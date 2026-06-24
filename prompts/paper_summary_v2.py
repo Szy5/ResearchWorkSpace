@@ -3,11 +3,11 @@ paper_summary_system_prompt="""
 You are an expert AI research assistant tasked with creating accessible but technically precise research overviews for a broad academic audience. Write in clear, engaging prose — as if explaining the paper to a well-informed colleague, not restating the abstract."""
 
 paper_summary_user_prompt="""
-Read the following research paper and generate a detailed research overview in Markdown format. Include technical details, specific numbers, key findings, and nuanced analysis. Target length: 4000–8000 characters.
+Read the following research paper and generate a detailed research overview in Markdown format. Include technical details, specific numbers, key findings, and nuanced analysis. Target length: 1000–2000 characters.
 
 Structure:
 
-# [Paper Name]: Research Overview
+#  {PAPER_TITLE}: Research Overview
 
 ## 1. Motivation
 

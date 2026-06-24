@@ -30,7 +30,15 @@ class IngestPipeline:
         self.prior_works_generator = PriorWorksGenerator(self.llm, self.settings.resolved_prompts_dir())
         self.pattern_generator = PatternGenerator(self.llm, self.settings.resolved_prompts_dir())
 
-    def run(self, slug: str, overwrite: bool = False) -> IngestResult:
+    def run(
+        self,
+        slug: str,
+        overwrite: bool = False,
+        *,
+        summary_prompt: str | None = None,
+        prior_works_prompt: str | None = None,
+        sci_pattern_prompt: str | None = None,
+    ) -> IngestResult:
         """
         执行 ingest；不会更新 wiki、图谱、向量库等 Layer2/Layer3 资源。
         """
@@ -56,18 +64,17 @@ class IngestPipeline:
         parsed = self.parser.parse(paper_dir)
 
         logger.info("步骤 2/4：生成 summary.md")
-        summary = self.summary_generator.generate(parsed)
-
-        logger.info("步骤 3/4：生成 prior_works.json")
-        prior_works = self.prior_works_generator.generate(parsed)
-        
-        logger.info("步骤 4/4：生成 sci_pattern.json")
-        sci_pattern = self.pattern_generator.generate(parsed)
-
+        summary = self.summary_generator.generate(parsed, prompt_file=summary_prompt)
         summary_path.write_text(summary, encoding="utf-8")
         logger.info("已写入：%s", summary_path)
+
+        logger.info("步骤 3/4：生成 prior_works.json")
+        prior_works = self.prior_works_generator.generate(parsed, prompt_file=prior_works_prompt)
         prior_works_path.write_text(prior_works.model_dump_json(indent=2), encoding="utf-8")
         logger.info("已写入：%s", prior_works_path)
+
+        logger.info("步骤 4/4：生成 sci_pattern.json")
+        sci_pattern = self.pattern_generator.generate(parsed, prompt_file=sci_pattern_prompt)
         sci_pattern_path.write_text(sci_pattern.model_dump_json(indent=2), encoding="utf-8")
         logger.info("已写入：%s", sci_pattern_path)
         logger.info("Layer1 三件套生成完成：slug=%s", slug)

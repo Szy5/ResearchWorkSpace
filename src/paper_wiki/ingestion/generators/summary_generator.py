@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import re
-import runpy
 from pathlib import Path
 
 import yaml
@@ -10,6 +9,7 @@ import yaml
 from paper_wiki.core.enums import ContributionType
 from paper_wiki.core.models import ParsedPaper, SummaryFrontmatter
 from paper_wiki.ingestion.llm_client import LLMClient
+from paper_wiki.ingestion.prompt_loader import load_prompt_module, resolve_prompt_path
 
 logger = logging.getLogger(__name__)
 
@@ -21,10 +21,13 @@ class SummaryGenerator:
         self.llm = llm
         self.prompts_dir = prompts_dir
 
-    def generate(self, parsed: ParsedPaper) -> str:
-        """调用摘要 prompt，再清洗模型输出并补齐 YAML frontmatter。"""
-        logger.info("开始生成 summary.md：slug=%s", parsed.slug)
-        prompt_vars = runpy.run_path(str(self.prompts_dir / "paper_summary.py"))
+    def generate(self, parsed: ParsedPaper, prompt_file: str | None = None) -> str:
+        """
+        调用摘要 prompt，再清洗模型输出并补齐 YAML frontmatter。
+        """
+
+        prompt_path = resolve_prompt_path(self.prompts_dir, prompt_file or "paper_summary.py")
+        prompt_vars = load_prompt_module(prompt_path)
         system = prompt_vars["paper_summary_system_prompt"].strip()
         user_template = prompt_vars["paper_summary_user_prompt"]
         user = user_template.replace("{PAPER_TITLE}", parsed.title).replace("{PAPER_CONTENT}", parsed.raw_text)

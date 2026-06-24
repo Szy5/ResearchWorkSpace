@@ -9,17 +9,21 @@ from pydantic import BaseModel, Field
 from paper_wiki.core.enums import ConfidenceLevel, PatternID
 from paper_wiki.core.models import ParsedPaper, SciPatternDoc
 from paper_wiki.ingestion.llm_client import LLMClient
+from paper_wiki.ingestion.prompt_loader import load_prompt_module, resolve_prompt_path
 
 logger = logging.getLogger(__name__)
 
 
-class _PatternLLMResponse(BaseModel):
-    """模型返回的范式分类最小结构。"""
-
+class _PatternClassification(BaseModel):
+    paper_index: int | None = None
     primary_pattern: PatternID
     secondary_patterns: list[PatternID] = Field(default_factory=list)
     confidence: ConfidenceLevel
     reasoning: str
+
+
+class _PatternLLMResponse(BaseModel):
+    classifications: list[_PatternClassification] = Field(default_factory=list)
 
 
 class PatternGenerator:
@@ -29,42 +33,44 @@ class PatternGenerator:
         self.llm = llm
         self.prompts_dir = prompts_dir
 
-    def generate(self, parsed: ParsedPaper) -> SciPatternDoc:
-        """加载本地 taxonomy，让模型只输出 ID，再在本地补齐范式名称。"""
+    def generate(self, parsed: ParsedPaper, prompt_file: str | None = None) -> SciPatternDoc:
+        """加载 taxonomy 与 prompt，解析 classifications 并写入单篇 sci_pattern.json。"""
         logger.info("开始生成 sci_pattern.json：slug=%s", parsed.slug)
         taxonomy = json.loads((self.prompts_dir / "pattern_taxonomy.json").read_text(encoding="utf-8"))
         taxonomy_text = json.dumps(taxonomy, ensure_ascii=False, indent=2)
-        system = "You are an expert at classifying scientific innovation patterns. Return JSON only."
-        user = f"""
-TAXONOMY:
-{taxonomy_text}
+        papers_text = (
+            f"Title: {parsed.title}\n"
+            f"Abstract: {parsed.abstract or 'N/A'}\n\n"
+            f"Content:\n{parsed.raw_text}"
+        )
 
-PAPER:
-Title: {parsed.title}
-Abstract: {parsed.abstract or "N/A"}
+        prompt_path = resolve_prompt_path(self.prompts_dir, prompt_file or "sci_pattern_classify_prompt.py")
+        logger.debug("使用 sci_pattern prompt：%s", prompt_path)
+        prompt_vars = load_prompt_module(prompt_path)
+        system = prompt_vars["sci_pattern_classify_system_prompt"].strip()
+        user = (
+            prompt_vars["sci_pattern_classify_user_prompt"]
+            .replace("{taxonomy_ref}", taxonomy_text)
+            .replace("{papers_text}", papers_text)
+        )
 
-Content:
-{parsed.raw_text}
-
-Classify this paper. Return exactly:
-{{
-  "primary_pattern": "P01",
-  "secondary_patterns": ["P03"],
-  "confidence": "high|medium|low",
-  "reasoning": "brief but specific classification reason"
-}}
-""".strip()
         response = self.llm.complete_json(system, user, _PatternLLMResponse)
+        if not response.classifications:
+            raise ValueError("LLM returned empty classifications list")
+        classification = response.classifications[0]
+
         pattern_names = self._pattern_name_map(taxonomy)
         doc = SciPatternDoc(
             target_slug=parsed.slug,
             target_title=parsed.title,
-            primary_pattern=response.primary_pattern,
-            primary_pattern_name=pattern_names.get(response.primary_pattern.value, ""),
-            secondary_patterns=response.secondary_patterns,
-            secondary_pattern_names=[pattern_names.get(pattern.value, "") for pattern in response.secondary_patterns],
-            confidence=response.confidence,
-            reasoning=response.reasoning,
+            primary_pattern=classification.primary_pattern,
+            primary_pattern_name=pattern_names.get(classification.primary_pattern.value, ""),
+            secondary_patterns=classification.secondary_patterns,
+            secondary_pattern_names=[
+                pattern_names.get(pattern.value, "") for pattern in classification.secondary_patterns
+            ],
+            confidence=classification.confidence,
+            reasoning=classification.reasoning,
         )
         logger.info(
             "sci_pattern.json 生成完成：slug=%s, primary_pattern=%s, confidence=%s",

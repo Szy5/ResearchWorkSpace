@@ -23,13 +23,18 @@ class FakeLLM(LLMClient):
               "synthesis_narrative": "Graph QA Foundations established the evaluation setup and path reasoning framing. The current work builds from that framing by adding staged trajectory synthesis."
             }
             """
-        if "primary_pattern" in user:
+        if '"classifications"' in user:
             return """
             {
-              "primary_pattern": "P05",
-              "secondary_patterns": ["P04"],
-              "confidence": "high",
-              "reasoning": "The paper centers on synthetic trajectories and evaluation for graph reasoning agents."
+              "classifications": [
+                {
+                  "paper_index": 1,
+                  "primary_pattern": "P05",
+                  "secondary_patterns": ["P04"],
+                  "confidence": "high",
+                  "reasoning": "The paper centers on synthetic trajectories and evaluation for graph reasoning agents."
+                }
+              ]
             }
             """
         return "# Tiny Graph Reasoning\n\n## 2. 贡献\n**类型**：方法改进型\n- Uses staged training."

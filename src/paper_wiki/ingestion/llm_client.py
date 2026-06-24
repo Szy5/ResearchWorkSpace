@@ -6,6 +6,7 @@ import re
 from abc import ABC, abstractmethod
 from typing import TypeVar
 
+import httpx
 from openai import OpenAI
 from pydantic import BaseModel, ValidationError
 
@@ -69,12 +70,19 @@ class OpenAIClient(LLMClient):
             raise ValueError("Missing API_KEY/OPENAI_API_KEY in environment")
         kwargs = {
             "api_key": self.settings.api_key,
-            "timeout": self.settings.request_timeout_seconds,
+            "http_client": httpx.Client(
+                timeout=self.settings.request_timeout_seconds,
+                trust_env=False,
+            ),
         }
         if self.settings.base_url:
             kwargs["base_url"] = self.settings.base_url
         self.client = OpenAI(**kwargs)
-        logger.debug("OpenAI-compatible 客户端初始化完成：provider=%s, model=%s", self.settings.llm_provider, self.settings.model_name)
+        logger.debug(
+            "OpenAI-compatible 客户端初始化完成：provider=%s, model=%s, proxy=disabled",
+            self.settings.llm_provider,
+            self.settings.model_name,
+        )
 
     def complete(self, system: str, user: str) -> str:
         """执行一次 chat completion，返回纯文本内容。"""

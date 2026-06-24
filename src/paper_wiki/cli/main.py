@@ -44,13 +44,34 @@ def ingest(
     slug: str,
     overwrite: bool = typer.Option(False, "--overwrite", "-f", help="允许覆盖已有 Layer1 三件套。"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="输出 DEBUG 级别日志和异常堆栈。"),
+    summary_prompt: str | None = typer.Option(
+        "paper_summary_v2.py",
+        "--summary-prompt",
+        help="摘要 prompt 文件，默认 paper_summary.py；可传相对 prompts/ 的路径或绝对路径。",
+    ),
+    prior_works_prompt: str | None = typer.Option(
+        "prior_work_prompt.py",
+        "--prior-works-prompt",
+        help="前作谱系 prompt 文件，默认 prior_work_prompt.py。",
+    ),
+    sci_pattern_prompt: str | None = typer.Option(
+        "sci_pattern_classify_prompt.py",
+        "--sci-pattern-prompt",
+        help="科学范式 prompt 文件，默认 sci_pattern_classify_prompt.py。",
+    ),
 ) -> None:
     """
     生成 artifacts/{slug}/summary.md、prior_works.json 和 sci_pattern.json
     """
     configure_logging(verbose)
     try:
-        result = IngestPipeline().run(slug, overwrite=overwrite)
+        result = IngestPipeline().run(
+            slug,
+            overwrite=overwrite,
+            summary_prompt=summary_prompt,
+            prior_works_prompt=prior_works_prompt,
+            sci_pattern_prompt=sci_pattern_prompt,
+        )
         print(f"[green]Generated Layer1 artifacts for {slug}[/green]")
         print(f"- {Path(result.summary_path)}")
         print(f"- {Path(result.prior_works_path)}")
