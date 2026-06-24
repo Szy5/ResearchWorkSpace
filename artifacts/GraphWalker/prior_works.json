@@ -1,0 +1,65 @@
+{
+  "target_slug": "GraphWalker",
+  "target_title": "GraphWalker: Agentic Knowledge Graph Question Answering via Synthetic Trajectory Curriculum",
+  "target_venue": "",
+  "target_year": null,
+  "prior_works": [
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting",
+      "authors": "Yao et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "ReAct 将链式推理与动作（工具调用）结合，直接启发 GraphWalker 采用 agentic 推理-行动范式并在训练设计上同时考虑推理步骤与交互动作。"
+    },
+    {
+      "title": "MINERVA: Learning to Navigate Knowledge Graphs for Question Answering",
+      "authors": "Das et al.",
+      "year": 2018,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "MINERVA 首次用强化学习训练代理在知识图谱上按路径导航完成多跳问答，奠定了以路径搜索与策略优化为核心的 KG 导航问题定义，成为 GraphWalker 在 RL 阶段与路径表示方面的基础参照。"
+    },
+    {
+      "title": "DeepWalk: Online Learning of Social Representations",
+      "authors": "Perozzi et al.",
+      "year": 2014,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "DeepWalk 提出用随机游走采样生成节点序列来捕获图的结构性信息，直接启发 GraphWalker 以受限随机游走合成结构多样的交互轨迹（GraphSynth）。"
+    },
+    {
+      "title": "ToG (iterative graph traversal prompting)",
+      "authors": "Sun et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "ToG 代表了基于提示的迭代图遍历范式，其依赖预定义提示/工作流且缺乏可训练的导航先验，GraphWalker 针对其在自主探索与训练上受限的问题提出数据合成与阶段式 SFT 以突破性能上限。"
+    },
+    {
+      "title": "RoG: Reasoning over Graphs (grounded plans in KGs)",
+      "authors": "Luo et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Related Problem",
+      "relationship_sentence": "RoG 强调将计划（plans）在知识图中落地并以轨迹级示例进行监督，GraphWalker 在此方向上进一步系统化了轨迹合成與精炼（GraphSynth 与 GraphRoll）以提高鲁棒性与错误恢复能力。"
+    },
+    {
+      "title": "ComplexWebQuestions (CWQ)",
+      "authors": "Talmor and Berant",
+      "year": 2018,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "CWQ 提供了复杂、多跳问题作为评测基准，定义了对长链组合性推理和路径泛化的评价需求，GraphWalker 用其作为主要测试以验证对 OOD 路径的泛化能力。"
+    },
+    {
+      "title": "WebQuestionsSP (WebQSP)",
+      "authors": "Yih et al.",
+      "year": 2016,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "WebQSP 为 KGQA 提供了早期的实体-关系查询基准，成为衡量基线方法在实际 KG 上检索与执行能力的标准数据集，GraphWalker 在该基准上展示其在轻量 RL 优化前后的提升。"
+    }
+  ],
+  "synthesis_narrative": "这些前作在技术细节上各自提供了 GraphWalker 所依赖的关键构件。ReAct 明确把链式推理和工具调用耦合，奠定了 agentic 推理-行动的范式；MINERVA 将问题形式化为在 KG 上按路径行走并用策略学习完成多跳问答，为以路径为中心的导航与 RL 优化提供了问题定义和范式；DeepWalk 则把随机游走作为捕获图结构的有效手段，为以受限随机游走合成多样轨迹的想法提供了技术灵感。ToG 与 RoG 等近期基线展示了基于提示或轨迹监督的迭代遍历方法的能力与局限，尤其暴露出缺乏可训练探索先验与有限轨迹多样性时的性能天花板。CWQ 与 WebQSP 等数据集则定义了对复杂多跳和组合性推理的评价需求。把这些工作放在一起可以清晰看出一个缺口：已有方法要么靠提示缺乏训练的探索能力，要么在 RL 阶段受限于狭窄的训练轨迹分布。GraphWalker 正是基于上述观察提出解决路径——用受限随机游走系统地合成结构多样的轨迹（借鉴 DeepWalk 思路）、以两阶段 SFT（先广泛探索再精炼专家轨迹来训练反思与恢复能力）弥补提示方法的训练缺陷，并在此强基座上进行轻量 RL，从而实现对 CWQ/WebQSP 等基准上更强的泛化与更高的 RL 上限。"
+}

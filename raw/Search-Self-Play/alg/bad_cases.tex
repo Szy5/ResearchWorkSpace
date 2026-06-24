@@ -1,0 +1,203 @@
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Example of hacking questions: question with non-unique answers.
+    }
+    \label{tab-app: bad_case_proposer}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Proposer} creates a question that leads to the answer \textit{Otis Williams}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+I need to create a question that leads to "Otis Williams" as the answer. 
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Let's begin by searching for 'associated' or 'preceding' facts which connect to "Otis Williams".\rthink
+}
+\\
+\search{otis williams}
+\\
+\info{
+Doc 1 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer. Williams is best known as the founder and last surviving original member of the Motown vocal group The Temptations, a group in which he continues to perform; he also owns the rights to the Temptations name. Williams was born Otis Miles, Jr. in Texarkana, Texas to Otis Miles and Hazel Louise Williams $\dots$
+\\
+Doc 2 (Title: "Charles Malik Whitfield")
+Charles Malik Whitfield Charles Malik Whitfield (born August 1, 1972) is an American actor. Whitfield is best known for his performance as Otis Williams in the television miniseries, ""The Temptations"" (1998), for which he was nominated for a NAACP Image Award for Outstanding Actor in a Television Movie or Mini-Series $\dots$
+\\
+Doc 3 (Title: "Johnny Otis")
+Johnny Otis Johnny Otis (born Ioannis Alexandres Veliotes; December 28, 1921 – January 17, 2012) was an American singer, musician, composer, arranger, bandleader, talent scout, disc jockey, record producer, television show host, artist, author, journalist, minister, and impresario $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink It appears that the most prominent "Otis Williams" refers to a singer from The Temptations, a famous Motown group.\rthink
+}
+\\
+\question{Temptations singer}
+\\\bottomrule
+\bottomrule
+\end{tabular}
+\end{table*}
+
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Example of hacking questions: question with non-unique answers (wrong answer).
+    }
+    \label{tab-app: bad_case_solver1}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Solver} answers the question raised by Proposer: \textit{Temptations singer?}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+I need to find out which singer from the Temptations group. I'll search for it.\rthink
+}
+\\
+\search{Temptations singer}
+\\
+\info{
+Doc 1 (Title: "Terry Weeks")
+Terry Weeks Terry Wayne Weeks (born December 23, 1963) is an American R\&B and soul singer who is currently one of the lead singers of the legendary Motown $\dots$
+\\
+Doc 2 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer. Williams $\dots$
+\\
+Doc 3 (Title: "The Temptations")
+The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer Norman Whitfield, beginning with the Top 10 hit single ""Cloud Nine"" in October 1968, pioneered psychedelic soul, and was significant in the evolution of R\&B and soul music. The band members are known for their choreography, distinct harmonies, and dress style. Having sold tens of millions of albums, the Temptations are among the most successful groups in popular music. Featuring five male vocalists and dancers (save for brief periods with $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that The Temptations are a vocal group. Now I need to find out which singer from the Temptations.\rthink
+}
+\\
+\search{who is the singer in The Temptations}
+\\
+\info{
+Doc 1 (Title: "David Ruffin")
+David Ruffin David Eli Ruffin (born Davis Eli Ruffin, January 18, 1941 – June 1, 1991) was an American soul singer and musician most famous for his work as one of the lead singers of The Temptations (1964–68) during the group's ""Classic Five"" period as it was later known. He was the lead voice on such $\dots$
+\\
+Doc 2 (Title: "The Temptations")
+The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer Norman Whitfield, beginning with the Top 10 hit single ""Cloud Nine"" in October 1968, pioneered psychedelic soul, and was significant in the evolution of R\&B and soul music. The band members are known for their choreography, distinct harmonies, and dress style. Having sold tens of millions of albums, the Temptations are among the most successful groups in popular music. Featuring five male vocalists and dancers (save for brief periods with $\dots$
+\\
+Doc 3 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer. Williams $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that David Ruffin, Otis Williams, and other singers were part of The Temptations. I need to find the main or most famous singer from the group.\rthink
+}
+\\
+\search{most famous singer in The Temptations}
+\\
+\info{
+Doc 1 (Title: "David Ruffin")
+David Ruffin David Eli Ruffin (born Davis Eli Ruffin, January 18, 1941 – June 1, 1991) was an American soul singer and musician most famous for his work as one of the lead singers of The Temptations (1964–68) during the group's ""Classic Five"" period as it was later known. He was the lead voice on such $\dots$
+\\
+Doc 2 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer. Williams $\dots$
+\\
+Doc 3 (Title: "The Temptations")
+The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer Norman Whitfield, beginning with the Top 10 hit single ""Cloud Nine"" in October 1968, pioneered psychedelic soul, and was significant in the evolution of R\&B and soul music. The band members are known for their choreography, distinct harmonies, and dress style. Having sold tens of millions of albums, the Temptations are among the most successful groups in popular music. Featuring five male vocalists and dancers (save for brief periods with $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that the main singer of The Temptations is not explicitly mentioned.\rthink
+}
+\\
+\answer{David Ruffin}
+\\\bottomrule
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Example of hacking questions: question with non-unique answers (correct answer).
+    }
+    \label{tab-app: bad_case_solver2}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Solver} answers the question raised by Proposer: \textit{Temptations singer?}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+I need to find out which singer of the Temptations. I'll search for it.\rthink
+}
+\\
+\search{Temptations singer}
+\\
+\info{
+Doc 1 (Title: "Terry Weeks")
+Terry Weeks Terry Wayne Weeks (born December 23, 1963) is an American R\&B and soul singer who is currently one of the lead singers of the legendary Motown $\dots$
+\\
+Doc 2 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer $\dots$
+\\
+Doc 3 (Title: "The Temptations")
+The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer Norman Whitfield, beginning with the Top 10 hit single ""Cloud Nine"" in October 1968, pioneered psychedelic soul, and was significant in the evolution of R\&B and soul music. The band members are known for their choreography, distinct harmonies, and dress style. Having sold tens of millions of albums, the Temptations are among the most successful groups in popular music. Featuring five male $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that The Temptations is a vocal group. Now I need to find which singer of the Temptations.\rthink
+}
+\\
+\search{who is a singer of the Temptations}
+\\
+\info{
+Doc 1 (Title: "The Temptations")
+The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer Norman Whitfield, beginning with the Top 10 hit single ""Cloud Nine"" in October 1968, pioneered psychedelic soul, and was significant in the evolution of R\&B and soul music. The band members are known for their choreography, distinct harmonies, and dress style. Having sold tens of millions of albums, the Temptations are among the most successful groups in popular music. Featuring five male vocalists and dancers (save for brief periods with $\dots$
+\\
+Doc 2 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer $\dots$
+\\
+Doc 3 (Title: "The Temptations")
+Ten on either the United States Pop or R\&B Albums Chart. The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer Norman Whitfield, beginning with the Top 10 hit single ""Cloud Nine"" in October 1968, pioneered psychedelic soul, and was significant $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that The Temptations is a vocal group. Now I need to find a specific singer of the Temptations.\rthink
+}
+\\
+\search{singer of The Temptations}
+\\
+\info{
+Doc 1 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer. Williams $\dots$
+\\
+Doc 2 (Title: "The Temptations")
+The Temptations The Temptations are an American vocal group who released a series of successful singles and albums with Motown Records during the 1960s and 1970s. Their work with producer $\dots$
+\\
+Doc 3 (Title: "Paul Williams (The Temptations)")
+Paul Williams (The Temptations) Paul Williams (July 2, 1939 – August 17, 1973) was an American baritone singer and choreographer. Williams was noted for being one of the founding members and original lead singer of the Motown group The Temptations. Along with Elbridge ""Al"" Bryant, Otis Williams , and fellow Alabamians Eddie Kendricks and Melvin Franklin, Williams was a member of The Temptations $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that the singers of The Temptations include Otis Williams, Eddie Kendricks, and Paul Williams. Now I need to find a specific singer of the Temptations.\rthink
+}
+\\
+\search{temptations lead singer}
+\\
+\info{
+Doc 1 (Title: "Otis Williams")
+Otis Williams Otis Williams (born Otis Miles Jr.; October 30, 1941) is an American baritone singer. Nicknamed ""Big Daddy"", he is occasionally also a songwriter and a record producer. Williams $\dots$
+\\
+Doc 2 (Title: "Terry Weeks")
+Terry Weeks Terry Wayne Weeks (born December 23, 1963) is an American R\&B and soul singer who is currently one of the lead singers of the legendary Motown quintet The Temptations. Weeks was born in Birmingham, Alabama. Serving in the Air Force, including involvement with Tops In Blue for eight years. Upon his retirement in the early-1990s, Weeks began singing locally around his home $\dots$
+\\
+Doc 3 (Title: "Terry Weeks")
+taking the place of Temptations lead Ali-Ollie Woodson, who was battling throat cancer. He would replace Woodson permanently in 1997, joining the Temptations lineup that included Williams, Ron Tyson, Theo Peoples and Harry McGilberry in 1996. Weeks sung co-lead on the $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink I found out that the lead singer of The Temptations might be Otis Williams. Now I can provide the answer.\rthink
+}
+\\
+\answer{Otis Williams}
+\\\bottomrule
+\bottomrule
+\end{tabular}
+\end{table*}

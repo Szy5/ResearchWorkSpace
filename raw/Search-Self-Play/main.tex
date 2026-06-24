@@ -1,0 +1,1186 @@
+
+% \documentclass{article} % For LaTeX2e
+\documentclass[10pt, a4paper, logo]{googledeepmind} %
+% \usepackage{iclr2026_conference}
+\usepackage{times}
+ 
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage[most]{tcolorbox}
+\usepackage[table]{xcolor}
+\tcbuselibrary{breakable} % 加载分页支持库
+\usepackage{amsmath} 
+\usepackage{siunitx}
+\usepackage{colortbl}
+\usepackage{caption}
+
+\usepackage{wrapfig}
+
+% 定义一种新的 tcolorbox 样式
+\newtcolorbox{examplebox}[2][]{ % 允许传入可选参数 [#1] 和必选标题参数 {#2}
+    breakable, % 关键：允许跨页分割
+    enhanced, % 增强模式（可选，支持更多样式）
+    colback=white, % 框体内背景色
+    colframe=cyan, % 边框颜色
+    coltitle=white, % 标题文字颜色
+    fonttitle=\bfseries, % 标题字体加粗
+    title=#2, % 框体标题（第二个必选参数）
+    % 以下为跨页分割线的样式设置（可选）
+    overlay middle={\draw[cyan, line width=1pt](frame.south west)--(frame.south east);}, % 分割处添加横线
+    overlay last={\draw[cyan, line width=1pt](frame.south west)--(frame.south east);}, % 最后一页底部横线
+    #1 % 允许在调用时传入其他可选参数以覆盖默认样式
+}
+
+\newcommand{\think}[1]{\textcolor{blue}{\texttt{<think>}} #1 \textcolor{blue}{\texttt{</think>}}}
+\newcommand{\search}[1]{\textcolor{cyan}{\texttt{<search>}} #1 \textcolor{cyan}{\texttt{</search>}}}
+\newcommand{\info}[1]{\textcolor{brown}{\texttt{<information>}} #1 \textcolor{brown}{\texttt{</information>}}}
+\newcommand{\answer}[1]{\textcolor{purple}{\texttt{<answer>}} #1 \textcolor{purple}{\texttt{</answer>}}}
+\newcommand{\question}[1]{\textcolor{orange}{\texttt{<question>}} #1 \textcolor{orange}{\texttt{</question>}}}
+\newcommand{\observation}[1]{\textcolor{brown}{\texttt{<observation>}} #1 \textcolor{brown}{\texttt{</observation>}}}
+\newcommand{\evidence}[1]{\textcolor{teal}{\texttt{<original\_evidence>}} #1 \textcolor{teal}{\texttt{</original\_evidence>}}}
+\newcommand{\lthink}{\textcolor{blue}{\texttt{<think>}}}
+\newcommand{\rthink}{\textcolor{blue}{\texttt{</think>}}}
+
+
+% --- 必要的宏包 ---
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}      % 用于漂亮的表格线 (toprule, midrule, etc.)
+\usepackage{graphicx}      % 用于 \resizebox
+\usepackage[table]{xcolor} % 用于颜色
+\usepackage{siunitx}       % 用于 S 列，实现小数点对齐
+\usepackage{etoolbox}      % 用于 \ifstrequal，实现条件判断
+\usepackage[normalem]{ulem}     % 用于更灵活的下划线 \uline
+
+% --- 命令定义 ---
+
+% 1. 定义颜色
+\definecolor{impcolor}{HTML}{2E8B57} % 提升使用的海绿色 (SeaGreen)
+
+% 2. 辅助命令：定义上标的统一格式
+\newcommand{\improvementstyle}[1]{$^{\textcolor{impcolor}{\tiny #1}}$}
+
+% 3. ★ 核心命令：用于有提升的分数
+%    - #1 是主分数, #2 是提升值
+%    - 使用 \ifstrequal 判断提升值是否为 "+0.0" 或 "0.0"，如果是则不显示上标
+%    - \makebox[0pt][l]{...} 确保上标不影响对齐
+\newcommand{\scoreimp}[2]{%
+  \textbf{#1}%
+  \ifstrequal{#2}{+0.0}{}{%
+    \ifstrequal{#2}{0.0}{}{%
+      \makebox[0pt][l]{\improvementstyle{#2}}%
+    }%
+  }%
+}
+
+% 4. 用于没有提升的基础分数
+\newcommand{\scorebase}[1]{#1}
+
+% \newcommand{\best}[1]{\underline{#1}}
+\definecolor{bestcolor}{HTML}{4169E1}  % ★ NEW: 最佳值使用的宝蓝色 (RoyalBlue)
+% \newcommand{\best}[1]{{\color{bestcolor}\uline{#1}}}
+\newcommand{\best}[1]{{\color{bestcolor}{#1}}}
+\newcommand{\pengyu}[1]{{\color{blue}{[\bf\sf Pengyu: #1]}}} 
+
+\title{Search Self-play: Pushing the Frontier of Agent Capability without Supervision}
+
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+% --- AUTHORS AND AFFILIATIONS (for submission)---
+% \author{Hongliang Lu\textsuperscript{1,2}\thanks{Equal contribution, work done during an internship at Alibaba.}  , Yuhang Wen\textsuperscript{1,3}\footnotemark[1]  , Pengyu Cheng\textsuperscript{1}\thanks{Corresponding author.}  , Ruijin Ding\textsuperscript{1}, Jiaqi Guo\textsuperscript{1}, Haotian Xu\textsuperscript{1},\\
+% \textbf{Chutian Wang\textsuperscript{1}, Haonan Chen\textsuperscript{1}, Xiaoxi Jiang\textsuperscript{1}, Guanjun Jiang\textsuperscript{1}}\\
+% \textsuperscript{1} Qwen Large Model Application Team, Alibaba \\
+% \textsuperscript{2} Peking University\\
+% \textsuperscript{3} Sun Yat-sen University \\
+
+% --- AUTHORS AND AFFILIATIONS (for arxiv)---
+\author[1,2]{Hongliang Lu\textsuperscript{*}}
+\author[1,3]{Yuhang Wen\textsuperscript{*}}
+\author[1]{Pengyu Cheng\textsuperscript{\dag}}
+\author[1]{Ruijin Ding}
+\author[1]{Jiaqi Guo}
+\author[1]{Haotian Xu}
+\author[1]{Chutian Wang}
+\author[1]{Haonan Chen}
+\author[1]{Xiaoxi Jiang}
+\author[1]{Guanjun Jiang}
+\affil[1]{Qwen Large Model Application Team, Alibaba}
+\affil[2]{Peking University}
+\affil[3]{Sun Yat-sen University}
+
+% --- Abstract (for arxiv)---
+\begin{abstract}
+Reinforcement learning with verifiable rewards (RLVR) has become the mainstream technique for training LLM agents. However, RLVR highly depends on well-crafted task queries and corresponding ground-truth answers to provide accurate rewards, which requires significant human effort and hinders the scaling of RL processes, especially in agentic scenarios. Although a few recent works explore task synthesis methods, the difficulty of generated agentic tasks can hardly be controlled to provide effective RL training advantages. To achieve agentic RLVR with higher scalability, we explore self-play training for deep search agents, in which the learning LLM utilizes multi-turn search engine calling and acts simultaneously as both a task proposer and a problem solver. The task proposer aims to generate deep search queries with well-defined ground-truth answers and increasing task difficulty. The problem solver tries to handle the generated search queries and output the correct answer predictions. To ensure that each generated search query has accurate ground truth, we collect all the searching results from the proposer's trajectory as external knowledge, then conduct retrieval-augmentation generation (RAG) to test whether the proposed query can be correctly answered with all necessary search documents provided. In this search self-play (SSP) game, the proposer and the solver co-evolve their agent capabilities through both competition and cooperation. With substantial experimental results, we find that SSP can significantly improve search agents' performance uniformly on various benchmarks without any supervision under both from-scratch and continuous RL training setups. The code is at \url{https://github.com/Qwen-Applications/SSP}.
+\end{abstract}
+\newif\ifaccepted
+\acceptedtrue
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+% \iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+\maketitle
+
+% --- Abstract (for submission)---
+% \begin{abstract}
+% Reinforcement learning with verifiable rewards (RLVR) has become the mainstream technique for training LLM agents. However, RLVR highly depends on well-crafted task queries and corresponding ground-truth answers to provide accurate rewards, which requires significant human effort and hinders the scaling of RL processes, especially in agentic scenarios. Although a few recent works explore task synthesis methods, the difficulty of generated agentic tasks can hardly be controlled to provide effective RL training advantages. To achieve agentic RLVR with higher scalability, we explore self-play training for deep search agents, in which the learning LLM utilizes multi-turn search engine calling and acts simultaneously as both a task proposer and a problem solver. The task proposer aims to generate deep search queries with well-defined ground-truth answers and increasing task difficulty. The problem solver tries to handle the generated search queries and output the correct answer predictions. To ensure that each generated search query has accurate ground truth, we collect all the searching results from the proposer's trajectory as external knowledge, then conduct retrieval-augmentation generation (RAG) to test whether the proposed query can be correctly answered with all necessary search documents provided. In this search self-play (SSP) game, the proposer and the solver co-evolve their agent capabilities through both competition and cooperation. With substantial experimental results, we find that SSP can significantly improve search agents' performance uniformly on various benchmarks without any supervision under both from-scratch and continuous RL training setups. The code is at \url{https://github.com/Qwen-Applications/SSP}.
+% \end{abstract}
+
+\begin{figure}[h]
+\vspace{1mm}
+\begin{center}
+\includegraphics[width=\textwidth]{figures/figure1_radar_1x4.pdf}
+\end{center}
+\vspace{-4mm}
+\caption{Performance gains of deep search agents trained via Search Self-play (SSP) across various agentic benchmarks. Our SSP method uniformly surpasses multiple strong open-source baselines without any agentic data annotation and additional supervision.}
+\label{fig:teaser}
+\vspace{-2mm}
+\end{figure}
+
+\vspace{-2mm}
+\section{Introduction}\label{intro}
+\vspace{-2mm}
+The rapid development of large language models (LLMs) has enabled Artificial Intelligence (AI) with astonishing natural language capabilities and systemically reshaped various application scenarios, including machine translation~\citep{brown2020language,zhang2023prompting}, dialog systems~\citep{ouyang2022training,achiam2023gpt,deepseek-ai_deepseek-r1_2025}, document retrieval~\citep{zhu2023large}, and AI search~\citep{openai2025deepresearch,li2025towards}. In this revolution, AI agents, which utilize LLMs' power to interact with complex functional tools and solve multi-step decision-making processes, have attracted wide attention for their unprecedented application potential and commercial value~\citep{li2024survey,xi2025rise}. According to different available tool sets, LLM Agents can be further categorized. For example, deep search agents primarily use search engines~\citep{jin2025search,tongyidr}, GUI agents are multi-modal based on screenshots~\citep{wang2024gui,xie2024osworld,wang2025ui}, and coding agents utilize code interpreters~\citep{huang2023agentcoder,yang2024swe}.
+
+Although with great practical potential, training LLM Agents has been widely acknowledged as a challenging task due to the scarcity of supervised training data~\citep{qi2024webrl,team2025kimi}.
+% Unlike natural language corpora with a large amount, LLM agents, as an emerging topic, have far less supervised training data. 
+Besides, different types of LLM agents utilize diversified tool sets, so the strategies of agents with different tool sets can be entirely dissimilar. Even for the same task query, a human-annotated agentic trajectory can be inapplicable for another agent tool set, which further exacerbates the data shortage. Thanks to the breakthroughs of reinforcement learning with verifiable rewards (RLVR)~\citep{guo2025deepseek}, many recent works start to train LLM agents within the RL paradigm instead of being stubborn in the supervised data collection~\citep{shang2025rstar2,jin2025search}. In these agentic RL methods, a ground-truth answer is well-crafted for each given task query, and the reward outcome is simply to check whether the agent's predicted answer is equivalent with the ground-truth. Agentic RL methods only concern about whether the final prediction is correct, without imposing any restrictions on the intermediate multi-step agents' exploration, which significantly reduces the demands of manual annotation~\citep{zhang2025landscape}. However, agentic RLVR still heavily depends on a large amount of well-crafted verified ground-truth for training scaling-up~\citep{zhao_absolute_2025,zhang2025landscape}, which means the data scarcity problem remains a bottleneck for effective agentic training.  
+%The labor-intensive and time-consuming nature of acquiring and validating this data leads to scarcity, which in turn poses a significant bottleneck to the scalability of RLVR systems~\citep{liang_beyond_2025}. 
+
+
+%Recent breakthroughs, demonstrated by models like O1~\citep{jaech2024openai} and DeepSeek-R1~\citep{guo2025deepseek}, have dramatically advanced the ability of AI to tackle complex, multi-step problems. To translate these powerful capabilities into practical, real-world applications, the field has seen a surge in the development of sophisticated AI agents. A new wave of systems, such as Deep-Research~\citep{openai2025deepresearch}, Grok-3~\citep{xai2025grok3}, and Kimi-Researcher~\citep{moonshot2025kimi}, now function as autonomous agents capable of performing complex, end-to-end research tasks.
+
+ 
+
+
+%Recent advances leverage reinforcement learning with verifiable rewards (RLVR)~\citep{guo2025deepseek} to train LLM agents for Deep Search~\citep{jin2025search,jin2025empirical,chen_research_2025,2025mirothinker}. In this paradigm, the agent performs a \textit{rollout}—a sequence of actions like querying a search engine and navigating web pages—to arrive at an answer for a given question. This final answer is then programmatically compared against a known \textit{ground-truth} answer to assign a clear, verifiable reward (e.g., 1 for correct, 0 for incorrect), which is used to optimize the agent's policy. 
+%The primary advantage of RLVR is that it provides a direct and unambiguous training signal, which is critical for learning complex reasoning chains. By tying the reward to factual correctness, it mitigates the risk of reward hacking common in systems that rely on proxy or estimated rewards, thus fostering more reliable and trustworthy agents~\citep{lightman2023let}. 
+
+To further mitigate the annotation scarcity of agentic RLVR, query-synthesis methods have been explored~\citep{li_websailor_2025,gao2025asearcher}. Provided with a ground-truth answer, synthetic methods first select a simple question or a related condition, then recursively replace some of the key information from the question or the condition with more complicated descriptions. With this multi-step inject-then-fuzz data pipeline, one can generate agent queries with different multi-hop conditions with controllable task difficulty~\citep{li2025websailor}.
+%
+%
+%in which synthetic agent tasks are generated by  Synthetic methods for agents employ an LLM-based inject-then-fuzz pipeline to generate question-answer (QA) pairs: starting from seed QA pairs or HTML subgraphs, the model automatically injects additional facts and then perturbs key information to increase multi-hop reasoning difficulty. 
+%
+However, query-synthesis approaches still suffer from two critical limitations of training efficiency and effectiveness: 
+First, the training scalability is inherently constrained, as each synthesized question-answer pair must be rigorously validated for answer correctness and logic consistency to compute accurate task outcomes~\citep{Villalobos2024Position}.
+Second, the offline synthetic scheme lacks the adaptability to dynamically adjust question difficulty to provide effective advantages during the RL training~\citep{guo2025synthetic}.
+%This rigidity ultimately limits both learning efficiency and performance gains.
+Consequently, existing approaches remain unqualified to be scalable and self-sustaining to generate high-quality agentic question-answer pairs without human annotation.
+
+On the other hand, self-play methods, pioneered by AlphaGo Zero~\citep{silver2017mastering}, have shown their effectiveness to continuously improve the intelligence of agents by playing games against agents themselves~\citep{schrittwieser2020mastering,zha2021douzero}. With a well-defined gaming outcome computation, self-play methods collect different trajectories from both winner and loser, then reinforce the policy models without any additional supervision. Recent studies have also verified the effectiveness of self-play training for LLMs, specifically in improving safety~\citep{deng2025duoguard,liu2025chasing}, alignment~\citep{chen2024self,cheng2024adversarial} and reasoning~\citep{cheng2024spag,chen2025spc}. Although self-play is naturally a potential solution to address data scarcity, its application for agent training remains unexplored. 
+%ising solution to these challenges. 
+
+%Through a self-sustaining learning loop, an agent learns by playing against itself and continuously improves through reinforcement learning. This paradigm effectively addresses both data scarcity and 
+
+To address the annotation scarcity of agentic RL training, this paper targets exploring the self-play training to self-improve agents under the deep search scenarios. More specifically, we design a Search Self-play (SSP) game, 
+%a framework for training continuously self-improving search agents through RLVR without human supervision. 
+in which the target LLM simultaneously plays two alternating roles: a \textit{question proposer} and a \textit{problem solver}. 
+The proposer generates deep search queries with verifiable ground-truth with progressive difficulty, while the solver attempts to answer the generated questions via multi-turn reasoning and search calling. 
+%
+To validate the correctness of each generated query, we collect all the searching results from the proposer's trajectory as the external materials, then conduct a retrieval augmentation generation (RAG) to check if the solver can successfully predict the answer with all necessary information provided. % the  each query is verified via RAG using the full set of documents that the proposer itself retrieved. 
+%
+%This process guarantees that a well-defined, ground-truth answer exists and is recoverable from the provided evidence. 
+With the above design, the deep search agent can autonomously generate high-quality training tasks and then solve them by itself, removing the demands of human-annotated verification while maintaining reward accuracy. 
+%
+%\pengyu{Besides, adaptability issues by autonomously generating training examples that naturally scale in difficulty as the agent improves.} 
+%
+Besides, the difficulty of the training queries becomes adaptive by controlling the reinforcement level of the proposer based on its SSP win rates.
+%
+Through competition and collaboration in SSP, the proposer and solver co-evolve, systematically improving the target LLM's capacities of searching, reasoning, and self-verification. In experiments, we show that SSP yields substantial and consistent improvements across various benchmarks under both from-scratch and continual learning setups, establishing a scalable pathway toward self-supervised agentic training.
+
+% Towards more effective agentic training, also inspired by the advancement from AlphaGO Zero~\citep{silver2017mastering}, we explore Search Self-Play (SSP) to train continuously self-improving deep search agent with RLVR towards better agent capability without supervision. A single LLM alternates between two roles: a task proposer that generates increasingly challenging and verifiable deep search queries, and a problem solver that attempts to answer these queries using multi-turn search interactions. Crucially, each proposed query is validated through RAG using the full set of documents retrieved during the proposer’s own search trajectory, ensuring that a well-defined ground-truth answer exists and is recoverable from the provided evidence. This closed-loop design enables the agent to autonomously generate high-quality training signals, eliminating the need for human-annotated supervision while maintaining reward fidelity. Within this SSP game, the proposer and solver co-evolve through iterative competition and collaboration, progressively enhancing the agent’s search, reasoning, and self-verification capabilities. As we demonstrate empirically, SSP yields substantial and consistent improvements across multiple benchmarks under both from-scratch and continual RL training settings, establishing a scalable pathway toward self-supervised agentic learning.
+
+
+\section{Related Work}\label{related}
+\vspace{-2mm}
+
+\subsection{Deep Search Agents}
+\vspace{-1mm}
+Deep search agents leverage the power of search engines and the reasoning capacities of LLMs to conduct multi-turn retrievals and analyses for seeking accurate answers of complex and challenging questions, which have gained increasing attention for their huge application potential to serve people as a novel information acquisition paradigm~\citep{huang_deep_2025,xi2025survey}.
+%
+%Central to the functionality of these advanced agents is their ability to perform deep, iterative information seeking. This is where Deep Search emerges as a critical reasoning paradigm for Large Language Models (LLMs) to solve complicated questions. 
+%
+In contrast to traditional Retrieval-Augmented Generation (RAG) methods~\citep{lewis2020retrieval}, deep search agents employ multi-hop reasoning, dynamic query reformulation, and self-guided exploration to emulate a human-like investigative process~\citep{xi2025survey}, which is crucial for applications that demand high precision and traceability, \textit{e.g.}, scientific literature review~\citep{openai2025deepresearch}, legal analysis~\citep{li2024legalagentbench}, and fact-checking~\citep{wei2024long}. Proprietary agents such as DeepResearch \citep{openai2025deepresearch}, Grok-3 \citep{xai2025grok3}, and Kimi-Researcher \citep{moonshot2025kimi} have already demonstrated noticeable performance on complicated information-seeking tasks. However, their model designs and training details remain opaque. In contrast, open-source efforts such as Search-R1~\citep{jin2025search}, R1-Searcher~\citep{song_r1-searcher_2025}, DeepResearcher~\citep{zheng_deepresearcher_2025}, and ZeroSearch~\citep{sun2025zerosearch} leverage agentic reinforcement learning (RL) to enhance question-answering capabilities, yet are still constrained by a limited amount of training queries. To scale up agentic RL, recent works such as WebDancer \citep{wu_webdancer_2025}, WebSailor \citep{li_websailor_2025}, and ASearcher \citep{gao_beyond_2025} propose question-synthesis pipelines. However, their processes remain offline, which are incapable of adaptively controlling task difficulty for providing more effective RL advantages. We propose a self-play search agentic training scheme, in which the learning agent generates tasks and then solves them simultaneously.  Through self-play training, the agent’s task-proposing and problem-solving abilities co-evolve without supervision, which significantly reduces human annotation and extends the agentic training to broader scenarios. 
+%ic corpora and from the limitations of the model’s internal knowledge.
+
+\vspace{-1mm}
+\subsection{Self-play in Large Language Models}
+\vspace{-1mm}
+Self-play methods let the target model play different roles in a multi-agent system, then update the policy with collected agents' outcomes computed by well-designed game rules~\citep{zhang2024survey,digiovanni2021survey}. 
+%
+%adopts dual roles to create a self-improving loop, 
+%
+Self-play has recently been explored to improve the capabilities of language models with no dependence on sophisticated human annotation. For instance, \citet{cheng2024spag} applied self-play of an adversarial language game to enhance LLMs' reasoning abilities, whereas the method only employs offline RL updates and remains confined to a simple word-based gaming environment. Other works, such as \citet{fang_serl_2025} and \citet{liang2025beyond}, generate problems from seed data but only train the solver models, leaving the problem-generation capability untrained and unsuitable for a co-evolutionary dynamic. More advanced and recent studies \citep{chen_self-questioning_2025,huang_r-zero_2025,kuba_language_2025} concurrently train both the proposer and solver models, demonstrating the effectiveness of this approach on diverse tasks like mathematics, code generation, and instruction following. However, these methods are limited by the LLMs' internal knowledge and not applicable under agentic scenarios. Our work makes two distinctions from prior self-play approaches. First, our proposer generates problems with accurate ground truth through an externally retrieved and verified validation pipeline. Second, with search tools, we equips the problem-proposer with external information, thereby breaking the limitations of the internal knowledge of LLMs.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=\textwidth]{figures/ssp-1010.pdf}
+\end{center}
+\vspace{-4mm}
+\caption{Examples of Search Self-play with a given ground-truth \textit{``Dr. Will Boyd''}.  Provided with the ground-truth, the \textit{proposer} iteratively uses search tools to excavate implicit factual evidence, then generates a challenging search question. Then the solver leverages all search results from the proposer's trajectory as the RAG materials to predict the answer without searching, to validate the question's correctness. 
+%is then verified by a \textit{solver}: if the solver can correctly answer the question using retrieved documents from the entire search trajectory of the proposer, the question is considered valid. 
+Once verified, the solver follows the ordinary deep search pipeline to explore the solution via multi-turn agentic rollout.
+%who also iteratively uses a search tool to gather evidence and reasoning in order to produce the final answer.
+}\label{fig:outline}
+\vspace{-2mm}
+\end{figure}
+
+\vspace{-2mm}
+\section{Methodology}
+\vspace{-2mm}
+Denote $\gN := \{\vx = (x^1,x^2,\dots,x^N) : N\in \mathbb{N}_{+}, x^i \in \gV, i= 1,2,\dots, N\}$ as the natural language sequence space, where $\gV$ is the vocabulary set of tokens. An auto-regressive next-token prediction policy of LLM $\pi_\theta$ iteratively outputs next-token $x^{i+1} \sim \pi_\theta(\cdot| \vx^{1:i})$ with $\theta$ as the model parameters, where $\vx^{1:i} = (x^1,x^2,\dots, x^i)$ is the length-$i$ prefix of the natual language sequence $\vx$.
+%
+% Then, we can model a search agent exploration as a Markov decision process $(\gS, \gA, \gT, r)$: 
+% \begin{itemize}
+%     \item $\gS = {\vs \in }$ is the search agent state space,  including two types of states: the $t$-th step observation  search engine
+% \end{itemize}
+%
+A search agent trajectory can be written as: $\vtau = (\vx, \vy_1, \vo_1, \vy_2, \vo_2, \dots, \vy_{T-1}, \vo_{T-1}, \vy_T)$, where $\vx \in \gN$ is the input prompt, each $\vy_t \in \gN$ is the LLM output at the $t$-th step, and $\vo_t \in \gN$ is the corresponding observation returned by the search tools at the $i$-th step. We model the search agent exploration as a token-level Markov decision process~\citep{littman1994markov} $(\gS,\gA,\gT,r)$. The state space $\gS$ is naturally the language sequence space $\gN$. The action space $\gA$ is equivalent to the vocabulary set $\gV$ for token-level action generation. The transition $\gT$ directly appends the newly-generated token $y_t^{i+1}$ to the end of $\vy_t^{1:i}$ if  $\vy_t^{1:i}$ has not formed a complete search tool call, or additionally appends the $t$-step observation $\vo_{t}$ if $\vy_t$ is finished. The reward function $r(\vtau)$ assigns the outcome to trajectory $\vtau$ as the judgment of the agent's performance, where the design details are discussed in Section~\ref{sec:ssp-modeling}.  Given a search agent system prompt $\vx_\text{sys}$ and a user query $\vq$, we can use a LLM policy $\pi_\theta$ to induce the search agent policy $u(\cdot|\vq) = \pi_\theta(\cdot | \vx_\text{sys}, \vq)$. For notation simplification, we denote $\vtau \sim u(\cdot|\vq)$ as collecting the trajectory $\vtau$ from the search agent policy $u(\cdot|\vq)$.
+
+
+
+%Suppose we have a LLM next-token prediction policy $\pi_\theta(x_{i+1}|\vx_{1:i})$. 
+%\vspace{-2mm}
+\subsection{Search Self-play Design}
+%\vspace{-2mm}
+
+ We focus on exploring the benefits of self-play training for deep search agents, enabling LLMs to self-improve agent capabilities without additional supervision. To achieve this, we consider using the search agent to act as a \textit{question proposer}  to generate challenging questions via multi-turn deep search tool usage. Meanwhile, given the generated questions, we let the same LLM play as a \textit{problem solver}  to seek the answer, as ordinary deep search agents do. The proposer aims to generate increasingly challenging questions to puzzle the solver, whereas the solver is dedicated to improving its answer correctness, no matter how difficult the generated questions are. Based on the above rules, the search self-play can be regarded as a zero-sum adversarial game. We suppose both the proposer and the solver can evolve through this intense competition.
+ 
+ However, the above game rules can be easily hacked: the proposer can constantly generate incorrect questions so that the solver can never solve.
+ Hence, to verify the correctness of the generated question from the proposer, we collect all the search results in the proposer's trajectory as the RAG documents, and let the solver answer without using search tools. If the proposer's question is correct and the corresponding search actions are meaningful, with the RAG documents, the solver should already have sufficient information to correctly predict the answer. By this additional verification, we successfully avoid the search self-play game from hacking and degeneration. The verification constraint requires the proposer and the solver to cooperate, which enhances the SSP game with cooperation besides the proposing-solving competition. An example of the search self-play game is shown in Figure~\ref{fig:outline}.
+
+%This setup creates a dynamic and adversarial learning environment. The Proposer aims to generate progressively more difficult questions for the Solver. In response, the Solver strives to answer these increasingly challenging questions. Through this continuous interaction, both the Proposer and the Solver evolve together. The Solver's ability to tackle difficult problems improves, while the Proposer becomes more adept at creating questions that are challenging for the current Solver.
+
+\vspace{-1mm}
+ \subsection{Search Self-play Modeling}\label{sec:ssp-modeling}
+\vspace{-1mm}
+ We use different system prompts $\vx_\text{propose}$ and $\vx_\text{solve}$ to let the LLM learning policy $\pi_\theta$ act as the proposer and the solver, respectively. Given a ground-truth answer $\va$,  the policy for the question proposer is $u(\cdot| \va) = \pi_\theta(\cdot| \vx_\text{propose}, \va)$.  After the proposer generates a question $\vq$,  the solver policy tries to settle the question with the policy $v(\cdot|\vq) = \pi_\theta(\cdot | \vx_\text{solve}, \vq)$. Denote $\vtau$ and $\vrho$ as the corresponding trajectories of the proposer and the solver, respectively. Then the adversarial self-play training objective is: 
+\begin{equation}\label{eq:adversarial-objective}
+\min_{u } \max_{v} \bbE_{\va^* \sim \gD, \vtau \sim u(\cdot| \va = \va^*), \vrho \sim v(\cdot| \vq = \gQ(\vtau) ) }[r(\gA(\vrho), \va^*)],
+\end{equation}
+where $\va^*$ is a ground-truth answer drawn from a pre-defined answer set $\gD$. $\gQ(\cdot)$ and $\gA(\cdot)$ extract the generated question and predicted answer from the proposer trajectory $\vtau$ and the solver trajectory $\vrho$, respectively. $r(\gA(\vtau),\va^*)$ is a binary outcome judgment function to check whether the solver's prediction $\gA(\vtau)$ and the ground-truth answer $\va^*$ are semantically equivalent (which means $r(\gA(\vtau), \va^*) = 1$). To ensure accurate judgment, we implement $r(\gA(\vtau),\va^*)$ with an LLM-as-a-judge function, whose prompts and judge critics are described in Appendix~\ref{app:prompts}.
+
+ To make sure the generated question $\vq = \gQ(\vtau)$ is solvable and correct with respect to the ground-truth $\va^*$, we need additional constraints. Therefore, we use the solver agent to $v(\cdot|\vq, \mO_{T}) = \pi_\theta(\cdot | \vx_\text{solve}, \vq, \mO_T)$ to verify the correctness of the generated question $\gQ(\vtau)$, where  $\mO_T = (\vo_1, \vo_2, \dots, \vo_T) = \gO(\vtau)$ is the collection of all the search results from the proposer trajectory. Then the proposer and the solver need to cooperate to maximize the solver's answer accuracy under RAG setups:
+\begin{equation}\label{eq:cooperative-objective}
+    \max_{u} \bbE_{\va^* \sim \gD, \vtau \sim u(\cdot|\va=\va^*), \vsigma \sim v(\cdot|\vq=\gQ(\vtau), \mO_T=\gO(\vtau))} [r(\gA(\vsigma), \va^*)]. 
+\end{equation}
+
+In practice, we find that jointly optimizing both the cooperation and competition objectives suffers from training inefficiency. Because the cooperative objection in \eqref{eq:cooperative-objective} requires the proposed question to be completely correct, otherwise the optimization of \eqref{eq:adversarial-objective} could lose its effectiveness due to the reward hacking. Therefore, we leverage rejection sampling \citep{liu2025augmenting} for the cooperative objective instead. More specifically, we dynamically filter the generated questions with $r(\gA(\vsigma), \va^*) = 1$ to collect a full batch of valid questions to optimize the adversarial objective in \eqref{eq:adversarial-objective}. Therefore, the overall training objective of search self-play is:
+\begin{align}
+    \min_{u } \max_{v} \ &  \bbE_{\va^* \sim \gD, \vtau \sim u(\cdot| \va = \va^*), \vrho \sim v(\cdot| \vq = \gQ(\vtau) ) }[r(\gA(\vrho), \va^*)], \label{eq:overall-ssp-objective} \\
+ \text{s.t.} \ & \bbE_{\vsigma \sim v(\cdot | \vq = \gQ(\vtau), \mO_T = \gO(\vtau))} [r(\gA(\vsigma), \va^*)] = 1. \nonumber
+\end{align}
+
+
+\vspace{-1mm}
+\subsection{Search Self-play Implementation}
+\vspace{-1mm}
+\input{alg/ssp}
+
+We describe the details of the SSP optimization as \eqref{eq:overall-ssp-objective} in Algorithm~\ref{alg:ssp_revised_v2}. As discussed in Section~\ref{sec:ssp-modeling}, invalid questions generated by the proposer will hinder the training effectiveness of SSP. Therefore, we applied two filtering strategies to improve the quality of generated questions: \textit{rule-based filtering} and \textit{RAG verification}. 
+
+Rule-based filtering ensures LLM has legal output for the question generation task. More specifically, each proposer's output should have a correct format for extracting the question (within \texttt{<question></question>} tags). Furthermore, we conduct several additional rule-based checks to pre-filter the low-quality questions and reduce the computational consumption before the RAG verification process. The bad cases to filter include: (1) empty question string; (2) no search tool invoked; (3)  excessively short question; (4) containing the original answer in the question.  
+
+After the rule-based filtering, we applied the RAG verification process as described in Section~\ref{sec:ssp-modeling}. We collect the search results from the proposer's trajectory as the RAG documents, then let the solver answer the generated question with the provided RAG materials. To further increase the robustness of the verification judgment, we mix some unrelated documents from other trajectories within the same batch to simulate more real RAG scenarios. Details and ablation studies about adding irrelevant RAG noises are discussed in Section~\ref{sec:rag_filter_ablation}.
+
+When the outcome reward calculation finished, each generated question $\vq_i$ had been tried by the solver for $n$ times, yielding a group of trajectories $\{\vrho_i^j\}_{j=1}^n$ and corresponding binary rewards $\{r_{\text{solve},i}^j\}_{j=1}^n$, where $r_{\text{solve},i}^j = r(\gA(\vrho_i^j), \va^*_i)$. A natural updating method for the solver's policy $v$ is Group Relative Policy Optimization (GRPO)~\citep{shao2024deepseekmath}, which uses the average reward of the group as a baseline to reduce variance. The solver aims to maximize its reward, so its loss function for a given question $\vq_i$ is:
+\begin{align}
+    \nabla_\theta \gL_\text{GRPO} (\theta) = \frac{1}{B} \sum_{i=1}^B \Bigg[ & \frac{1}{n} \sum_{j=1}^{n} \frac{1}{|\vrho_i^j|} \sum_{t=1}^{|\vrho_i^j|}\nabla_\theta \log \pi_\theta(\rho^{j,t}_{i} | \vq_i, \vrho^{j,1:t-1}_{i}) \cdot \hat{A}_i^j  - \beta \nabla_\theta \text{KL}[\pi_\theta || \pi_\text{ref}] \Bigg] \label{eq:grpo_solver}
+\end{align}
+where the advantage $\hat{A}_i^j = r_{\text{solve},i}^j - \frac{1}{n}\sum_{k=1}^n r_{\text{solve},i}^k$ is calculated for the $j$-th trajectory of question $\vq_i$. 
+% Note that we use on-policy RL updates by default, hence the importance sampling and clip ratios are not applicable. %$|\vrho_i^j|$ is the number of tokens in the solver's trajectory $\vrho_i^j$. $v_\text{old}$ is the policy before the update, and $v_\text{ref}$ is a fixed reference policy.
+
+Conversely, the proposer is updated to generate questions that are more challenging for the solver, which aligns with the min-max objective in \eqref{eq:overall-ssp-objective}. As defined in Algorithm~\ref{alg:ssp_revised_v2}, the proposer receives a high reward if the solver fails. We use the REINFORCE~\citep{williams1992simple} algorithm to update the proposer's policy $u$. The loss function aims to increase the log-probability of generating trajectories that result in high proposer reward (i.e., low solver success rate):
+\begin{align}
+    \nabla_\theta \gL_\text{REINFORCE} (\theta) &= \frac{1}{B} \sum_{u=1}^B  \left[ R(\vtau_i) \sum_{t=1}^{|\vtau_i|} \nabla_\theta \log \pi_\theta(\tau_{i}^{t}|\va^*_i, \vtau_{i}^{1:t-1}) \right], 
+    \label{eq:reinforce_proposer}
+\end{align}
+ where $R(\vtau_i) =  1 - \frac{1}{n} \sum_{j=1}^n r_{\text{solve},i}^j$.
+%The return for the proposer's trajectory $R(\vtau_i)$ is one minus the average reward achieved by the solver on the generated question $\vq_i = \gQ(\vtau_i)$. 
+This update encourages the proposer to generate increasingly difficult questions to continuously challenge the task solver. Unlike prior question proposing methods, which only use LLMs' internal knowledge, our SSP utilizes interactions with external environments to acquire information for question generation. Moreover, our SSP verifies the correctness of the generated question with a verifiable RAG pipeline, which is more credible than previous synthetic methods, such as majority vote~\citep{huang_r-zero_2025}.
+
+%, is fundamentally different from generating questions based solely on the model's internal knowledge. It bypasses the limitations of the model's own knowledge, allowing it to access external information and thus create novel questions that the model has not encountered before.
+
+
+
+%\vspace{-2mm}
+\section{Experiments}
+\label{exp}
+\vspace{-1mm}
+\subsection{Experimental Setups}
+\label{sec:exp_setup}
+\vspace{-1mm}
+\textbf{Benchmarks.} We evaluate SSP on seven widely-used question-answering benchmarks: NQ~\citep{kwiatkowski2019natural}, TriviaQA~\citep{joshi2017triviaqa}, PopQA~\citep{mallen2022not}, HotpotQA~\citep{yang2018hotpotqa}, 2WikiMultiHopQA~\citep{ho2020constructing}, Musique~\citep{trivedi2022musique}, and Bamboogle~\citep{press2022measuring}. Following the practice in prior works~\citep{sun2025simpledeepsearcher,sun2025zerosearch,zhao2025rsearch,gao2025asearcher,deng_atom-searcher_2025,tan_hiersearch_2025}, we randomly sample 500 question-answer (QA) pairs on each benchmark to reduce the evaluation overhead while maintaining statistical reliability.
+For Bamboogle~\citep{press2022measuring}, all 125 test samples are used for evaluation.
+
+\textbf{Baselines.} We select open-source pretrained LLMs of different sources and model sizes used for deep search, including Qwen2.5~\citep{yang2024qwen2p5}, LLaMA3.1~\citep{dubey2024llama}, Qwen3~\citep{yang2025qwen3}, Search-R1~\citep{jin2025search,jin2025empirical}, ZeroSearch~\citep{sun2025zerosearch}, and R-Search~\citep{zhao2025rsearch}.
+
+\textbf{Search Tools.} A local E5~\citep{wang2022text} retriever with a Wiki-2018 corpus~\citep{karpukhin2020dense} is incorporated in our training and evaluation, which retrieves the top-3 related documents for each query. We limit search tool calls to 10 rounds for each trajectory.
+
+\textbf{Evaluation Metrics.} Following recent work~\citep{gao2025asearcher}, we adopt LLM-as-a-judge as standard metric for evaluation. Qwen2.5-32B-Instruct~\citep{yang2024qwen2p5} is deployed as the judge model. All results are reported in terms of pass@1 accuracy.
+
+\textbf{Training Details.} We implemented our method using the SGLang asynchronous multi-turn tool-integrated rollout in VeRL~\citep{sheng2024hybridflow}. The proposer is optimized using REINFORCE~\citep{williams1992simple}, while the solver is updated with GRPO~\citep{shao2024deepseekmath}. The learning rate is  1e-6 with 5 warmup steps. The global batch size and the mini-batch is 256 and 128, respectively. The maximum prompt length is 4,096 tokens, and the response length is set to 8,192 tokens. Each training horizon is within a range of 150 to 200 steps. The answer set $\gD$ is sampled exclusively from public training sets~\citep{jin2025search,dong2025agentic}, detailed in Appendix~\ref{sec:construction_answer_set}. More implementation details and prompts for both proposer and solver agents are provided in Appendix~\ref{app:imp} \& ~\ref{app:prompts}.
+Full configurations are summarized in Table~\ref{tab:hyperparameter_settings_en}.
+
+
+
+\begin{table}[t]
+\caption{Main experimental results. SSP delivers strong gains across from-scratch training, generalization across architectures, continual training on search-specialized agents, and scaling to larger models. All scores are on a 100-point scale. Bold (black) indicates the better score within each baseline v.s. +SSP pair.}
+\label{tab:main_results}
+\centering
+\resizebox{0.93\textwidth}{!}{%
+\begin{tabular}{l *{8}{S[table-format=2.1]}}
+\toprule
+ & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-8}
+\textbf{Method} & {NQ} & {TriviaQA} & {PopQA} & {HotpotQA} & {2Wiki} & {MuSiQue} & {Bamboogle} & {\textbf{Avg}}\\
+\midrule
+\rowcolor{black!15}
+\multicolumn{9}{c}{\textbf{From-Scratch Training on Base and Instruct Models}} \\
+\midrule
+Qwen2.5-7B-Base & \scorebase{32.0} & \scorebase{33.2} & \scorebase{25.0} & \scorebase{18.0} & \scorebase{10.8} & \scorebase{11.0} & \scorebase{26.4} & \scorebase{22.3} \\
+\textbf{+ SSP} & {\scoreimp{54.2}{+22.2}} & {\scoreimp{73.6}{+40.4}} & {\scoreimp{56.0}{+31.0}} & {\scoreimp{52.8}{+34.8}} & {\scoreimp{33.2}{+22.4}} & {\scoreimp{24.0}{+13.0}} & {\scoreimp{47.2}{+20.8}} & {\scoreimp{48.7}{+26.4}} \\
+Qwen2.5-7B-Instruct & \scorebase{44.2} & \scorebase{64.0} & \scorebase{36.4} & \scorebase{45.0} & \scorebase{32.8} & \scorebase{16.8} & \scorebase{51.2} & \scorebase{41.5} \\
+\textbf{+ SSP} & {\scoreimp{54.8}{+10.6}} & {\scoreimp{73.4}{+9.4}} & {\scoreimp{51.8}{+15.4}} & {\scoreimp{51.8}{+6.8}} & {\scoreimp{38.8}{+6.0}} & {\scoreimp{21.2}{+4.4}} & {\scoreimp{54.4}{+3.2}} & {\scoreimp{49.5}{+8.0}}\\
+\midrule
+\rowcolor{black!15}
+\multicolumn{9}{c}{\textbf{Generalization Across Model Families}} \\
+\midrule
+LLaMA-3.1-8B & \scorebase{50.2} & \scorebase{65.2} & \scorebase{45.8} & \scorebase{34.6} & \scorebase{19.4} & \scorebase{11.4} & \scorebase{30.4} & \scorebase{36.7} \\
+\textbf{+ SSP} & {\scoreimp{58.0}{+7.8}} & {\scoreimp{75.8}{+10.6}} & {\scoreimp{55.4}{+9.6}} & {\scoreimp{44.2}{+9.6}} & {\scoreimp{34.4}{+15.0}} & {\scoreimp{16.2}{+4.8}} & {\scoreimp{40.0}{+9.6}} & {\scoreimp{46.3}{+9.6}} \\
+Qwen3-8B & \scorebase{53.6} & \scorebase{76.0} & \scorebase{50.8} & \scorebase{54.2} & \scorebase{48.0} & \scorebase{26.6} & \scorebase{58.4} & \scorebase{52.5} \\
+\textbf{+ SSP} & {\scoreimp{56.0}{+2.4}} & {\scoreimp{78.2}{+2.2}} & {\scoreimp{55.0}{+4.2}} & {\scoreimp{58.0}{+3.8}} & {\scoreimp{51.5}{+3.5}} & {\scoreimp{28.0}{+1.4}} & {\scoreimp{67.2}{+8.8}} & {\scoreimp{56.3}{+3.8}} \\
+\midrule
+\rowcolor{black!15}
+\multicolumn{9}{c}{\textbf{Continual Training on Search-Specialized Agents}} \\
+\midrule
+ZeroSearch-7B & \scorebase{52.2} & \scorebase{66.6} & \scorebase{50.2} & \scorebase{43.2} & \scorebase{34.6} & \scorebase{17.6} & \scorebase{40.8} & \scorebase{43.6} \\
+\textbf{+ SSP} & {\scoreimp{54.2}{+2.0}} & {\scoreimp{69.0}{+2.4}} & {\scoreimp{53.0}{+2.8}} & {\scoreimp{44.0}{+0.8}} & {\scoreimp{37.2}{+2.6}} & {\scoreimp{19.6}{+2.0}} & {\scoreimp{44.0}{+3.2}} & {\scoreimp{45.9}{+2.3}} \\
+Search-R1-7B & \scorebase{56.6} & \scorebase{75.4} & \scorebase{57.2} & \scorebase{58.2} & \scorebase{45.2} & \scorebase{29.6} & \scorebase{55.2} & \scorebase{53.9} \\
+\textbf{+ SSP} & {\scoreimp{57.8}{+1.2}} & {\scoreimp{78.0}{+2.6}} & {\scoreimp{58.4}{+1.2}} & {\scoreimp{60.4}{+2.2}} & {\scoreimp{45.6}{+0.4}} & {\scoreimp{30.6}{+1.0}} & {\scoreimp{59.2}{+4.0}} & {\scoreimp{55.7}{+1.8}}\\
+R-Search-7B & \scorebase{50.8} & \scorebase{71.0} & \scorebase{53.8} & \scorebase{54.0} & \scorebase{56.4} & \scorebase{29.8} & \scorebase{53.6} & \scorebase{52.8} \\
+\textbf{+ SSP} & {\scoreimp{52.4}{+1.6}} & {\scoreimp{74.2}{+3.2}} & {\scoreimp{56.8}{+3.0}} & {\scoreimp{54.2}{+0.2}} & {\scoreimp{58.0}{+1.6}} & {\scoreimp{31.4}{+1.6}} & {\scoreimp{55.2}{+1.6}} & {\scoreimp{54.6}{+1.8}}\\
+\midrule
+\rowcolor{black!15}
+\multicolumn{9}{c}{\textbf{Scaling to Larger Models}} \\
+\midrule
+Qwen2.5-14B-Instruct & \scorebase{56.0} & \scorebase{77.0} & \scorebase{53.8} & \scorebase{57.0} & \scorebase{48.4} & \scorebase{26.6} & \scorebase{64.8} & \scorebase{54.8} \\
+\textbf{+ SSP} & {\scoreimp{57.4}{+1.4}} & {\scoreimp{77.8}{+0.8}} & {\scoreimp{54.6}{+0.8}} & {\scoreimp{61.2}{+4.2}} & {\scoreimp{49.4}{+1.0}} & {\scoreimp{28.0}{+1.4}} & {\scoreimp{69.6}{+4.8}} & {\scoreimp{56.9}{+2.1}} \\
+Qwen2.5-32B-Instruct & \scorebase{58.0} & \scorebase{78.4} & \scorebase{53.4} & \scorebase{57.0} & \scorebase{48.4} & \scorebase{27.4} & \scorebase{63.2} & \scorebase{55.1} \\
+\textbf{+ SSP} & {\scoreimp{62.6}{+4.6}} & {\scoreimp{82.8}{+4.4}} & {\scoreimp{55.0}{+1.6}} & {\scoreimp{62.8}{+5.8}} & {\scoreimp{49.2}{+0.8}} & {\scoreimp{32.0}{+4.6}} & {\scoreimp{69.6}{+6.4}} & {\scoreimp{58.5}{+3.4}}\\
+\bottomrule
+\end{tabular}%
+}
+\vspace{-2mm}
+\end{table}
+
+\vspace{-2mm}
+\subsection{Main Results}
+\vspace{-2mm}
+The main experimental results are summarized in Table~\ref{tab:main_results}. Across all settings, SSP consistently outperforms baseline counterparts on question-answering benchmarks. These results demonstrate, through consistent and substantial performance gains across a variety of models, training paradigms, and scales, that Search Self-play is a highly effective and versatile method for enhancing LLM agent capabilities.
+
+Our primary finding is that SSP yields substantial improvements when training models from scratch without any external supervision. The gains are particularly pronounced for base models that have not undergone instruction tuning; for instance, applying SSP to Qwen2.5-7B-Base results in an impressive average improvement of 26.4 points, including a remarkable \textbf{+40.4} gain on TriviaQA. SSP also benefits instruction-tuned models, improving Qwen2.5-7B-Instruct by 8.0 points on average. Moreover, SSP proves to be model-agnostic, consistently enhancing models from different architectural families, including LLaMA-3.1 and Qwen3.
+
+Additionally, SSP serves as an effective continual training strategy. Although strong open-source models have already been extensively trained on search-oriented tasks (e.g., Search-R1, R-Search), our method uniformly yields further performance improvements. Furthermore, the performance gain holds when scaling to larger models. When applying SSP to Qwen2.5-32B-Instruct, it achieves state-of-the-art results on five of the seven benchmarks. These competitive results demonstrate the consistent effectiveness of SSP for training agents across diverse model sizes, architectures, and initial agentic performances.
+
+
+% \begin{table}[t]
+% \caption{Main experimental results. SSP delivers strong gains across from-scratch training, cross-architecture generalization, continual training on search-specialized  agents, and scaling to larger models. All scores are on a 100-point scale. Formatting: bold (black) indicates the better score within each Base vs +SSP pair; bold blue denotes the best score in each column.}
+% \label{tab:main_results}
+% \centering
+% \resizebox{0.95\textwidth}{!}{%
+% \begin{tabular}{l *{8}{S[table-format=2.1]}}
+% \toprule
+%  & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+% \textbf{Method} & {NQ} & {TriviaQA} & {PopQA} & {HotpotQA} & {2Wiki} & {MuSiQue} & {Bamboogle} & {\textbf{Avg}}\\
+% \midrule
+% \multicolumn{9}{l}{\textit{From-Scratch Training on Base and Instruct Models}} \\
+% \midrule
+% Qwen2.5-7B-Base & \scorebase{32.0} & \scorebase{33.2} & \scorebase{25.0} & \scorebase{18.0} & \scorebase{10.8} & \scorebase{11.0} & \scorebase{26.4} & \scorebase{22.3} \\
+% \textbf{+ SSP} & {\scoreimp{51.2}{+19.2}} & {\scoreimp{67.8}{+34.6}} & {\scoreimp{49.0}{+24.0}} & {\scoreimp{46.0}{+28.0}} & {\scoreimp{31.0}{+20.2}} & {\scoreimp{17.8}{+6.8}} & {\scoreimp{48.0}{+21.6}} & {\scoreimp{44.4}{+22.1}} \\
+% Qwen2.5-7B-Instruct & \scorebase{44.2} & \scorebase{64.0} & \scorebase{36.4} & \scorebase{45.0} & \scorebase{32.8} & \scorebase{16.8} & \scorebase{51.2} & \scorebase{41.5} \\
+% \textbf{+ SSP} & {\scoreimp{54.8}{+10.6}} & {\scoreimp{73.4}{+9.4}} & {\scoreimp{51.8}{+15.4}} & {\scoreimp{51.8}{+6.8}} & {\scoreimp{38.8}{+6.0}} & {\scoreimp{21.2}{+4.4}} & {\scoreimp{54.4}{+3.2}} & {\scoreimp{49.5}{+8.0}}\\
+% \midrule
+% \multicolumn{9}{l}{\textit{Cross-Architecture Generalization}} \\
+% \midrule
+% LLaMA-3.1-8B & \scorebase{50.2} & \scorebase{65.2} & \scorebase{45.8} & \scorebase{34.6} & \scorebase{19.4} & \scorebase{11.4} & \scorebase{30.4} & \scorebase{36.7} \\
+% \textbf{+ SSP} & {\scoreimp{58.0}{+7.8}} & {\scoreimp{75.8}{+10.6}} & {\scoreimp{55.4}{+9.6}} & {\scoreimp{44.2}{+9.6}} & {\scoreimp{34.4}{+15.0}} & {\scoreimp{16.2}{+4.8}} & {\scoreimp{40.0}{+9.6}} & {\scoreimp{46.3}{+9.6}} \\
+% Qwen3-8B & \scorebase{53.6} & \scorebase{76.0} & \scorebase{50.8} & \scorebase{54.2} & \scorebase{48.0} & \scorebase{26.6} & \scorebase{58.4} & \scorebase{52.5} \\
+% \textbf{+ SSP} & {\scoreimp{56.0}{+2.4}} & {\scoreimp{78.2}{+2.2}} & {\scoreimp{55.0}{+4.2}} & {\scoreimp{58.0}{+3.8}} & {\scoreimp{51.5}{+3.5}} & {\scoreimp{28.0}{+1.4}} & {\scoreimp{67.2}{+8.8}} & {\scoreimp{56.3}{+3.8}} \\
+% \midrule
+% \multicolumn{9}{l}{\textit{Continual Training on Specialized Search Agents}} \\
+% \midrule
+% ZeroSearch-7B & \scorebase{52.2} & \scorebase{66.6} & \scorebase{50.2} & \scorebase{43.2} & \scorebase{34.6} & \scorebase{17.6} & \scorebase{40.8} & \scorebase{43.6} \\
+% \textbf{+ SSP} & {\scoreimp{54.2}{+2.0}} & {\scoreimp{69.0}{+2.4}} & {\scoreimp{53.0}{+2.8}} & {\scoreimp{44.0}{+0.8}} & {\scoreimp{37.2}{+2.6}} & {\scoreimp{19.6}{+2.0}} & {\scoreimp{44.0}{+3.2}} & {\scoreimp{45.9}{+2.3}} \\
+% Search-R1-7B & \scorebase{56.6} & \scorebase{75.4} & \scorebase{57.2} & \scorebase{58.2} & \scorebase{45.2} & \scorebase{29.6} & \scorebase{55.2} & \scorebase{53.9} \\
+% \textbf{+ SSP} & {\scoreimp{57.8}{+1.2}} & {\scoreimp{78.0}{+2.6}} & {\scoreimp{\best{58.4}}{+1.2}} & {\scoreimp{60.4}{+2.2}} & {\scoreimp{45.6}{+0.4}} & {\scoreimp{30.6}{+1.0}} & {\scoreimp{59.2}{+4.0}} & {\scoreimp{55.7}{+1.8}}\\
+% R-Search-7B & \scorebase{50.8} & \scorebase{71.0} & \scorebase{53.8} & \scorebase{54.0} & \scorebase{56.4} & \scorebase{29.8} & \scorebase{53.6} & \scorebase{52.8} \\
+% \textbf{+ SSP} & {\scoreimp{52.4}{+1.6}} & {\scoreimp{74.2}{+3.2}} & {\scoreimp{56.8}{+3.0}} & {\scoreimp{54.2}{+0.2}} & {\scoreimp{\best{58.0}}{+1.6}} & {\scoreimp{31.4}{+1.6}} & {\scoreimp{55.2}{+1.6}} & {\scoreimp{54.6}{+1.8}}\\
+% \midrule
+% \multicolumn{9}{l}{\textit{Scaling to Larger Models}} \\
+% \midrule
+% Qwen2.5-14B-Instruct & \scorebase{56.0} & \scorebase{77.0} & \scorebase{53.8} & \scorebase{57.0} & \scorebase{48.4} & \scorebase{26.6} & \scorebase{64.8} & \scorebase{54.8} \\
+% \textbf{+ SSP} & {\scoreimp{57.4}{+1.4}} & {\scoreimp{77.8}{+0.8}} & {\scoreimp{54.6}{+0.8}} & {\scoreimp{61.2}{+4.2}} & {\scoreimp{49.4}{+1.0}} & {\scoreimp{28.0}{+1.4}} & {\scoreimp{\best{69.6}}{+4.8}} & {\scoreimp{56.9}{+2.1}} \\
+% Qwen2.5-32B-Instruct & \scorebase{58.0} & \scorebase{78.4} & \scorebase{53.4} & \scorebase{57.0} & \scorebase{48.4} & \scorebase{27.4} & \scorebase{63.2} & \scorebase{55.1} \\
+% \textbf{+ SSP} & {\scoreimp{\best{62.6}}{+4.6}} & {\scoreimp{\best{82.8}}{+4.4}} & {\scoreimp{55.0}{+1.6}} & {\scoreimp{\best{62.8}}{+5.8}} & {\scoreimp{49.2}{+0.8}} & {\scoreimp{\best{32.0}}{+4.6}} & {\scoreimp{\best{69.6}}{+6.4}} & {\scoreimp{\best{58.5}}{+3.4}}\\
+% \bottomrule
+% \end{tabular}%
+% }
+% \end{table}
+
+
+
+% \subsection{Main Results}
+
+% The main experimental results are summarized in Table~\ref{tab:main_results} and Figure~\ref{fig:teaser}. Our primary finding is that SSP significantly enhances the performance of large language models in question-answering tasks. When training the Qwen2.5-7B-Instruct model from scratch, SSP achieves substantial improvements without any external data. Most notably, it boosts the model's score by a remarkable 15.4 points on PopQA and 10.6 points on NQ, contributing to an average increase of 8.0 points across all seven benchmarks.
+
+% Furthermore, to demonstrate the generalizability and effectiveness of our method as a continual training strategy, we applied SSP to other strong, open-source search-oriented models. The results consistently show that our method further enhances their capabilities across all evaluated benchmarks. For instance, when applied to models like Search-R1-7B and R-Search-7B, SSP still delivers consistent gains. When scaled to larger models, such as Qwen2.5-32B-Instruct, SSP helps achieve state-of-the-art performance, securing the best scores on five of the seven datasets. These comprehensive results validate that SSP is a robust and effective method for improving the search and reasoning abilities of language models.
+
+% \begin{table}[t]
+% % 在标题中增加对下划线的说明
+% \caption{Experimental results under both from-scratch and continuous RL training setups. All scores are reported on a 100-point scale. The best score in each column is \underline{underlined}.}
+% \label{tab:main_results}
+% \centering
+% \resizebox{\textwidth}{!}{%
+% \begin{tabular}{l *{8}{S[table-format=2.1]}}
+% \toprule
+%  & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+%  & {NQ} & {TriviaQA} & {PopQA} & {HotpotQA} & {2Wiki} & {MuSiQue} & {Bamboogle} & {\textbf{Avg}}\\
+% \midrule
+% Qwen2.5-7B-Ins & \scorebase{44.2} & \scorebase{64.0} & \scorebase{36.4} & \scorebase{45.0} & \scorebase{32.8} & \scorebase{16.8} & \scorebase{51.2} & \scorebase{41.5} \\
+% \textbf{+ SSP} & {\scoreimp{54.8}{+10.6}} & {\scoreimp{73.4}{+9.4}} & {\scoreimp{51.8}{+15.4}} & {\scoreimp{51.8}{+6.8}} & {\scoreimp{38.8}{+6.0}} & {\scoreimp{21.2}{+4.4}} & {\scoreimp{54.4}{+3.2}} & {\scoreimp{49.5}{+8.0}}\\
+% \midrule
+% Search-R1-7B & \scorebase{56.6} & \scorebase{75.4} & \scorebase{57.2} & \scorebase{58.2} & \scorebase{45.2} & \scorebase{29.6} & \scorebase{55.2} & \scorebase{53.9} \\
+% \textbf{+ SSP} & {\scoreimp{57.8}{+1.2}} & {\scoreimp{78.0}{+2.6}} & {\scoreimp{\best{58.4}}{+1.2}} & {\scoreimp{60.4}{+2.2}} & {\scoreimp{45.6}{+0.4}} & {\scoreimp{30.6}{+1.0}} & {\scoreimp{59.2}{+4.0}} & {\scoreimp{55.7}{+1.8}}\\
+% \midrule
+% ZeroSearch-7B & \scorebase{52.2} & \scorebase{66.6} & \scorebase{50.2} & \scorebase{43.2} & \scorebase{34.6} & \scorebase{17.6} & \scorebase{40.8} & \scorebase{43.6} \\
+% \textbf{+ SSP} & {\scoreimp{54.2}{+2.0}} & {\scoreimp{69.0}{+2.4}} & {\scoreimp{53.0}{+2.8}} & {\scoreimp{44.0}{+0.8}} & {\scoreimp{37.2}{+2.6}} & {\scoreimp{19.6}{+2.0}} & {\scoreimp{44.0}{+3.2}} & {\scoreimp{45.9}{+2.3}} \\
+% \midrule
+% R-Search-7B & \scorebase{50.8} & \scorebase{71.0} & \scorebase{53.8} & \scorebase{54.0} & \scorebase{56.4} & \scorebase{29.8} & \scorebase{53.6} & \scorebase{52.8} \\
+% \textbf{+ SSP} & {\scoreimp{52.4}{+1.6}} & {\scoreimp{74.2}{+3.2}} & {\scoreimp{56.8}{+3.0}} & {\scoreimp{54.2}{+0.2}} & {\scoreimp{\best{58.0}}{+1.6}} & {\scoreimp{31.4}{+1.6}} & {\scoreimp{55.2}{+1.6}} & {\scoreimp{54.6}{+1.8}}\\
+% \midrule
+% \midrule
+% Qwen2.5-14B-Ins & \scorebase{56.0} & \scorebase{77.0} & \scorebase{53.8} & \scorebase{57.0} & \scorebase{48.4} & \scorebase{26.6} & \scorebase{64.8} & \scorebase{54.8} \\
+% \textbf{+ SSP} & {\scoreimp{57.4}{+1.4}} & {\scoreimp{77.8}{+0.8}} & {\scoreimp{54.6}{+0.8}} & {\scoreimp{61.2}{+4.2}} & {\scoreimp{49.4}{+1.0}} & {\scoreimp{28.0}{+1.4}} & {\scoreimp{\best{69.6}}{+4.8}} & {\scoreimp{56.9}{+2.1}} \\
+% \midrule
+% Qwen2.5-32B-Ins & \scorebase{58.0} & \scorebase{78.4} & \scorebase{53.4} & \scorebase{57.0} & \scorebase{48.4} & \scorebase{27.4} & \scorebase{63.2} & \scorebase{55.1} \\
+% \textbf{+ SSP} & {\scoreimp{\best{62.6}}{+4.6}} & {\scoreimp{\best{82.8}}{+4.4}} & {\scoreimp{55.0}{+1.6}} & {\scoreimp{\best{62.8}}{+5.8}} & {\scoreimp{49.2}{+0.8}} & {\scoreimp{\best{32.0}}{+4.6}} & {\scoreimp{64.8}{+1.6}} & {\scoreimp{\best{58.5}}{+3.4}}\\
+% \bottomrule
+% \end{tabular}%
+% }
+% \end{table}
+
+% \begin{table}[t]
+% \caption{Experimental results under both from-scratch and continuous RL training setups. All scores are reported on a 100-point scale.}
+% \label{tab:main_results_percentage}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l*{8}{c}}
+% \toprule
+%  & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+%  & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & \textbf{Avg}\\
+% \midrule
+% Qwen2.5-7B-Instruct & 44.2 & 64.0 & 36.4 & 45.0 & 32.8 & 16.8 & 51.2 & 41.5 \\
+% \textbf{+ SSP} & \textbf{55.4}\improvement{+11.2} & \textbf{73.2}\improvement{+9.2} & \textbf{52.6}\improvement{+16.2} & \textbf{52.6}\improvement{+7.6} & \textbf{36.0}\improvement{+3.2} & \textbf{22.4}\improvement{+5.6} & \textbf{52.0}\improvement{+0.8} & \textbf{49.2}\improvement{+7.7}\\
+% \midrule
+% Search-R1-7B & 56.6 & 75.4 & 57.2 & 58.2 & 45.2 & 29.6 & 55.2 & 53.9\\
+% \textbf{+ SSP} & \textbf{57.8}\improvement{+1.2} & \textbf{78.0}\improvement{+2.6} & \textbf{58.4}\improvement{+1.2} & \textbf{60.4}\improvement{+2.2} & \textbf{45.6}\improvement{+0.4} & \textbf{30.6}\improvement{+1.0} & \textbf{59.2}\improvement{+4.0} & \textbf{55.7}\improvement{+1.8}\\
+% \midrule
+% ZeroSearch-7B & 52.2 & 66.6 & 50.2 & 43.2 & 34.6 & 17.6 & 40.8 & 43.6\\
+% \textbf{+ SSP} & \textbf{54.2}\improvement{+2.0} & \textbf{69.0}\improvement{+2.4} & \textbf{53.0}\improvement{+2.8} & \textbf{44.0}\improvement{+0.8} & \textbf{37.2}\improvement{+2.6} & \textbf{19.6}\improvement{+2.0} & \textbf{44.0}\improvement{+3.2} & \textbf{45.9}\improvement{+2.3}
+% \\
+% \midrule
+% R-Search-7B & 50.8 & 71.0 & 53.8 & 54.0 & 56.4 & 29.8 & 53.6 & 52.8\\
+% \textbf{+ SSP} & \textbf{52.4}\improvement{+1.6} & \textbf{74.2}\improvement{+3.2} & \textbf{56.8}\improvement{+3.0} & \textbf{54.2}\improvement{+0.2} & \textbf{58.0}\improvement{+1.6} & \textbf{31.4}\improvement{+1.6} & \textbf{55.2}\improvement{+1.6} & \textbf{54.6}\improvement{+1.8}\\
+% \midrule
+% \midrule
+% Qwen2.5-14B-Instruct & 56.0 & 77.0 & 53.8 & 57.0 & 48.4 & 26.6 & 64.8 & 54.8\\
+% \textbf{+ SSP} & \textbf{58.0}\improvement{+2.0} & \textbf{81.4}\improvement{+4.4} & \textbf{57.0}\improvement{+3.2} & \textbf{61.2}\improvement{+4.2} & \textbf{53.2}\improvement{+4.8} & \textbf{29.6}\improvement{+3.0} & \textbf{64.8}\improvement{+0.0} & \textbf{57.9}\improvement{+3.1} \\
+% \midrule
+% Qwen2.5-32B-Instruct & 58.0 & 78.4 & 53.4 & 57.0 & 48.4 & 27.4 & 63.2 & 55.1\\
+% \textbf{+ SSP} & \textbf{62.6}\improvement{+4.6} & \textbf{82.8}\improvement{+4.4} & \textbf{55.0}\improvement{+1.6} & \textbf{62.8}\improvement{+5.8} & \textbf{49.2}\improvement{+0.8} & \textbf{32.0}\improvement{+4.6} & \textbf{64.8}\improvement{+1.6} & \textbf{58.5}\improvement{+3.4}\\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{center}
+% \end{table}
+
+
+% \begin{table}[t]
+% \caption{Experimental results under both from-scratch and continuous RL training setups}
+% \label{tab:main_results}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l*{8}{c}}
+% \toprule
+%  & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+%  & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & \textbf{Avg}\\
+% % \midrule
+% % \multicolumn{9}{c}{Qwen2.5 7B}\\
+
+% \midrule
+% Qwen2.5-7B-Instruct & 0.442 & 0.640 & 0.364 & 0.450 & 0.328 & 0.168 & 0.512 & 0.415 \\
+% \textbf{+ SSP} & \textbf{0.554}\improvement{+0.112} & \textbf{0.732}\improvement{+0.092} & \textbf{0.526}\improvement{+0.162} & \textbf{0.526}\improvement{+0.076} & \textbf{0.360}\improvement{+0.032} & \textbf{0.224}\improvement{+0.056} & \textbf{0.520}\improvement{+0.008} & \textbf{0.492}\improvement{+0.077}\\
+% \midrule
+% Search-R1-7B & 0.566 & 0.754 & 0.572 & 0.582 & 0.452 & 0.296 & 0.552 & 0.539\\
+% \textbf{+ SSP} & \textbf{0.578}\improvement{+0.012} & \textbf{0.780}\improvement{+0.026} & \textbf{0.584}\improvement{+0.012} & \textbf{0.604}\improvement{+0.022} & \textbf{0.456}\improvement{+0.004} & \textbf{0.306}\improvement{+0.010} & \textbf{0.592}\improvement{+0.040} & \textbf{0.557}\improvement{+0.018}\\
+% \midrule
+% ZeroSearch-7B & 0.522 & 0.666 & 0.502 & 0.432 & 0.346 & 0.176 & 0.408 & 0.436\\
+% \textbf{+ SSP} & \textbf{0.542}\improvement{+0.020} & \textbf{0.690}\improvement{+0.024} & \textbf{0.530}\improvement{+0.028} & \textbf{0.440}\improvement{+0.008} & \textbf{0.372}\improvement{+0.026} & \textbf{0.196}\improvement{+0.020} & \textbf{0.440}\improvement{+0.032} & \textbf{0.459}\improvement{+0.023}
+% \\
+% \midrule
+% R-Search-7B & 0.508 & 0.710 & 0.538 & 0.540 & 0.564 & 0.298 & 0.536 & 0.528\\
+% \textbf{+ SSP} & \textbf{0.524}\improvement{+0.016} & \textbf{0.742}\improvement{+0.032} & \textbf{0.568}\improvement{+0.030} & \textbf{0.542}\improvement{+0.002} & \textbf{0.580}\improvement{+0.016} & \textbf{0.314}\improvement{+0.016} & \textbf{0.552}\improvement{+0.016} & \textbf{0.546}\improvement{+0.018}\\
+% % \midrule
+% % \multicolumn{9}{c}{Qwen2.5 14B}\\
+% \midrule
+% \midrule
+% Qwen2.5-14B-Instruct & 0.560 & 0.770 & 0.538 & 0.570 & 0.484 & 0.266 & 0.648 & 0.548\\
+% \textbf{+ SSP} & \textbf{0.580}\improvement{+0.020} & \textbf{0.814}\improvement{+0.044} & \textbf{0.570}\improvement{+0.032} & \textbf{0.612}\improvement{+0.042} & \textbf{0.532}\improvement{+0.048} & \textbf{0.296}\improvement{+0.030} & \textbf{0.648}\improvement{+0.000} & \textbf{0.579}\improvement{+0.031} \\
+% % \midrule
+% % \multicolumn{9}{c}{Qwen2.5 32B}\\
+% \midrule
+% Qwen2.5-32B-Instruct & 0.580 & 0.784 & 0.534 & 0.570 & 0.484 & 0.274 & 0.632 & 0.551\\
+% \textbf{+ SSP} & \textbf{0.626}\improvement{+0.046} & \textbf{0.828}\improvement{+0.044} & \textbf{0.550}\improvement{+0.016} & \textbf{0.628}\improvement{+0.058} & \textbf{0.492}\improvement{+0.008} & \textbf{0.320}\improvement{+0.046} & \textbf{0.648}\improvement{+0.016} & \textbf{0.585}\improvement{+0.034}\\
+% % \midrule
+% % Search-R1 & 0.6 & 0.796 & 0.612 & 0.61 & 0.554 & 0.342 & 0.656 & 0.597\\
+% % \textbf{+ SSP} & & & & & & & & \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{center}
+% \end{table}
+
+
+% \begin{table}[t]
+% \caption{Experimental results under both from-scratch and continuous RL training setups}
+% \label{tab:main_results}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l*{8}{c}}
+% \toprule
+%  & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+%  & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & Avg\\
+% % \midrule
+% % \multicolumn{9}{c}{Qwen2.5 7B}\\
+
+% \midrule
+% Qwen2.5-7B-Instruct & 0.442 & 0.640 & 0.364 & 0.450 & 0.328 & 0.168 & 0.512 & 0.415 \\
+% \textbf{+ SSP} & \textbf{0.554} & \textbf{0.732} & \textbf{0.526} & \textbf{0.526} & \textbf{0.360} & \textbf{0.224} & \textbf{0.520} & \textbf{0.492}\\
+% \midrule
+% Search-R1-7B & 0.566 & 0.754 & 0.572 & 0.582 & 0.452 & 0.296 & 0.552 & 0.539\\
+% \textbf{+ SSP} & \textbf{0.578} & \textbf{0.780} & \textbf{0.584} & \textbf{0.604} & \textbf{0.456} & \textbf{0.306} & \textbf{0.592} & \textbf{0.557}\\
+% \midrule
+% ZeroSearch-7B & 0.522 & 0.666 & 0.502 & 0.432 & 0.346 & 0.176 & 0.408 & 0.436\\
+% \textbf{+ SSP} & \textbf{0.542} & \textbf{0.690} & \textbf{0.530} & \textbf{0.440} & \textbf{0.372} & \textbf{0.196} & \textbf{0.440} & \textbf{0.459}
+% \\
+% \midrule
+% R-Search-7B & 0.508 & 0.710 & 0.538 & 0.540 & 0.564 & 0.298 & 0.536 & 0.528\\
+% \textbf{+ SSP} & \textbf{0.524} & \textbf{0.742} & \textbf{0.568} & \textbf{0.542} & \textbf{0.580} & \textbf{0.314} & \textbf{0.552} & \textbf{0.546}\\
+% % \midrule
+% % \multicolumn{9}{c}{Qwen2.5 14B}\\
+% \midrule
+% \midrule
+% Qwen2.5-14B-Instruct & 0.560 & 0.770 & 0.538 & 0.570 & 0.484 & 0.266 & 0.648 & 0.548\\
+% \textbf{+ SSP} & \textbf{0.580} & \textbf{0.814} & \textbf{0.570} & \textbf{0.612} & \textbf{0.532} & \textbf{0.296} & \textbf{0.648} & \textbf{0.579} \\
+% % \midrule
+% % \multicolumn{9}{c}{Qwen2.5 32B}\\
+% \midrule
+% Qwen2.5-32B-Instruct & 0.580 & 0.784 & 0.534 & 0.570 & 0.484 & 0.274 & 0.632 & 0.551\\
+% \textbf{+ SSP} & \textbf{0.626} & \textbf{0.828} & \textbf{0.550} & \textbf{0.628} & \textbf{0.492} & \textbf{0.320} & \textbf{0.648} & \textbf{0.585}\\
+% % \midrule
+% % Search-R1 & 0.6 & 0.796 & 0.612 & 0.61 & 0.554 & 0.342 & 0.656 & 0.597\\
+% % \textbf{+ SSP} & & & & & & & & \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{center}
+% \end{table}
+
+% \begin{table}[t]
+% \caption{Main Results}
+% \label{tab:main_results}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l*{21}{c}}
+% \toprule
+%  & \multicolumn{9}{c}{GeneralQA} & \multicolumn{12}{c}{Multi-HopQA} \\
+% \cmidrule(lr){2-10} \cmidrule(lr){11-22}
+%  & \multicolumn{3}{c}{NQ} & \multicolumn{3}{c}{TriviaQA} & \multicolumn{3}{c}{PopQA} & \multicolumn{3}{c}{HotpotQA} & \multicolumn{3}{c}{2Wiki} & \multicolumn{3}{c}{MuSiQue} & \multicolumn{3}{c}{Bamboogle} \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-7} \cmidrule(lr){8-10} \cmidrule(lr){11-13} \cmidrule(lr){14-16} \cmidrule(lr){17-19} \cmidrule(lr){20-22}
+%  & LasJ & EM & F1 & LasJ & EM & F1 & LasJ & EM & F1 & LasJ & EM & F1 & LasJ & EM & F1 & LasJ & EM & F1 & LasJ & EM & F1\\
+% \midrule
+% \multicolumn{22}{c}{7B}\\
+% \midrule
+% Qwen2.5 & 0.442 & 0.286 & 0.375 & 0.640 & 0.500 & 0.592 & 0.364 & 0.308 & 0.361 & 0.45 & 0.278 & 0.400 & 0.328 & 0.264 & 0.330 & 0.168 & 0.118 & 0.189 & 0.512 & 0.352 & 0.476 \\
+% + SSP & & & & & & & & & & & & & & & & & & & & & \\
+% \midrule
+% Search-R1 & 0.566 & 0.486 & 0.555 & 0.754 & 0.62 & 0.716 & 0.572 & 0.522 & 0.567 & 0.582 & 0.428 & 0.562 & 0.458 & 0.388 & 0.466 & 0.296 & 0.21 & 0.301 & 0.552 & 0.424 & 0.549 \\
+% + SSP & & & & & & & & & & & & & & & & & & & & & \\
+% \midrule
+% ZeroSearch & 0.522 & 0.364 & 0.474 & 0.666 & 0.542 & 0.640 & 0.502 & 0.424 & 0.498 & 0.432 & 0.294 & 0.410 & 0.346 & 0.294 & 0.385 & 0.176 & 0.116 & 0.195 & 0.408 & 0.352 & 0.416\\
+% + SSP & & & & & & & & & & & & & & & & & & & & & \\
+% \midrule
+% RSearch & 0.508 & 0.384 & 0.476 & 0.710 & 0.594 & 0.677 & 0.538 & 0.466 & 0.527 & 0.570 & 0.398 & 0.523 & 0.564 & 0.502 & 0.560 & 0.298 & 0.210 & 0.296 & 0.536 & 0.400 & 0.534 \\
+% + SSP & & & & & & & & & & & & & & & & & & & & & \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{center}
+% \end{table}
+
+%\subsection{Ablation Studies}
+\vspace{-1mm}
+\subsection{Self-play versus Fixed-Opponent Training}
+\vspace{-1mm}
+The co-evolution of the proposer and solver is critical for pushing the frontier of agent capability. We investigate this core hypothesis through an ablation study comparing the complete Search Self-play framework against two fixed-opponent schemes: training only the solver, denoted as \textit{Solver-Only}, and training only the proposer, denoted as \textit{Proposer-Only}. As shown in Table~\ref{tab:ablation_selfplay}, the results clearly demonstrate the superiority of SSP. Our SSP achieves the highest average score, substantially outperforming both fixed-opponent variants. The training dynamics, analyzed in Figure~\ref{fig:training_dynamics}, reveal the reasons behind this performance gap.
+
+\textbf{Solver-Only:} figure~\ref{fig:training_dynamics} (a) reveals the underlying issue with Solver-Only. The solver's in-game reward rapidly saturates near 0.9, indicating that it quickly masters the static distribution of tasks from the fixed proposer. In the lack of a progressively challenging curriculum, the solver begins to overfit. This is confirmed by its performance on held-out evaluation sets (Figure~\ref{fig:training_dynamics}(b) and (c)), where scores on NQ and 2Wiki initially increase but then decrease over time.
+
+\textbf{Proposer-Only:} conversely, the Proposer-Only setting shows different limitations. While its in-game reward also rises, its evaluation performance on NQ and 2Wiki initially declines before a slight recovery. We attribute this partial recovery to the proposer learning general tool-use skills, which incidentally aid the fixed solver. This effect is more pronounced on simpler GeneralQA benchmarks like NQ, where this setting eventually surpasses Solver-Only. However, this general skill enhancement is insufficient for complex multi-hop reasoning, resulting in lower performance on Multi-HopQA datasets compared to the Solver-Only setup.
+
+In contrast to the flawed dynamics of fixed-opponent training, our complete SSP framework facilitates a stable co-evolution. As shown in Figure~\ref{fig:training_dynamics}(a), the solver's in-game reward initially rises, but unlike the saturating curve of the Solver-Only setting, it later experiences a slight decline. This dip is not a sign of performance degradation, but rather crucial evidence of the proposer's co-evolution: it has learned to generate more difficult tasks that challenge the improving solver, thus reducing its success rate. This dynamic creates a robust and adaptive curriculum where task difficulty perpetually adjusts to the solver's current agentic level, preventing overfitting and forcing continuous learning. Consequently, this internal adversarial pressure reflects on the stable and sustained performance gains of benchmarks in Figure~\ref{fig:training_dynamics} (b) and (c). This confirms that the mutual evolution between the proposer and solver is decisively superior to fixed-opponent training.
+
+
+% \begin{table}[t]
+% \caption{Ablation on training schemes. Full search self-play (\textbf{+SSP}) significantly outperforms fixed-opponent variants, underscoring the necessity of co-evolution for robust performance gains.}
+% \label{tab:ablation_selfplay}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l*{8}{c}}
+% \toprule
+%  & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+% \cmidrule(lr){2-4} \cmidrule(lr){5-8}
+% \textbf{Method} & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & \textbf{Avg.}\\
+% \midrule
+% Qwen2.5-7B-Instruct & 0.442 & 0.640 & 0.364 & 0.450 & 0.328 & 0.168 & 0.512 & 0.415 \\
+% \midrule
+% +SSP (Solver-Only)       & 0.452 & 0.682 & 0.466 & 0.472 & 0.326 & 0.210 & 0.488 & 0.442 \\
+% +SSP (Proposer-Only)     & 0.524 & 0.690 & 0.504 & 0.448 & 0.288 & 0.142 & 0.320 & 0.417 \\
+% \midrule
+% +\textbf{SSP}     & \textbf{0.548} & \textbf{0.734} & \textbf{0.518} & \textbf{0.518} & \textbf{0.388} & \textbf{0.212} & \textbf{0.544} & \textbf{0.495} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{center}
+% \end{table}
+
+
+\begin{table}[t]
+\caption{Ablation on training schemes. The complete search self-play (\textbf{+SSP}) significantly outperforms fixed-opponent variants, underscoring the necessity of co-evolution for robust performance gains.}
+\label{tab:ablation_selfplay}
+\vspace{-3mm}
+\begin{center}
+\resizebox{0.94\textwidth}{!}{
+\begin{tabular}{l*{8}{c}}
+\toprule
+ & \multicolumn{3}{c}{GeneralQA} & \multicolumn{4}{c}{Multi-HopQA} &  \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-8}
+\textbf{Method} & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & \textbf{Avg.}\\
+\midrule
+Qwen2.5-7B-Instruct & 44.2 & 64.0 & 36.4 & 45.0 & 32.8 & 16.8 & 51.2 & 41.5 \\
+\midrule
++SSP (Solver-Only)       & 45.2 & 68.2 & 46.6 & 47.2 & 32.6 & 21.0 & 48.8 & 44.2 \\
++SSP (Proposer-Only)     & 52.4 & 69.0 & 50.4 & 44.8 & 28.8 & 14.2 & 32.0 & 41.7 \\
+\midrule
++\textbf{SSP}     & \textbf{54.8} & \textbf{73.4} & \textbf{51.8} & \textbf{51.8} & \textbf{38.8} & \textbf{21.2} & \textbf{54.4} & \textbf{49.5} \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+\vspace{-4mm}
+\end{table}
+
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}[t]{0.325\textwidth}
+        \centering
+        \includegraphics[width=0.99\textwidth]{figures/critic_score_plot.png}
+          \centering
+          \vspace{-2.5mm}
+        \captionsetup{justification=centering}
+        \caption{In-Game Training Reward}
+        \label{fig:critic_score}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.325\textwidth}
+        \centering
+        \includegraphics[width=0.99\textwidth]{figures/nq_reward_plot.png}
+          \centering
+          \vspace{-2.5mm}
+        \captionsetup{justification=centering}
+        \caption{Evaluation Score on NQ}
+        \label{fig:nq_reward}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.325\textwidth}
+        \centering
+        \includegraphics[width=0.99\textwidth]{figures/2wiki_reward_plot.png}
+          \centering
+          \vspace{-2.5mm}
+        \captionsetup{justification=centering}
+        \caption{Evaluation Score on 2Wiki}
+        \label{fig:2wiki_reward}
+    \end{subfigure}
+    \vspace{-2mm}
+    \caption{Training dynamics of different SSP variants. (a) shows the in-game reward. (b) and (c) display the evaluation accuracy on the held-out NQ and 2Wiki datasets over training steps. }
+    \label{fig:training_dynamics}
+%\vspace{-2mm}
+\end{figure*}
+
+
+% \subsubsection{Effectiveness on Various Base Models}
+
+% To investigate whether our SSP framework is model-agnostic, we conduct experiments across three different base models: Qwen2.5-7B-Base~\citep{yang2024qwen2p5}, LLaMA3.1-8B~\citep{dubey2024llama}, and Qwen3-8B~\citep{yang2025qwen3}. As shown in Table~\ref{tab:model_agnostic}, SSP consistently improves performance across all model variants, demonstrating the general applicability of our approach. The improvements are particularly substantial for models with lower initial performance, such as Qwen2.5-7B-Base, where SSP training leads to dramatic improvements across both general and complex reasoning tasks. This consistent pattern of improvement suggests that our self-play framework effectively enhances search and reasoning capabilities regardless of the underlying model architecture, though the final performance is still bounded by the inherent capabilities of the base model.
+
+% \begin{table}[t]
+% \caption{Performance comparison of SSP training across different base models. }
+% \label{tab:model_agnostic}
+% \begin{center}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l*{8}{c}}
+% \toprule
+% \textbf{Method} & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & \textbf{Avg.} \\
+% \midrule
+% Qwen2.5-7B-Base & 0.320 & 0.332 & 0.250 & 0.180 & 0.108 & 0.110 & 0.264 & 0.223 \\
+% SSP-Qwen2.5-7B-Base & 0.512 & 0.678 & 0.490 & 0.460 & 0.310 & 0.178 & 0.480 & \textbf{0.444} \\
+% \midrule
+% LLaMA-3.1-8B & 0.502 & 0.652 & 0.458 & 0.346 & 0.194 & 0.114 & 0.304 & 0.367 \\
+% SSP-LLaMA-3.1-8B & 0.580 & 0.758 & 0.554 & 0.442 & 0.344 & 0.162 & 0.400 & \textbf{0.463} \\
+% \midrule
+% Qwen3-8B & 0.536 & 0.760 & 0.508 & 0.542 & 0.480 & 0.266 & 0.584 & 0.525 \\
+% SSP-Qwen3-8B & 0.560 & 0.782 & 0.550 & 0.580 & 0.515 & 0.280 & 0.672 & \textbf{0.563} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{center}
+% \end{table}
+\vspace{-1mm}
+\subsection{Ablation on RAG verification}
+\label{sec:rag_filter_ablation}
+\vspace{-1mm}
+
+Another key component of our SSP framework is the RAG verification, which validates each proposed question is correct and answerable given all evidences collected by the proposer. We conduct an ablation study to quantify the impact of the RAG verification and optimize its configuration at the same time. All ablation studies are conducted on Qwen2.5-7B-Instruct, with results demonstrated in Table~\ref{tab:rag_filter_ablation}.
+
+
+
+First, we compare our SSP against a variant with no RAG verification. As shown in the results, removing RAG verification leads to a significant performance decay, particularly on GeneralQA benchmarks. This result confirms our hypothesis that the RAG verification is crucial for question quality controlling, which effectively prunes invalid questions % where the proposed ground-truth answer is not actually supported by the retrieved documents, 
+and prevents the solver from being trained on noisy or incorrect data.
+
+
+
+\begin{wraptable}{r}{0.44\textwidth}
+    \centering
+    \vspace{-12.5pt} % Adjust vertical spacing to align top of table with text
+    \caption{Ablation on the RAG verification. Performance (Avg. Score) improves with a moderate number of noisy context documents.}
+    \label{tab:rag_filter_ablation}
+    \resizebox{0.42\textwidth}{!}{
+    \begin{tabular}{lcc}
+    \toprule
+    \textbf{Config.} & \textbf{GeneralQA} & \textbf{Multi-HopQA} \\
+    \midrule
+    No RAG Verifi. & 49.5 & 36.7 \\
+    \midrule
+    \multicolumn{3}{l}{\textit{RAG verification w/ Noisy Docs:}} \\
+    0 Noisy Docs  & 58.5 & 38.2 \\
+    1 Noisy Docs  & 58.5 & 36.9 \\
+    \textbf{4 Noisy Docs} & \textbf{60.0} & \textbf{41.6} \\
+    7 Noisy Docs & 57.8 & 35.9 \\
+    \bottomrule
+    \end{tabular}}
+    \vspace{-0.2cm}
+\end{wraptable}
+
+
+Next, we examine the impact of injecting noisy documents into the search materials for RAG verification. These documents are randomly sampled from other trajectories within the same training batch and are \emph{not} retrieved by the proposer during its search trajectory. The goal of this strategy is to prevent the proposer from hacking the self-play game: without irrelevant materials, the proposer can generate easy-for-RAG but hard-for-deep-search questions based on a fixed range of augmented documents. For instance, if the proposer explored 5 biographical portraits, a hacking question generation could be \textit{``Who is the earliest-born individual?''}, which is easy for RAG to answer within the fixed 5 portraits, but with insufficient conditions for deep search agents to solve with unrestricted search freedom. Additional analyses of hacking question examples are provided in Appendix~\ref{app:hacking_case}.  
+%could exploit the RAG verifier's access to a closed set of retrieved documents by crafting questions that are answerable in the verifier's omniscient context, but unfairly difficult for a solver operating under realistic search constraints\pengyu{hard-to-read, give example instead}. 
+%
+%A notable failure involves generating questions with non-unique answers: the proposer may locate and reinforce evidence for one particular answer, which the RAG verifier accepts, while a search-based solver might reasonably retrieve evidence supporting a different, equally plausible answer and be wrongly penalized.
+%
+%
+%
+% By introducing noisy documents, we challenge the solver in RAG verification. Now, it must verify the ground truth answer from a context that contains relevant and irrelevant information, making it more difficult to validate ambiguous questions. This forces the proposer to generate more robust questions whose answers are strongly and uniquely entailed by the evidence, rather than being trivially verifiable only in a noise-free context. The results show that adding a moderate amount of noise is beneficial. The configuration with 4 noisy documents achieves the best performance on both benchmarks. However, adding too much noise (e.g., 7 noisy documents) becomes counterproductive, as the excessive irrelevant information likely confuses the RAG solver, reducing its ability to accurately verify question answerability and leading to a drop in performance. Therefore, we use the setting with 4 noisy documents for our main experiments.
+%
+Injecting noisy documents into the RAG verification context poses a greater challenge for the solver, which forces the solver to validate the ground truth answer in the presence of both relevant and irrelevant information. This increased difficulty discourages the proposer from generating ambiguous questions.  Besides, unknown to the randomly injected documents, the proposer is forced to produce more robust questions whose answers are strongly and uniquely supported by the searched evidence, rather than ones that are trivially verifiable in a clean, noise-free context. Based on the experimental results in Table~\ref{tab:rag_filter_ablation}, adding four noisy documents yields the best performance across benchmarks. In contrast, exhaustive noise injection (e.g., 7 random documents) degrades accuracy, due to increased confusion during verification. We therefore choose the number of noise documents to 4 in our main experiments.
+
+%\vspace{-1mm}
+\section{Conclusion}
+%\vspace{-1mm}
+
+We introduce Search Self-play (SSP), a self-evolving reinforcement learning approach for deep search agents, in which the LLM policy acts as both a question proposer and a problem solver. In the proposed game, both agents utilize multi-turn search engine interactions, where the proposer aims to generate more difficult questions with verifiable ground-truths and the solver tries to predict the answer accurately. The correctness of generated questions is verified by the cooperation between the proposer and the solver via a retrieval-augmented generation (RAG). 
+%SSP dynamically generates verifiable search tasks with controllable difficulty and ensures reward accuracy via retrieval-augmented verification of ground-truth answers. 
+With the well-designed competition and cooperation, both the proposer and solver significantly improve themselves in the SSP games. Extensive experiments demonstrate that SSP consistently enhances search agent performance across diverse benchmarks under both from-scratch and continuous training setups, without requiring any external human supervision. These results highlight the potential of self-play as a scalable and data-efficient paradigm for agentic LLM training, paving the path for more efficient and self-sustaining RL methods in complicated agentic application scenarios.
+
+% \subsubsection*{Author Contributions}
+% If you'd like to, you may include  a section for author contributions as is done
+% in many journals. This is optional and at the discretion of the authors.
+
+% \subsubsection*{Acknowledgments}
+% Use unnumbered third level headings for the acknowledgments. All
+% acknowledgments, including those to funding agencies, go at the end of the paper.
+
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\newpage
+\appendix
+\section{Implementation Details}
+\label{app:imp}
+
+\subsection{Training Hyperparameter}
+\label{app:training_hyper}
+The hyperparameters for our main experiments are detailed in Table~\ref{tab:hyperparameter_settings_en}. Parameters not explicitly mentioned in the table adhere to the default settings provided by the veRL framework~\citep{sheng2024hybridflow}.
+
+\begin{table}[htbp]
+\centering
+\caption{Experimental hyperparameter configuration. The table is divided into two sections: Base Settings for the main training process, and specific settings for Search Self-play.}
+\label{tab:hyperparameter_settings_en}
+\begin{tabular}{ll}
+\toprule
+\multicolumn{2}{c}{\textbf{Base Settings}} \\
+\midrule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Global Batch Size & 256 \\
+Mini-batch Size & 128 \\
+Learning Rate & 1e-6 \\
+Learning Rate Warmup Steps & 5 \\
+Max Prompt Length & 4096 \\
+Max Response Length & 8192 \\
+KL Loss Coefficient & 0.01 \\
+Validation Temperature & 0.0 \\
+Rollout Temperature & 1.0 \\
+\midrule
+\multicolumn{2}{c}{\textbf{Search Self-play Settings}} \\
+\midrule
+\textbf{Parameter} & \textbf{Value} \\
+\textit{--- Proposer ---} & \\
+Proposer Warm-up Steps & -1 (disabled) \\
+Proposer Advantage Estimator & REINFORCE \\
+Proposer Samples (n) & 1 \\
+\textit{--- Solver ---} & \\
+Solver Advantage Estimator & GRPO \\
+Solver Samples (n) & 5 \\
+\textit{--- Other ---} & \\
+Batch Sampling Strategy & Replay Buffer (Periodic Reset) \\
+Use RAG Verification & True \\
+Noisy RAG Documents & 4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Rewards Design}
+
+\textbf{Solver.} A simple binary outcome reward is designed for Solver:
+\begin{equation}
+r_{\text{solve}} = \bm{1}(\va = \va^*)
+\end{equation}
+where $\va^*$ is the ground-truth answer and $\bm{1}(\cdot)$ is the indicator function that checks for equality between the predicted and true answers. 
+
+\textbf{Proposer.} The solver attempts to answer the same question $n$ times, where the average success rate for that question is $\bar{r}_\text{solve}=\frac{1}{n}\sum_{i=1}^{n} r_\text{solve}^{i}$. Thus, the reward for the proposer can be formulated as:
+\begin{equation}
+    r_{\text{propose}} = 1-\bar{r}_{\text{solve}}
+\end{equation}
+
+Tool-integrated rollout is an interactive sequence of reasoning and tool invocation, with the search tool providing external information. Following Search-R1~\citep{jin2025search,jin2025empirical}, we mask the content within the \texttt{<information></information>} tags to exclude their loss computation during training to maintain stability. The responses of both the proposer and solver are required to strictly follow the target format, using tags such as \texttt{<think>}, \texttt{<search>}, \texttt{<answer>}, and \texttt{<question>}. Responses that deviate from the format will receive no reward.
+
+\subsection{Baselines}
+We use the following baseline models for continuous RL training: Search-R1~\citep{jin2025search,jin2025empirical}, ZeroSearch~\citep{sun2025zerosearch}, and R-Search~\citep{zhao2025rsearch}. We start the SSP training from the best-performing checkpoint as reported in their respective papers. For example, Search-R1-7B corresponds to checkpoint \texttt{SearchR1-nq\_hotpotqa\_train-qwen2p5-7b-em-ppo-v0p2}, ZeroSearch-7B to checkpoint \texttt{ZeroSearch\_wiki\_V2\_Qwen2.5\_7B}, and R-Search-7B to checkpoint \texttt{R-Search-7b-grpo}.
+
+During the question generation process, the number of valid questions in each batch is significantly reduced after applying the filtering strategies. To mitigate this, we replenish the batch using dynamic sampling~\citep{yu_dapo_2025}, %or a QA replay buffer. This 
+which ensures that the rewards within a training batch are less sparse, thus contributing to a more stable training process. To enhance sampling efficiency in experiments, the default RAG solver in RAG verification is Qwen2.5-32B-Instruct.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=\textwidth]{figures/supp-vocab.pdf}
+\end{center}
+\vspace{-4mm}
+\caption{Diversity and length distribution of pre-defined answer set $\gD$.}
+\label{fig:answer_set}
+\vspace{-2mm}
+\end{figure}
+
+\subsection{Construction of Pre-Defined Answer Set $\gD$}
+\label{sec:construction_answer_set}
+
+The entire set $\gD$ is sampled exclusively from public training data. Specifically, we construct $\gD$ by randomly sampling ground-truth answers from (1) the Search-R1 training set (i.e., the training sets of NQ and HotpotQA), and (2) the ground-truth answers used in ARPO's released training set~\citep{dong2025agentic}. We sample 50,000 ground-truth answers to form the final answer set $\gD$. The word length distribution is presented in Figure~\ref{fig:answer_set}, showing an averaged length of 14.53. $\gD$ spans a broad range of topics, including People (26.3\%), Time \& Dates (12.9\%), Geography \& Places (9.2\%), Music (8.4\%), Sports (5.5\%), Film/TV/Entertainment (4.4\%), History (4.1\%), Law \& Politics (3.8\%), Biology (3.8\%), and others.
+
+\section{Additional Experimental Results}
+
+\subsection{Ablation on Batch Sampling Strategies}
+\label{sec:ablation_batch_completion}
+
+In our SSP framework, the proposer's generation process is stochastic, and not all generated questions pass the online filter. This can result in training batches smaller than the target batch size, leading to sparse reward signals and potential training instability. To address this, we investigate four distinct batch sampling strategies below to ensure a full batch is always available for the RL update step. All experiments are conducted on the Qwen2.5-7B-Base model, with results summarized in Table~\ref{tab:ablation_batch_completion}.
+% The strategies are as follows:
+\begin{itemize}
+    \item \textbf{Dummy Padding:} Invalid slots in a batch are filled with a generic, non-informative "dummy" problem. This simple approach provides no learning signal for the padded slots.
+    \item \textbf{Dynamic Resampling:} The proposer continues to generate new questions until a full batch of valid problems is collected. It ensures every sample in the batch is novel, but it is computationally expensive when the valid question pass rate is low.
+    \item \textbf{Replay Buffer (Full Reuse):} We maintain a replay buffer of all previously generated valid questions. Invalid slots are filled by sampling from the buffer, which guarantees a dense training signal but risks solver overfitting and proposer policy stagnation.
+    \item \textbf{Replay Buffer (Periodic Reset):} This strategy is used to reproduce our main experimental results. It is identical to \textit{Replay Buffer (Full Reuse)}, but the replay buffer is cleared every 10 training steps, balancing the efficiency of reuse with the need for data novelty.
+\end{itemize}
+
+\begin{table}[t]
+\caption{Ablation study on batch sampling strategies. Performance is evaluated on Qwen2.5-7B-Base. The Periodic Reset strategy yields the best results, highlighting the importance of striking a balance between data reuse and novelty.}
+\label{tab:ablation_batch_completion}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lcccccccc}
+\toprule
+\textbf{Method} & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & \textbf{Avg.} \\
+\midrule
+Qwen2.5-7B-Base (Baseline) & 32.0 & 33.2 & 25.0 & 18.0 & 10.8 & 11.0 & 26.4 & 22.3 \\
+\midrule
+Dummy Padding & 48.4 & 68.8 & 49.6 & 40.8 & 22.6 & 19.0 & 40.8 & 41.4 \\
+Dynamic Resampling & 48.4 & 66.4 & 45.8 & 44.6 & 31.4 & 17.6 & 42.4 & 42.4 \\
+Replay Buffer (Full Reuse) & 51.2 & 67.8 & 49.0 & 46.0 & 31.0 & 17.8 & \textbf{48.0} & 44.4 \\
+\textbf{Replay Buffer (Periodic Reset)} & \textbf{54.2} & \textbf{73.6} & \textbf{56.0} & \textbf{52.8} & \textbf{33.2} & \textbf{24.0} & 47.2 & \textbf{48.7} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+As shown in Table~\ref{tab:ablation_batch_completion}, the choice of strategy has a profound impact on training outcomes. The \textit{Dummy Padding} approach yields the smallest improvement over the baseline. Its low performance can be attributed to severe reward sparsity. With many invalid proposals, both the proposer and solver receive fewer learning signals per iteration, hindering effective optimization. \textit{Dynamic Resampling} performs slightly better, as it guarantees a full batch of novel, valid questions. However, it comes at a high, often prohibitive, computational cost, as it requires repeated generation cycles.
+
+The \textit{Replay Buffer (Full Reuse)} strategy provides a significant performance boost, improving the average score from 42.4 to 44.4, which allows the solver to learn more thoroughly from each valid question generated by the proposer by reusing it for multiple training updates. It verifies the reward signal and enhances training efficiency. However, its gains are ultimately limited, for unbounded reuse allows the solver to train on the same questions too many times, leading to overfitting on the static pool of questions within the ever-growing buffer. Concurrently, the proposer's learning signal diminishes as the solver masters these old questions, potentially causing policy degradation.
+
+The \textit{Replay Buffer (Periodic Reset)} strategy emerges as the clear winner, achieving the highest scores across nearly all benchmarks and boosting the average score to 48.7, which represents an effective trade-off between sufficient data exposure and novelty. Reusing questions for a limited period allows the solver to learn sufficiently from each generated task, ensuring the reward signal remains dense. However, periodically clearing the buffer prevents the solver from learning the same questions too many times, thus mitigating the overfitting observed with full reuse. Concurrently, this forces the proposer to continuously generate novel questions to populate the fresh buffer, maintaining a strong co-evolutionary pressure. The result validates the effectiveness of \textit{Replay Buffer (Periodic Reset)}, as it fosters the most stable and effective self-play training.
+
+\begin{figure*}[t]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/7b_base_reuse_clear_interval_10_search_statistics.pdf}
+        \captionsetup{justification=centering}
+        \caption{Search Tool Usage}
+        \label{fig:dynamics_search}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/7b_base_reuse_clear_interval_10_length_statistics.pdf}
+        \captionsetup{justification=centering}
+        \caption{Trajectory Length Statistics}
+        \label{fig:dynamics_length}
+    \end{subfigure}
+    
+    \vspace{0.5cm} % Add some vertical space between rows
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/7b_base_reuse_clear_interval_10_generalqa.pdf}
+        \captionsetup{justification=centering}
+        \caption{Performance on GeneralQA Benchmarks}
+        \label{fig:dynamics_generalqa}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/7b_base_reuse_clear_interval_10_multihopqa.pdf}
+        \captionsetup{justification=centering}
+        \caption{Performance on Multi-HopQA Benchmarks}
+        \label{fig:dynamics_multihopqa}
+    \end{subfigure}
+    \caption{Training dynamics of SSP with Qwen2.5-7B-Base. (a) The agent learns to use the search tool more frequently. (b) Solver response length increases while prompt length remains stable. (c, d) Evaluation scores on both GeneralQA and Multi-HopQA datasets show continuous improvement during training.}
+    \label{fig:training_dynamics_base}
+\end{figure*}
+
+
+\subsection{Training Dynamics of Solver}
+
+We provide a granular view into the training process by analyzing the training dynamics of our SSP framework on the Qwen2.5-7B-Base model, configured with the \textit{Replay Buffer (Periodic Reset)} strategy. % \pengyu{what is replay buffer strategy? dynamic sampling? make the name consistent}. 
+Figure~\ref{fig:training_dynamics_base} illustrates core metrics in the self-play training, demonstrating how the agent's behavior and performance co-evolve.
+
+As shown in Figure~\ref{fig:dynamics_search}, the average number of search tool calls per trajectory steadily increases over time, indicating that through search self-play, the agent learns to conduct more extensive and complex multi-step searches to solve problems, significantly enhancing its tool-use capabilities. Simultaneously, Figure~\ref{fig:dynamics_length} shows that the solver's response length also grows during the training, suggesting it learns to generate more detailed and comprehensive answers. In contrast, the prompt length remains relatively stable, indicating consistent task/question generation of the proposer.
+
+Figures~\ref{fig:dynamics_generalqa} and \ref{fig:dynamics_multihopqa} demonstrate a consistent and significant improvement in accuracy across both GeneralQA and Multi-HopQA datasets as training progresses. Notably, the slope of performance improvement gradually decreases in later training stages. This plateau is partially attributable to a resource-imposed constraint: the maximum number of search steps was capped at 10 to conserve computational resources, preventing the agent from exploring even deeper reasoning paths. We believe that scaling the search step constraint could unlock further performance improvements.
+
+
+\subsection{Training Dynamics of Proposer}
+To gain deeper insights into the proposer's behavior during SSP training, we conduct a comprehensive analysis of its evolution across multiple dimensions. Figure~\ref{fig:proposer_dynamics} presents four key aspects of the proposer's development throughout the training process.
+\begin{figure}[h]
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/proposer_search_count.pdf}
+        \captionsetup{justification=centering}
+        \caption{Search Tool Usage}
+        \label{fig:proposer_search_count}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/extraction_success_rate_trend.pdf}
+        \captionsetup{justification=centering}
+        \caption{Question Validation Success Rate}
+        \label{fig:proposer_validation}
+    \end{subfigure}
+    \vspace{0.5cm}
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/difficulty_analysis.pdf}
+        \captionsetup{justification=centering}
+        \caption{Question Difficulty Progression}
+        \label{fig:question_difficulty}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \includegraphics[width=\textwidth]{figures/question_topic_distribution.pdf}
+        \captionsetup{justification=centering}
+        \caption{Question Topic Distribution}
+        \label{fig:question_topics}
+    \end{subfigure}
+    \caption{Comprehensive analysis of proposer dynamics during SSP training. (a) The proposer gradually increases its search tool usage, demonstrating enhanced exploration capabilities. (b) Question validation success rate shows steady improvement, indicating enhanced question quality over training. (c) Generated question difficulty progressively increases, evidencing adaptive curriculum learning. (d) Topic distribution remains well-balanced across training, indicating broad question coverage.}
+    \label{fig:proposer_dynamics}
+\end{figure}
+
+The analysis reveals several key insights into the proposer's learning dynamics. First, as shown in Figure~\ref{fig:proposer_search_count}, the proposer demonstrates a consistent upward trend in search tool utilization throughout training. The progressive increase in search frequency indicates that the proposer develops more sophisticated information-gathering strategies, enabling it to construct increasingly complex question scenarios that require deeper exploration of external knowledge sources. Additionally, Figure~\ref{fig:proposer_validation} demonstrates a steady improvement in question validation success rate, rising from near 0\% to approximately 50\% by the end of training. This upward trend indicates that the proposer learns to generate higher-quality questions that successfully pass verification, reflecting improved question formulation skills and better alignment with the verification constraints. In designing the SSP framework, we have prioritized high precision in the verification process, even at the cost of some recall. While this means a subset of valid questions might be filtered out, it effectively ensures that only high-confidence samples enter the self-play loop. This selective mechanism helps maintain a clean and stable training environment, which we find essential for facilitating robust co-evolution between the proposer and solver.
+
+Figure~\ref{fig:question_difficulty} reveals a clear progression in the difficulty of generated questions throughout training. To systematically observe the evolution of question difficulty, we employ DeepSeek-V3.2~\citep{liu2024deepseek}to evaluate and score the generated questions using a structured difficulty assessment prompt (detailed in Appendix~\ref{app:prompts}). The proposer exhibits an adaptive curriculum learning behavior, gradually increasing the complexity and challenge level of its generated questions. This progressive difficulty scaling demonstrates the proposer's ability to provide increasingly sophisticated challenges to the solver, facilitating the co-evolutionary dynamics that drive mutual improvement in the SSP framework. The upward trend in question difficulty, coupled with maintained topic diversity, confirms that the proposer successfully balances challenge progression with comprehensive coverage.
+
+To assess the diversity and coverage of generated questions, we employ Latent Dirichlet Allocation (LDA)~\citep{blei2003latent} clustering to analyze the topical distribution of the questions generated by proposer. As demonstrated in Figure~\ref{fig:question_topics}, the topic distribution remains remarkably balanced across different training phases. The consistent proportional representation across multiple topic clusters indicates that the proposer successfully maintains broad domain coverage and avoids bias toward specific question types, thereby ensuring comprehensive curriculum development.
+
+
+
+
+\subsection{Proposer's Reward Design}
+We analyze the sensitivity of our Search Self-play framework to the reward function with an experiment on the effect of a punitive reward structure for the proposer. In our main configuration, the proposer receives a zero reward for generating an invalid or malformed question. Besides, we introduce a small penalty, setting the reward as -0.1 for any question that fails the online filter. The proposer is optimized using the REINFORCE algorithm with a single sample per prompt ($n=1$), while the solver is updated using GRPO, and we adopt the \textit{Replay Buffer (Full Reuse)} strategy for batch sampling.
+
+The results, shown in Figure~\ref{fig:reward_design_ablation}, demonstrate that the seemingly minor change leads to a catastrophic failure of the training process. The proposer's average reward becomes sparse and progressively declines (Figure~\ref{fig:reward_design_ablation}a), directly corresponding to a collapse in the valid question generation rate, which plummets towards 0 (Figure~\ref{fig:reward_design_ablation}c). This phenomenon can be explained as a negative feedback loop: the penalty for format errors encourages the agent to explore away from its current policy. However, this exploration, manifested as an increase in policy entropy (Figure~\ref{fig:reward_design_ablation}b), makes the generation more random and thus more likely to produce invalid outputs. This "death spiral" effectively halts the creation of new training instances. Meanwhile, the solver's reward appears to increase, which is a misleading artifact of overfitting. As the supply of new, valid questions from the proposer dwindles, the solver is repeatedly trained on a small, static buffer of past questions, failing to generalize its capabilities. This experiment critically underscores that the proposer's reward design is paramount for stable co-evolution in SSP; a punitive approach can destabilize the entire self-play dynamic, highlighting the need for a carefully calibrated reward scheme.
+
+\begin{figure*}[t]
+\centering
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/negative_format_reward_proposer_solver_reward_comparison.pdf}
+\captionsetup{justification=centering}
+\caption{In-Game Reward Dynamics}
+\label{fig:neg_reward}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/negative_format_reward_actor_entropy_trend.pdf}
+\captionsetup{justification=centering}
+\caption{Proposer Policy Entropy}
+\label{fig:neg_entropy}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.32\textwidth}
+\centering
+\includegraphics[width=\textwidth]{figures/negative_format_reward_valid_question_rate_trend.pdf}
+\captionsetup{justification=centering}
+\caption{Valid Question Rate}
+\label{fig:neg_valid_rate}
+\end{subfigure}
+\caption{Training dynamics of SSP when the proposer receives a negative reward for format errors. (a) The proposer's reward (blue) trends to -0.1 as it stops producing valid questions, while the solver's reward (purple) spuriously increases due to overfitting on a question pool. (b) The proposer's policy entropy steadily rises as the agent tries to escape the negative rewards, leading to more random and less valid outputs. (c) Consequently, the rate of generating valid questions collapses, halting productive self-play training and demonstrating the instability caused by punitive rewards.}
+\label{fig:reward_design_ablation}
+\end{figure*}
+
+% \subsection{Ablation Study on RL Algorithms}
+
+% To investigate the impact of different reinforcement learning algorithms on our SSP framework, we conduct comprehensive experiments comparing various combinations of RL algorithms for the proposer and solver roles. The experimental results are presented in Table~\ref{tab:ablation_RL_algo}.  We set the per-query rollout budget to n=5 whenever GRPO is used for either role (proposer or solver), and n=1 when a role is trained by REINFORCE (RF) or REINFORCE++ (RF++)~\citep{hu2025reinforce++}. 
+
+% Training both roles with GRPO achieves the highest average accuracy (50.9), slightly outperforming our default RF--GRPO configuration (49.5), but with a substantial computational cost: the per-step generation time rises from 83.4 s to 504.4 s, \textit{i.e.}, approximately 6$\times$ slower. The improvements are modest and appear across several datasets (e.g., +1.2 on NQ, +2.0 on PopQA, +3.0 on 2Wiki, +1.2 on MuSiQue, +2.4 on Bamboogle), with a small drop on TriviaQA ($-0.6$). Given the pronounced increase in runtime and resource consumption, the GRPO--GRPO configuration is the most expensive option despite only marginal gains over the default.
+
+% Among the remaining settings (i.e., configurations other than GRPO--GRPO), the first configuration (RF--GRPO) delivers the best average performance (49.5) while maintaining reasonable generation time (83.4 s/step). Switching the proposer from RF to RF++ with a GRPO solver slightly reduces the average to 48.1, with a small time saving (80.0 s/step). Using GRPO for the proposer while training the solver with RF or RF++ substantially degrades accuracy, even though the per-step times are lower (50.1 s and 66.7 s). Notably, the RF--RF pairing yields the second-lowest average performance , only outperforming the GRPO--RF++ configuration, despite the shortest per-step time (9.1 s). These results suggest that placing GRPO on the solver side is more effective than on the proposer side: multi-trajectory credit assignment during solving directly benefits solution quality, whereas stronger exploration in proposing alone does not yield improvements unless the solver can reliably evaluate and solve the proposed queries.
+
+% \paragraph{Takeaways.} The GRPO--GRPO pair is slightly more accurate than the default RF--GRPO but is by far the slowest and most resource-intensive configuration. For practical training budgets, the small accuracy gains do not justify the $\sim$6$\times$ increase in generation time. Among all other configurations, the first one (RF--GRPO) achieves the best trade-off between effectiveness and efficiency and remains our default choice.
+
+
+% \begin{table}[t]
+% \caption{Evaluation results and rollout generation time comparisons on different RL algorithms for proposers and solvers, where RF denotes REINFORCE and RF++ denotes REINFORCE++.}
+% \label{tab:ablation_RL_algo}
+% \centering
+% \resizebox{\textwidth}{!}{%
+% \begin{tabular}{llccccccccc}
+% \toprule
+% Proposer & Solver & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & Avg. & T/step(s)\\
+% \midrule
+% RF & GRPO & 54.8 & 73.4 & 51.8 & 51.8 & 38.8 & 21.2 & 54.4 & 49.5 & 83.4\\
+% \midrule
+% RF & RF & 53.0 & 71.2 & 53.6 & 46.2 & 28.0 & 13.2 & 28.8 & 42.0 & 9.1 \\
+% RF++ & GRPO & 55.0 & 72.4 & 51.2 & 48.8 & 36.8 & 21.6 & 51.2 & 48.1 & 80.0\\
+% GRPO & RF & 51.2 & 69.2 & 49.8 & 47.6 & 37.0 & 21.6 & 48.8 & 46.5 & 50.1\\
+% GRPO & RF++ & 34.4 & 55.0 & 22.6 & 24.8 & 22.0 & 7.4 & 37.6 & 29.1 & 66.7\\
+% GRPO & GRPO & 56.0 & 72.8 & 53.8 & 52.4 & 41.8 & 22.4 & 56.8 & 50.9 & 504.4\\
+% \bottomrule
+% \end{tabular}%
+% }
+% \end{table}
+
+\subsection{Ablation Study on RL Algorithms}
+To investigate the impact of different reinforcement learning algorithms on our SSP framework, we conduct comprehensive experiments comparing various combinations of RL algorithms for the proposer and solver roles. The experimental results are presented in Table~\ref{tab:ablation_RL_algo}. We set the per-query rollout budget to n=5 whenever GRPO is used for either role (proposer or solver), and n=1 when a role is trained by REINFORCE (RF).
+
+Training both roles with GRPO achieves the highest average accuracy (50.9), slightly outperforming our default RF--GRPO configuration (49.5), but with a substantial computational cost: the per-step generation time rises from 83.4 s to 504.4 s, \textit{i.e.}, approximately 6$\times$ slower. The improvements are modest and appear across several datasets (e.g., +1.2 on NQ, +2.0 on PopQA, +3.0 on 2Wiki, +1.2 on MuSiQue, +2.4 on Bamboogle), with a small drop on TriviaQA ($-0.6$). Given the pronounced increase in runtime and resource consumption, the GRPO--GRPO configuration is the most expensive option despite only marginal gains over the default.
+
+Among the remaining settings (i.e., configurations other than GRPO--GRPO), the first configuration (RF--GRPO) delivers the best average performance (49.5) while maintaining reasonable generation time (83.4 s/step). Using GRPO for the proposer while training the solver with RF substantially degrades accuracy to 46.5, even though the per-step time is lower (50.1 s). Notably, the RF--RF pairing yields the lowest average performance (42.0), despite the shortest per-step time (9.1 s). These results suggest that placing GRPO on the solver side is more effective than on the proposer side: multi-trajectory credit assignment during solving directly benefits solution quality, whereas stronger exploration in proposing alone does not yield improvements unless the solver can reliably evaluate and solve the proposed queries.
+
+\paragraph{Takeaways.} The GRPO--GRPO pair is slightly more accurate than the default RF--GRPO but is by far the slowest and most resource-intensive configuration. For practical training budgets, the small accuracy gains do not justify the $\sim$6$\times$ increase in generation time. Among all other configurations, RF--GRPO achieves the best trade-off between effectiveness and efficiency and remains our default choice.
+
+\begin{table}[t]
+\caption{Evaluation results and rollout generation time comparisons on different RL algorithms for proposers and solvers, where RF denotes REINFORCE.}
+\label{tab:ablation_RL_algo}
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llccccccccc}
+\toprule
+Proposer & Solver & NQ & TriviaQA & PopQA & HotpotQA & 2Wiki & MuSiQue & Bamboogle & Avg. & T/step(s)\\
+\midrule
+RF & GRPO & 54.8 & 73.4 & 51.8 & 51.8 & 38.8 & 21.2 & 54.4 & 49.5 & 83.4\\
+\midrule
+RF & RF & 53.0 & 71.2 & 53.6 & 46.2 & 28.0 & 13.2 & 28.8 & 42.0 & 9.1 \\
+GRPO & RF & 51.2 & 69.2 & 49.8 & 47.6 & 37.0 & 21.6 & 48.8 & 46.5 & 50.1\\
+GRPO & GRPO & 56.0 & 72.8 & 53.8 & 52.4 & 41.8 & 22.4 & 56.8 & 50.9 & 504.4\\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+% for submission
+% \section{Use of Large Language Models}
+
+% Large language models were used to aid in the writing and polishing of this manuscript. Specifically, LLMs assisted with language refinement and improving clarity. All core content and intellectual contributions are solely the work of the authors.
+
+
+\section{Self-play Examples}
+
+Table~\ref{tab-app: example1_proposer},~\ref{tab-app: example1_solver},~\ref{tab-app: example2_proposer},~\ref{tab-app: example2_solver},~\ref{tab-app: example3_proposer}, and~\ref{tab-app: example3_solver} provide examples of trajectories in our SSP game.
+
+\input{alg/examples}
+
+\section{Prompts}
+\label{app:prompts}
+Prompts used in our search self-play experiments are listed as follows.
+
+\input{alg/prompts}
+
+\section{Hacking Question Cases}
+\label{app:hacking_case}
+The example in Table~\ref{tab-app: bad_case_proposer} illustrates a significant problem with the proposer's question formulation: non-uniqueness of answers. The question "Temptations singer" is inherently ambiguous because the Temptations, as a famous Motown group, had multiple singers throughout their history, including David Ruffin, Eddie Kendricks, Dennis Edwards, and many others. The question essentially asks for "a singer from a band," which obviously has multiple valid answers. However, the RAG Solver has the documents that prominently feature one particular member (in this case, Otis Williams), making it appear as if there's a single correct answer. While a RAG-based solver can succeed due to the limited and biased retrieval results, a solver working independently without access to these specific documents would likely struggle to determine which of the many possible Temptations singers is the "correct" answer. %, highlighting the fundamental flaw in the question's specificity.
+
+\input{alg/bad_cases}
+
+\end{document}

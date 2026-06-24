@@ -1,0 +1,160 @@
+\begin{abstract}% .
+% Pvsmthosofn onuprvisdf-u(SFT),whchco fuda-
+% mentally enhhe model's capabilityddress this
+% limittioby introdung a GRPO-bsed optimizationdireim-
+% provmodl' reasnigabiity.Ou proacleves-
+% toguide blingmore effective
+% and ph-
+% that ou methd achies superior-
+% advtagGRPO over trdiionl SFT ppah
+% 
+% Reasoning over knowledge graphs is a fundamental challenge in artificial intel-
+% ligence, requiring both accurate inference and interpretability. Recent advances
+% leverage reinforcement learning to optimize reasoning paths, yet most approaches
+% focus on end-state rewards, neglecting the importance of intermediate reasoning
+% steps. In this work, we propose a deliberative and constructive reasoning frame-
+% work that explicitly rewards the process of path exploration on knowledge graphs.
+% By integrating process-based rewards into policy optimization, our method en-
+% courages agents to discover interpretable and effective reasoning trajectories. Ex-
+% periments on benchmark datasets demonstrate improved performance in both an-
+% swer accuracy and path quality, highlighting the significance of path-aware policy
+% design for knowledge graph reasoning.
+% Large language models (LLMs) have demonstrated great potential in various reasoning tasks. 
+% However, their performance in knowledge graph reasoning (KGR) remains suboptimal due to the lack of interpretability and the challenge of capturing complex relationships.
+% In this work, we propose a novel framework that leverages process-based rewards to enhance the reasoning capabilities of LLMs on knowledge graphs. 
+% By integrating these rewards into a reinforcement learning paradigm, 
+% our approach encourages the model to explore more effective and interpretable reasoning paths.
+%  Experimental results on benchmark datasets demonstrate that our method significantly improves both answer accuracy and path quality,
+%   showcasing the advantages of process-aware optimization in KGR tasks.
+% Knowledge Graphs(KGs) have demonstrated great potential in complex facilitating reasoning tasks due to their ability to capture intricate relationships
+% and provide interpretable reasoning paths.
+% Recent advances in the utilization of KG for large language models(LLMs) mainly focus on , igno
+% Reasoning over knowledge graphs (KGs) is a critical task to
+% improve the factuality and mitigate the hallucinations of large language models (LLMs).
+% % Recent advances predominantly emphasize answer generation by decoding from KGs, often overlooking the necessity for deep understanding and robust reasoning capabilities of LLMs over knowledge graphs. 
+% % Recent advances mainly focus on  
+% % designing decoding rules to extract rule-compliant answers from knowledge graphs,
+% % while neglecting deep understanding of graph features. 
+% % This results in insufficient fundamental reasoning capabilities of large language models over knowledge graphs.
+% % Recent advances mainly focus on 
+% %  rule-based decoding for extracting answers from KGs,
+% % while neglecting 
+% % Consequently, the fundamental reasoning capacity 
+% % of large language models over knowledge graphs remains underdeveloped. 
+% Recent advances primarily decouple the generation of reasoning paths
+% from the subsequent answer inference based on those paths,
+% preventing LLMs from comprehensively understanding the original graph structure 
+% and limiting their capacity for self-directed exploration.
+% % In this paper, we proporse EOG (Exploration on Graphs), a novel framework that 
+% In this paper, we propose a novel end-to-end framework that encourages LLMs to actively
+% explore on the graphs (EOG) to enable spontaneous and deliberative reasoning.
+% First, we model the graph reasoning process as a textual chain of thought to 
+% utilize the reasoning capabilities of LLMs. 
+% Then, we introduce the Group Relative Policy Optimization (GRPO) to 
+% enable the LLMs to learn the experience of the spontaneous exploration on the graphs.
+% % from a group of reasoning paths and 
+% % and refine their exploration policy towards the correct answer.
+% % to produce diverse reasoning thoughts, incentivizing 
+% % the autonomous exploration of the KGs.
+% % Moreover, we proporse a path-based rewards aligned with 
+% % To generate more effective and faithful reasoning paths, we propose 
+% % the path-based rewards based on the quality of the reasoning paths.
+% Extensive experiments on three benchmark datasets demonstrate that our method
+% significantly outperforms state-of-the-art baselines with different open-source LLMs,
+% showing the promising advantages of path-wise reward modeling in KG reasoning tasks.
+% Reasoning over knowledge graphs (KGs) is a critical task to
+% improve the factuality and mitigate the hallucinations of large language models (LLMs).
+% Recent advances predominantly emphasize answer generation by decoding from KGs, often overlooking the necessity for deep understanding and robust reasoning capabilities of LLMs over knowledge graphs. 
+% Recent advances mainly focus on  
+% designing decoding rules to extract rule-compliant answers from knowledge graphs,
+% while neglecting deep understanding of graph features. 
+% This results in insufficient fundamental reasoning capabilities of large language models over knowledge graphs.
+% Recent advances mainly focus on 
+%  rule-based decoding for extracting answers from KGs,
+% while neglecting 
+% Consequently, the fundamental reasoning capacity 
+% of large language models over knowledge graphs remains underdeveloped. 
+% Knowledge Graph Question Answering (KGQA) is a critical task to
+% improve the factuality and mitigate the hallucinations of large language models (LLMs).\
+% Enabling Large Language Models (LLMs) to reason over knowledge graphs 
+% is a crucial approach for Knowledge Graph Question Answering (KGQA), 
+% aiming to improve their factuality and mitigate hallucinations.
+% Reasoning over knowledge graphs is a crucial approach for Large Language Models (LLMs) 
+% to improve their factuality and mitigate hallucinations 
+% in Knowledge Graph Question Answering (KGQA).
+% Knowledge Graph Question Answering (KGQA) is a critical task to
+% improve the factuality and mitigate the hallucinations of large language models (LLMs),
+% which involves complex reasoning over structured knowledge graphs.
+% Reasoning over knowledge graphs is a crucial approach for Large Language Models (LLMs) to 
+% improve their factuality and mitigate hallucinations.
+% Although Large language models (LLMs) have shown remarkable capabilities,
+The reasoning process of  Large Language Models (LLMs) is often plagued by hallucinations and missing facts in question-answering tasks.
+A promising solution is to ground LLMs' answers in verifiable knowledge sources, such as Knowledge Graphs (KGs).
+% However, recent KG-enhanced methods 
+% primarily decouple the generation of reasoning paths
+% from the subsequent answer inference based on those paths,
+% % preventing LLMs from comprehensively understanding the original graph structure 
+% % and limiting their capacity for active exploration of the knowledge graph.
+% preventing LLMs from holistically leveraging and exploring the original graph structure to derive the final answer.
+% In this paper, we proporse EOG (Exploration on Graphs), a novel framework that 
+% In this paper, we propose a novel synergistic exploitation-exploration framework 
+% to enable structured and spontaneous reasoning on knowledge graphs (SSR-KG).
+% (i) In the exploitation stage, 
+% we model the graph reasoning process as the generation of textual chain of thought 
+% to enhance the structure and completeness of the reasoning process through the supervised fine-tuning (SFT).
+% % and 
+% % and utilize the reasoning capabilities of LLMs by supervised fine-tuning (SFT).
+% (ii) In the exploration stage, we propose the adaptive path-wise reward to score the quality
+% of the reasoning paths, thereby dynamically refining the LLMs' exploration policy 
+% to promote more spontaneous and efficient exploration by the reinforcement learning (RL).
+% from a group of reasoning paths and 
+% and refine their exploration policy towards the correct answer.
+% to produce diverse reasoning thoughts, incentivizing 
+% the autonomous exploration of the KGs.
+% Moreover, we proporse a path-based rewards aligned with 
+% To generate more effective and faithful reasoning paths, we propose 
+% the path-based rewards based on the quality of the reasoning paths.
+% 目前的方法主要通过预定的 学习过的样本
+% Recent KG-enhanced methods mainly focus on constructing structured schemas and instructions to govern LLMs' reasoning process.
+% However, their rigid and pre-defined nature limits the model's flexibility and exploration capabilities in complex reasoning scenarios.
+% Recent KG-enhanced methods mainly focus on constructing structured schemas or learning fixed features from known samples to govern LLMs' reasoning process.
+Prevailing KG-enhanced methods typically constrained LLM reasoning either by enforcing rules during generation or by imitating paths from a fixed set of demonstrations.
+% However, these approaches limits the model's flexibility and exploration capabilities, leading to insufficient utilization of graphs and thus impairing the model's generalization in complex reasoning scenarios.
+% However, these approaches restricted LLMs to previously seen patterns, fundamentally limiting their generalization to complex graphs with unseen reasoning structures.
+% this reliance on static and pre-defined patterns fundamentally limit the model's ability to explore unseen paths of the graph, thus impairing its generalization to more complex and novel reasoning paths.
+% However, these approaches restrict LLMs to previously seen patterns, fundamentally limiting their generalization to complex graphs. 
+However, they naturally confined the reasoning patterns of LLMs within the scope of prior experience or fine-tuning data, limiting their generalizability to out-of-distribution graph reasoning problems.
+% To tackle this problem,
+To address this issue,
+% , we aim to enhance LLMs' reasoning capability by encouraging to explore a more diverse reasoning space.
+% To overcome this, our goal is exposing the model to a broader and richer reasoning patterns
+% is to promote the generalization through autonomous exploration, exposing the model to a broader and more complex set of reasoning patterns.
+% they usually suffered from the inherent inflexibility of these prescribed paradigms,
+% hindering their ability to actively explore the graph for alternative and potentially more effective reasoning process.
+% restricts the model to the demonstrated patterns and discourages it from discovering alternative, potentially more efficient or novel, reasoning strategies.
+in this paper, we propose Explore-on-Graph (EoG), a novel framework that encourages LLMs to autonomously explore a more diverse reasoning space on KGs.
+To incentivize exploration and discovery of novel reasoning paths, we propose to introduce reinforcement learning during training, whose reward is the correctness of the reasoning paths' final answers. 
+To enhance the efficiency and meaningfulness of the exploration, we propose to incorporate path information as additional reward signals to refine the exploration process and reduce futile efforts.
+Extensive experiments on five KGQA benchmark datasets demonstrate that, to the best of our knowledge, our method achieves state-of-the-art performance, outperforming not only open-source but also even closed-source LLMs\footnote{Code and data are available at: https://github.com/ysq111333/EoG}. 
+% Our code is publicly available at xx.
+% promotes the autonomous exploration of LLMs on knowledge graphs through path-refined reward modeling.
+% To effectively optimize the LLM’s exploration policy, we introduce the Group Relative Policy Optimization (GRPO), which leverages the group-wise relative advantages to facilitate stable and efficient policy updates. 
+% To provide fine-grained feedback and mitigate model hallucinations, we propose path-refined rewards that effectively guide the LLM’s exploration process towards factually grounded paths.
+% EoG introduces path-refined rewards that effectively guide the LLM’s exploration process towards factually grounded paths.
+% providing fine-grained feedback and mitigate model hallucinations.
+% Specifically, EoG adopts an answer-oriented reward to incentivize LLMs to explore diverse reasoning paths that lead to potentially correct answers and a path-refinement reward which evaluates the logical coherence to reduce hallucinations and enhance the overall quality of the reasoning process.
+% The following advantages of EoG are examined and illustrated through a number of well-designed experiments: 
+% 1) EOG achieves deep exploration on knowledge graphs by LLMs.
+% 2) EOG demonstrates outstanding performance in terms of reasoning depth and comprehensiveness.
+% 3) EOG exhibits robust generalization capabilities across diverse datasets.
+% First, we model graph reasoning as the generation of long chain-of-thought to leverage the reasoning capabilities of LLMs. 
+% we introduce the Group Relative Policy Optimization (GRPO) to incentivize LLMs to learn from a diverse range of explorations.
+% % and to autonomously distill effective reasoning strategies from these experiences.
+% % enable the LLMs to produce diverse reasoning thoughts and , incentivizing the autonomous exploration on the KGs.
+% Moreover, 
+% we propose path-refined rewards to effectively guide the model's exploration
+% % by providing a more fine-grained and reasonable exploration experiences 
+% based on the entire reasoning paths.
+% Extensive experiments on five KGQA benchmark datasets
+% demonstrate that our method achieves state-of-the-art performance, outperforming even closed-source large-scale models.
+\end{abstract}

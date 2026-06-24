@@ -1,0 +1,420 @@
+% \clearpage
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Self-play example 1: question proposing.
+    }
+    \label{tab-app: example1_proposer}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Proposer} creates a question that leads to the answer \textit{Roger (alien)}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+Given that I have a single search requirement, it's essential to design a straightforward but intricate-enough route to come to the term "Roger (alien)" that would normally require a direct search. This will differentiate "Roger (alien)" from other similar or general terms to ensure the question is precise and unambiguous.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Starting with "Roger (alien)," this seems like a reference to a specific character or entity. "Roger" is a common name. The term "alien" specifically refers to an alien from other galaxies or universes. }
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{I'll brainstorm some 'associated concepts' related to "Roger (alien)." If it is a specific cultural reference or a name from specific media content, I can build my questions around these concepts.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Let’s begin by searching for 'associated' or 'preceding' facts which connect to "Roger (alien)" without specifying the answer directly.\rthink
+}
+\\
+\search{Roger alien}
+\\
+\info{
+(Title: "Roger (American Dad!)") Roger is a fictional character in the adult animated sitcom ""American Dad!"", voiced by Seth MacFarlane. The character was created and designed by Seth MacFarlane. Roger is a centuries-year-old grey space alien living with the Smith family, around whom the show revolves. Having $\dots$
+\\
+(Title: "Big O (mecha)") locks itself and lets Roger out because R. Dorothy is in danger. In ""Enemy Is $\dots$
+\\
+(Title: "Roger (Hellboy)") Roger the Homunculus is a fictional character featured in the $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink It appears that the most prominent "Roger (alien)" refers to a character named Roger from the animated sitcom, "American Dad!," who is known to be an extraterrestrial being from another planet. Given this, the associated concept is now clear, and we can build the question accordingly. We need to find a particular instance or unique detail linked to Roger from American Dad! which would require a solver to search to reach the final answer.\rthink
+}
+\\
+\search{Roger alien american dad!}
+\\
+\info{
+(Title: "Roger (American Dad!)") Roger is a fictional character in the adult animated  $\dots$
+\\
+(Title: "Roger (American Dad!)") be shown on the series. Although in the episode ""Lost in Space"", a brief clip $\dots$
+\\
+(Title: "American Dad!") alien race. To date, Roger's birth planet has yet to be revealed $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink Based on the information gathered, I see that there’s a notable character detail that can be used—the fact that Roger has a backstory linked to Roswell crash. Given that it's quite specific and links directly to the search results, we can use this idea to form our single-search question.\rthink
+}
+\\
+\question{Who is the grey alien character from American Dad! that was involved in the Roswell incident in 1947?}
+\\\bottomrule
+\bottomrule
+ \end{tabular}
+\end{table*}
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Self-play example 1: question answering.}
+    \label{tab-app: example1_solver}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Solver} answers the question raised by Proposer: \textit{Who is the grey alien character from American Dad! that was involved in the Roswell incident in 1947?}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink To answer this question, I need to identify a grey alien character from American Dad! that has a connection to the Roswell incident in 1947. I'm not sure off-hand which character is known for this, as the show features many alien characters. Searching for the details will likely retrieve the relevant information.\rthink}
+\\
+\search{Grey alien character from American Dad! Roswell incident 1947}
+\\
+\info{
+(Title: "Grey alien") as ""visitors"", appear in two episodes of ""South Park"", and Roger $\dots$
+\\
+(Title: "Grey alien") small-bodied beings with smooth grey-colored skin, enlarged hairless heads and large $\dots$
+\\
+(Title: "Roger (American Dad!)") Roger is a fictional character in the adult animated sitcom ""American Dad!"", voiced by Seth MacFarlane. The character was created and designed by Seth MacFarlane. Roger is a centuries-year-old grey space alien living with the Smith family, around whom the show revolves. Having lived on Earth since crashing in Roswell, New Mexico in 1947, Roger came to live with the Smiths after rescuing main character Stan Smith at Area 51 four years prior to the beginning of the series. $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink Based on the provided information, the grey alien character from American Dad! that was involved in the Roswell incident in 1947 is Roger. The text mentioned that Roger is a grey space alien living with the Smith family, and he has been on Earth since crashing in Roswell, New Mexico in 1947.\rthink}
+\\
+\answer{Roger}
+\\\bottomrule
+\bottomrule
+ \end{tabular}
+\end{table*}
+
+
+\clearpage
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Self-play example 2: question proposing.
+    }
+    \label{tab-app: example2_proposer}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Proposer} creates a question that leads to the answer \textit{Castle Drogo}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+The target answer is Castle Drogo. To create a question that requires three sequential searches, I need to find an associated concept for the final answer and reverse-engineer the question from there.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{First, let's identify an associated concept for Castle Drogo. Castle Drogo is a 20th-century castle located in the South West of England, situated in Devon. The associated concept could be the architect behind it, Sir Edwin Lutyens.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Next, I'll search for information connecting Sir Edwin Lutyens to Castle Drogo to find a 'preceding fact' for the third search.\rthink
+}
+\\
+\search{Sir Edwin Lutyens and Castle Drogo}
+\\
+\info{
+(Title: "Castle Drogo") Castle Drogo Castle Drogo is a country house and castle near Drewsteignton, Devon, England. Constructed between 1911 and 1930, it was the last castle to be built in England. The client was Julius Drewe, the hugely successful founder of the Home and Colonial Stores. Drewe chose the site in the belief that it formed part of the lands of his supposed medieval ancestor, Drogo de Teigne. The architect he chose to realise his dream was Edwin Lutyens, then at the height of his career. Lutyens lamented Drewe's determination to $\dots$
+\\
+(Title: "Castle Drogo") purely decorative. Additionally, the castle had electricity and lifts from the outset, with power being supplied by two turbines on the river below. The castle is a Grade I listed building. $\dots$
+\\
+(Title: "Castle Drogo") the village of Drewsteignton in the belief $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink From the search results, we know that Edwin Lutyens designed Castle Drogo. The preceding fact for the third search could be the architect who designed Castle Drogo. 
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Now, I need to find another piece of information that leads logically to Edwin Lutyens as the answer, which will be the second search. I know that Sir Edwin Lutyens was a notable 20th-century English architect, known for his numerous significant works, including collaborations with Gertrude Jekyll. Let's explore his collaboration with Jekyll further.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Lutyens frequently collaborated with the famous garden designer Gertrude Jekyll. I'll find a specific project or fact related to this collaboration.\rthink}
+\\
+\search{Edwin Lutyens and Gertrude Jekyll}
+\\
+\info{
+(Title: "Gertrude Jekyll") wife Julia Hammersley. Her younger brother, Walter Jekyll  (an Anglican priest; sometime Minor Canon of Worcester Cathedral and Chaplain of Malta) $\dots$
+\\
+(Title: "Gertrude Jekyll") was awarded the Victoria Medal of Honour of the Royal Horticultural Society in 1897 and the Veitch Memorial Medal of the society in 1929. Also in 1929, she was given the George Robert White Medal $\dots$
+\\
+(Title: "Hestercombe House") the house by Henry Hall in the 1870s. The Edwardian garden was laid out by Gertrude Jekyll and Edwin Lutyens between 1904 and 1906 for $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink From the search results, I can see that Edwin Lutyens and Gertrude Jekyll collaborated on several projects, particularly Hestercombe House. The preceding fact for the second search could be a well-known collaboration project of Edwin Lutyens and Gertrude Jekyll.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{For the final step, I need to identify an associated concept related to Hestercombe House that leads to Edwin Lutyens as the answer. I can create a sequential search question that starts from a well-known architectural or garden feature associated with Hestercombe House.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{The Hestercombe Garden is a well-known aspect. The next fact for the first search could be related to a designer or architect's masterpiece associated with Hestercombe Garden.\rthink}
+\\
+\search{Hestercombe Garden architect}
+\\
+\info{
+(Title: "Hestercombe House") petrol and air. When the house and gardens were inherited $\dots$
+\\
+(Title: "Hestercombe House") the house by Henry Hall in the 1870s. The Edwardian garden was laid out by Gertrude Jekyll and Edwin Lutyens between 1904 and 1906 for the Hon E.W.B. Portman, resulting in a garden ""remarkable for the bold, concise pattern of its layout, and for the minute attention to detail everywhere to be seen in the variety $\dots$
+\\
+(Title: "Hestercombe House") the hardy herbaceous planting espoused by Miss Jekyll. Lutyens also designed the orangery about 50 m east of the main house between 1904–09, which is now Grade I listed $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink The search results indicate that Hestercombe House and Garden were designed by Edwin Lutyens and Gertrude Jekyll. This association can lead us to the architect Edwin Lutyens in a search starting from a prominent aspect of the Hestercombe Garden. The question can start by referencing a key feature of Hestercombe Garden and logically lead to Edwin Lutyens and later Castle Drogo.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{To formulate the question, let's start referring to the specific feature, such as the orangery built by Edwin Lutyens.\rthink}
+\\
+\question{What is the name of the 20th-century castle in Devon, England, designed by the architect who, alongside Gertrude Jekyll, created the famous Edwardian garden at Hestercombe House, known for its listed orangery?}
+\\\bottomrule
+\bottomrule
+ \end{tabular}
+\end{table*}
+
+\clearpage
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Self-play example 2: question answering.}
+    \label{tab-app: example2_solver}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Solver} answers the question raised by Proposer: \textit{What is the name of the 20th-century castle in Devon, England, designed by the architect who, alongside Gertrude Jekyll, created the famous Edwardian garden at Hestercombe House, known for its listed orangery?}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+The question is asking for the name of a 20th-century castle in Devon, England. This castle is designed by an archite
+ct who also worked with Gertrude Jekyll on the Hestercombe House gardens. The Hestercombe House gardens are f
+amous for their Edwardian style and especially known for their listed orangery.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Given this information, I need to find:
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{1. The architect who collaborated with Gertrude Jekyll on the Hestercombe House gardens.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{2. A 20th-century castle in Devon, England, designed by that architect.\rthink
+}
+\\
+\search{architect who collaborated with Gertrude Jekyll on Hestercombe House gardens}
+\\
+\info{
+(Title: "Hestercombe House") the house by Henry Hall in the 1870s. The Edwardian garden was laid out by Gertrude Jekyll and Edwin Lutyens between 1904 and 1906 for the Hon E.W.B. Portman, resulting in a garden ""remarkable for the bold, concise pattern of its layout, and for the minute attention to detail everywhere to be seen in the variety and imaginative handling of contrasting materials, whether cobble, tile, flint, or thinly coursed local stone"". Jekyll and Lutyens were leading participants of the Arts and Crafts movement. Jekyll is remembered for her outstanding designs and subtle, painterly approach to the arrangement of the gardens $\dots$
+\\
+(Title: "Hascombe Court") Hascombe Court Hascombe Court is a estate in Hascombe, Surrey, best known for its vast garden designed by Gertr
+ude Jekyll. Hascombe Court is listed Grade II on the National Heritage List for England, and its gardens are also Grad
+e II listed on the Register of Historic Parks and Gardens. $\dots$
+\\
+(Title: "Gertrude Jekyll") over 300 photographs taken by Jekyll. From 1881, when she laid out the gardens for Munstead House, built for her
+mother by John James Stevenson, Jekyll provided designs or planned planting for some four hundred gardens. More
+than half were directly commissioned, but many were $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink Doc 1 mentions that Edwin Lutyens and Gertrude Jekyll collaborated on the garden at Hestercombe House.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{With this in mind, I can now search for a 20th-century castle in Devon, England designed by Edwin Lutyens.\rthink}
+\\
+\search{20th-century castle in Devon, England designed by Edwin Lutyens}
+\\
+\info{
+(Title: "Castle Drogo") Castle Drogo Castle Drogo is a country house and castle near Drewsteignton, Devon, England. Constructed between 1911 and 1930, it was the last castle to be built in England. The client was Julius Drewe, the hugely successful founder of the Home and Colonial Stores. Drewe chose the site in the belief that it formed part of the lands of his supposed medieval ancestor, Drogo de Teigne. The architect he chose to realise his dream was Edwin Lutyens, then at the height of his career. Lutyens lamented Drewe's determination to $\dots$
+\\
+(Title: "Devon County War Memorial") The Devon County War Memorial is a First World War memorial, designed by Sir Edwin Lutyens and situated on Cathedral Green in Exeter, the county town of Devon, in the south west of England. It is one of fifteen War Crosses designed by Lutyens with similar characteristics $\dots$
+\\
+(Title: "Devon County War Memorial") memorials were built across Britain. Amongst the most prominent designers of memorials was the architect Sir Edwin Lutyens, described by Historic England as ""the leading English architect of his generation"". Prior to the First World War, Lutyens established $\dots$
+}
+\\
+\answer{Castle Drogo}
+\\\bottomrule
+\bottomrule
+ \end{tabular}
+\end{table*}
+
+
+\clearpage
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Self-play example 3: question proposing.
+    }
+    \label{tab-app: example3_proposer}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Proposer} creates a question that leads to the answer \textit{George Smith}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+To create a question that leads to the answer "George Smith," which requires three searches, I need to work backwards and establish a logical sequence of information that will lead to this name. Let's start by identifying an associated concept or related information.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{1. \textbf{Associated Concept}: George Smith might be a person involved in a specific historical event, a notable figure in a certain field, or someone connected to a particular organization or place. For this, I'll explore who George Smith might be and find a notable fact or place relevant to this person.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{2. \textbf{Search Process}:}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{ - \textbf{Search \#3}: Start with the target "George Smith." I need to identify an event or place associated with him.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{ - \textbf{Search \#2}: Once the preceding fact is discovered from Search \#3, I’ll use that information to identify another intermediary fact.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{ - \textbf{Search \#1}: Finally, will determine the starting point using the information from Search \#2.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Let's start with Search \#3 to establish the initial associated concept.\rthink
+}
+\\
+\search{Who is George Smith and what is he known for?}
+\\
+\info{
+(Title: "George P. Smith (politician)") George Peter Smith (August 12, 1873 – November 29, $\dots$
+\\
+(Title: "George Smith (historian)") George Smith (31 August 1800 – 30 August 1868) was an English businessman $\dots$
+\\
+(Title: "George Smith (artist)") George Smith (1713/14 – 7 September 1776) was $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink From the search results, George Smith (politician) from Alberta provides a specific context. George P. Smith played a role in the development of Duhamel, Alberta, and the establishment of influential relationships with indigenous peoples. I will use this in the backward search chain.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\textbf{Search \#3}: Identify a fact related to George P. Smith.\rthink}
+\\
+\search{What significant role did George P. Smith play in the community of Duhamel, Alberta?}
+\\
+\info{
+(Title: "George P. Smith (politician)") George Peter Smith (August 12, 1873 – November 29, $\dots$
+\\
+(Title: "George P. Smith (politician)") with fraud as they believed that the money which was $\dots$
+\\
+(Title: "George Wilbert Smith") George Wilbert Smith (April 24, 1855 – August 1, 1931) $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink From the information, George P. Smith played a significant role in founding the Trading Store in Duhamel, Alberta, and developing it into a hub for fur trading with indigenous peoples.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\textbf{Search \#3 Key Fact}: George P. Smith bought and established a Trading Store in Duhamel, Alberta.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Next, we will now build on this fact in Search \#2.\rthink}
+\\
+\search{What role did trading stores play in the development of settlements like Duhamel, Alberta, in the early 20th century?}
+\\
+\info{
+(Title: "Duhamel, Alberta") Duhamel is a hamlet in the $\dots$
+\\
+(Title: "Duhamel, Alberta") soil, and vegetation within the circles had apparently been $\dots$
+\\
+(Title: "Exchange District") was a new route for shipping goods from Eastern Canada $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink From the search, trading stores played a crucial role in connecting settlers with resources and indigenous peoples. Tr
+ading stores in early settlements were central to economic and social development.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\textbf{Search \#2 Key Fact}: Trading stores were central hubs for economic activities, distributing goods and establishing trade relations with indigenous peoples.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Finally, we build the starting point for Search \#1.\rthink}
+\\
+\search{Which early 20th-century Alberta town was a key trading center due to the presence of a significant fur-trading activity?}
+\\
+\info{
+(Title: "History of Alberta") providing an important channel for the flow $\dots$
+\\
+(Title: "Lamson \& Hubbard Trading Company") Lamson \& Hubbard Trading Company (also referred to as $\dots$
+\\
+(Title: "Northern Traders Company") The Northern Traders Company was an enterprise $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink From the search, Alberta towns like Red Deer could have been key trading centers due to fur trading activity. Red Deer's role fits well because it was an economic hub with connections to the indigenous communities.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\textbf{Search \#1 Key Fact}: Red Deer, Alberta, was a key trading center due to its fur-trading activity.}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Now I can construct the final question ensuring it meets all the established requirements and necessitates precisely three searches to reach the final answer.\rthink}
+\\
+\question{What was the name of the politician who established a crucial trading store in the early 20th century, which transformed a small community into an important trading hub for fur and developed strong relationships with the indigenous peoples in Alberta?}
+\\\bottomrule
+\bottomrule
+ \end{tabular}
+\end{table*}
+
+\clearpage
+
+\begin{table*}[ht!]
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{2pt}
+    \fontsize{9}{10}\selectfont
+    \centering
+    \captionsetup{justification=centering}
+    \caption{Self-play example 3: question answering}
+    \label{tab-app: example3_solver}
+    \begin{tabular}{p{15cm}}
+\toprule
+\toprule
+{\bf Solver} answers the question raised by Proposer: \textit{What was the name of the politician who established a crucial trading store in the early 20th century, which trans
+formed a small community into an important trading hub for fur and developed strong relationships with the indigenous peoples in Alberta?}
+\\\bottomrule
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink
+The question asks for a politician who established a trading store in Alberta, Canada in the early 20th century. This politician seems to have had substantial influence in the region, not just in politics but also in trade, and built strong relationships with indigenous peoples. The region mentioned, Alberta, was an important area for fur trading during this period.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Given that the politician founded a crucial trading store, it's likely that they were known for their contributions to Canadian history, particularly in the province of Alberta. Notable figures in Alberta during the early 20th century would be relevant here, particularly those linked with economic development through trade or industry, and who engaged in dialogue or relationships with indigenous groups.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{To identify this specific politician, more precise historical information about fur trading in Alberta in the early 20th ce
+ntury is required, especially someone known for such a significant act of setting up a trading hub.\rthink
+}
+\\
+\search{politician who established a trading store in Alberta early 20th century}
+\\
+\info{
+(Title: "James Ramsey (politician)") James ""Merchant Prince"" Ramsey (April 4, 1864 – December 23, 1939) was a provincial politician and business man from Alberta, Canada $\dots$
+\\
+(Title: "Alexander Livingstone (Alberta politician)") Alexander Livingstone (August 2, 1884 – October 26, 1944) was a Canadian politician and municipal councillor in Edmonton, Alberta. Livingstone was born in Bathgate, Scotland $\dots$
+\\
+(Title: "Cornelius Hiebert") Cornelius ""Don"" Hiebert (August 2, 1862 – March 21, 1919) was a politician from Alberta, Canada. Hiebert was born in Sea of Azov, Russia and lived in Russia $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink The initial search results did not directly identify a politician who established a fur trading store or created a significa
+nt trading hub in early 20th-century Alberta. James Ramsey and Alexander Livingstone were notable business and political figures, but they are primarily mentioned for their work in department stores in Edmonton, not for a specific trading store related to fur or indigenous relations. Cornelius Hiebert was involved in setting up a general store in a founding phase of a village, but not detailed circumstances specifically in trading of fur. 
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{A second search is needed with a more concentrated focus on fur traders and key individuals who had influence in relation to indigenous communities.\rthink}
+\\
+\search{politician from Alberta early 20th century established fur trading store}
+\\
+\info{
+(Title: "James Ramsey (politician)")  James ""Merchant Prince"" Ramsey (April 4, 1864 $\dots$
+\\
+(Title: "Cornelius Hiebert") Cornelius ""Don"" Hiebert (August 2, 1862 – March 21, 1919) was $\dots$
+\\
+(Title: "Alexander Livingstone (Alberta politician)")  Alexander Livingstone (August 2 $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink Despite the multiple searches, there appears a lack of direct information providing an exact match regarding a prominent fur trader politician in Alberta from the early 20th century. The information given points primarily to notable business and political figures linked with department stores or general stores in Alberta but not specifically to fur trading or close relations to indigenous communities as mentioned in the question. As the information is still scattered and does not directly answer the specific individual queried, a reconsideration and possibly with a broader search is required to uncover the correct specific person’s name and connection with fur trading in Alberta.\rthink
+}
+\\
+\search{politician who established a fur trading store in Alberta early 1900s}
+\\
+\info{
+(Title: "George P. Smith (politician)") George Peter Smith (August 12, 1873 – November 29, 1942) was a politician and former Minister of the Crown from Alberta, Canada. He was born in Lieury, Ontario and came west in 1901 while working for an insurance company. After visiting Duhamel (a mission settlement $\dots$
+\\
+(Title: "Cornelius Hiebert") Cornelius ""Don"" Hiebert (August 2, 1862 – March 21, 1919) was $\dots$
+\\
+(Title: "Alexander Livingstone (Alberta politician)")  Alexander Livingstone (August 2 $\dots$
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{\lthink The information provided initially presents George P. Smith as someone who bought a trading store in 1902 after visiting Duhamel in Alberta and developed a relationship with influential settlers and with Métis and Saulteaux peoples. He formed a lucrative fur trading business, leading to the establishment of a trading hub important for fur trade. This matches well with the criteria outlined in the question. The second document did not specifically mention fur trade, while the third one was about a prominent figure, but not specifically in the context of fur trading. So it strongly indicates that George P. Smith is the person sought.
+}
+\\
+\rowcolor[rgb]{ .900,  .900,  .900}{Given the direct relevance of George P. Smith's background and activities in developing a fur trading hub and formin
+g relationships with indigenous communities in Alberta, the answer to the question appears to be George P. Smith.\rthink}
+\\
+\answer{George P. Smith}
+\\\bottomrule
+\bottomrule
+ \end{tabular}
+\end{table*}

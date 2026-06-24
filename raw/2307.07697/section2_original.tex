@@ -1,0 +1,112 @@
+\section{Methods}
+\label{sec: methods} 
+We introduce ToG, a novel algorithm for graph search-based LLM reasoning, which prompts the LLM to iteratively explore multiple possible reasoning paths on KGs based the given queries by using beam search, until the LLM determines that the question can be answered based on the current reasoning paths. 
+ToG constantly updates and maintains top-N reasoning paths $P=\{(p_n,s_n)\}^{N}_{n=1}$ for question $x$ after each iteration, where $N$ denotes the width of beam search. Each path $p_n$ consists of $D$ triples $p_n =\{(e^d_{s,n}, r^d_{j,n}, e^d_{o,n})\}^{D}_{d=1}$, where $e^d_{s,n}$ and $e^d_{o,n}$ denote subject and object entities, $r^d_{j,n}$ is a specific relation between them, $(e^d_{s,n}, r^d_{j,n}, e^d_{o,n})$ and $(e^{d+1}_{s,n}, r^{d+1}_{j,n}, e^{d+1}_{o,n})$  are connected to each other, and $D$ denotes the current iteration depth. $s_n$ is the normalized contribution score of $p_n$, i.e., $\sum_{n=1}^{N} s_n = 1$. The entire inference process of ToG contains the following 3 phases: initialization, exploration, and reasoning. In particular, we propose a variant of ToG, relation-based ToG by exploring top-N relations chains $p_n = (e^{0}_n,r^{1}_n,r^{2}_n,...,r^{D}_n)$ starting with the topic entity $e^{0}_n$, instead of triple-based reasoning paths.
+
+\subsection{Think-on-Graph}
+
+\subsubsection{Initialization of Graph Search}
+Given a question, ToG leverages the underlying LLM to localize the initial entity of the reasoning paths on knowledge graph. This phase can be regarded as the initialization of the top-N reasoning paths $P$. 
+% Denote the sets of the tail entities and relations in $P$ as $E^{D}=\{e^{D}_{1},e^{D}_{2},...,e^{D}_{N}\}$ and $R^{D}=\{r^{D}_{1},r^{D}_{2},...,r^{D}_{N}\}$. 
+ToG first prompts LLMs to automatically extract the topic entities in question and gets the initial contribution score $S = \{s_1, s_2,...,s_N\}$ of top-N topic entities $E^{0}=\{e^{0}_{1},e^{0}_{2},...,e^{0}_{N}\}$ to the question. Note that the number of topic entities might be less than N.
+
+\subsubsection{Exploration}
+As shown in Figure~\ref{fig: framework}, the exploration phase in the $D$-th iteration aims to exploit the LLM to identify the most relevant top-N entities $E^{D}$ from the neighboring entities of the current top-N entity set $E^{D-1}$ based on the question $x$ and extend the top-N reasoning paths $P$ with $E^{D}$.
+To address the complexity of handling numerous neighboring entities with the LLM, we implement a two-step exploration strategy: first, exploring out significant relations, and then using selected relations to guide entity exploration.
+%based on a given to serve as intermediate steps in the reasoning paths for a given question based on \textbf{Beam Search}. This phase comprises two distinct stages: relation exploration and entity exploration.  %%为什么要分为两步，一个是因为 下一步的实体candidate数量很多，分两步搜索可以减少单次搜索的宽度
+
+% The set of $E_c$ entities at the current search depth $D_c$, $\{t_i\}^{N}_{i=1} \sim $\text{take}(N)($p_\theta(t_{m+1} | x, E_c) = p_\theta(t_{m+1} | x, \{(e_s, r_j, e_o)\}^{D}_{j=1})), t_i = (e_s, r_i, e_o) $. 
+
+
+
+\paragraph{Relation Exploration}
+\label{sec: relation_exploration}
+For each path $p_n$ of the current top-N reasoning paths $P$, we first use the LLM to explore and score the N most relevant relations following $p_n$ and expand $p_n$ to $\{p_{n,i}\}^N_{i=1}$. Out from N$\times$N reasoning paths of $\{\{p_{n,i}\}^N_{n=1}\}^N_{i=1}$,  new top-N reasoning paths are selected based on their scores. The whole process can be decomposed into two steps: \texttt{Search} and \texttt{Prune}. LLMs serverd as agent to automatically complete this process.
+\begin{itemize}[leftmargin=*]
+%%应该是参考图例，进行清晰地描述：第一步是searches all the relations
+    % \item \textbf{Search} The relation exploration phase first searches all the relations $R_{cand} = \{R_s \cup R_o\}$, where $R_s$ and $R_o$ denote the relation edge set with the current entity as the subject or object entity, respectively, linked to each entity in the current entity set $E_{c}$, where $E_{c}$ of the first iteration is initialized by $E_{init}$, and subsequent $E_c$ updated after each iteration. The same applies to the set of current scores $S_c$. The \texttt{Search} procedure can be easily completed by executing two simple pre-defined formal queries, which makes ToG adapt well to different KBs.
+
+
+    
+    \item \textbf{Search} 
+    % At the beginning of the $i$-th iteration, for each current reasoning path $p_j$ where $j\in(1，N)$, the relation exploration phase first search out relations $R^{i}_{cand,j}$ linked to the tail entity of $p_j$. Specially for the first iteration where $P$ is initialized by $E_{init}$. In the case of Figure~\ref{fig: framework}, $E^{1}_c=\{\textbf{Canberra}\}$ and $R_{cand}$ denotes the set of all relations linked to \textbf{Canberra} inwards or outwards when \textit{Depth} = 1. After the first iteration, $E^{i}_c$. The \texttt{Search} procedure can be easily completed by executing two simple pre-defined formal queries, which makes ToG adapt well to different KBs \textbf{without any training cost}.
+    At the beginning of the $D$-th iteration, the relation exploration phase first search out relations $R^{D}_{cand,n}$ linked to the tail entity $e^{D-1}_{n}$ for each current reasoning path $p_n$. These relations are aggregated as $R^{D}_{cand}$. In the case of Figure~\ref{fig: framework}, $E^{0}=\{\textbf{Canberra}\}$ and $R^{1}_{cand}$ denotes the set of all relations linked to \textbf{Canberra} inwards or outwards. Notably, the \texttt{Search} procedure can be easily completed by executing two simple pre-defined formal queries shown in Appendix~\ref{sparqls} and~\ref{APIs}, which makes ToG adapts well to different KBs \textbf{without any training cost}.
+    
+    \item \textbf{Prune} Once we have obtained the N candidate relation sets $\{R^{D}_{cand,n}\}^{N}_{n=1}$ from the relation search, we can utilize the LLM to select and score the most relevant top-N relations $R^{D}_{n}=\{r^{D}_{n,i}\}^{N}_{i=1}$ for each candidate set $R^{D}_{cand,n}$ based on the literal information of the question and candidate relations. The prompt used here can be found in Appendix~\ref{prompts4rel}. The score of  $r^{D}_{n,i}$ can be denoted as $sr^{D}_{n,i}=\pi(r^{D}_{n,i}|x,p_{n},R^{D}_{cand,n})$, where $\pi()$ denotes the LLM or other alternative scoring models.
+    %we prune relations that have a low contribution to the question and as the termination for the current relation exploration phase. 
+    % Since $r\in R^{D}_{cand,n}$ is expressed in natural language, we can utilize the LLM to select the most relevant top-N relations $R^{D}_{c,n}=\{r^{D}_{c,n,i}\}^{N}_{i=1}$ for each candidate set $R^{D}_{cand,n}$ with their corresponding scores $\{s^{D}_{r,n,i}\}_{i=1}^{N}$, based on their relevance to the question and the reasoning path $p_n$. 
+    Then the top-N candidate reasoning paths $P$ are expanded to at most N$\times$N reasoning paths, i.e., $\{\{p_{n,i},s_{n,i}\}^{N}_{i=1}\}^{N}_{n=1}$, with $\{R^{D}_{n}\}_{n=1}^{N}$. Each new reasoning path $p_{n,i}$ is scored as $s_{n,i}=s_{n}\times sr^{D}_{n,i}$. We select N reasoning paths $p_n$ with the highest scores $s_n$ out from $P$ and update $P=\{p_n,s_n\}^{N}_{n=1}$ with the selected paths, where $s_n$ is re-normalized to keep the sum of $s_n$ as 1.
+    As shown in Figure~\ref{fig: framework}, the LLM select top-3 relations $\{\textbf{capital of}, \textbf{country}, \textbf{territory}\}$ out from all relations linked to the entity \textbf{Canberra} and scores them as $\{0.5, 0.4, 0.1\}$ in the first iteration. Since \textbf{Canberra} has a score of 1 as the only topic entity, the top-3 candidate reasoning paths are updated as $\{(\textbf{Canberra, capital of})$,$(\textbf{Canberra, country})$,$(\textbf{Canberra, territory})\}$ with scores of $\{0.5, 0.4, 0.1\}$.
+        % with the corresponding scores as our current relation set $ R_{c} = \{(r_{i}, s_{i})\}_{i=1}^{N}, s.t. \sum_{i=1}^{N} s_{i} = 1, s_{i} = p_{\theta}(r_{i}|x, e_{j}), r_{i} \in R_{cand}, e_{j} \in E_{c}$. Then, we update and normalize the scores $ S_c = \left\{ \frac{s_{S_c}^{i} \cdot s_{R_c}^{i}}{\sum_{j=1}^{n} s_{S_c}^{j} \cdot s_{R_c}^{j}} \right\}_{i=1}^{n}$, where $s_{S_c}^{i}$ and $s_{R_c}^{i}$ denote the $i-th$ scores of the $S_c$ and $R_c$ sets, respectively.
+
+        
+        % $S_c = Normalize(\{s_{S_c}^{i} \cdot s_{R_c}^{i}\}_{i=1}^{n})$, where $s_{S}^{i}$ denotes the $i-th$ score of the $S$.
+%  = p_{\theta}(r_{i}|x, E_{c})
+% $R_{c} = \{p_\theta(r_i|x, E_c)\}^{N}_{i=1} = \{p_\theta(r_i|x, e_j)\}^{N}_{i=1}, r_i \in R_{cand}, e_j \in E_c$. 
+\end{itemize}
+
+\paragraph{Entity Exploration}
+\label{sec: entity_exploration}
+Similar to relationship exploration, entity exploration is also a beam search process with the width of N performed by the LLM, consisting of two steps, \texttt{Search} and \texttt{Prune}.
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Search} Once we have finished relation exploration and obtained new top-N reasoning paths, for each relation path $p_n$, we can explore a candidate entity sets $E^{D}_{cand,n}$ by querying $(e_n, r_n,?)$ or $(?, r_n,e_n)$, where $e_n, r_n$ denote the tail entity and relation of $p_n$. We can aggregate $\{E^{D}_{cand,n}\}^N_{n=1}$ as $E^{D}_{cand}$.
+    % the entity set $E^{i}_c$ and its corresponding relation set $R^{i}_{c}$ for the $i$-th iteration, we can explore N candidate entity sets  $E^{i}_{cand} = \{e_m|E_c, R_{c}\}_{i=1}^{D} = \{\{\{e_m|e_j, r_k\}_{k=1}^{N}\}_{j=1}^{L}\}_{m=1}^{D}$ by querying $(e_j, r_k,?)$ or $(?, r_k,e_j)$, where $e_j \in E_c, r_k \in R_{c}$, $N$, $L$ and $D$ denotes the size of $R_{c}$, $E_c$ and $E_{cand}$, respectively. 
+    For the shown case, $E^{1}_{cand}$ contains \textbf{Australia} and \textbf{Australian Capital Territory}.
+    \item \textbf{Prune} Since the entities in each candidate set $E^{D}_{cand,n}$ is expressed in natural language, we leverage the LLM to select the top-N entities $E^{D}_{n}=\{e^{D}_{n,i}\}^{N}_{i=1}$ out from the candidate entity set $E^{D}_{cand, n}$ with their corresponding scores $se^{D}_{n,i}=\pi(e^{D}_{n,i}|x,p_{n},E^{D}_{cand,n})$. The prompt used here can be found in Appendix~\ref{prompts4ent}. Same as relation prune, the top-N reasoning paths $P$ is expanded to N$\times$N reasoning paths $\{\{p_{n,i},s_{n,i}\}^{N}_{i=1}\}^{N}_{n=1}$ with $\{E^{D}_{n}\}^N_{n=1}$ where $s_{n,i}=s_{n}\times se^{D}_{n,i}$. The new top-N paths $\{p_n\}_{n=1}^N$ are selected out from $\{\{p_{n,i}\}^{N}_{i=1}\}^{N}_{n=1}$ with normalized scores $\{s_n\}_{n=1}^N$. As shown in Figure~\ref{fig: framework}, \textbf{Australia} and \textbf{Australian Capital Territory} are scored as 1 since the relations \textbf{capital of}, \textbf{country} and \textbf{territory} are only linked to one tail entity respectively, and the current reasoning paths $p$ are updated as $\{(\textbf{Canberra, capital of, Australia}),(\textbf{Canberra, country, Australia})$, $(\textbf{Canberra, territory, Australian Capital Territory})\}$ with scores of $\{0.5, 0.4, 0.1\}$.
+    % \item \textbf{Prune} Since the candidate set $E_{cand}$ is still expressed in natural language, we leverage the LLM to prune the candidate entity set $E^{i}_c$ based on the query to obtain the most relevant top-N entities $E_{N} = \{(e_{i}, s_{i})\}_{i=1}^{N}, s.t. \sum_{i=1}^{N} s_{i} = 1, s_{i} = \{p_\theta(e_i|x, e_j, r_k)\}^{N}_{i=1}, e_i \in E_{cand}, e_j \in E_c$, $r_k \in R_c$. Then, we also update the and normalize scores $ S_c = \left\{ \frac{s_{S_c}^{i} \cdot s_{E_N}^{i}}{\sum_{j=1}^{n} s_{S_c}^{j} \cdot s_{E_N}^{j}} \right\}_{i=1}^{n}$.
+    
+%$S_c = Normalize(\{s_{S_c}^{i} \cdot s_{E_N}^{i}\}_{i=1}^{n})$.
+% \{p_\theta(e_i|x, E_c, R_c)\}^{N}_{i=1} =
+% $E_{N} = \{p_\theta(e_i|x, E_c, R_c)\}^{N}_{i=1} = \{p_\theta(e_i|x, e_j, r_k)\}^{N}_{i=1}, e_i \in E_{cand}, e_j \in E_c$, $r_k \in R_c$.
+\end{itemize}
+After executing the two explorations described above, we reconstruct the top-N candidate reasoning paths $P$ where the length of each path increases by 1. $S$, $E^{D}$ and $R^{D}$ are \textbf{update} instantly for the following iteration. Each prune step requires at most $N$ LLM calls.
+%We then \textbf{update} the $E_c$ with $E_N$ to continue the iteration process. Finally, we can construct a comprehensive reasoning path where each intermediate step corresponds to a triple that is sequentially related.
+% and calculate $S_c = \{s_{S_c}^{i} \cdot s_{R_c}^{i} \cdot s_{E_N}^{i}\}_{i=1}^{n}$, where $s_{S}^{i}$ denotes the score of the $i-th$ entity of the current$S$, 
+\subsubsection{Reasoning}
+Upon obtaining the current reasoning path $P$ through the exploration process, we prompt the LLM to evaluate whether the current reasoning pathways are adequate for generating the answer. If the evaluation yields a positive result, we prompt the LLM to generate the answer using the reasoning pathways with the query as inputs as illustrated in Figure~\ref{fig: framework}. The prompt used for evaluation and generation can be found in Appendix~\ref{prompts4rea} and~\ref{prompts4gen}. Conversely, if the evaluation yields a negative result, we repeat the \texttt{Explore} and \texttt{Reasoning} steps until the evaluation is positive or reaches the maximum search depth $D_{max}$. If the algorithm has not yet concluded, it signifies that even upon reaching the $D_{max}$, ToG remains unable to explore the reasoning paths to resolve the question. In such a scenario, ToG generates the answer exclusively based on the inherent knowledge  in the LLM.
+
+The whole inference process of ToG contains $D$ exploration phases and $D$ evaluation steps as well as a generation step, which needs at most $2ND+D+1$ calls to the LLM. 
+
+
+\subsection{Relation-based Think-on-Graph}
+
+% \subsubsection{Exploration}
+% The exploration phase is divided into two parts: Search and Prune. It is important to note that the relation exploration is similar to that of entity based approach, 
+% \paragraph{Relation Exploration}
+ %ToG(E)存在哪些问题：，Unameuntity。我们又发现，在不完备的kb中，关系的信息比实体要重要\ref{3.4.2}.然后我们提出relation。，这个东西focus on bala，在不完备的kb上飙戏那更好。整体pipeline，这两个方法一样，只不过有两点有些区别。
+Previous KBQA methods, particularly based on semantic parsing, have predominantly relied on relation information in questions to generate formal queries~\citep{complexKBQA}. Inspired by this, we propose relation-based ToG (ToG-R) that explores the top-N relation chains $\{p_n = (e^{0}_n,r^{1}_n,r^{2}_n,...,r^{D}_n)\}^N_{n=1}$ starting with the topic entities $\{e^{0}_n\}^N_{n=1}$ instead of triple-based reasoning paths. ToG-R sequentially performs \textbf{relation search}, \textbf{relation prune} and \textbf{entity search} in each iteration, which is the same as ToG. Then ToG-R performs the \textbf{reasoning} step based on all candidate reasoning paths ending with $\{E^{D}_{cand,n}\}^N_{n=1}$ obtained by entity search. If the LLM determines that the retrieved candidate reasoning paths do not contain enough information for the LLM to answer the question, we randomly sample N entities from the candidate entities $\{E^{D}_{cand,n}\}^N_{n=1}$ and continue to the next iteration. Assuming that entities in each entity set $E^{D}_{cand,n}$ probably belong to the same entity class and have similar neighboring relations, the results of pruning the entity set $\{E^{D}_{cand,n}\}^N_{n=1}$ might have little impact on the following relation exploration. Thus, we use the random beam search instead of the LLM-constrained beam search in ToG for \textbf{entity prune}. Algorithm \ref{algorithm1} and \ref{algorithm2} show the implementation details of the ToG and ToG-R. ToG-R needs at most $ND+D+1$ calls to the LLM.
+% ToG-R traverses entities, converting all intermediate steps into relations, and generates answers based on candidate entity sets corresponding to the complete reasoning chains.
+% It leverages LLMs' reasoning capabilities to generate answers using different candidate sets for each chain in the reasoning process. 
+
+
+
+% Notably, both approaches follow similar pipelines but differ in extending the reasoning chains in the intermediate steps.
+
+
+
+
+%\subsubsection{Reasoning}
+% Relation-based ToG also performs esolely involves the relation exploration phase and the reasoning phase. The relation exploration remains unchanged, and the reasoning phase consists of two steps: The generation of relations through a two-step approach, \texttt{Search} and \texttt{Prune}.
+
+
+% \begin{itemize}[leftmargin=*]
+%     \item \textbf{Entity Search} Once the top-N reasoning paths $P$ are updated with new tail relations by relation exploration, The samples in $E^{D-1}_c$ are independently and identically distributed, and through the calculation of the averages of several samples, we can derive the mean of the relations $R^{D}_{cand}$ within $E^{D-1}_c$. Specifically, we randomly sample N entities based on the $E^{D-1}_{c}$, and search the relations in both directions as $R_{cand}$ and prune to $R^{D}_{c}$, in the same way as Section \ref{sec: relation_exploration}.
+%     \item \textbf{Path-aware Entity Search} As the intermediate steps do not involve any entities, we need to obtain $E^{D}_{cand}$ based on $R^{D}_c$, history paths $P$ and $E_{c}$, where $E_c$ is fixed. Accordingly, $E_{cand}$ serves as the terminal node in the reasoning pathways, illustrated in Table \ref{table: case3}.
+
+% \end{itemize}
+
+Compared to ToG, ToG-R offers two key benefits: 1) It eliminates the need for the process of pruning entities using the LLM, thereby reducing the overall cost and reasoning time. 2) ToG-R primarily emphasizes the literal information of relations, mitigating the risk of misguided reasoning when the literal information of intermediate entities is missing or unfamiliar to the LLM. 
+
+
+% \subsection{Generate Reasoning State}
+% The current reasoning state is denoted as $s$, representing a retrieved triple $t_i = (e_s, r_i, e_o)$. Based on the characteristics of triples, we initially search for the corresponding relation and subsequently search for the head entity and tail entity (or tail entity and head entity) based on the directionality of the relation.
+
+% \subsubsection{Retrieve and Rank Relations}
+% After obtaining the initial entity set and contribution degree for each entity in the set, we must execute SPARQL to retrieve all relationships in the knowledge graph related to the entity (both as a subject and object) as $R_{all} = \{R_s, R_o\}$. These relationships must then be sorted. As relationships in the knowledge graph exist in natural language, we can use LLMs to assign a related score to each relationship based on its name. Finally, the topN relationships based on their scores must be retained.
+
+% \subsubsection{Retrieve and Rank Entities}
+% Upon obtaining the corresponding relationships for each entity in the previous step, we can retrieve the tail entity (or head entity, depending on the direction of the relationship) using SPARQL, and construct a triple. By iteratively performing the second and third steps, we can obtain multiple triples where the head and tail entities are interrelated. In this way, we express a reasoning path through triples.
+% \subsection{Evaluate Paths}
+% Given a retrieved reasoning chain, we prompt LLMs to automatically determine whether the current chain provides sufficient knowledge to answer the question or whether the search path has reached a pre-designed threshold.
+% \subsection{Search algorithm}
+% Unlike ToT \citep{tot}, our initial state is a set of identified entities, so we use \textbf{Breadth-first Search (BFS)}. For each entity in the initial state, we search simultaneously and always maintain a top-n reasoning chain based on scores.
