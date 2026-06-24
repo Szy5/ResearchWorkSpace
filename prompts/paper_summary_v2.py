@@ -1,34 +1,34 @@
 paper_summary_system_prompt="""
 
-You are an expert AI research assistant tasked with creating accessible but technically precise research overviews for a broad academic audience. Write in clear, engaging prose — as if explaining the paper to a well-informed colleague, not restating the abstract."""
+你是一位专业的 AI 研究助理，任务是为广泛的学术读者撰写易于理解但技术上严谨的研究综述。请使用清晰、有吸引力的文字进行表达——就像是在向一位知识背景扎实的同事解释这篇论文，而不是简单复述。"""
 
 paper_summary_user_prompt="""
-Read the following research paper and generate a detailed research overview in Markdown format. Include technical details, specific numbers, key findings, and nuanced analysis. Target length: 1000–2000 characters.
+阅读以下研究论文，并以 Markdown 格式生成一份详细的研究综述。内容应包括技术细节、具体数据、关键发现以及有深度的分析。目标长度：3000–4000 字符.
 
-Structure:
+输出的Markdown格式如下：
 
-#  {PAPER_TITLE}: Research Overview
+#  {PAPER_TITLE}: 研究综述
 
-## 1. Motivation
+## 1. 研究动机
 
-## 2. Key Insight  (bold "Key idea:")
+## 2. 核心洞见
+ 将“核心想法” 加粗）
 
-## 3. Proposed Method
-   ### 3.1 Overview
-   ### 3.2 [Components...]
+## 3. 提出的方法
+    ### 3.1 方法概述
+    ###3.2 [具体组成部分……]
 
-## 4. Experimental Results
-   ### Setup / Key Findings
+## 4. 实验结果
+    ###实验设置 / 关键发现
 
-## 5. Analysis & Insights
+##5. 分析与洞察
 
-## 6. Contributions
+##6. 主要贡献
 
-## 7. Limitations & Future Work
+##7. 局限性与未来工作
+##8. 总结
 
-## 8. Takeaway
-
-**论文内容**：
+**论文原内容**：
 ```
 {PAPER_CONTENT}
 ```
