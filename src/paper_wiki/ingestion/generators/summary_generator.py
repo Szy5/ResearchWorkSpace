@@ -36,6 +36,7 @@ class SummaryGenerator:
             "slug, title, authors, contribution_type, reviewed, added_date；reviewed 必须为 false。"
         )
         content = self.llm.complete(system, user).strip()
+        content = self._rewrite_figure_paths(content, parsed.slug)
         summary = self._ensure_frontmatter(parsed, content)
         logger.info("summary.md 生成完成：slug=%s, chars=%d", parsed.slug, len(summary))
         return summary
@@ -57,6 +58,22 @@ class SummaryGenerator:
             sort_keys=False,
         ).strip()
         return f"---\n{yaml_text}\n---\n\n{body.strip()}\n"
+
+    def _rewrite_figure_paths(self, content: str, slug: str) -> str:
+        """把 LaTeX 相对路径 figures/... 改写为 artifacts/{slug}/summary.md 可解析的路径。"""
+        raw_prefix = f"../../raw/{slug}/"
+
+        def repl(match: re.Match[str]) -> str:
+            alt, path = match.group(1), match.group(2).strip()
+            if path.startswith(("http://", "https://", "/", raw_prefix)):
+                return match.group(0)
+            if path.startswith("figures/"):
+                return f"![{alt}]({raw_prefix}{path})"
+            if path.startswith(f"raw/{slug}/"):
+                return f"![{alt}](../../{path})"
+            return match.group(0)
+
+        return re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", repl, content)
 
     def _strip_outer_fence(self, content: str) -> str:
         """处理模型把整篇 Markdown 包进代码块的情况。"""

@@ -1,0 +1,1012 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+% Additional packages from ACL submission
+\usepackage{latexsym}
+\usepackage{enumitem}
+\usepackage{mdframed}
+\usepackage[T1]{fontenc}
+\usepackage{footmisc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{cleveref}
+\usepackage{xspace}
+\usepackage{verbatim}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+
+% Custom commands from ACL submission
+\newcommand{\synthLlama}{\textrm{SynthKG-8b}}
+\newcommand{\distilledLlama}{\textrm{D-SynthKG-8b}}
+\newcommand{\distilledMistralGpt}{$\textrm{D-SynthKG-7b}_{\text{\scriptsize Mistral }}^{\text{\scriptsize GPT}}$}
+\newcommand{\distilledMistralLlama}{$\textrm{D-SynthKG-7b}_{\text{\scriptsize Mistral }}^{\text{\scriptsize Llama-3}}$}
+
+% Cleveref format for footnotes
+\crefformat{footnote}{#2\footnotemark[#1]#3}
+
+% \title{Distill-SynthKG: Distilling Knowledge Graph Synthesis Workflow for Improved Coverage and Efficiency}
+\title{Scaling Knowledge Graph Construction through Synthetic Data Generation and Distillation}
+
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{\textbf{Prafulla Kumar Choubey$^{*}$\textsuperscript{1}},
+ \textbf{Xin Su$^{*}$\textsuperscript{2}},
+ \textbf{Man Luo$^{*}$\textsuperscript{3}},
+ \textbf{Xiangyu Peng\textsuperscript{1}}
+\\
+ \textbf{Caiming Xiong\textsuperscript{1}},
+ \textbf{Tiep Le\textsuperscript{4}},
+ \textbf{Shachar Rosenman\textsuperscript{5}},
+ \textbf{Vasudev Lal\textsuperscript{4}}
+\\
+ \textbf{Phil Mui\textsuperscript{1}},
+ \textbf{Ricky Ho\textsuperscript{1}},
+ \textbf{Phillip Howard$^{\dagger}$\textsuperscript{2}},
+ \textbf{Chien-Sheng Wu$^{\dagger}$\textsuperscript{1}}
+\\
+ \textsuperscript{1}Salesforce Research,
+ \textsuperscript{2}Thoughtworks,
+ \textsuperscript{3}Abridge,
+ \textsuperscript{4}Oracle,
+ \textsuperscript{5}Intel Labs
+\\
+ \small{
+   \textbf{Correspondence:} \href{mailto:pchoubey@salesforce.com}{pchoubey@salesforce.com}, \href{mailto:xin.su@thoughtworks.com}{xin.su@thoughtworks.com}, \href{mailto:man.luo@abridge.com}{man.luo@abridge.com}
+ } \\
+ \small{
+   $^{*}$Main authors contributed equally, $^{\dagger}$Senior authors
+}\\
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+Document-level knowledge graph (KG) construction faces a fundamental scaling challenge: existing methods either rely on expensive large language models (LLMs), making them economically nonviable for large-scale corpora, or employ smaller models that produce incomplete and inconsistent graphs. We find that this limitation stems not from model capabilities but from insufficient training on high-quality document-level KG data.
+To address this gap, we introduce SynthKG, a multi-step data synthesis pipeline that generates high-quality document-KG pairs through systematic chunking, decontextualization, and structured extraction using LLMs.
+By fine-tuning a smaller LLM on synthesized document-KG pairs, we streamline the multi-step process into a single-step KG generation approach called Distill-SynthKG.
+Furthermore, we repurpose existing question-answering datasets to construct KG evaluation datasets and introduce new evaluation metrics. Using KGs produced by Distill-SynthKG, we also design a novel graph-based retrieval framework for RAG. Experimental results demonstrate that Distill-SynthKG not only surpasses all baseline models in KG quality (including models up to eight times larger) but also consistently improves in retrieval and question-answering tasks. Additionally, our proposed graph retrieval framework outperforms all KG-retrieval methods across multiple benchmark datasets. 
+%We identify that this limitation stems not from model capabilities but from the absence of high-quality training data for document-level KG construction. 
+%We make SynthKG and Distill-SynthKG publicly available.
+\end{abstract}
+
+\section{Introduction}
+
+Retrieval Augmented Generation (RAG) has been widely adopted for effectively connecting large language models (LLMs) with external knowledge sources. Recently, Knowledge Graph (KG)-augmented RAG methods have demonstrated strong potential, offering several advantages such as effective corpus-level information summarization \citep{edge2024from}, improved reasoning capabilities \citep{gutiérrez2024hipporag, li2024graphreaderbuildinggraphbasedagent}, and accurate modeling of historical customer issue resolutions for QA \citep{Xu_2024}.
+
+Recent works \citep{edge2024from,gutiérrez2024hipporag} have begun exploring the use of LLMs to automate the construction of KGs, which then serve as knowledge sources for tasks such as question answering or building intelligent agentic frameworks. However, these approaches face a fundamental scaling challenge: they rely on simple zero-shot or few-shot prompting to construct KGs in a single step using LLMs such as GPT-4o \citep{openai2024gpt4o}. Consequently, they can incur significant inference costs when applied to large corpora due to the need for many commercial API calls. These methods also lack a rigorous, reliable design tailored to document-level KG construction, and processing entire documents with LLMs, particularly for long texts, can lead to information loss \citep{edge2024from}. Finally, the lack of datasets and evaluation methods for document-level, ontology-free KGs makes it difficult to determine whether errors in RAG systems stem from failures in specific reasoning components or from low-quality KGs that propagate errors throughout the system.
+
+
+
+% We identify that these limitations stem not from model capabilities, but from the absence of high-quality training data for document-level KG construction. While other structured extraction tasks benefit from supervised datasets, ontology-free KG construction lacks substantial training corpora, forcing reliance on expensive zero-shot inference.
+% To address this data gap, we introduce SynthKG, a novel data synthesis pipeline for KG construction. We further distill this pipeline into a smaller LLM named Distill-SynthKG, which enables efficient, one-step generation of high-quality document-level KGs. 
+% In SynthKG, we begin by splitting the input document into manageable, semantically complete text chunks. Each chunk is then processed through a decontextualization step where entity disambiguation occurs based on the previous context, making each chunk an independent, self-contained unit. We then prompt the LLM to extract entities, relations, and relevant propositions from each text chunk, which are combined to form the final KG. 
+% By fine-tuning Distill-SynthKG on the synthetic document-KG pairs produced by SynthKG, we enable smaller models to generate high-quality KGs for a given document in a single inference step.
+We find that these limitations stem not from model capabilities but from the absence of high-quality training data for document-level KG construction. While other structured extraction tasks benefit from supervised datasets, ontology-free KG construction lacks substantial training corpora, forcing reliance on expensive zero-shot inference.
+To address this data gap, we introduce SynthKG, a data synthesis pipeline for KG construction. We further distill this pipeline into a smaller LLM, Distill-SynthKG, which enables efficient one-step generation of high-quality document-level KGs. In SynthKG, we begin by splitting the input document into manageable, semantically complete text chunks. Each chunk is then processed through a decontextualization step that performs entity disambiguation using prior context, making each chunk a self-contained unit. We then prompt the LLM to extract entities, relations, and relevant propositions from each chunk, which are combined to form the final KG. By fine-tuning Distill-SynthKG on the synthetic document–KG pairs produced by SynthKG, smaller models can generate high-quality KGs for a given document in a single inference step.
+
+Additionally, we propose a method for constructing evaluation datasets for document-level, ontology-free KGs, along with a corresponding evaluation framework. Specifically, we repurpose existing multihop QA datasets by converting questions and answers into ground-truth relation triplets, where the answer appears as the head, tail, or predicate of a triplet. Using these ground-truth triplets for each document, we introduce semantic-similarity and keyword-based metrics to assess KG triplet coverage. Finally, we present a graph-based retrieval framework built on KGs generated by Distill-SynthKG. We design a progressive retrieval method that begins with proposition retrieval and leverages the graph structure to retrieve related triplets, propositions, and text chunks relevant to the query. Our retriever outperforms state-of-the-art methods in both retrieval and question-answering accuracy across three multihop QA datasets: MuSiQue \citep{trivedi-etal-2022-musique}, 2WikiMultiHopQA \citep{xanh2020_2wikimultihop}, and HotpotQA \citep{yang-etal-2018-hotpotqa}. Moreover, our KG coverage evaluation framework correlates strongly with both QA and retrieval performance, demonstrating its effectiveness for evaluating document-level KG coverage.
+% Additionally, we propose a method for constructing an evaluation dataset for document-level ontology-free KGs, along with a corresponding KG evaluation framework. Specifically, we re-purpose existing multihop QA datasets by converting questions and answers into ground truth relation triplets, where the answer appears as either the head, tail, or predicate in a triplet. Using these ground truth triplets for each document, we introduce semantic similarity and keyword-based metrics to assess the coverage of triplets from a KG.
+% Finally, we present a new graph-based retrieval framework based on the KGs generated by Distill-SynthKG. We design a progressive retrieval method that begins with proposition retrieval, leveraging the graph structure to retrieve related triplets, propositions, and text chunks relevant to the input query. Our proposed retriever outperforms state-of-the-art retrieval methods in both retrieval accuracy and question-answering accuracy, showing improvements across three multihop QA datasets: MuSiQue \citep{trivedi-etal-2022-musique}, 2WikiMultiHopQA \citep{xanh2020_2wikimultihop}, and HotpotQA \citep{yang-etal-2018-hotpotqa}. Furthermore, our KG coverage evaluation framework correlates strongly with both QA and retrieval performance, demonstrating its effectiveness in evaluating document-level KG coverage.
+
+In summary, our contributions are as follows:
+\begin{enumerate}[noitemsep,leftmargin=*]
+\setlength\itemsep{0.01em}
+    \item We introduce SynthKG, a systematic data synthesis pipeline that generates high-quality document-level ontology-free KGs, addressing the training data scarcity in KG construction.
+    \item We present Distill-SynthKG, demonstrating that smaller LLMs can achieve large-model KG construction quality when trained on appropriate synthetic data.
+    \item We establish comprehensive KG evaluation datasets and metrics by re-purposing existing multi-hop QA datasets.
+    \item We design a novel graph-based retrieval framework that effectively leverages KG structure for RAG.
+    \item Our experiments show that Distill-SynthKG produces higher-quality KGs than all baselines, including models up to eight times larger, while consistently improving retrieval and question-answering performance.
+\end{enumerate}
+
+
+\section{Related Work}
+Recently, there has been a growing interest in using KGs for different Retrieval-Augmented Generation (RAG) applications. For instance, GraphRAG \citep{edge2024from} shows the advantages of using KGs over a text corpus for answering global queries that require summarizing information from multiple documents. HippoRAG \citep {gutiérrez2024hipporag} demonstrates that applying personalized PageRank algorithms on LLM-derived KG can enhance retrieval accuracy for complex multi-hop reasoning questions. GraphReader \citep{li2024graphreaderbuildinggraphbasedagent} shows how KGs can enable LLM agents to plan and reason in a long context to answer complex questions. These approaches focus on maximizing KG utility.
+
+All the above work, along with many others such as \citet{chia2022relationpromptleveragingpromptsgenerate, trajanoska2023enhancingknowledgegraphconstruction, chen2023autokgefficientautomatedknowledge, Zhang2023LLM-QA4RE, nayak2023llm2kbconstructingknowledgebases, mihindukulasooriya2023text2kgbench, zhu2024llmsknowledgegraphconstruction, jiao-etal-2023-instruct, khorashadizadeh2023exploringincontextlearningcapabilities, han2024pivepromptingiterativeverification, yao2024exploringlargelanguagemodels, bi2024codekgccodelanguagemodel, ding2024automatedconstructionthemespecificknowledge, sanmartin2024kgragbridginggapknowledge, 10.1145/3589334.3645678, 10.1145/3539618.3591763,Chase_LangChain_2022} have used LLM prompting to build KGs or extract semantic relation triplets from text. 
+However, all prior works have overlooked improving the efficiency of ontology-free KG construction. We are the first to develop a specialized LLM for KG construction, enhancing efficiency by shifting from large models to smaller, more efficient models without sacrificing performance.
+
+\section{Distill-SynthKG} 
+\label{sec:Distill-Synth-kg}
+We present Distill-SynthKG, a data-centric approach for scaling KG construction. Rather than relying on increasingly larger models, we generate high-quality training data through a systematic pipeline (SynthKG) and use it to train smaller models for document-level KG construction. This enables efficient single-step KG generation from documents using smaller-scale LLMs while matching the quality of expensive multi-step pipelines.
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=0.97\linewidth]{figures/main-figure-v2.pdf}
+    \caption{Our SynthKG data synthesis method (left) generates high-coverage, ontology-free, document-level KGs. We distill this synthetic data into Distill-SynthKG (right), which is applied to multiple downstream applications. Long document refers to multi-paragraph documents.
+    } \label{kg-synthesis-workflow}
+\end{figure*}
+
+\subsection{SynthKG: A Data Synthesis Engine}\label{sec:kg-flow}
+Traditional prompt-based KG extraction treats each document as an isolated zero-shot problem, leading to inconsistent outputs and preventing systematic learning. SynthKG addresses this by decomposing KG construction into reproducible stages that generate consistent, high-quality training data. The pipeline consists of two main steps: (1) document chunking and decontextualization, followed by (2) entity, relation and proposition extraction. These steps ensure high coverage of extracted entities and relations while minimizing information loss. We present an overview of SynthKG in \Cref{kg-synthesis-workflow}, with detailed prompts in \Cref{sec:kg-synthesis-prompts}.
+
+\paragraph{Document Chunking and Decontextualization} \label{sec:decontextualization}
+Directly inputting long texts into an LLM has been shown to result in information loss \citep{edge2024from}. 
+To mitigate this risk, we first split each input document into smaller, more manageable chunks before processing them with the LLM in subsequent steps. This chunking is done along sentence boundaries, without overlap, to preserve semantic coherence and avoid redundancy.
+
+However, processing each chunk in isolation can lead to a loss of prior context. For example, if ``John Doe'' appears in one chunk and ``John'' in another, we might lose track of who ``John'' refers to. To prevent this, we apply a ``decontextualization'' step, where we prompt the LLM to rewrite each chunk, replacing all entity mentions with their most informative form based on the context of the preceding chunk. This step serves a critical dual purpose: ensuring entity consistency across chunks and creating self-contained text units that can be independently processed. For example, if ``John Doe'' is introduced in a previous chunk, subsequent mentions of ``John D.'' ``John,'' or related pronouns are replaced with ``John Doe.'' This not only preserves context but also prevents the same entity from being represented in different forms, which could lead to redundancy, discontinuous KG paths, and reduced accuracy at inference time. The first chunk of a document is not decontextualized, as chunking does not lead to context loss in this case. We provide an example of a decontextualized chunk in \Cref{fig:kg-decontextualized-example}.
+
+To verify that the preceding chunk is sufficient for decontextualization, we calculate the average chunk distance for the same entity within each document in our generated dataset of 100K samples (details of this dataset are described in \Cref{sec:synthKG}). 
+Specifically, we measure the distance between the first occurrence of each entity and its subsequent mentions. 
+The overall average chunk distance per entity is 0.9, indicating that, on average, entities are mentioned again within less than one chunk after their first mention. This suggests that using only the preceding chunk is sufficient and that no significant number of entities remain unresolved due to the chunk-based decontextualization process.
+
+A potential drawback of prompting an LLM to rewrite chunks is that the rewritten text can drift from the source, introducing information loss or hallucinations. To mitigate this risk, we compute ROUGE scores between the original and decontextualized chunks and filter out cases with substantial divergence. Full experimental settings are reported in \Cref{sec:synthKG}.
+
+To further evaluate decontextualization accuracy, we manually annotate 75 randomly selected rewritten chunks. Three authors each label 25 chunks, with access to both the original chunk and the full document. For each chunk, annotators assess whether any modifications were made, whether those modifications are correct, and whether any information was lost.
+
+Across the 75 chunks, we record 593 edits in total, of which only six involve incorrect modifications and four exhibit information loss. Overall, these results suggest that decontextualization produces high-quality, self-contained text. Qualitatively, most edits increase specificity, for example, replacing a generic term like “scientists” with “Darwinian scientists,” indicating that the rewritten chunks are typically understandable without additional context.
+
+
+
+% One potential downside of prompting the LLM to rewrite chunks is that the rewritten version may deviate from the original, potentially introducing information loss or hallucination. To mitigate this, we use ROUGE scores to compare the original and decontextualized chunks, filtering out those that exhibit significant deviations. Detailed experimental settings are provided in \Cref{sec:synthKG}.
+% To further assess the accuracy of our decontextualization process, we manually annotate 75 randomly selected decontextualized chunks. Three authors each annotate 25 chunks, with access to both the original chunk and the full document. They evaluate whether modifications are made, whether those modifications are correct, and whether any information is lost.
+
+% Among the 75 annotated chunks, we identify a total of 593 edits, with only six containing incorrect modifications and four showing information loss. These results indicate that the decontextualization process generally produces high-quality, self-contained text. Moreover, our annotations reveal that most modifications enhance specificity—for example, replacing a general term like ``scientists'' with ``Darwinian scientists'' This suggests that the rewritten chunks are typically self-contained and comprehensible on their own.
+
+\paragraph{Entity and Relation Extraction} 
+\label{sec:relation-extraction}
+
+Similar to \citet{edge2024from} and \citet{gutiérrez2024hipporag}, we first prompt the LLM to extract all entities and their corresponding types from each text chunk, as shown in Step 3 of \Cref{kg-synthesis-workflow}. Then, we prompt the LLM again to generate all propositions and corresponding relation triplets based on the text chunk and previously extracted entities. Each relation is represented by quadruplets consisting of a \textbf{source} entity, \textbf{predicate}, \textbf{target} entity, and a \textbf{proposition} (see \Cref{kg-synthesis-workflow} for examples). The proposition is a sentence that describes the semantic relation between the source and target entities, encapsulating all key details of that relation.
+
+We extend traditional KG triples by adding a proposition component, which functions as an intermediate chain of thought \citep{wei2022chain} enabling the LLM to first articulate the relevant context coherently before extracting the corresponding triplets. This approach therefore better leverages contextual information. Additionally, the proposition acts as a fine-grained, self-contained retrieval unit, which facilitates the construction of KG-based retrieval indices. Beyond triplets and text chunks, our final KG incorporates these clear, independent propositions. For example, the proposition ``\textit{OWC Pharmaceutical Research Corp preferred stock is convertible to common stock at \$0.20 per share.}'' provides important contextual details, such as the ``\textit{conversion price \$0.20 per share},'' and also serves as a precise, indexable unit.
+
+Crucially, this multi-step decomposition creates consistent patterns that can be learned. Unlike single-step prompting which produces variable outputs, our pipeline generates KGs with predictable structure: consistent entity naming from decontextualization, systematic coverage from chunk-by-chunk processing, and interpretable intermediate representations through propositions. These properties make the outputs suitable as training data for smaller models.
+
+\subsection{Distilling SynthKG}
+While SynthKG’s detailed, chunk-by-chunk workflow enables high-quality KG construction with LLMs, it creates efficiency challenges. Building a KG from a single document requires multiple LLM calls, which increases computation or API cost and limits scalability. For instance, processing a 1,000-word document requires 12 inference calls: the document is split into four chunks, and each chunk triggers three calls for decontextualization, entity extraction, and relation extraction.
+
+To scale KG construction, we distill the multi-step SynthKG pipeline into a single-step model, as shown in \Cref{kg-synthesis-workflow}. The key insight is that once KG construction is decomposed into systematic stages, it can be learned as a pattern recognition problem rather than re-solved through multi-step prompting at inference time. Concretely, we fine-tune a smaller LLM on the document–KG pairs generated by SynthKG, enabling it to process full documents end-to-end and produce high-quality KGs in a single forward pass.
+
+This distillation approach overcomes the limitations of direct prompting because the synthetic training data provides two essential signals: (1) consistent examples of handling long documents without losing information, learned from the chunk-aggregated outputs; and (2) an implicit encoding of the multi-step procedure into the model parameters. As a result, the model learns not only to extract triplets, but also to preserve entity consistency and the coverage patterns demonstrated by SynthKG. Notably, no large-scale dataset currently exists for this form of document-to-KG training, making SynthKG crucial for generating the data required to enable effective distillation.
+
+% While the detailed, chunk-by-chunk approach in SynthKG enables the generation of high-quality KGs using LLMs, it introduces efficiency challenges. 
+% Each time we construct a KG from a document, multiple LLM calls are required, leading to high computational or API costs and limiting the scalability of KG construction.
+% For example, processing a 1000-word document requires 12 LLM inference calls: the document is split into 4 chunks, and each chunk involves 3 calls for decontextualization, entity extraction, and relation extraction.
+
+% To achieve scalability, we distill the entire multi-step SynthKG pipeline into a single-step model, as shown in \Cref{kg-synthesis-workflow}. The key insight is that KG construction, when decomposed into systematic steps, becomes a pattern recognition task that can be learned from examples rather than requiring complex reasoning at each inference. 
+% Specifically, we fine-tune a smaller LLM on the document-KG pairs generated by SynthKG, enabling it to directly process entire documents and produce high-quality KGs in one inference step.
+% This approach addresses the limitations of direct prompting because the synthetic training data provides two critical elements: (1) consistent examples of how to handle long documents without information loss, learned from the chunk-aggregated outputs, and (2) implicit encoding of the multi-step reasoning process into the model's parameters. The model learns not just to extract triplets, but to maintain entity consistency and coverage patterns demonstrated in the training data. However, there is currently no large-scale dataset available for this type of training, making SynthKG essential for creating the data necessary to enable such model distillation.
+
+
+\section{KG Coverage Evaluation} 
+\label{sec:kg-eval}
+
+Evaluating the quality of the extracted KG is essential for our data-centric approach, as it enables systematic assessment of both the synthetic training data and the distilled models. However, there is a lack of document-level evaluation resources for ontology-free KGs. Although DocRED \citep{yao-etal-2019-docred} is one existing dataset, it is limited to just 96 relations, making it unsuitable for open-domain KGs that require diverse, unconstrained relations. To address this gap and enable scalable evaluation, we propose a framework that re-purposes multihop QA datasets to create proxy ground truth triplets, providing the first systematic evaluation method for document-level ontology-free KG construction.
+
+\paragraph{Proxy Triplets Generation}
+We leverage multihop QA datasets because they naturally encode the structured facts needed to answer complex questions, which is exactly the kind of information KGs should capture. We use GPT-4o to generate triplets from QA pairs, since each multihop question implicitly contains multiple interconnected facts. When a dataset provides these facts as subquestion–answer pairs, we form triplets directly from those pairs and ensure that the final answer appears as the head, relation, or tail of at least one triplet. When subquestions or supporting facts are not available, we first prompt GPT-4o to generate the necessary subquestions and then generate the corresponding triplets.
+
+Although this procedure is synthetic, it yields a scalable and consistent evaluation framework that would be impractical to obtain through manual annotation at the scale required for training data validation. The prompts for triplet generation and question decomposition, along with illustrative examples, are provided in Appendix~\ref{apd:proxy_triplets_generation}. Human evaluation shows that the resulting triplets are largely valid (86\% accuracy); see Appendix~\ref{app:kg-coverage-human-eval} for details.
+
+
+% We leverage multihop QA datasets as they inherently encode the structured facts needed for answering complex questions—exactly the type of information KGs should capture. We use GPT-4o to generate triplets from QA pairs, as each multihop question implicitly contains multiple interconnected facts. In datasets where these facts are present as subquestion-answer pairs, we create triplets using these pairs while ensuring that the answer is used as the head, relation, or tail in the triplet. In cases where facts or subquestions are unavailable, we use GPT-4o to first generate the required subquestions before subsequently generating the corresponding triplets.
+% While this approach relies on synthetic generation, it provides a scalable and consistent evaluation framework that would be infeasible through manual annotation at the scale required for training data validation.
+% The prompts used for generating the triplets and decomposed questions, along with relevant examples, are provided in Appendix~\ref{apd:proxy_triplets_generation}. In human evaluations, we found a high degree of validity in triplets extracted by GPT-4o with this approach (86\% accuracy); see Appendix~\ref{app:kg-coverage-human-eval} for details.
+
+\paragraph{KG Coverage Evaluation Metrics}
+Existing KG evaluation metrics typically rely on exact match or token-level F1, often assuming relations come from a predefined schema. This assumption breaks down for ontology-free KGs, where entity and relation strings are unconstrained and surface-form variation is common. To handle this setting, we perform semantic matching to align extracted triplets with ground-truth triplets and report three complementary measures: semantic scores, triplet coverage, and F1.
+
+We emphasize coverage over precision for a practical reason. In RAG applications, missing critical information (low recall) is usually more harmful than extracting additional facts (lower precision): irrelevant triplets can often be ignored during retrieval, whereas absent triplets can make relevant questions unanswerable. Accordingly, our metrics focus on whether the graph includes the key triplets needed to answer questions. As a proxy for overall comprehensiveness, we also report the total number of extracted triplets.
+
+% Existing KG evaluation metrics typically depend on exact match or F1 score at the text level, assuming relations are derived from a predefined set. However, this approach is ineffective for ontology-free KGs, where entities and relations are not constrained. To address this, we use semantic matching to align the extracted triplets with the ground truth triplets, and propose three complementary metrics: semantic scores, triplet coverage, and F1 scores.
+% Our evaluation focuses on coverage rather than precision for a deliberate reason: in RAG applications, missing critical information (low recall) is more detrimental than including extra information (lower precision), as the latter can be filtered during retrieval while the former leads to unanswerable queries. Therefore, these metrics are designed to verify whether the important triplets—those critical for answering questions—are included in the graph. As a proxy for comprehensiveness, we additionally report the total number of extracted triplets.
+
+Our three proposed metrics are defined as follows:
+\begin{itemize}[noitemsep,leftmargin=*]
+\setlength\itemsep{0.01em}
+    \item \textit{Semantic score}: We calculate the cosine similarity between the vector representation of each ground truth triplet and the triplets in the KG, taking the highest similarity score as the semantic score for that ground truth triplet. A higher semantic score indicates a closer match between the ground truth and the extracted graph.
+    \item \textit{Triplet Coverage}: If the semantic score for a ground truth triplet exceeds a cutoff threshold, it is marked as covered (coverage = 1); otherwise, the triplet is not covered (coverage = 0).
+    \item \textit{F1 score}: We use the semantic score to identify the triplet from the KG that most closely matches the ground truth triplet. Then, we compute the F1 score by comparing the text of the extracted and ground truth triplets.
+\end{itemize}
+
+These metrics collectively provide a comprehensive view of KG quality: semantic score captures conceptual alignment, coverage measures recall of critical information, and F1 score assesses surface-level accuracy. Together, they enable systematic comparison across different KG construction methods and validate the effectiveness of our data-centric approach.
+
+
+\section{Proposition-Entity Graph Retriever}
+\begin{wrapfigure}{r}{0.48\textwidth}
+    \centering
+    \includegraphics[width=0.40\textwidth]{figures/graph-retriever.png}
+    \caption{Our Proposition-Entity Graph Retriever for multi-hop reasoning retrieves semantically similar propositions, uses graph traversal to select those connected through query entities, and then re-ranks selected propositions using LLMs.}
+    \label{fig:kg-retriever}
+\end{wrapfigure}
+
+We introduce a retrieval framework that leverages the structure of our synthesized KGs, in particular the proposition–entity bipartite graph (\Cref{fig:kg-retriever}). Unlike prior graph-based retrieval methods that operate over sparse triplets, our retriever treats propositions as the primary retrieval units. Because propositions are rich, self-contained text statements, they serve as higher-quality candidates for RAG while the bipartite topology provides explicit links through shared entities, promoting logical connectivity across retrieved evidence. This design is made possible by the consistent KG structure produced by our data-centric pipeline.
+
+% We introduce a retrieval framework that leverages the unique structure of our synthesized KGs, particularly the proposition-entity bipartite graph (\Cref{fig:kg-retriever}). Unlike traditional graph-based retrieval that operates on sparse triplets, our approach uses propositions—rich, self-contained text units—as primary retrieval candidates while exploiting graph topology to ensure logical connectivity. This design is enabled by the consistent structure of KGs produced through our data-centric pipeline.
+
+Given a question, we first retrieve the top-M most relevant propositions from the KG using embedding similarity, narrowing the search space to a smaller subset of relevant information. This initial semantic retrieval is crucial because propositions, unlike raw triplets, contain sufficient context for meaningful similarity computation. In step 2, we construct a sub-graph consisting of these propositions and their linked entities, capturing the relations among the retrieved propositions. In step 3, we traverse the sub-graph starting from the entities mentioned in the question, selecting only propositions within their N-hop neighborhood. This graph-constrained filtering addresses a key challenge in multi-hop reasoning: distinguishing between semantically related but logically disconnected information. For instance, propositions about ``Washington'' the president versus ``Washington'' the state may have high embedding similarity but different graph neighborhoods.
+We then include text chunks corresponding to the selected propositions within N-hop distance to question entities, ranked by their embedding similarity to the query, until the top-K chunks are selected. We call this approach \textbf{Graph} Retriever.
+
+Additionally, as shown in Step 4 of \Cref{fig:kg-retriever}, we augment retrieval with LLM-based re-ranking. Given the candidate propositions returned by the Graph Retriever, we prompt an LLM to select the propositions required to answer the question, using its reasoning ability to re-rank the evidence. This is feasible because propositions are interpretable text units that an LLM can directly judge for relevance, unlike isolated triplets.
+
+After re-ranking, we prioritize the chunks associated with the LLM-selected propositions, and then fall back to the Graph Retriever to fill the remaining budget until the top-K chunks are selected. We refer to this hybrid method as \textbf{Graph+LLM} in \Cref{sec:experiments}.
+
+
+% Additionally, as shown in step 4 of \Cref{fig:kg-retriever}, we enhance the retrieval with LLM-based re-ranking. We prompt an LLM to identify the necessary propositions to answer the question from those retrieved in the Graph Retriever process, effectively using LLM reasoning capabilities to re-rank the selected propositions. This step leverages the interpretability of propositions—unlike triplets, propositions can be directly evaluated by LLMs for relevance. Following this LLM-based re-ranking, we include the chunks corresponding to the LLM-identified propositions first, and then fall back to the Graph Retriever to select additional chunks until the top-K chunks are selected. We refer to this combined approach as \textbf{Graph+LLM} in \Cref{sec:experiments}.
+
+The design of this retrieval framework is tightly coupled with our data synthesis approach: the consistent entity naming from decontextualization ensures reliable graph traversal, while the proposition generation provides semantically rich retrieval units.
+
+\section{Experiments} \label{sec:experiments}
+
+Our experiments are designed to validate the data-centric approach across three dimensions: (1) the quality of synthetic training data, (2) the effectiveness of distillation, and (3) the performance of downstream applications. We address the following research questions: (RQ1) Does the multi-step SynthKG pipeline produce higher-quality KGs than direct prompting? (RQ2) Can an 8B model achieve large-model performance through distillation on synthetic data? (RQ3) How does data scale affect the performance of distilled models? (RQ4) Does improved KG quality translate to better retrieval and QA performance?
+
+\subsection{KG Synthesis and Distillation Settings}\label{sec:synthKG}
+\paragraph{SynthKG Dataset and Model:}
+To create a large-scale training resource, we use \textit{Llama-3.1-70b-Instruct} \citep{llama3modelcard} to synthesize KGs from 100K documents from \textit{IndustryCorpus} (by \href{https://huggingface.co/datasets/BAAI/IndustryCorpus}{BAAI}). We ensure domain diversity by sampling equally from ten categories: politics, news, medicine, literature, finance, film \& TV, computer science, automotive, technology, and education. 
+We use the SentenceSplitter from the Llama-Index \citep{Liu_LlamaIndex_2022} framework to split documents into chunks, setting the chunk size to 256 tokens and chunk overlap to 0 tokens. 
+We apply a filtering criterion based on the ROUGE-1 F1 score \citep{lin-2004-rouge}, setting a threshold of 0.70 to minimize the risk of hallucinations from decontextualization.
+We perform the KG synthesis using VLLM \citep{kwon2023efficient} on 160 Intel\textsuperscript{\textregistered}\space Gaudi 2 AI accelerators in the Intel\textsuperscript{\textregistered}\space Tiber\textsuperscript{\texttrademark}\space AI Cloud.
+Our 100K generated document-KG pairs represent the first large-scale training resource for ontology-free KG construction and will be publicly released.
+
+
+% Our experiments are designed to validate the data-centric approach across three dimensions: (1) the quality of synthetic training data, (2) the effectiveness of distillation, and (3) the performance of downstream applications. We address the following research questions:
+% \begin{itemize}[noitemsep,leftmargin=*]
+% \item RQ1: Does the multi-step SynthKG pipeline produce higher-quality KGs than direct prompting?
+% \item RQ2: Can an 8B model achieve large-model performance through distillation on synthetic data?
+% \item RQ3: How does data scale affect the performance of distilled models?
+% \item RQ4: Does improved KG quality translate to better retrieval and QA performance?
+% \end{itemize}
+
+\paragraph{SynthKG Distillation:}
+We validate that synthetic data enables effective distillation by training \textit{Meta-Llama-3-8b-Instruct} \citep{llama3modelcard} on 30K synthesized documents. The model learns to directly generate corresponding KGs for entire input documents in a single pass. Training uses 8 Intel\textsuperscript{\textregistered}\space Gaudi 2 AI accelerators with a learning rate of 5e-5, batch size of 32, for one epoch. We name our model Distill-SynthKG and refer to it subsequently as \textbf{\distilledLlama}.
+
+
+\subsection{Evaluation Settings}
+\paragraph{Datasets} 
+We evaluate on three multi-hop reasoning benchmarks that require integrating information across multiple facts: MuSiQue, 2WikiMultiHopQA (2Wiki), and HotpotQA. These datasets are well suited for KG evaluation because answering their questions depends on structured, multi-fact reasoning, which is precisely the behavior KGs are intended to support. Following the experimental protocol of HippoRAG \citep{gutiérrez2024hipporag}, we use the same 1,000 questions and the same candidate passage sets, which include both supporting and distractor passages, to enable a fair comparison. For KG coverage evaluation, we generate proxy ground-truth triplets with GPT-4o as described in Section~\ref{sec:kg-eval}.
+
+% We evaluate on three multi-hop reasoning datasets that require complex information integration: MuSiQue, 2WikiMultiHopQA (2wiki), and HotpotQA. These datasets are ideal for KG evaluation as they inherently require structured reasoning over multiple facts—exactly what KGs should capture. We follow the settings of HippoRAG \citep{gutiérrez2024hipporag} and use the same 1000 questions and candidate passages, including both supporting and distractor passages, ensuring fair comparison.
+% For KG coverage evaluation, we generate proxy ground-truth triplets using GPT-4o as described in Section~\ref{sec:kg-eval}.
+
+\paragraph{Baselines}
+We compare against multiple baseline categories for comprehensive evaluations:
+\begin{itemize}[noitemsep,leftmargin=*]
+\item \textit{Direct prompting baselines}: Llama-3-8b and Llama-3-70b\footnote{We use the Instruct variants of both models throughout} for single-step KG extraction
+\item \textit{Multi-step baselines}: Full SynthKG pipeline with Llama-3-8b (\synthLlama) and Llama-3-70b (SynthKG-70b) to assess distillation effectiveness
+\item \textit{Retrieval baselines}: Standard dense vector retrieval and a two-stage approach combining dense retrieval with LLM-based re-ranking (Dense+LLM) to establish non-KG performance benchmarks
+\item \textit{KG-based retrieval}: Retrieval using GPT-4o-based KGs
+\item \textit{KG-RAG systems}: GraphRAG and HippoRAG using GPT-4o-extracted KGs, representing state-of-the-art KG-based approaches\footnote{To improve GraphRAG performance, we append the instruction: ``Only provide the answer without any context. For yes/no questions, just mention yes or no. Do not cite data sources.'' at the end of each query. For GraphRAG, we report results using the local and drift modes, which yield the best performance; the global mode is excluded. For HippoRAG, we use GPT-4o for KG construction and apply our query synthesizer to the retrieved text chunks to generate the final answer, ensuring a fair comparison.}
+\item \textit{Closed-book QA}: LLM using only parametric knowledge, establishing the lower bound
+\end{itemize}
+We provide full experimental details including hyperparameters in \Cref{sec:task-specific-eval-settings}.
+
+\paragraph{Multihop QA Frameworks} 
+To demonstrate the versatility of our KGs, we evaluate using three distinct retrieval frameworks using LlamaIndex's \textit{TreeSummarize} with GPT-4o for answer generation:
+\begin{itemize}[noitemsep,leftmargin=*]
+\setlength\itemsep{0.001em}
+    \item \textit{LlamaIndex}: Standard KG-based retrieval using LlamaIndex's KnowledgeGraphIndex with hybrid keyword and semantic search
+    \item \textit{Chain-of-Triplet}: Direct KG reasoning by decomposing questions into sub-queries and retrieving matching triplets (details in Appendix~\ref{apd:chain-of-triplets})
+    \item \textit{Graph+LLM}: Our proposition-entity graph retriever with LLM re-ranking, leveraging the unique structure of our synthesized KGs
+\end{itemize}
+
+
+
+\section{Results}\label{sec:results}
+
+\begin{table*}[ht]
+    \centering
+    \small
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccccccccccc}
+    \toprule
+    \multirow{2}{*}{KG Source} & \multicolumn{4}{c}{MuSiQue} & \multicolumn{4}{c}{2wiki} & \multicolumn{4}{c}{HotpotQA} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9} \cmidrule(lr){10-13}
+     & Triplets & Semantic & Coverage & F1 & Triplets & Semantic & Coverage & F1 & Triplets & Semantic & Coverage & F1 \\
+    \midrule
+    Llama-3-8b         & 93855  & 0.8111 & 32.09 & 0.51 & 41384  & 0.8281 & 43.39 & 0.56 & 76906  & 0.8343 & 41.79 & 0.58 \\
+    SynthKG-8b         & 125197 & 0.8341 & 38.84 & 0.55 & 56178 & 0.8275 & 44.56 & 0.54 & 108031 & 0.8448 & 47.72 & 0.60   \\ \midrule
+    Llama-3-70b        & 102119 & 0.8346 & 40.34 & \underline{0.56} & 46100  & 0.8475 & 54.10 & 0.58 & 82948  & 0.8440 & 47.20 & 0.61 \\
+    SynthKG-70b        & \textbf{140527} &\textbf{ 0.8559} & \textbf{47.18} & \textbf{0.59} & \textbf{71305} & \textbf{0.8778} & \textbf{63.30} & \textbf{0.61} & \textbf{124460} & \underline{0.8633} & \underline{54.54} & \underline{0.63}  \\ \midrule
+    \distilledLlama    & \underline{139376} & \underline{0.8546} & \underline{46.90} & \textbf{0.59} & \underline{68800} & \underline{0.8693} & \underline{58.27} & \underline{0.59} & \underline{123458} & \textbf{0.8693} & \textbf{55.26} & \textbf{0.64} \\
+    \bottomrule
+    \end{tabular}
+    }
+    \caption{KG coverage performance. The best scores are \textbf{bolded}, and the second-best scores are \underline{underlined}.}
+    \label{tab:kg-coverage}
+\end{table*}
+
+
+We present experimental results that validate our data-centric approach to KG construction, directly addressing the research questions posed in Section~\ref{sec:experiments}.
+
+\subsection{KG Coverage Results (RQ1: Multi-step vs Direct Prompting)}
+\label{sec:kg-coverage-results}
+The multi-step SynthKG pipeline consistently generates more triplets and achieves higher coverage than the commonly used single-step LLM prompting approach across all three datasets, for both LLaMA-3-8b and 70b models (\Cref{tab:kg-coverage}). This validates our hypothesis that decomposing KG construction into systematic steps prevents the information loss inherent in single-pass processing. Furthermore, our \distilledLlama\ model outperforms the untrained Llama-3-8b, Llama-3-70b, and SynthKG-8b baselines, demonstrating the benefit of distilling the SynthKG pipeline using Llama-3-70b as the teacher. Remarkably, \distilledLlama\ is also highly competitive with SynthKG-70b, despite being approximately $\sim$8$\times$ smaller and relying on a single-step inference process. These results underscore that high-quality training data can bridge the gap between model sizes.
+As our KG coverage metric emphasizes recall of critical information, we also verified precision through manual inspection. Among 150 randomly sampled triplets from D-SynthKG-8b's predictions, only 4 were incorrect and 5 meaningless, indicating that the generated triplets largely align with the source content while maintaining high coverage.
+
+\subsection{Retrieval (RQ2 \& RQ4: Distillation Effectiveness and Downstream Impact)}
+\label{sec:retrieval-results}
+
+
+
+\begin{table*}[ht]
+\small
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccccccccc}
+\toprule
+KG Source & Retriever & \multicolumn{4}{c}{MuSiQue} & \multicolumn{4}{c}{2wiki} & \multicolumn{4}{c}{HotpotQA} \\
+\cmidrule(lr){3-6} \cmidrule(lr){7-10} \cmidrule(lr){11-14}
+& & Hits@2 & Hits@10 & MRR & MAP & Hits@2 & Hits@10 & MRR & MAP & Hits@2 & Hits@10 & MRR & MAP \\
+\midrule
+None & Dense & 41.32 & 64.19 & 79.89 & 40.17 & 62.22 & 74.72 & 97.86 & 55.73 & 66.55 & 89.45 & 91.98 & 60.68 \\
+None & Dense+LLM & 47.60 & 67.02 & 84.44 & 44.26 & 72.63 & 76.70 & 97.77 & 58.65 & \textbf{83.10} & 92.10 & \textbf{96.79} & \textbf{67.58} \\ \midrule
+Llama-3-8b & Graph + LLM & 31.33 & 42.68 & 60.67 & 29.49 & 41.55 & 45.60 & 66.53 & 36.70 & 50.65 & 57.45 & 73.72 & 45.06 \\
+\synthLlama & Graph + LLM & 50.62 & 65.17 & 86.65 & 45.43 & 65.25 & 69.65 & 95.54 & 54.79 & 76.55 & 86.35 & 92.69 & 63.44 \\ \midrule
+Llama-3-70b & Graph + LLM & 48.64 & 68.93 & 85.24 & 45.20 & 68.73 & 74.47 & 97.32 & 57.42 & 79.10 & 93.75 & 93.27 & 65.78 \\
+SynthKG-70b & Graph + LLM & \underline{53.70} & \underline{72.23} & \underline{88.81} & \underline{48.32} & \underline{73.23} & \underline{78.80} & \underline{98.80} & \underline{60.09} & 81.90 & 94.40 & \underline{94.62} & 66.93 \\ \midrule
+\distilledLlama & Graph + LLM & 53.35 & \textbf{72.78} & {87.41} & {48.04} & {73.15} & {78.57} & {98.74} & {59.91} & 81.85 & \underline{94.70} & {94.53} & \underline{67.22} \\
+GPT-4o & Graph + LLM & \textbf{53.90} & {70.38} & \textbf{90.46} & \textbf{48.66} & \textbf{74.35} & \textbf{79.25} & \textbf{99.02} & \textbf{60.52} & \underline{82.90} & \textbf{94.95} & 93.98 & 67.15 \\
+\bottomrule
+\end{tabular}
+}
+\caption{Retrieval performance.
+The best scores are \textbf{bolded}, and the second-best scores are \underline{underlined}.}
+\label{tab:retrieval-combined}
+\end{table*}
+
+Our \distilledLlama\ model improves Hits@2 by an average of 28.27 points over the pre-trained Llama-3-8b, 5.31 points over \synthLlama, and 3.96 points over the larger Llama-3-70b (\Cref{tab:retrieval-combined}). These gains suggest that training on synthetic data produces a qualitative shift in capability rather than a marginal tuning effect. Notably, \distilledLlama\ remains highly competitive with the full SynthKG-70b pipeline, despite being much smaller and requiring only single-step inference, indicating that the multi-step procedure can be effectively internalized through distillation. It also performs comparably to GPT-4o (see Appendix~\ref{sec:appendix_gpt4o} for details).
+
+In addition, our \textbf{Graph+LLM} retriever improves Hits@2 by 12.75 points over standard dense retrieval and by 1.67 points over dense retrieval augmented with an LLM re-ranker, demonstrating that structured KGs enable more effective retrieval strategies.
+
+
+% Our \distilledLlama \ model yields an average absolute improvement of 28.27 in Hits@2 over the pre-trained Llama-3-8b, 5.31 over \synthLlama, and 3.96 over the larger Llama-3-70b (\Cref{tab:retrieval-combined}). These gains demonstrate that training on synthetic data fundamentally changes the model's capability, not just incrementally improving it. Notably, \distilledLlama is highly competitive with the full SynthKG-70b pipeline—despite being significantly smaller and using single-step inference—validating that the multi-step reasoning can be successfully internalized through distillation. It also performs comparably to GPT-4o (details in Appendix \ref{sec:appendix_gpt4o}).
+% Additionally, our graph+LLM retriever achieves an average improvement of 12.75 in hits@2 over standard dense retrieval and 1.67 in hits@2 over the dense retriever with an LLM-based reranker, demonstrating that the structured KGs enable more effective retrieval strategies.
+
+
+\begin{table*}[ht]
+    \centering
+    \resizebox{0.7\textwidth}{!}{%
+    \begin{tabular}{llcccccccc}
+    \toprule
+    & & \multicolumn{2}{c}{MuSiQue} & \multicolumn{2}{c}{2wiki} & \multicolumn{2}{c}{HotpotQA} & \multicolumn{2}{c}{Average}  \\
+    \cmidrule{3-4}
+    \cmidrule{5-6}
+    \cmidrule{7-8}
+    \cmidrule{9-10}
+    KG Source & Retrieval & EM & F1 & EM & F1 & EM & F1 & EM & F1 \\
+    \midrule
+    None & None & 0.100 & 0.220 & 0.190 & 0.340 & 0.290 & 0.440 & 0.193 & 0.333 \\
+    None & Dense Retriever & 0.237 & 0.376 & 0.380 & 0.497 & 0.471 & 0.641 & 0.363 & 0.505 \\
+    None & Dense + LLM & 0.260 & 0.398 & 0.414 & 0.531 & 0.509 & 0.678 & 0.394 & 0.536 \\
+    \midrule
+    GPT-4o & GraphRAG (local) &  0.291 & 0.412 & 0.432 & 0.491 & 0.448 & 0.569 & 0.390 & 0.491 \\
+    GPT-4o & GraphRAG (drift) & 0.222 & 0.350 & \textbf{0.497} & \textbf{0.629} & 0.434 & 0.561 & 0.384 & 0.513  \\
+    GPT-4o & HippoRAG & 0.224 & 0.368 & {0.493} & {0.627} & 0.492 & 0.644 & 0.403 & 0.546 \\
+    \midrule
+    \multicolumn{10}{c}{\textit{Ours}} \\
+    \midrule
+    Llama-3-8b & LlamaIndex & 0.155 & 0.259 & 0.366 & 0.461 & 0.405 & 0.555 & 0.308 & 0.425 \\
+    Llama-3-70b & LlamaIndex & 0.202 & 0.309 & 0.417 & 0.507 & 0.424 & 0.563 & 0.347 & 0.459 \\
+    \distilledLlama & LlamaIndex & \underline{0.217} & \underline{0.320} & \underline{0.435} & \underline{0.528} & \underline{0.451} & \underline{0.608} & \underline{0.367} & \underline{0.485} \\
+    \midrule
+    Llama-3-8b & Chain-of-Triplet & 0.131 & 0.244 & 0.305 & 0.381 & 0.278 & 0.469 & 0.238 & 0.365 \\
+    Llama-3-70b & Chain-of-Triplet & 0.188 & 0.299 & 0.351 & 0.428 & 0.370 & 0.517 & 0.303 & 0.415 \\
+    \distilledLlama & Chain-of-Triplet & \underline{0.243}
+ & \underline{0.383} & \underline{0.410} & \underline{0.507} & \underline{0.400} & \underline{0.579} & \underline{0.354} & \underline{0.490} \\
+    \midrule
+    Llama-3-8b & Graph + LLM & 0.181 & 0.299 & 0.291 & 0.394 & 0.373 & 0.515 & 0.281 & 0.402 \\
+    Llama-3-70b & Graph + LLM & 0.297 & 0.437 & 0.400 & 0.501 & \underline{\textbf{0.544}} & 0.705 & 0.413 & 0.548 \\
+    \distilledLlama & Graph + LLM  & \underline{\textbf{0.320}} & \underline{\textbf{0.459}} & \underline{0.440} & \underline{0.544} & 0.539 & \underline{\textbf{0.706}} & \underline{\textbf{0.433}} & \underline{\textbf{0.569}} \\ 
+    \bottomrule
+    \end{tabular}
+    }
+    \caption{
+    Multi-hop QA evaluation (EM and F1 score). Best scores for each framework are \underline{underlined}.
+    }
+    \label{tab:main_qa_result}
+\end{table*}
+
+
+
+\subsection{Multi-hop QA Results (RQ4: End-to-End Performance)}
+\distilledLlama\ delivers the best overall results across all three frameworks: LlamaIndex, Chain-of-Triplet, and Graph+LLM, surpassing both Llama-3-8b and the larger Llama-3-70b (\Cref{tab:main_qa_result}). The consistency of these gains across diverse RAG pipelines highlights the robustness and broad applicability of our synthesized KGs. The largest improvement appears in the Graph+LLM setting, where \distilledLlama\ achieves a +15.2\% absolute EM gain over Llama-3-8b and a +2.0\% gain over Llama-3-70b, yielding the best overall performance. Notably, it also outperforms GraphRAG and HippoRAG, two strong KG-based RAG systems built on KGs generated by GPT-4o, underscoring that our data-centric approach enables a smaller model to compete with substantially larger systems in practical applications.
+
+% \distilledLlama \ achieves the best overall performance across all three frameworks—LlamaIndex, Chain-of-Triplet, and Graph+LLM—outperforming both the Llama-3-8b and the larger Llama-3-70b models (\Cref{tab:main_qa_result}). This consistent improvement across diverse frameworks demonstrates the general applicability and robustness of our synthesized KGs. In the Graph + LLM framework, \distilledLlama achieves the highest gain, with a +15.2\% absolute improvement in EM accuracy over Llama-3-8b and a +2.0\% gain over Llama-3-70b, leading to the best overall results. Notably, it surpasses GraphRAG and HippoRAG—two strong KG-based RAG systems built using KGs generated by the state-of-the-art GPT-4o model—highlighting that our data-centric approach enables a smaller model to compete with much larger ones in practical applications.
+
+\subsection{Analysis (RQ3: Scaling and Design Validation)} \label{sec:analysis}
+\paragraph{How effective is multi-step SynthKG in processing documents of increasing length?}
+We compare our multi-step SynthKG framework with a single-step LLM prompting approach by examining the number of triples generated per 100 words for documents of varying lengths (\Cref{kg-coverage-plot}, Appendix~\ref{app:analysis}). For the single-step method, the proportion of extracted relations decreases as document length increases, with triple density dropping by about 60\% when moving from 100-word documents to 1,200-word documents. In contrast, SynthKG's triple density remains nearly constant across all lengths. This validates our chunking strategy and demonstrates why the multi-step approach is essential for creating consistent training data.
+
+\paragraph{What is the optimal retrieval source?}
+Our KGs support multiple retrieval strategies. In \Cref{fig:ablation_studies}(a) in Appendix~\ref{app:analysis}, we compare retrieval using triples, propositions, and the full graph structure. Proposition retrieval outperforms triples (+0.89 Hits@10) due to richer context, while graph-based retrieval achieves the best performance (+2.50 over propositions). This validates our design choice of including propositions as first-class components of the KG, not just intermediate representations.
+
+\paragraph{How can our KG improve RAG beyond retrieval?}
+Our ablation study (\Cref{fig:ablation_studies}(b) in Appendix~\ref{app:analysis}) shows that enriching retrieved context with structured signals improves QA performance. Adding propositions (+2 EM) or 2-hop paths (+2.7 EM) to retrieved chunks improves accuracy, with 2-hop paths offering slightly better gains due to their ability to capture complex relationships. This demonstrates that our KGs provide value beyond simple retrieval, enabling structured reasoning.
+
+% \begin{figure}[ht]
+%     \centering
+%     \begin{subfigure}[b]{0.48\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/ablation_retrieval.png}
+%         \caption{Retrieval methods comparison}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.48\textwidth}
+%         \centering
+%         \includegraphics[width=\textwidth]{figures/ablation_qa.png}
+%         \caption{Input context combinations}
+%     \end{subfigure}
+%     \caption{Ablation studies: (a) Performance comparison of different KG-based retrieval methods on multi-hop QA. (b) Results on different combinations of input context for multi-hop QA.}
+%     \label{fig:ablation_studies}
+% \end{figure}
+
+\section{Conclusion}
+
+We presented SynthKG, a data synthesis pipeline that generates high-quality document-KG pairs, and Distill-SynthKG, which distills this multi-step process into an efficient single-step model. Our experiments demonstrate that an 8B model trained on synthetic data matches or exceeds the performance of models eight times larger across KG quality, retrieval, and QA tasks. This work shifts the paradigm from scaling models to generating training data, showing that structured extraction capabilities can be transferred through synthetic examples rather than parameter count. We release our 100K document-KG pairs to enable future research in data-centric approaches to knowledge extraction.
+
+\section*{Reproducibility Statement}
+To ensure reproducibility, we provide detailed experimental settings and hyperparameters in Section~\ref{sec:experiments} and Appendix~\ref{sec:task-specific-eval-settings}. All prompts used in the SynthKG pipeline are included in Appendix~\ref{sec:kg-synthesis-prompts}. The 100K synthetic document-KG pairs dataset will be made publicly available. The core implementation code, including the KG synthesis pipeline and evaluation metrics, will be released to facilitate the reproduction of our results.
+
+\bibliography{custom}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\section{Appendix} \label{sec:appendix}
+
+\section{Additional Analyses}
+\label{app:analysis}
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/ablation_retrieval.png}
+        \caption{Retrieval methods comparison}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{figures/ablation_qa.png}
+        \caption{Input context combinations}
+    \end{subfigure}
+    \caption{Ablation studies: (a) Performance comparison of different KG-based retrieval methods on multi-hop QA. (b) Results on different combinations of input context for multi-hop QA.}
+    \label{fig:ablation_studies}
+\end{figure}
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.6\linewidth]{figures/kg-plot.pdf}
+    \caption{SynthKG maintains the triplet density consistently across documents of different lengths.  
+    } \label{kg-coverage-plot}
+\end{figure}
+
+\subsection{Efficiency and Generalizability of Distill-SynthKG} 
+\label{sec:mistral-qlora}
+
+\begin{table*}[ht]
+    \centering
+    \small
+    % \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcccccccc}
+    \toprule
+    & \multicolumn{5}{c}{Retrieval Evaluation} & \multicolumn{2}{c}{QA Evaluation} \\
+    \cmidrule{2-6}
+    \cmidrule{7-8}
+    KG Source & Hits@2 & Hits@5 & Hits@10 & MRR & MAP & EM & F1 \\
+    \midrule
+    \distilledMistralGpt & 0.680 & 0.776 & 0.809 & 0.932 & 0.575 & 0.417 & 0.556 \\[0.1cm]
+    \distilledMistralLlama & 0.685 & 0.780 & 0.811 & 0.931 & 0.578 & \textbf{0.433} & 0.565 \\
+    \midrule
+    \distilledLlama & \textbf{0.695} & \textbf{0.792} & \textbf{0.820} & \textbf{0.936} & \textbf{0.584} & \textbf{0.433} & \textbf{0.569} \\ 
+    \bottomrule
+    \end{tabular}
+    % }
+    \caption{Efficiency and Generalizability results for Distill-SynthKG. The results show average performance across MuSiQue, 2wiki, and HotpotQA datasets. \distilledMistralGpt and \distilledMistralLlama are Mistral-7b-Instruct-v0.3 models fine-tuned using QLoRA on ~1000 document-KG pairs annotated by GPT-4o and Llama-3.1-70b-Instruct (respectively).}
+    \label{tab:mistral_qlora_ablation}
+\end{table*}
+
+In Table \ref{tab:mistral_qlora_ablation}, we study three key important questions for developing Distill-SynthKG: 1. the efficiency of training Distill-SynthKG, 2. the effectiveness of various powerful LLMs for synthesizing training data, and 3. the generalizability of fine-tuning other smaller LLMs on synthesized data.
+To address these questions, we employ QLoRA \citep{dettmers2023qlora} fine-tuning on approximately 1,000 synthetic Document-KG pairs, generated using GPT-4o and Llama-3.1-70b-Instruct. We provide fine-tuning configurations in \Cref{appendix:qlora-setup}. Additionally, to answer the third question, we fine-tune another well-known base LLM, Mistral-7b-Instruct-v0.3 \citep{jiang2023mistral7b}.
+
+We observe that both QLoRA fine-tuned models perform slightly below the fully fine-tuned model on retrieval and multi-hop QA tasks. However, the performance gap is minimal, demonstrating that QLoRA fine-tuning, even on a small dataset, remains competitive while requiring significantly fewer compute resources. The model fine-tuned on GPT-4o synthesized KGs shows slightly lower performance, which we attribute to more abstractive and atomic propositions in the synthesized data.
+
+
+\begin{table}[ht]
+\centering
+\small
+% \resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Dataset} & \textbf{Model} & \textbf{Hits@2} & \textbf{Hits@10} & \textbf{MAP} & \textbf{MRR} \\
+\midrule
+\multirow{2}{*}{2Wiki} 
+    & GPT-4o (OpenAI) & 74.35 & 79.25 & 60.52 & 99.02 \\
+    & D-SynthKG-8b    & 73.15 & 78.57 & 59.91 & 98.74 \\
+\midrule
+\multirow{2}{*}{HotpotQA} 
+    & GPT-4o (OpenAI) & 82.90 & 94.95 & 67.15 & 93.98 \\
+    & D-SynthKG-8b    & 81.85 & 94.70 & 67.22 & 94.53 \\
+\midrule
+\multirow{2}{*}{MuSiQue} 
+    & GPT-4o (OpenAI) & 53.90 & 70.38 & 48.66 & 90.46 \\
+    & D-SynthKG-8b    & 53.35 & 72.78 & 48.04 & 87.41 \\
+\bottomrule
+\end{tabular}
+% }
+\caption{Retrieval performance comparison between D-SynthKG-8b and GPT-4o across three multihop QA datasets.}
+\label{tab:gpt4o_comparison}
+\end{table}
+
+
+
+\subsection{Comparison of Retrieval Performance with Proprietary Foundation Models}
+\label{sec:appendix_gpt4o}
+
+We include additional comparisons between our distilled model D-SynthKG-8b and a state-of-the-art proprietary foundation model, GPT-4o from OpenAI. We evaluate retrieval performance on three multihop QA benchmarks: 2Wiki, HotpotQA, and MuSiQue. We present the results in \Cref{tab:gpt4o_comparison}.
+The results show that D-SynthKG-8b achieves retrieval performance that is highly competitive with GPT-4o across all datasets. Notably, D-SynthKG-8b yields a slightly higher average Hits@10 (82.02 vs. 81.52), despite being significantly more cost-efficient. GPT-4o incurs \$2.50 per million input tokens and \$10 per million output tokens, while D-SynthKG-8b operates at only \$0.20 per million tokens (input or output), representing roughly \textbf{3\%} of the inference cost. These findings highlight the practical advantages of our approach in cost-sensitive deployment scenarios.
+
+\subsection{Entity Distribution Analysis}
+When analyzing entity references across document chunks, we find that the overall average chunk distance per entity is 0.9. This metric represents the average number of chunks between an entity mention and its most recent previous mention. Further analysis reveals that 80.03\% of entities have their most recent mention within a single paragraph, indicating that the majority of entity references are relatively localized within the document.
+
+These findings support our design decision to only reference the immediately preceding chunk during decontextualization, as this approach effectively balances computational efficiency with adequate contextual information.
+
+
+\section{LLM Prompts for SynthKG} \label{sec:kg-synthesis-prompts}
+We use prompts \Cref{prompt:decontextualizatio}, \Cref{prompt:entity} and \Cref{prompt:relation} for decontextualization, entity extraction and relation extraction respectively within SynthKG. We also provide an example of decontextualized chunk in \Cref{fig:kg-decontextualized-example}.
+
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+\textbf{Previous paragraph from Document}:\\
+Gualala, the isolated Mendocino Coast town with a name that leaves most visitors tongue-tied, is on a new list of the 50 best places to live in the United States. Men's Journal magazine describes Gualala as an \"outpost of adventure lifestyle\" in its latest edition, which goes on sale today. The magazine describes Gualala (pronounced wa-LA-la by locals) as one of the \"below-the-radar places to a make a move on before the word gets out.\" There were five such cities. The others were Homer, Alaska; Newport, Vt.; Logan, Utah; and Walla Walla, Wash. Rolling Stone magazine's Jann Wenner publishes Men's Journal, which has a paid circulation of about 620,000. Gualala joined three other California communities on the magazine's list: Santa Cruz, Mammoth Lakes and Bishop. \"We were looking for places that combined affordability, proximity to outdoor adventure and a generally undiscovered quality of life,\" said Erica Kestenbaum, a spokeswoman for Men's Journal.\\
+\textbf{Instruction}: \\
+Rewrite the below paragraph by resolving all entity coreferences with the preceding paragraph from document. \\
+- Resolve all inter-sentence pronoun references. \\
+- Make sure that all pronouns in a sentence refers to some named entity with in the same sentence. \\
+- Explicitly mention entity names wherever necessary to remove ambiguity from a sentence. Remember to make each sentence clear and unambiguous. \\
+- For each entity, use only the one most informative name.\\
+- Do not generate anything except the rewritten paragraph. \\
+\textbf{Paragraph}: \\
+She said isolation played a factor. \"In Northern California, it's particularly difficult to find a beautiful coastal setting that isn't entirely overrun,\" she said. Gualala residents Monday were largely unaware of the magazine listing or the attention it could bring to the old logging town turned tourist center. A few coastal residents chuckled about any notion of affordability, given an influx of newcomers who've driven the median housing price to \$580,000 compared to the median family income of \$47,778. Others recalled an era when the Gualala region was better known for the logging of ancient redwoods, marijuana growing and boisterous beer drinking at the historic Gualala Hotel. Still there was a certain pride to the magazine's designation. Yvette White, a 25-year resident who works at the Gualala Sport; Tackle shop, said she's proud her town made it on the list.\\
+\textbf{Output}:\\
+Erica Kestenbaum said isolation played a factor. \"In Northern California, it's particularly difficult to find a beautiful coastal setting that isn't entirely overrun,\" Erica Kestenbaum said. Gualala residents Monday were largely unaware of the Men's Journal magazine listing or the attention it could bring to the old logging town turned tourist center. A few coastal residents of Gualala chuckled about any notion of affordability, given an influx of newcomers who've driven the Gualala’s median housing price to \$580,000 compared to the median family income of \$47,778. Other Gualala residents recalled an era when the Gualala region was better known for the logging of ancient redwoods, marijuana growing and boisterous beer drinking at the historic Gualala Hotel. Still there was a certain pride to the Men's Journal magazine's designation. Yvette White, a 25-year Gualala resident who works at the Gualala Sport; Tackle shop, said she's proud her town made it on the list.\\
+\textbf{Previous paragraph from Document}: [previous paragraph]\\
+\textbf{Instruction}: \\
+Rewrite the below paragraph by resolving all entity coreferences with the preceding paragraph from document. \\
+- Resolve all inter-sentence pronoun references. \\
+- Make sure that all pronouns in a sentence refers to some named entity with in the same sentence. \\
+- Explicitly mention entity names wherever necessary to remove ambiguity from a sentence. Remember to make each sentence clear and unambiguous. \\
+- For each entity, use only the one most informative name.\\
+- Do not generate anything except the rewritten paragraph. \\
+\textbf{Paragraph}: [paragraph ]\\
+\textbf{Output}:\\
+\end{mdframed}
+\caption{The prompt for chunk decontextualization.} \label{prompt:decontextualizatio}
+\end{figure*}
+
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+Extract all named entities from the document. Also generate the type for each entity.
+
+\textbf{Instructions}
+
+- Generate only the most informative name for each named entity. Example: if John P., Parker, John Parker are coreferential, only generate John Parker.\\
+- Use your best understanding best on the domain of paragraph to decide appropriate entity types.\\
+- Respond using json format provided below.
+
+\begin{verbatim}
+{
+    "n1":{"name": "entity_name", "type": "entity_type_label"},
+    "n2":{},
+}
+\end{verbatim}
+
+Below is an example for reference.\\
+Paragraph: Tucked into Eli Lilly’s year-end earnings report, the company revealed positive results from Synergy-NASH—its phase 2 study of tirzepatide in adults in nonalcoholic steatohepatitis (NASH), also known as metabolic dysfunction-associated steatohepatitis (MASH).\\
+Output:
+
+\begin{verbatim}
+{
+    "n1": {"name": "Eli Lilly", "type": "Organization"},
+    "n2": {"name": "Synergy-NASH", "type": "Clinical Trial"},
+    "n4": {"name": "tirzepatide", "type": "Drug"},
+    "n5": {"name": "nonalcoholic steatohepatitis", "type": "Disease"},
+    "n6": {"name": "metabolic dysfunction-associated steatohepatitis", "type": "Disease"},
+    "n7": {"name": "year-end earnings report", "type": "Document"}
+}
+\end{verbatim}
+\end{mdframed}
+\caption{The prompt for graph node extraction} \label{prompt:entity}
+\end{figure*}
+
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+Extract all facts from the document. For each fact, also generate all semantic triplets. \\
+\textbf{Instructions}\\
+- Consistently use the most informative name for each named entity in all facts and triplets. \\
+- Avoid pronouns or ambiguous references in facts and triplets. Instead, directly include all relevant named entities in facts. \\
+- Ensure that each semantic triplet contains head entity, predicate, and tail entity. \\
+- Ensure that at least one (preferably both) entity in each semantic triplet is present in the given entities list. \\
+- Respond using json format provided below:\\
+\begin{verbatim}
+{
+    "f1":{
+        "fact": "A factual statement describing important information (preferably about some entities) from the paragraph",
+        "triplets: [["entity 1", "predicate", "entity 2"], ["entity 1", "predicate", "entity 3"]]
+    },
+    "f2":{},
+}   
+\end{verbatim}
+
+Below is an example for reference. \\
+Paragraph: Locked in a heated battle with Novo Nordisk’s semaglutide franchise, Eli Lilly’s tirzepatide is beginning to come into its own—both with regards to sales and amid attempts to show the dual GIP/GLP-1 agonist can strike out beyond diabetes and obesity. As Mounjaro, tirzepatide won its first FDA nod in Type 2 diabetes back in May 2022. An obesity approval followed last November, with that formulation of tirzepatide adopting the commercial moniker Zepbound. In 2023’s fourth quarter, Mounjaro generated a whopping \$2.2 billion in sales, a nearly eight-fold increase over the \$279 million it pulled down during the same stretch in 2022. Year-to-date, the drug brought home around \$5.2 billion in revenues, Lilly said in an earnings release Tuesday. Zepbound, for its part, generated \$175.8 million during its first quarter on the market. Overall, Lilly reeled in around \$9.4 billion in fourth-quarter sales, growing 28\% over the \$7.3 billion it made for the quarter in 2022.\\
+Entities: Eli Lilly, Novo Nordisk, Tirzepatide, Semaglutide, GLP-1, GIP, FDA, Mounjaro, Zepbound \\
+Output:\\
+\begin{verbatim}
+{
+    "f1": {
+        "fact": "Eli Lilly's tirzepatide is competing with Novo Nordisk's semaglutide franchise.",
+        "triplets": [["Eli Lilly", "competing with", "Novo Nordisk"], ["Tirzepatide", "is competing with", "Semaglutide"]]
+    },
+    "f2": {
+        "fact": "Eli Lilly is trying to show tirzepatide, the dual GIP/GLP-1 agonist, can strike out beyond diabetes and obesity.",
+        "triplets": [["Eli Lilly", "is trying to show", "Tirzepatide"], ["Tirzepatide", "is a", "dual GIP/GLP-1 agonist"], 
+                     ["Tirzepatide", "can treat beyond", "Diabetes"], ["Tirzepatide", "can treat beyond", "Obesity"]]
+    },
+    "f3": {
+        "fact": "Tirzepatide, under the brand name Mounjaro, received its first FDA approval for Type 2 diabetes in May 2022.",
+        "triplets": [["Tirzepatide", "branded as", "Mounjaro"], ["Mounjaro", "won", "FDA approval"], 
+                     ["FDA approval", "for",  "Type 2 diabetes"], ["FDA approval", "was in", "May 2022"]]
+    },
+    "f4": {
+        "fact": "Tirzepatide, under the brand name Zepbound, received an obesity approval in November 2022.",
+        "triplets": [["Tirzepatide", "was branded as", "Zepbound"], ["Zepbound", "received", "Obesity approval"], 
+                     ["Obesity approval", "was in", "November 2022"]]
+    },
+    "f5": {
+        "fact": "Mounjaro generated $2.2 billion in sales in the fourth quarter of 2023,
+                 an eight-fold increase from the $279 million during the same period in 2022.",
+        "triplets": [["Mounjaro", "2023's fourth quarter sales", "$2.2 billion sales"],
+                     ["Mounjaro", "2022's fourth quarter sales", "$279 million"]]
+    },
+    "f6": {
+        "fact": "Mounjaro brought in around $5.2 billion in revenues year-to-date in 2023, Lilly said in an earnings release Tuesday",
+        "triplets": [["Mounjaro", "2023 sales year-to-date", "$5.2 billion revenues"]]
+    },
+    "f7": {
+        "fact": "Zepbound generated $175.8 million in sales in its first quarter on the market.",
+        "triplets": [["Zepbound", "first quarter sales", "$175.8 million"]]
+    },
+    "f8": {
+        "fact": "Eli Lilly's fourth-quarter sales were around $9.4 billion, 
+                 a 28% increase over the $7.3 billion during the same period in 2022.",
+        "triplets": [["Eli Lilly", "2023 fourth-quarter sales", "$9.4 billion,"], 
+                     ["Eli Lilly", "2022 fourth-quarter sales", "$7.3 billion,"]]
+    }
+}
+\end{verbatim}
+\end{mdframed}
+\caption{The prompt for relation extraction} \label{prompt:relation}
+\end{figure*}
+
+\begin{figure*}[!ht]
+    \centering
+    \includegraphics[width=0.93\linewidth]{figures/decontext-example.png}
+    \caption{An example of decontextualization chunk.
+    } 
+    \label{fig:kg-decontextualized-example}
+\end{figure*}
+
+\section{KG Coverage Evaluation}
+
+\subsection{Prompts and examples}
+\label{apd:proxy_triplets_generation}
+
+Figure~\ref{prompt-triplet} shows the prompt that we used to generate the triplets, and Figure~\ref{prompt-decomposition} the prompts that we used to instruct the model to generate the decomposed questions. 
+Table~\ref{tab:kg-example} shows a question from HotpotQA dataset, and the generated decomposed questions and the triplet for the question answer pair. 
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+
+You are given a question answer pair, please generate a relation triplet to represent the relationship.
+
+Generate output in the format described below.
+```
+head || relation || tail
+```
+Note:
+- Must include relation, head entity and tail entity. Ensure that head entity is a subject of relation, and tail entity is a direct object of relation.
+- You must use the given answer as the head or tail entity.
+- Specific entity is more preferable than generic entity.
+- Do NOT generate pronouns or references in head and tail entities.
+----
+Example 1:
+
+Question: To whom was Messi's goal in the first leg of the Copa del Rey compared?
+Answer: Diego Maradona
+
+Output:
+Messi's goal || was compared to || Diego Maradona
+
+Example 2:
+
+Question: The father of Chiang Hsiao-wen is whom?
+Answer: Chiang Ching-kuo
+
+Output:
+Chiang Ching-kuo || the father of || Chiang Hsiao-wen
+
+
+Question: \{question\}
+
+Answer: \{answer\}
+
+Output:
+\end{mdframed}
+\caption{The prompt for generating triplet given a question and the answer.}
+\label{prompt-triplet}
+\end{figure*}
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+
+You are given a multihop question, some facts that are used to reach the correct answer, and the correct answer. Your goal is to decompose the question into sub-question, and the corresponding answer to each sub question. 
+
+Example 1
+
+Question:
+What relationship does Fred Gehrke have to the 23rd overall pick in the 2010 Major League Baseball Draft?
+
+Facts:
+He is the great-grandfather of Miami Marlin Christian Yelich
+Yelich was drafted out of high school by the Marlins in the 1st round (23rd overall) of the 2010 Major League Baseball Draft.
+
+Answer:
+great-grandfather
+
+Decompose question answer pairs:
+
+Who was the 23rd overall pick in the 2010 Major League Baseball Draft? Christian Yelich
+
+What relationship does Fred Gehrke have to Christian Yelich? Great-grandfather
+
+
+Question:
+\{question\}
+
+Facts:
+\{facts\}
+
+Answer:
+\{answer\}
+
+Decompose question answer pairs:
+\end{mdframed}
+\caption{The prompt for decomposing question into sub-questions and answers.}
+\label{prompt-decomposition}
+\end{figure*}
+
+
+\subsection{Human evaluation of extracted triplets}
+\label{app:kg-coverage-human-eval}
+
+% To assess the quality of the GPT-4-generated data, three authors of this work reviewed and validated both the decomposed questions and the proxy triplets. Specifically, we randomly selected 50 samples from each dataset and asked human evaluators to rate the validity of generated outputs. For the decomposed questions generated for the HotpotQA dataset, the reported valid ratio was 85\%, while for the triplets generated for the Musique and HotpotQA datasets, the valid ratios were both 86\%. 
+% Additionally, annotators were asked to provide reasons for why certain generated outputs were rated as invalid. For invalid decomposed questions, the main issues reported were that the first sub-question often contained unseen entities, or the second sub-question was not well-formed. In the case of low-quality triplets, the most common issue was missing minor details (e.g., dates), which, while incomplete, did not necessarily make the triplet incorrect. In only 4\% of cases, the problem was identified as an incorrect relation being extracted.
+
+To evaluate the quality of the GPT-4-generated KG coverage evaluation data, three authors of this work reviewed and validated both the decomposed questions and the proxy triplets. A random sample of 50 instances from each dataset was selected for human assessment, where evaluators rated the validity of the generated outputs. For decomposed questions from the HotpotQA dataset, the validity rate was found to be 85\%, while the generated triplets for both the Musique and HotpotQA datasets showed a validity rate of 86\%.
+Annotators also provided reasons for any invalid ratings. Common issues with decomposed questions included the presence of previously unseen entities in the first sub-question or a poorly structured second sub-question. For triplets, the most frequent problem was the omission of minor details, such as dates, which did not necessarily make the triplet incorrect but affected its completeness. Only 4\% of the cases involved an incorrect relation being extracted.
+
+
+\section{Experimental Settings} 
+\label{appendix:experimental-setting}
+
+\subsection{QLoRa fine-tuning setup} \label{appendix:qlora-setup}
+In our experiments detailed in \Cref{sec:mistral-qlora}, we employ the QLoRA fine-tuning. The training configuration used is as follows: we train models for 3 epochs, with an alpha value of 256 and a rank of 128. The learning rate, warmup steps and batch size are set to 0.00003, 50 and 8 respectively.
+
+\section{Task-Specific Evaluation Settings} \label{sec:task-specific-eval-settings}
+\subsection{KG Coverage Task} We use the \textit{`all-MiniLM-L6-v2'} checkpoint to embed the triplets for semantic matching. For the coverage, we use threshold 0.88 as we manually check that this threshold representing a desirable semantic match.
+
+\subsection{Retrieval Task} \label{appendix-graph_llm}
+We use \textit{`text-embedding-3-small'} for both dense retrieval and embedding propositions in KG-based retrievers. For both the graph and graph + LLM retrievers, we first construct the sub-graph by selecting the 200 propositions (M = 200) most similar to the question based on embedding similarity. Within the sub-graph, we traverse the KG, starting from the question entity, and select propositions within a 5-hop neighborhood (N = 5). For re-ranking the propositions in the LLM-based retriever and also for re-ranking chunks in Dense+LLM retriever, we use the GPT-4o model. The Dense+LLM retriever uses LlamaIndex's implementation of the \textit{LLMRerank} post-processor.
+
+We evaluate retrieval performance at the passage level, following the setup used in HippoRAG
+. For each query, we evaluate whether the retrieved passages contain all ground-truth information required to answer the question. Retrieval metrics include Hits@2 and Mean Reciprocal Rank (MRR), computed based on the rank positions of the passages associated with ground-truth triplets. Specifically, a passage is considered relevant if it contains all the facts (triplets or propositions) needed for correct multi-hop reasoning. The evaluation code is directly adopted from HippoRAG.
+
+To ensure comparability, we use the same benchmark datasets and experimental setup as HippoRAG, including 1,000 questions and a fixed set of candidate passages. The number of ground-truth passages per question is consistent with the original annotations. Our experiments are conducted on three multi-hop QA datasets: MuSiQue (11,656 passages), 2WikiMultiHopQA (6,119 passages), and HotpotQA (9,221 passages).
+
+\subsection{Multi-hop Question Answering Task}
+\subsubsection{LlamaIndex Configuration} \label{sec:llama-index-config}
+
+\Cref{tab:llama-index-parameters} presents the complete configuration of our LlamaIndex query engine setup.
+
+\subsubsection{Chain-of-Triplet} 
+\label{apd:chain-of-triplets}
+We design a triplet retrieval method that first breaks down the question into sub-queries in a triplet format. These triplet queries are then used to retrieve the most semantically matching triplet facts from the extracted KG. Specifically, it includes three steps to generate the final answer. 
+\paragraph{Step 1: Generate the Chain of Triplet Queries:}
+given a question, we convert it into a series of triplet queries. Specifically, since our downstream task involves multi-hop QA, instead of generating a single triplet, we prompt the model to generate a chain of triplets. The generated triplets may contain placeholders that represent unknown entities. The prompt is shown in Figure~\ref{prompt-queries-triple}. 
+
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+There is a knowledge graph (entities and relations). Now, you are given a question, your task is to decompose this question into a chain of triplets used for searching fact from the graph.
+
+The triplet should be in this format: head || relation || tail
+
+Note:
+- Ensure that head entity is a subject of relation, and tail entity is a direct object of relation.
+- Do NOT generate pronouns or references in head and tail entities.
+- Do NOT generate entities that are not appeared in the question.
+- If an triplet includes an intermediate answer or the final answer, you can use \# followed by an digit for reference. 
+- The triplets order should be the same order for retrieving the facts from a knowledge graph.  
+
+Example 1:
+
+Question: Who is older, Hampton Del Ruth or Ted Kotcheff?
+
+Decompose Triplets:
+
+Hampton Del Ruth || was born on || \#1 
+Ted Kotcheff || was born on || \#2 
+
+Example 2:
+
+Question: In what town is Suffolk county hamlet that was served by the Suffolk Traction Company?
+
+Decompose Triplets:
+
+Suffolk Traction Company || served || \#1
+\#1 || is located in || \#2
+
+Now please generate the decompose Triplets for the question: \{question\}
+
+Decompose Triplets:
+\end{mdframed}
+\caption{The prompt for generating chain of triplet query given a question, which are then used for triplet retrieval.}
+\label{prompt-queries-triple}
+\end{figure*}
+
+\paragraph{Step 2: Triplet Retrieval:}
+once the chain of triplet queries is generated, we retrieve the top 20 triplets for each query. During retrieval, if any of the triplets contain placeholders for uncertain entities, we attempt to resolve those entities by filling them with entities or relations from the previously retrieved triplets. 
+For subsequent triplet queries in the chain, placeholders are updated with these resolved entities, thus refining the triplet queries progressively.
+
+\paragraph{Step 3: Question Answering:} with the question, the chain of triplet queries, and the retrieved triplets, we prompt the model to generate the answer. If the graph extraction method also retrieves associated propositions alongside the triplets, these propositions are provided to the model to further enhance the answer generation. The prompt is shown in Figure~\ref{fig:prompt-tripletqa}. 
+
+\begin{figure*}[!ht]
+\tiny
+\begin{mdframed}
+You are given a natural language question, triplets chain for this question, a set of retrieved tripletes, and a set of facts, please answer the question.
+
+Question: \{question\}
+
+Question Triplets Chain:
+\{question triplets\}
+
+Retrieved Triplets:
+\{retrieved triplets\}
+
+Retrieved Facts:
+\{retrieved facts\}
+
+Short Answer no more than 3 words:
+\end{mdframed}
+\caption{The prompt for generating the final answer given the original question, chain of triplet query, retrieved triplets and the facts.}
+\label{fig:prompt-tripletqa}
+\end{figure*}
+
+
+\paragraph{Graph + LLM}: We use the same graph + LLM retriever hyper-parameters as in \cref{appendix-graph_llm}.
+
+
+\section{Data Release and Training/ Inference Cost Considerations}
+We will make our annotated 100K data samples publicly available to support future research. With the rapid advancements in LLMs, researchers may choose to resynthesize data to better align with their specific applications. In such cases, we recommend using our cost-efficient approach, detailed in \Cref{sec:mistral-qlora}, which provides a practical balance between performance and computational cost.
+
+Below, we present the detailed training and inference costs, highlighting the efficiency of our SynthKG and Distill-SynthKG methods.
+
+\paragraph{Cost of Data Synthesis:} With the Llama-3.1-70b-Instruct model, running the entire SynthKG pipeline on a single document requires processing an average of 11,849 input tokens. This results in a total of 2,675 average output tokens, distributed across intermediate steps such as decontextualization and the final entities, relations, and proposition generation. At a cost of \$0.90 per million tokens\footnote{https://www.together.ai/pricing}, the total annotation cost per document is \$0.0131. This translates to \$13.08 for synthesizing training data for the \distilledMistralLlama model and \$392.28 for the \distilledLlama \ model.
+
+\paragraph{Cost of Model Training:} After consolidating the data synthesized by SynthKG, each document contains an average of 1,723 input tokens (including prompts) and 1,248 output tokens, totaling 2,971 tokens per document. For a dataset of 30,000 documents, the total training token count is 89.13 million tokens. Fine-tuning Llama-3.1-8b-Instruct for one epoch on this dataset to obtain \distilledLlama\ would cost \$36.65. Additionally, fine-tuning Mistral-7b-Instruct-v0.2 for 3 epochs to obtain the \distilledMistralLlama model would cost \$3.67.
+
+Combining data synthesis and fine-tuning costs, training \distilledLlama\ would cost \$428.93, while training \distilledMistralLlama would cost \$16.75. 
+
+\paragraph{Inference Cost:} As mentioned in the cost of data synthesis, processing a single document using the SynthKG pipeline requires an average of 11,849 input tokens and 2,675 output tokens, totaling 14,524 tokens per document. At a cost of \$0.90 per million tokens, this amounts to \$0.031 per document. In contrast, with \distilledLlama\ and \distilledMistralLlama, each document requires 1,723 input tokens and 1,248 output tokens, totaling 2,971 tokens, with a cost of \$0.00267 per document. This is only 8.6\% of the cost of SynthKG, demonstrating the significant efficiency gains from fine-tuning a distilled model.
+
+
+
+\begin{table*}[!ht]
+\small
+\centering
+\begin{tabular}{@{}p{0.17\linewidth}p{0.37\linewidth} p{0.37\linewidth} }
+\toprule
+Question                  & Decomposed Question and Answer & Triplet (head || relation || tail) \\
+\midrule
+The birthplace of George McCall Theal is a port city of what bay? & Where was George McCall Theal born? Saint John, New Brunswick & George McCall Theal || was born in || Saint John, New Brunswick \\
+& Saint John is a port city of what bay? Bay of Fundy & Saint John || is a port city of || Bay of Fundy\\
+\bottomrule
+\end{tabular}
+\caption{Example from HotpotQA dataset: the generated decomposed question answer pair and the triplet.}
+\label{tab:kg-example}
+\end{table*}
+
+\begin{table*}[!ht]
+\small
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+Parameter                  & Value\\
+\midrule
+QA Prompt                  & \parbox{10cm}{You are an expert Q\&A system that is trusted around the world. Always answer the query using the provided context information, and not prior knowledge. Some rules to follow:
+
+1. Never directly reference the given context in your answer.
+
+2. Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines.
+
+3. Provide only the essential information. Answer as briefly as possible, using keywords, phrases, or dates. Avoid full sentences or unnecessary details.} \\
+include\_text              & True\\
+response\_mode             & tree\_summarize\\
+retriever\_model           & hybrid\\
+num\_chunks\_per\_query    & 10\\
+similarity\_top\_k         & 2\\
+graph\_store\_query\_depth & 2\\
+\bottomrule
+\end{tabular}
+\caption{LlamaIndex query engine parameter settings.}
+\label{tab:llama-index-parameters}
+\end{table*}
+
+
+\section{License information}
+
+We respect the license and intended use of all models and datasets employed in this study. Detailed license information is provided below.
+
+\paragraph{Models.}
+The Llama-3 models utilized in our study are licensed under the \href{https://www.llama.com/llama3/license/}{Meta Llama 3 Community License Agreement}. The Llama-3.1 models utilized in our study are licensed under the \href{https://www.llama.com/llama3_1/license/}{Llama 3.1 Community License Agreement}. The Mistral-7b-v0.3 model is licensed under the \href{https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md}{Apache 2.0 license}. 
+
+\paragraph{Datasets.}
+The BAAI/IndustryCorpus dataset used for extracting our synthetic training data is available under the \href{https://huggingface.co/datasets/choosealicense/licenses/blob/main/markdown/apache-2.0.md}{Apache 2.0 license}. 
+The 2WikiMultihopQA dataset used in our evaluations is available under the \href{https://github.com/Alab-NII/2wikimultihop/blob/main/LICENSE}{Apache 2.0 license}. The Musique dataset used in our evaluations is available under the \href{https://github.com/StonyBrookNLP/musique/blob/main/LICENSE}{Creative Commons Attribution 4.0 International license}. The HotpotQA dataset used in our evaluations is available under the \href{https://github.com/hotpotqa/hotpot/blob/master/LICENSE.txt}{Apache 2.0 license}.
+We will make our synthetic dataset publicly available under the MIT license, subject to terms and conditions of the \href{https://www.llama.com/llama3_1/license/}{Llama 3.1 Community License Agreement} related to the use of Llama-3.1 outputs. 
+
+
+\section{Discussion on the Segmentation Strategy and Document Structure Preservation}
+
+
+While our segmentation and de-semanticization approach may appear simple, our design choice is guided by both empirical findings and practical considerations. First, our analysis (see Figure~\ref{kg-coverage-plot}) shows that model performance consistently degrades as document length increases. Preserving structural associations in segmentation might result in longer input spans, which, based on our experiments, would still harm performance. Second, while we agree that capturing structural dependencies across multiple pages is a meaningful goal, it remains an open research challenge—particularly in open-ontology settings. Even state-of-the-art models like GPT-4o lack robust, generalizable pipelines for reliably preserving cross-page structure in a way that could be distilled into a smaller model. Given these limitations, we prioritize practicality and scalability by adopting a fixed-size (~1K token) chunking approach. This method aligns with the constraints of retrieval-augmented generation (RAG) and enables effective, document-level KG construction at scale. We believe our approach provides a strong balance between empirical performance and real-world applicability under current technological constraints.
+
+\section{Discussion on Manual Hyperparameter Selection}
+We manually tune two key hyperparameters in our framework: the semantic match score threshold for triplet coverage evaluation and the ROUGE score threshold for decontextualization. For the semantic match score, we intentionally select a higher threshold to ensure accuracy when determining whether two triplets are semantically equivalent. It is important to note that this threshold is only used for evaluation purposes and does not affect model training, inference, or RAG evaluation, thus having no impact on the model's learning or predictions. While the threshold is manually adjusted, downstream task performance reflects the reliability of our model.
+
+For the ROUGE score threshold used in decontextualization, we conduct careful manual analysis to ensure its effectiveness. For both Llama-3.1-70b and GPT-4o, we examine a small subset of chunks with low ROUGE scores and find that most rewritings are accurate. We identify 593 edits in this subset, with only six containing incorrect modifications and four showing some loss of information. These results suggest that the decontextualization process generally yields high-quality, self-contained text.
+
+The low ROUGE scores typically result from document footers or metadata, which are removed during the LLM's decontextualization process, and not from factual errors or information loss. Our analysis shows that approximately 72\% of the chunks achieve a ROUGE score of 90 or higher, reflecting strong alignment with the original content. Chunks with scores below 0.70 make up less than 3\%, and these are filtered out during the process to avoid any omission or extreme paraphrasing.
+
+\section{LLM Usage Statement}
+We used ChatGPT and Claude as writing assistants to improve the clarity and grammar of our manuscript. All scientific content, experimental design, and technical contributions are the original work of the authors.
+
+
+\end{document}

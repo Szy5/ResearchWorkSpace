@@ -1,0 +1,1345 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+% \usepackage{hyperref}
+% \usepackage{url}
+% \usepackage{wrapfig}
+% \setlength{\intextsep}{4pt plus 2pt minus 2pt} % vertical space around in-text floats
+% \setlength{\abovecaptionskip}{0pt}
+% \setlength{\belowcaptionskip}{0pt}
+
+
+% ========== Packages ==========
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{textcomp}
+\usepackage{booktabs}
+\usepackage{mathtools,amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage{enumitem}
+\usepackage{newunicodechar}
+\newunicodechar{−}{\textminus}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{algcompatible}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{pifont}
+\usepackage{hyperref}
+\usepackage[nameinlink,capitalize]{cleveref}
+\usepackage{url}
+\usepackage{etoc}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsthm}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}   % left-wrapping X
+\newcolumntype{C}{>{\centering\arraybackslash}X}     % centered X
+\newcommand{\lagvec}{\boldsymbol{\lambda}}       % dual vector
+\newcommand{\cost}{\mathbf{c}}                    % cost vector
+\newcommand{\budget}{\mathbf{b}}                  % budget vector
+\newcommand{\dr}{\textsc{DynamicSelector}\xspace}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+
+\newtheorem{assumption}{Assumption}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+
+% \hypersetup{
+%   colorlinks=true,
+%   linkcolor=black,
+%   citecolor=black,
+%   urlcolor=black,
+%   pdftitle={Logic-Gated Multi-Agent KGQA with Differentiable Constraints},
+%   pdfauthor={Anonymous}
+% }
+
+\newcommand{\method}{\textsc{CLAUSE}\xspace}
+
+\newcommand{\kg}{KG\xspace}
+\newcommand{\kgs}{KGs\xspace}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+
+\usepackage{xcolor,amsmath}
+\usepackage[most]{tcolorbox}
+\definecolor{brandblack}{RGB}{34,102,170}
+\definecolor{brandGreen}{RGB}{34,153,84}
+\definecolor{brandGrey}{RGB}{245,247,250}
+\tcbset{
+  enhanced,
+  boxsep=1.2mm,
+  arc=1.6mm,
+  colback=brandGrey,
+  colframe=brandblack,
+  coltitle=white,
+  fonttitle=\bfseries,
+  left=2mm,right=2mm,top=1.2mm,bottom=1.2mm
+}
+
+% Optional convenience macros (put in preamble once)
+\newcommand{\logiccons}{\textsc{Logic-Cons}\xspace}    % logic consistency metric
+\newcommand{\supportpath}{\textsc{SupportPath}\xspace} % path coverage metric
+
+
+% Uncomment AFTER acceptance:
+\iclrfinalcopy
+
+
+\title{\method: Agentic Neuro-Symbolic Knowledge Graph Reasoning via Dynamic Learnable Context Engineering }
+
+% CLAUSE = Constrained Logic-Augmented Subgraph Exploration.
+
+% \author{Anonymous Authors\\
+% Affiliations removed for double-blind review}
+
+
+% \author{
+% Yang Zhao$^{a}$\thanks{Equal contribution. Corresponding author: Yang Zhao (\texttt{s180049@e.ntu.edu.sg}).},~
+% Chengxiao Dai$^{b}$\footnotemark[1],~
+% Wei Zhuo$^{c}$,~
+% Yue Xiu$^{a}$,~
+% Dusit Niyato$^{c}$\\
+% {\small $^{a}$Independent Researcher; $^{b}$SCS, Univ.\ of Sydney; $^{c}$CCDS, NTU.}
+% }
+
+\author{
+Yang Zhao$^{1}$\thanks{Equal contribution. Corresponding author: Yang Zhao (\texttt{s180049@e.ntu.edu.sg}).},~
+Chengxiao Dai$^{2}$\footnotemark[1],~
+Wei Zhuo$^{3}$,~
+Yue Xiu$^{1}$,~
+Dusit Niyato$^{3}$\\
+{\small $^{1}$Independent Researcher.}\\
+{\small $^{2}$School of Computer Science, The University of Sydney, Australia.}\\
+{\small $^{3}$College of Computing \& Data Science, Nanyang Technological University, Singapore.}
+}
+
+
+% \author{
+%   Yang Zhao\thanks{Equal contribution.} \quad
+%   Chengxiao Dai\footnotemark[1] \quad
+%   Wei Zhuo \quad
+%   Yue Xiu \quad
+%   Dusit Niyato \quad
+% }
+
+% \author{Antiquus S.~Hippocampus, Natalia Cerebro \& Amelie P. Amygdale \thanks{ Use footnote for providing further information
+% about author (webpage, alternative address)---\emph{not} for acknowledging
+% funding agencies.  Funding acknowledgements go at the end of the paper.} \\
+% Department of Computer Science\\
+% Cranberry-Lemon University\\
+% Pittsburgh, PA 15213, USA \\
+% \texttt{\{hippo,brain,jen\}@cs.cranberry-lemon.edu} \\
+% \And
+% Ji Q. Ren \& Yevgeny LeNet \\
+% Department of Computational Neuroscience \\
+% University of the Witwatersrand \\
+% Joburg, South Africa \\
+% \texttt{\{robot,net\}@wits.ac.za} \\
+% \AND
+% Coauthor \\
+% Affiliation \\
+% Address \\
+% \texttt{email}
+% }
+
+\begin{document}
+\maketitle
+
+%%%%% For ICLR submission
+
+
+
+\begin{abstract}
+Knowledge graphs provide structured context for multi‑hop question answering, but deployed systems must balance answer accuracy with strict latency and cost targets while preserving provenance. Static $k$‑hop expansions and ``think‑longer'' prompting often over‑retrieve, inflate context, and yield unpredictable runtime. Thus, we introduce \method, an agentic three-agent neuro‑symbolic framework that treats context construction as a sequential decision process over knowledge graphs, deciding what to expand, which paths to follow or backtrack, what evidence to keep and when to stop. Latency (interaction steps) and prompt cost (selected tokens) are exposed as user‑specified budgets or prices, allowing per‑query adaptation to trade‑offs among accuracy, latency, and cost without retraining. \method employs the proposed Lagrangian‑Constrained Multi‑Agent Proximal Policy Optimization (LC‑MAPPO) algorithm to coordinate three agents: \emph{Subgraph Architect}, \emph{Path Navigator}, and \emph{Context Curator}, so that subgraph construction, reasoning path discovery, and evidence selection are jointly optimized under per‑query resource budgets on edge edits, interaction steps, and selected tokens. Across HotpotQA, MetaQA, and FactKG, \method yields higher EM@1 while reducing subgraph growth and end-to-end latency at equal or lower token budgets. On MetaQA-2-hop, relative to the strongest RAG baseline (GraphRAG), \method achieves $+39.3$ EM@1 with $18.6\%$ lower latency, and $40.9\%$ lower edge growth. The resulting contexts are compact, provenance‑preserving, and deliver predictable performance under deployment constraints.
+\end{abstract}
+
+
+
+
+\section{Introduction}
+
+Large language models (LLMs) benefit from external structure for knowledge graph question answering (KGQA) that require multi‑hop reasoning and provenance \citep{lewis2020rag,yang2018hotpotqa,pan2023llmkg}. Knowledge graphs (\kgs) are a natural substrate: they expose typed entities and relations, support symbolic traversals, and yield auditable context trails \citep{yasunaga2021qagnn,das2018minerva}. A common design is to build a query-based local neighborhood in the KG, and then condition a reader language model to produce the answer \citep{sun2019pullnet, ding2024epr}.
+
+How the graph context is assembled often misaligns with both answer quality and runtime constraints. Fixed $k$‑hop expansions serialize many triples, inflating token mass and latency \citep{zhou2024efficient,wan2023efficientllms} and introducing distractors that depress accuracy \citep{jiang2019adversarialhotpot}. Extending chain‑of‑thought \citep{wei2022cot,kojima2022zeroshot} lengthens per‑step reasoning without changing \emph{which} evidence is visible and offers little control over end‑to‑end latency \citep{zhou2024efficient}. In practice, systems are constrained not only by prompt length but also by the number of interaction steps, how often we edit, traverse, and curate, yet most pipelines expose only heuristic knobs (hop depth, degree caps, top‑$k$).
+
+Our view is to make context construction itself as the learning problem: decide which edges to add or delete, which paths to pursue or backtrack, which snippets to keep, and when to stop, all under explicit caps or prices on interaction steps and selected tokens. This replaces brittle $k$‑hop heuristics with a learned, budget‑aware controller and makes accuracy–latency–cost trade‑offs explicit and tunable. We then propose \method, an \emph{agentic neuro‑symbolic} framework with three agents—\emph{Subgraph Architect}, \emph{Path Navigator}, and \emph{Context Curator}. Decisions unfold sequentially on a symbolic state (nodes, edges, paths) through discrete, auditable actions (edit, traverse, curate), while compact neural scorers prioritize entities, relations, and neighborhoods. In this design, step and token usage enter the training objective directly, so stopping rules and exploration depth are learned rather than hard‑coded.
+
+Specifically, three cooperative agents operate on the KG: \emph{Subgraph Architect} constructs a question‑anchored subgraph that preserves answer‑supporting paths while avoiding over‑expansion; the \emph{Path Navigator} discovers and revises reasoning paths while respecting a step budget; and \emph{Context Curator} assembles a minimal set of textualized snippets sufficient for accurate responses from LLMs under a token budget. We coordinate three agents with LC‑MAPPO—a Lagrangian-constrained centralized training with decentralized execution (CTDE) variant of PPO that uses a centralized critic and Lagrangian dual variables to learn decentralized policies, which maximize task reward while enforcing per‑query budgets on edge edits, interaction steps, and selected tokens \citep{foerster2018coma,rashid2018qmix,schulman2017ppo,yu2022surprising,achiam2017constrained,stooke2020pidlagrangian}. During inference, a single checkpoint runs under hard budgets (caps) or fixed prices (soft trade‑offs), adapting per query without retraining.
+
+Empirically, the \method framework produces compact, targeted contexts and predictable runtime. In HotpotQA, MetaQA, and FactKG, it reduces edge counts and end‑to‑end latency while improving exact match at the matched token mass, as shown in Section~\ref{sec:experiments}. Requirement sweeps reveal clear accuracy–latency–cost Pareto frontiers: shifting budget from per‑step reasoning to interaction improves accuracy at fixed tokens, and tightening the step budget reduces latency with little or no loss in accuracy.
+
+% {\color{black}
+
+\textbf{Contributions.} (1) \textit{Formulation.} We cast multi-hop KGQA as \emph{requirements-conditioned} context assembly with per-query budgets/prices on three deployment-relevant resources: (i) subgraph edits, (ii) interaction steps (latency proxy), and (iii) selected tokens (prompt cost). This makes accuracy--efficiency trade-offs explicit and tunable. \\
+(2) \textit{Framework.} \method is an agentic neuro-symbolic controller that \emph{jointly} decides what to edit, which paths to follow or backtrack, what textual evidence to keep, and when to \textsc{stop}. Actions are symbolic (auditable) and priorities come from lightweight neural scorers, yielding compact, provenance-preserving context. \\
+(3) \textit{Training.} We adapt constrained RL to this setting via LC-MAPPO: centralized training with decentralized execution, a multi-head critic that separates \emph{task} value from \emph{edge/step/token} costs, and per-budget dual variables that enforce episode-level requirements or enable price-based trade-offs at test time. \\
+(4) \textit{Evidence.} In HotpotQA, MetaQA, and FactKG, CLAUSE achieves higher or matched EM at equal or lower budgets, with reduced subgraph growth and latency. Ablations show that removing any agent or constraint handling degrades accuracy and/or efficiency, supporting the need for joint control and explicit budgets.
+% }
+
+
+
+
+\section{Preliminaries and Related Work}
+\label{sec:related}
+
+\subsection{Preliminaries}
+\label{sec:preliminaries}
+
+\textbf{Neuro-symbolic definition.} We view \emph{neuro-symbolic inference} as coupling an explicit symbolic calculus (Boolean, first‑order, or soft/fuzzy) with a learned scoring/belief module; differentiable logic is unnecessary—only a principled linkage between symbols and learned scores is required \citep{DeSmetDeRaedt2025}.
+\textbf{KGQA as neuro-symbolic.} KGQA operates on typed entity–relation graphs and commonly targets (i) single‑relation queries, (ii) multi‑hop path queries, and (iii) compositional‑logic queries (e.g., conjunction/disjunction/negation) \citep{Zhang2021AIOpen}. Surveys group approaches into (1) logic‑informed embeddings, (2) embeddings trained with logical constraints, and (3) \emph{rule/path learning} where a neural controller searches over symbolic paths/rules \citep{DeLong2024NeSyKG}. We adopt (3): a dynamic learnable agentic framework edits a KG for reasoning.
+
+\subsection{Related Work}
+
+\textbf{Existing Multi‑hop KGQA Solutions.} Multi‑hop KGQA must balance accuracy and provenance with strict constraints on latency and prompt cost. In practice, two resources dominate deployment behavior: the number of \emph{interaction steps} taken while assembling context and the \emph{selected tokens} ultimately shown to the reader LLM. Static $k$‑hop expansions often over‑retrieve, inflate prompts, and surface distractors \citep{zhou2024efficient,wan2023efficientllms,jiang2019adversarialhotpot}, while typical pipelines expose only heuristic knobs rather than learned, per‑query control. A long line of \emph{symbolic/neuro‑symbolic} KGQA operates directly on entity–relation structure. Path‑following and rule‑learning systems (e.g., MINERVA, NeuralLP, TensorLog, RNNLogic) traverse the graph to derive answers \citep{das2018minerva,yang2017neurallp,cohen2016tensorlog,qu2021rnnlogic}; graph‑aware readers (e.g., QAGNN) inject KG signals into the encoder \citep{yasunaga2021qagnn}. Question‑conditioned subgraph builders such as GraftNet and PullNet assemble local neighborhoods for a downstream reader \citep{sun2019pullnet}. These approaches typically set expansion depth/degree and filtering thresholds a priori, which makes runtime behavior sensitive to manual tuning and obscures the accuracy–efficiency trade‑off. Then, work on \emph{context engineering} shows that prompt composition strongly affects both cost and accuracy \citep{zhou2024efficient,wan2023efficientllms}. Chain‑of‑thought prompting can help certain tasks \citep{wei2022cot,kojima2022zeroshot,han2026readbeforeyouthink}, yet it primarily lengthens the reasoning text without changing \emph{which} evidence is visible, offering limited leverage over end‑to‑end latency \citep{zhou2024efficient}. Moreover, \emph{Retrieval‑augmented generation} (RAG) conditions generation on external evidence \citep{lewis2020rag,karpukhin2020dense,izacard2022atlas}. Recent variants interleave reasoning and retrieval (ReAct) \citep{yao2023react}, incorporate self‑feedback (\textsc{Self‑RAG}) \citep{asai2023selfrag}, or adapt retrieval frequency to difficulty/confidence \citep{jeong2024adaptiverag,zhang2024retrievalqa}. Graph‑guided pipelines (e.g., GraphRAG; Think‑on‑Graph 2.0) leverage entity–relation structure for multi‑hop collection \citep{edge2024graphrag,ma2024tog2}. These systems often rely on fixed hop limits or hand‑tuned schedules; optimization of construction, traversal, and selection is rarely carried out jointly under explicit step/token costs. Finally, \emph{agentic LLMs} plan, call tools, and decide when to act versus reflect \citep{press2022selfask,yao2023react,shinn2023reflexion,schick2023toolformer,shen2023hugginggpt,liu2023agentbench,wang2023voyager}. Their flexibility comes with multi‑step deliberation that can raise interaction cost, and per‑episode resource control is  implicit.
+
+
+
+\textbf{MARL and constrained optimization.}
+Multi‑agent reinforcement learning (MARL) addresses decentralized coordination under partial observability and non‑stationarity, where multiple local‑view actors must produce joint behavior that optimizes a global objective subject to deployment constraints (e.g., latency, token budget, graph edits). A widely used recipe is centralized training with decentralized execution (CTDE), which stabilizes learning and credit assignment via a centralized value while keeping actors decentralized at test time; representative instances include COMA, which introduces a counterfactual baseline for per‑agent credit, and QMIX, which learns a monotonic mixing network to factorize joint values into per‑agent utilities \citep{foerster2018coma,rashid2018qmix}. Building on PPO \citep{schulman2017ppo}, MAPPO shows that PPO‑style updates with a centralized critic are strong, simple baselines on standard cooperative benchmarks \citep{yu2022surprising}. Existing methods largely fall into two families: value factorization (e.g., QMIX), which is efficient and scalable but restricted by the monotonic mixing constraint and can misattribute credit when joint action values are non‑monotonic; and policy‑gradient CTDE (e.g., COMA/MAPPO), which is flexible but higher‑variance/sample‑hungry and, in vanilla form, lacks principled mechanisms to enforce per‑episode resource constraints. Single‑penalty constrained RL such as Reward-Constrained Policy Optimization (RCPO) \citep{tessler2018reward} further conflates heterogeneous costs, making it difficult to independently control edge growth, interaction steps, and selected tokens. Preference‑optimization methods (GRPO/DPO) instead learn from static pairwise/group preferences over complete responses in bandit‑like, text‑only settings without explicit environment state transitions \citep{rafailov2023dpo,shao2024deepseekmath}; they neither decompose multi‑agent credit nor estimate shaped values on graph states, and they provide no handle for enforcing per‑episode constraints. 
+
+
+% {\color{black}
+\textbf{Positioning.}
+In summary, we situate \method among four families: (i) \emph{question-conditioned subgraph builders} and graph-guided RAG (e.g., GraftNet, PullNet, GraphRAG; \citep{sun2019pullnet,edge2024graphrag}), which rely on fixed hop/degree/top-$k$ rules; (ii) \emph{path/rule learners} (MINERVA, NeuralLP, RNNLogic; \citep{das2018minerva,yang2017neurallp,qu2021rnnlogic}) that optimize task reward without explicit latency/token control; (iii) \emph{agentic LLMs} (ReAct, Graph-of-Thoughts, AutoGen;
+\citep{yao2023react,besta2023graphofthoughts,wu2023autogen}) that interleave tools but do not enforce per-episode resources; and (iv) \emph{constrained RL} (RCPO or fixed-penalty PPO; MAPPO/COMA without constraints; \citep{tessler2018reward,schulman2017ppo,yu2022surprising,foerster2018coma}). In contrast, we cast KGQA as a \emph{constrained} decision process with three deployment-relevant costs (edges/steps/tokens), learn \emph{price-aware} edit/traverse/curate policies with explicit \textsc{stop}, and train with \emph{separate} cost heads and dual variables so a single checkpoint supports both budget caps and price trade-offs.
+% }
+
+\begin{table}[t!]
+\centering
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+\renewcommand{\arraystretch}{0.95}
+\setlength{\tabcolsep}{4.5pt}
+\footnotesize
+\caption{Notation. See Appendix~\ref{app:notation} for the extended table.}
+\label{tab:notation-1}
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+$\mathcal{K}=(V,R,E)$ & Global knowledge graph; $E\subseteq V\times R\times V$ \\
+$G_t=(V_t,E_t)$; $G^\ast$ & Evolving subgraph at step $t$; final subgraph \\
+$\mathcal{F}_t$; $\mathcal{P}_t$; $\mathcal{A}_t$ & Frontier nodes; candidate pool at step $t$; typed outgoing candidates (navigator actions) \\
+$q$; $y,\hat y$ & Input question; gold / predicted answers \\
+$p_t$; $\Pi$ & Path prefix at step $t$; set of discovered paths (provenance) \\
+$\pi_B,\pi_T,\pi_S$; $a_t^B,a_t^T,a_t^S$ & Policies and actions for \textsc{Edit}/\textsc{Traverse}/\textsc{Curate} \\
+$s_t=(q,G_t,\mathcal{F}_t,\mathcal{P}_t,\mathbf{b}_t)$ & State summary at step $t$; $\mathbf{b}_t$: remaining budgets (vector) \\
+$\beta=(\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}})$ & Episode budgets: edges, latency (steps), selected tokens \\
+$C=(C_{\text{edge}},C_{\text{lat}},C_{\text{tok}})$; $c_t^{(k)}$ & Cumulative costs and per‑step increments ($k\!\in\!\{\text{edge},\text{lat},\text{tok}\}$; $\sum_t c_t^{(k)}=C_k$) \\
+$\boldsymbol{\lambda}=(\lambda_{\text{edge}},\lambda_{\text{lat}},\lambda_{\text{tok}})$ & Lagrange multipliers (resource prices) \\
+$R_{\mathrm{acc}}(\tau)$; $r^{\mathrm{acc}}_t$; $r'_t$ & Episode reward; per‑step task reward; shaped return $r'_t=r^{\mathrm{acc}}_t-\sum_{k}\lambda_k\,c_t^{(k)}$ \\
+$\mathcal{L}(\pi,\boldsymbol{\lambda})$ & Lagrangian $\mathbb{E}[\,R_{\mathrm{acc}}(\tau)-\boldsymbol{\lambda}^{\top}C(\tau)\,]$ \\
+$Q^{\text{task}},Q^{\text{edge}},Q^{\text{lat}},Q^{\text{tok}}$ & Centralized‑critic action‑values (task head + three cost heads) \\
+$A^{i,h}_t,\ A^{i,\lambda}_t$; $i\in\{B,T,S\}$ & Counterfactual and Lagrangian‑shaped advantages; agent index \\
+$D^\star$; $\operatorname{tok}(\cdot)$ & Ordered curated evidence; token‑count operator \\
+$e=(u,r,v)$ & KG triple (head $u$, relation $r$, tail $v$) \\
+$H,\ \bar d,\ |\mathcal{P}_t|,\ K$ & Hop cap; avg local branching factor; pool size; selected list length ($K$ dynamic) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+
+
+\section{Problem Formulation}
+\label{sec:problem}
+
+% {\color{black}
+\textbf{Problem.}
+We study multi-hop KGQA over a typed knowledge graph
+\(\mathcal{K}=(V,R,E)\) with entities \(V\), relation types \(R\), and
+triples \(E\subseteq V\times R\times V\).
+A query \(q\) is natural language; the gold answer \(y^\star\subseteq V\)
+can be a single entity or a set (surface strings, when provided, are canonicalized to IDs in \(V\)).
+Given \((\mathcal{K},q)\), the system outputs a prediction \(\hat y\subseteq V\)
+and a compact, provenance-preserving context for the reader LLM.
+An \emph{episode} corresponds to one question.
+
+\textbf{State and observations.}
+At round \(t\), the controller maintains a working subgraph
+\[
+G_t=(V_t,E_t),\qquad E_t \subseteq V_t \times R \times V_t,
+\]
+a \emph{frontier} \(\mathcal{F}_t\subseteq V_t\) of nodes eligible for expansion,
+a candidate pool \(\mathcal{P}_t\) of textualized units (nodes/edges/paths and optional retrieval hits),
+and remaining budgets \(\mathbf{b}_t=(b^{\text{edge}}_t,b^{\text{lat}}_t,b^{\text{tok}}_t)\).
+We write
+$
+s_t=\big(q,\,G_t,\,\mathcal{F}_t,\,\mathcal{P}_t,\,\mathbf{b}_t\big),
+$
+and each agent acts on a compact observation \(o^i_t=\phi_i(s_t)\).
+
+\textbf{Action space.}
+We use three action families,
+$
+a_t\in\{\textsc{edit},\textsc{traverse},\textsc{curate}\}.
+$
+Let the current path prefix be \(p_t=(u_0,r_1,u_1,\dots,u_t)\) with tip \(u_t\).
+Define the typed outgoing options
+$
+\mathcal{A}_t \;:=\; \{\, (r,v') \in R\times V \;:\; (u_t,r,v') \in E \,\}.
+$
+Then,
+\[
+\begin{aligned}
+\textsc{edit:}&\quad \{\textsc{add}(e),\,\textsc{delete}(e),\,\textsc{stop}\},
+&& e=(u,r,v)\in \mathcal{E}^{\mathrm{cand}}_t,\\
+\textsc{traverse:}&\quad \{\textsc{continue}(r,v'),\,\textsc{backtrack},\,\textsc{stop}\},
+&& (r,v')\in\mathcal{A}_t,\\
+\textsc{curate:}&\quad \{\textsc{select}(d),\,\textsc{stop}\},
+&& d\in\mathcal{P}_t,
+\end{aligned}
+\]
+where \(\mathcal{E}^{\mathrm{cand}}_t\) are frontier-adjacent edges (defined below).
+
+\textbf{Costs and budgets.}
+We track episode-level costs for subgraph edits, interaction steps (latency proxy),
+and selected tokens (prompt cost):
+\[
+C_{\text{edge}}=\sum_t c^{\text{edge}}_t,\quad
+C_{\text{lat}}=\sum_t c^{\text{lat}}_t,\quad
+C_{\text{tok}}=\sum_t c^{\text{tok}}_t,
+\]
+with increments (at most one edit per round)
+\[
+c^{\text{edge}}_t=\mathbf{1}\{a_t\in\{\textsc{add},\textsc{delete}\}\},\quad
+c^{\text{lat}}_t=\mathbf{1}\{a_t\neq\textsc{stop}\},\quad
+c^{\text{tok}}_t=\textstyle\sum_{d\in\Delta D_t}\operatorname{tok}(d),
+\]
+where \(\Delta D_t\) are newly selected units at round \(t\) and \(\operatorname{tok}(\cdot)\) counts tokens.
+Per-episode budgets are \(\beta=(\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}})\).
+An episode ends when all three agents emit \textsc{stop} or any budget is exhausted.
+
+\textbf{Objective (CMDP).}
+Let \(R_{\mathrm{acc}}(\tau)\) be the episode reward. We solve
+\begin{equation}
+\label{eq:cmdp}
+\max_{\pi}\ \mathbb{E}_{\tau\sim\pi}\!\big[R_{\mathrm{acc}}(\tau)\big]
+\ \ \text{s.t.}\ \
+\mathbb{E}[C_{\mathrm{edge}}]\le\beta_{\mathrm{edge}},\ \
+\mathbb{E}[C_{\mathrm{lat}}]\le\beta_{\mathrm{lat}},\ \
+\mathbb{E}[C_{\mathrm{tok}}]\le\beta_{\mathrm{tok}}.
+\end{equation}
+The Lagrangian is
+\(
+\mathcal{L}(\pi,\boldsymbol{\lambda})=\mathbb{E}\!\big[R_{\mathrm{acc}}-\boldsymbol{\lambda}^{\top}C\big]
+\)
+with prices \(\boldsymbol{\lambda}=(\lambda_{\text{edge}},\lambda_{\text{lat}},\lambda_{\text{tok}})\ge 0\).
+
+\textbf{Frontierized subgraph.}
+A subgraph \(G_t\) is \emph{frontierized} if
+$
+\mathcal{E}^{\mathrm{cand}}_t\subseteq \{(u,r,v)\in E:\ u\in\mathcal{F}_t\},
+$
+i.e., all candidate expansions originate from the frontier. After each accepted edit or traversal,
+\(\mathcal{F}_t\) is updated by adding touched endpoints and removing saturated nodes.
+% }
+
+\section{Method}
+\label{sec:method}
+
+\subsection{CLAUSE Overview}
+We propose \textbf{\method}, an \emph{agentic neuro-symbolic} framework for multi-hop KGQA that learns to \emph{edit}, \emph{traverse}, and \emph{curate} compact, query-specific graph contexts under explicit per-episode budgets. An overview of the \method\ architecture is shown in Figure~\ref{fig:framework}. \method operates over KG symbols (entities/relations/paths) with lightweight neural controllers, yielding auditable traces. Three agents act on the evolving subgraph $G_t$ and are trained \emph{jointly} with LC–MAPPO (centralized training with a constrained multi-head critic; \S\ref{sec:training}): (i) \textbf{Subgraph Architect} for conservative, reversible edits to keep $G_t$ compact; (ii) \textbf{Path Navigator} that decides \textsc{continue}/\textsc{backtrack}/\textsc{stop} along symbolic paths; and (iii) \textbf{Context Curator} that performs budget-aware evidence selection with an explicit \textsc{stop}. \method exposes deployable controls via per-query budgets $(\beta_{\mathrm{edge}},\beta_{\mathrm{lat}},\beta_{\mathrm{tok}})$ or equivalent prices $\boldsymbol{\lambda}$, enabling accuracy–efficiency trade-offs without retraining. The algorithms are given in the Appendix~\ref{appendix:algs}.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/framework.pdf}
+  \caption{The CLAUSE workflow. Three agents (\emph{Architect}, \emph{Navigator}, \emph{Curator}) operate on a symbolic KG state under per-episode budgets; LC–MAPPO trains task and cost heads jointly and provides deployable dials at inference.}
+  \label{fig:framework}
+\end{figure}
+
+\subsection{Design Principles}
+\label{sec:principles}
+\textbf{Per-episode budgets.} Each query carries budgets $(\beta_{\mathrm{edge}},\beta_{\mathrm{lat}},\beta_{\mathrm{tok}})$ (or prices $\lagvec$; see \S\ref{sec:problem}).\\
+\textbf{Joint control.} Editing, traversal, and curation are optimized together, replacing $k$-hop/degree/top-$k$ heuristics. \\
+\textbf{Learned stopping.} The agents keep going only if another hop or another snippet is worth its cost; otherwise they stop. \\
+\textbf{Neuro-symbolic transparency.} Actions are discrete KG edits/moves; neural modules provide the scores; traces are auditable.
+
+\subsection{Agentic Workflow}
+\label{sec:agents}
+
+At each decision round, \method executes a three-stage loop—\emph{edit} $\rightarrow$ \emph{traverse} $\rightarrow$ \emph{curate}$\,$—conditioned on $(\beta_{\mathrm{edge}},\beta_{\mathrm{lat}},\beta_{\mathrm{tok}})$ or $\boldsymbol{\lambda}$. After every action, counters $(C_{\mathrm{edge}},C_{\mathrm{lat}},C_{\mathrm{tok}})$ update, remaining budgets are recomputed, and any agent may issue \textsc{stop}; the episode ends when all modules stop or a budget is exhausted. We train three agents jointly with LC–MAPPO (Section~\ref{sec:training}). 
+
+
+
+
+% {\color{black}
+
+\textbf{(1) Subgraph Architect (anchoring \& edit).}
+From the question \(q\), we extract mention candidates \(M(q)\) by matching to entity names/aliases (optionally aided by a simple tagger).
+For a mention \(m\) and entity \(v\), we compute the anchor score \(s_{\mathrm{anch}}(m,v)\).
+We aggregate to an entity score
+$s_{\mathrm{ent}}(v \mid q) \;=\; \max_{m \in M(q)} s_{\mathrm{anch}}(m,v),$
+and form a seed set \(S_0\) by taking the top-\(k\) entities.
+If alias hits are weak or absent, we fall back to a frozen-encoder retrieval over entity textual fields and take the top-\(k\) as seeds.
+The initial frontier is \(\mathcal{F}_0 := S_0\); the initial subgraph \(G_0\) is built around \(\mathcal{F}_0\) (within budget).
+
+% \emph{Edit step.}
+Let \((G_t,\mathcal{F}_t)\) be the current subgraph and frontier \(\mathcal{F}_t \subseteq V(G_t)\).
+The architect considers frontier-adjacent candidates
+$
+\mathcal{E}^{\text{cand}}_t \subseteq \{(u,r,v)\in E : u\in \mathcal{F}_t\}.
+$
+Each candidate \(e=(u,r,v)\) receives a fused score
+\[
+s(e \mid q,G_t)=
+w^\top\!\Big[
+\phi_{\text{ent}}(u,q),\,
+\phi_{\text{rel}}(r,q),\,
+\phi_{\text{nbr}}(u,G_t),\,
+\phi_{\text{deg}}(u)
+\Big],
+\]
+where \(\phi_{\text{ent}}\) and \(\phi_{\text{rel}}\) combine lexical features and cosine similarities from a frozen encoder, and
+\(\phi_{\text{nbr}}\), \(\phi_{\text{deg}}\) encode neighborhood and degree priors (hub throttling).
+At step \(t\) the agent chooses \(a_t \in \{\textsc{add},\textsc{delete},\textsc{stop}\}\) and, if applicable, \(e_t \in \mathcal{E}^{\text{cand}}_t\) to maximize the price-shaped gain
+\[
+g(a,e \mid q,G_t) \;=\; s(e \mid q,G_t)\;-\;\lambda_{\text{edge}}\,c_{\text{edge}}(a,e),
+\]
+subject to remaining edge/latency budgets.
+An edit is applied only if \(g(a_t,e_t)>0\) and budget remains; \((G_{t+1},\mathcal{F}_{t+1})\) are updated accordingly.
+All candidates originate from the frontier, avoiding uninformed \(k\)-hop expansions.
+Per round, scoring costs \(O(C_B d)\) with \(C_B=\lvert \mathcal{E}^{\text{cand}}_t\rvert\) and encoder width \(d\); applying accepted edits costs \(O(\Delta E)\).
+% }
+
+
+
+\textbf{(2) Path Navigator (traverse).}
+Given $G_t$, the navigator maintains a path prefix $p_t$ and observes $(q, v_t, \mathcal{A}_t, \mathrm{summary}(p_t))$, where $\mathcal{A}_t$ are typed outgoing candidates. A light encoder outputs (i) a termination head over \{\textsc{stop}, \textsc{continue}\} and (ii) candidate logits over $\mathcal{A}_t$ when continuing; \textsc{backtrack} is modeled as an explicit action. Each hop increments $C_{\mathrm{lat}}$, so continuation occurs only when expected shaped value exceeds the current step price. We cap the horizon by a small $H$ and retain log-probabilities for credit assignment. Discovered paths $\Pi=\{p_1,\dots,p_m\}$ serve as human-readable provenance.
+
+
+
+\textbf{(3) Context Curator (curate).}
+From a pool $\mathcal{P}_t$ (textualized nodes/edges/paths and optional retrieval hits), the curator performs listwise selection with an explicit \textsc{stop}:
+\[
+\max_{\pi_S}\; R^{\text{task}}(\mathcal{S})
+\quad \text{s.t.} \quad
+\sum_{c\in\mathcal{S}}\operatorname{tok}(c)\le \beta_{\text{tok}},
+\qquad
+\mathcal{S}=\text{Curate}(\mathcal{P}_t;\pi_S).
+\]
+Beyond independent passage thresholds, we use \emph{listwise, redundancy-aware} scoring with a learned \textsc{stop} head \emph{conditioned on the token price} (dual $\lambda_{\mathrm{tok}}$), aligning selection with $C_{\mathrm{tok}}$ and producing compact, complementary evidence sets that are both efficient and auditable.
+
+
+\textbf{Observations and cost attribution.}
+Agents receive compact summaries of $(G_t,\mathcal{F}_t,\mathcal{P}_t)$ and the remaining budgets. Costs are attributed at source, edits $\!\rightarrow\! C_{\mathrm{edge}}$, steps $\!\rightarrow\! C_{\mathrm{lat}}$, curations $\!\rightarrow\! C_{\mathrm{tok}}$, which simplifies credit assignment and supplies the cost signals used by LC-MAPPO.
+
+
+\subsection{Learning: LC-MAPPO}
+\label{sec:training}
+
+To enforce per-episode budgets in \emph{edges}, \emph{steps}, and \emph{tokens} while preserving accuracy, we propose LC–MAPPO, a Lagrangian-constrained CTDE variant of MAPPO that \emph{jointly} learns task value and multiple cost processes with deployable test-time dials. A centralized critic estimates one task head $Q^{\mathrm{task}}$ and three cost heads $(Q^{\mathrm{edge}},Q^{\mathrm{lat}},Q^{\mathrm{tok}})$ over joint actions; a monotonic mixer aggregates per-agent utilities for each head \citep{rashid2018qmix}. Let $c_t^{(k)}$ denote instantaneous cost increments whose episode sums yield $C_k$ in Eq.~\ref{eq:cmdp}, for $k\!\in\!\{\text{edge},\text{lat},\text{tok}\}$. The PPO surrogate uses COMA-style counterfactual advantages \citep{foerster2018coma,schulman2017ppo,yu2022surprising} on the \emph{shaped} return
+\begin{equation}
+\label{eq:shaped}
+r'_t \;=\; r^{\mathrm{acc}}_t \;-\; \lambda_{\mathrm{edge}}\,c^{\mathrm{edge}}_t \;-\; \lambda_{\mathrm{lat}}\,c^{\mathrm{lat}}_t \;-\; \lambda_{\mathrm{tok}}\,c^{\mathrm{tok}}_t,
+\end{equation}
+which instantiates the \emph{per-step Lagrangian} of the CMDP in Eq.~\ref{eq:cmdp}. At optimum, the duals $\lagvec^\star$ equal the partial derivatives of the optimal value w.r.t.\ budgets (shadow‑price property), and therefore predict the local slope of the accuracy–latency-cost frontiers (Appendix~\ref{app:tradeoff}).
+
+Rather than fixing a single penalty, LC–MAPPO maintains \emph{separate} dual variables $\lambda_{\mathrm{edge}},\lambda_{\mathrm{lat}},\lambda_{\mathrm{tok}}$ and updates them by projected ascent,
+\[
+\lambda_k \leftarrow \bigl[\lambda_k + \eta\bigl(\widehat{\mathbb{E}}[C_k]-\beta_k\bigr)\bigr]_+,
+\quad k\in\{\text{edge},\text{lat},\text{tok}\},
+\]
+optionally stabilized with PID control \citep{achiam2017constrained,stooke2020pidlagrangian}. This is stochastic dual ascent on the Lagrangian of Eq.~\ref{eq:cmdp}, moving $\lambda$ to enforce $\mathbb{E}[C_k]\!\le\!\beta_k$ while actors ascend the shaped objective. The separation of a task head from cost heads improves credit assignment and exposes explicit accuracy–efficiency trade-offs at test time (tune $\lambda$ or $\beta$ without retraining). Convergence is stated in Appendix~\ref{appendix:convergence}.
+
+\subsection{Inference and Deployment Controls}
+\label{sec:inference}
+At test time, agents act greedily with learned \textsc{stop}. Operators may run in \emph{cap} mode (set $(\beta_{\mathrm{edge}},\beta_{\mathrm{lat}},\beta_{\mathrm{tok}})$) for hard guarantees or in \emph{price} mode (fix $\lagvec$) for smooth trade-offs—both from a single checkpoint. Symbolic decisions yield step-level traces (what was added, explored, selected, and where we stopped) for audit and ablation.
+
+
+
+
+
+\section{Experiments}
+\label{sec:experiments}
+
+\textbf{Dataset.} We evaluate on three multi‑hop KGQA datasets, including \textsc{MetaQA} \citep{zhang2017variational}, \textsc{HotpotQA} \citep{yang2018hotpotqa}, and \textsc{FactKG} \citep{kim2023factkg}.
+
+
+\textbf{Baselines.} We compare three families under a shared retriever/reader and decoding (except the no-retrieval group). \textbf{Pretrained LLMs (no retrieval):} GPT-OSS-120B;\ LLaMA3.3-70B;\ Qwen3-32B. \textbf{RAG methods (Qwen3-32B):} Vanilla RAG~\citep{lewis2020rag};\ Hybrid RAG~\citep{robertson2009bm25,karpukhin2020dense,nogueira2019passage};\ LightRAG~\citep{guo-etal-2025-lightrag};\ GraphRAG~\citep{edge2024graphrag}. \textbf{Agent-based methods (Qwen3-32B):} ReAct~\citep{yao2023react};\ Graph-of-Thoughts (GoT)~\citep{besta2023graphofthoughts};\ AutoGen~\citep{wu2023autogen};\ KG-Agent~\citep{jiang2024kg}. Additionally, LC-MAPPO is compared with MAPPO~\citep{yu2022surprising}, fixed-penalty PPO \citep{schulman2017ppo} and single-multiplier RCPO \citep{tessler2018reward}.
+
+
+\textbf{Metrics.}
+\textbf{Accuracy} is reported as top‑1 exact match (EM@1). \textbf{Efficiency} is measured by (i) \textbf{Average latency}, normalized so that Vanilla RAG $=1.0\times$ per dataset/hop; and (ii) \textbf{Average edge budget}, i.e., the mean number of graph edges explored, also normalized to Vanilla RAG $=1.0\times$.
+
+
+\subsection{Experimental Results and Analysis}
+\label{sec:main_results}
+
+\textbf{Exact Match.} Table~\ref{tab:mainqa_em} reports EM@1 in HotpotQA (distractor), FactKG, and MetaQA. \textbf{CLAUSE} achieves the best accuracy on all datasets and hops (71.7 on HotpotQA, 84.2 on FactKG, and 91.0/87.3/85.5 on MetaQA 1/2/3-hop), consistently surpassing both RAG baselines (e.g., Hybrid RAG 66.0 on HotpotQA) and agent baselines (e.g., KG-Agent 68.7 on HotpotQA, 87.3/78.0/75.4 on MetaQA). Pure pretrained LLMs perform markedly worse, highlighting the value of budget-aware, neuro-symbolic control over subgraph editing, traversal, and evidence curation.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Main QA results: EM@1 on HotpotQA, FactKG, and MetaQA.}
+\label{tab:mainqa_em}
+\small
+\begin{tabular}{l|l|c|c|c|c|c}
+\hline
+\textbf{Family} & \textbf{Method} & \textbf{HotpotQA} & \textbf{FactKG} & \multicolumn{3}{c}{\textbf{MetaQA}} \\
+\cline{5-7}
+ &  & \textbf{(Distractor)} &  & \textbf{1-hop} & \textbf{2-hop} & \textbf{3-hop} \\
+\hline
+\multirow{3}{*}{Pretrained-LLMs}
+& GPT-OSS-120B    & 44.5 & 68.0 & 62.7 & 41.5 & 52.3 \\
+& LLaMA3.3-70B    & 41.0 & 66.7 & 57.2 & 29.0 & 44.2 \\
+& Qwen3-32B       & 37.9 & 60.1 & 52.5 & 22.8 & 39.0 \\
+\hline
+\multirow{4}{*}{\shortstack[l]{RAG-based\\(Qwen3-32B)}}
+& Vanilla RAG     & 62.1 & 77.0 & 60.2 & 37.6 & 33.0 \\
+& Hybrid RAG      & 66.0 & 80.2 & 63.0 & 41.5 & 34.1 \\
+& LightRAG        & 44.3 & 64.5 & 54.0 & 35.0 & 32.0 \\
+& GraphRAG        & 50.1 & 72.0 & 63.5 & 48.0 & 44.4 \\
+\hline
+\multirow{4}{*}{\shortstack[l]{Agent-based \\(Qwen3-32B)}}
+& ReAct                 & 63.5 & 78.2 & 82.3 & 52.1 & 49.4 \\
+& Graph-of-Thoughts     & 59.2 & 74.0 & 79.5 & 48.4 & 46.3 \\
+& AutoGen               & 64.0 & 76.5 & 85.2 & 55.7 & 53.5 \\
+& KG-Agent              & 68.7 & 82.1 & 87.3 & 78.0 & 75.4 \\
+\hline
+\multirow{1}{*}{\textbf{Ours}}
+& \textbf{\method}      & \textbf{71.7} & \textbf{84.2} & \textbf{91.0} & \textbf{87.3} & \textbf{85.5} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Latency.} Table~\ref{tab:mainqa_lat} shows average latency normalized to Vanilla RAG $=1.0\times$. Among RAG methods, LightRAG is the fastest but sacrifices accuracy; GraphRAG is slowest because of graph construction overheads. Agent baselines incur higher latency than RAG (e.g., AutoGen and GoT are the slowest) because of multi-step tool/use deliberations. \textbf{CLAUSE} achieves \emph{agent-level accuracy with competitive efficiency}: its latency is close to or below Hybrid/GraphRAG and substantially lower than typical agent systems (e.g., 1.48$\times$ on HotpotQA vs.\ 2.43$\times$ for AutoGen), and even dips below Vanilla on MetaQA 1-hop (0.98$\times$), reflecting effective \emph{learned stopping} and budgeted context construction; the slight rise at 2/3-hop mirrors increased multi-hop exploration while remaining well under other agentic baselines.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Efficiency results: Average latency (normalized to Vanilla RAG $=1.0\times$).}
+\label{tab:mainqa_lat}
+\small
+\begin{tabular}{l|l|c|c|c|c|c}
+\hline
+\textbf{Family} & \textbf{Method} & \textbf{HotpotQA} & \textbf{FactKG} & \multicolumn{3}{c}{\textbf{MetaQA}} \\
+\cline{5-7}
+ &  & \textbf{(Distractor)} &  & \textbf{1-hop} & \textbf{2-hop} & \textbf{3-hop} \\
+\hline
+\multirow{4}{*}{\shortstack[l]{RAG-based\\(Qwen3-32B)}}
+& Vanilla RAG  & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+& Hybrid RAG   & 1.18 & 1.15 & 1.12 & 1.20 & 1.28 \\
+& LightRAG     & 0.85 & 0.88 & 0.80 & 0.83 & 0.86 \\
+& GraphRAG     & 1.45 & 1.35 & 1.25 & 1.40 & 1.60 \\
+\hline
+\multirow{4}{*}{\shortstack[l]{Agent-based \\(Qwen3-32B)}}
+& ReAct                 & 1.62 & 1.40 & 1.25 & 1.45 & 1.70 \\
+& Graph-of-Thoughts     & 2.10 & 1.78 & 1.65 & 1.90 & 2.32 \\
+& AutoGen               & 2.43 & 2.20 & 1.81 & 2.14 & 2.62 \\
+& KG-Agent              & 1.70 & 1.54 & 1.30 & 1.62 & 1.90 \\
+\hline
+\multirow{1}{*}{\textbf{Ours}}
+& \textbf{\method}      & \textbf{1.48} & \textbf{1.36} & \textbf{0.98} & \textbf{1.14} & \textbf{1.27} \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\textbf{Average Edge Budget.} Table~\ref{tab:mainqa_budget} reports the average edge budget normalized to Vanilla RAG ($1.0\times$), which reflects how much the working subgraph grows during context construction. Within RAG baselines, LightRAG is the most frugal (0.75–0.82) and GraphRAG the most expansive (1.18–1.55), while Hybrid RAG sits slightly above Vanilla due to dual-channel retrieval and re-ranking. Agent systems generally consume more edges than RAG (e.g., AutoGen up to $2.10\times$ on MetaQA-3hop) because multi-step deliberation triggers additional expansions. In contrast, \textbf{CLAUSE} achieves the smallest edge budgets across all settings (0.74–0.90) while still delivering the best EM (cf. Table~\ref{tab:mainqa_em}), indicating that its budget-aware subgraph editing and learned \textsc{stop} decisions effectively suppress redundant growth. The modest increase from MetaQA 1-hop to 3-hop matches the expected need to explore deeper paths, yet remains well below other agentic approaches.
+
+
+\begin{table}[htbp]
+\centering
+\caption{Efficiency results: Average Edge Budget (normalized to Vanilla RAG $=1.0\times$).}
+\label{tab:mainqa_budget}
+\small
+\begin{tabular}{l|l|c|c|c|c|c}
+\hline
+\textbf{Family} & \textbf{Method} & \textbf{HotpotQA} & \textbf{FactKG} & \multicolumn{3}{c}{\textbf{MetaQA}} \\
+\cline{5-7}
+ &  & \textbf{(Distractor)} &  & \textbf{1-hop} & \textbf{2-hop} & \textbf{3-hop} \\
+\hline
+\multirow{4}{*}{\shortstack[l]{RAG-based\\(Qwen3-32B)}}
+& Vanilla RAG   & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 \\
+& Hybrid RAG    & 1.12 & 1.08 & 1.05 & 1.12 & 1.20 \\
+& LightRAG      & 0.78 & 0.80 & 0.75 & 0.78 & 0.82 \\
+& GraphRAG      & 1.35 & 1.30 & 1.18 & 1.32 & 1.55 \\
+\hline
+\multirow{4}{*}{\shortstack[l]{Agent-based \\(Qwen3-32B)}}
+& ReAct                 & 1.20 & 1.13 & 1.05 & 1.18 & 1.35 \\
+& Graph-of-Thoughts     & 1.55 & 1.40 & 1.30 & 1.55 & 1.85 \\
+& AutoGen               & 1.84 & 1.72 & 1.45 & 1.75 & 2.10 \\
+& KG-Agent              & 1.30 & 1.22 & 1.10 & 1.32 & 1.58 \\
+\hline
+\multirow{1}{*}{\textbf{Ours}}
+& \textbf{\method}      & \textbf{0.78} & \textbf{0.74} & \textbf{0.77} & \textbf{0.78} & \textbf{0.90} \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Token Usage.} As shown in Figure~\ref{fig:token-usage}, across all three datasets, \textbf{Qwen3-32B (no RAG)} exhibits the lowest normalized token usage (because no retrieved context is concatenated), while \textbf{CLAUSE}, without relying on multi-agent expansion, consistently uses fewer tokens than the family averages of RAG-based and Agent-based methods, indicating better token efficiency. (Note: the MetaQA panel reports the average over the 1/2/3-hop settings.)
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\linewidth]{figures/token_usage.pdf}
+    \caption{Normalized Token Consumption (Vanilla RAG = 1.0×).}
+    \label{fig:token-usage}
+\end{figure}
+
+\textbf{Constraint Satisfaction Performance.} We evaluate LC-MAPPO against MAPPO~\citep{yu2022surprising}, Fixed‑Penalty PPO~\citep{schulman2017ppo} and RCPO~\citep{tessler2018reward} on the MetaQA KGQA task under constrained settings (edge budget = 0.5, latency budget = 0.7). Figure~\ref{fig:lcmappo-main} demonstrates LC-MAPPO's superior constraint satisfaction capabilities across multiple metrics. LC-MAPPO achieves a 191\% improvement in feasibility rate compared to standard MAPPO (0.340 vs. 0.117), indicating significantly better constraint adherence. Furthermore, LC-MAPPO reduces latency violations by 34\% (0.577 vs. 0.880) and latency costs by 12\% (0.738 vs. 0.838), demonstrating effective latency-aware optimization. LC-MAPPO demonstrates the strongest constraint learning with adaptive dual variables of 0.004, outperforming RCPO's  0.001 and surpassing methods without constraint adaptation, confirming that our multi-head centralized critic successfully learns to balance task performance with constraint satisfaction. These results validate LC-MAPPO's design for constraint-aware MARL, where the algorithm  substantially improved constraint compliance.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figures/rl/performance.pdf}
+  \caption{Constraint satisfaction performance comparison. (a) Constraint Feasibility. (b) Latency Violations. (c) Latency Cost. (d) Constraint Learning.}
+  \label{fig:lcmappo-main}
+\end{figure}
+
+
+
+\subsection{Ablations}
+\label{sec:ablations}
+
+
+\begin{table}[htbp]
+\centering
+\caption{Core ablations on \textbf{MetaQA}. All runs use the same reader and settings (normalized to CLAUSE = 1.0×).}
+\label{tab:core_ablations}
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.15}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X c c c@{}}
+\toprule
+\textbf{Variant} &
+\textbf{EM@1}$\uparrow$ &
+\makecell{\textbf{Latency}$\downarrow$ \\ (avg)} &
+\makecell{\textbf{Edge budget}$\downarrow$ \\ (avg)} \\
+\midrule
+\textbf{\method\ (full)}                                                & \textbf{87.3} & \textbf{1.00} & \textbf{1.00} \\
+% \addlinespace[2pt]
+% \multicolumn{4}{@{}l}{\emph{Agent removals}} \\
+% \addlinespace[2pt]
+w/o Subgraph Architect \, \textit{(StaticRAG; no-KG)}                    & 74.8 & 1.32 & 1.44 \\
+w/o Path Navigator \, \textit{(Greedy-Hop; no traversal policy)}         & 82.1 & 1.18 & 1.22 \\
+w/o Context Curator \, \textit{(Top-$k$ Rerank; no learned stop)}        & 80.6 & 1.24 & 1.07 \\
+% \addlinespace[4pt]
+% \multicolumn{4}{@{}l}{\emph{Constraint handling}} \\
+% \addlinespace[2pt]
+MAPPO \textit{(no duals)}                                                         & 85.0 & 1.08 & 1.28 \\
+Fixed $\lambda$ \textit{(no updates)}                                             & 84.6 & 1.06 & 1.15 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+As summarized in Table~\ref{tab:core_ablations}, removing any agent or disabling constraint handling hurts both accuracy and efficiency. The full \method{} attains the best EM@1 (87.3) at the reference latency and edge budget (both $1.00\times$). Without the \emph{Subgraph Architect} (StaticRAG; no-KG), EM drops sharply to 74.8 while latency and edge usage rise to $1.32\times$ and $1.44\times$, indicating severe over-expansion without budget-aware graph editing. Removing the \emph{Path Navigator} (Greedy-Hop) yields EM 82.1 with higher latency/edges ($1.18\times/1.22\times$), showing that learned continue/backtrack/stop decisions are important for disciplined exploration. Omitting the \emph{Context Curator} (Top-$k$ Rerank) reduces EM to 80.6 and raises latency to $1.24\times$ (edges $1.07\times$), reflecting longer, unpruned contexts when the learned stop is absent. Constraint ablations further confirm the role of LC-MAPPO: MAPPO without duals achieves EM 85.0 but overshoots edges ($1.28\times$), and fixing $\lambda$ (no updates) reaches EM 84.6 with milder but persistent budget violations ($1.06\times$ latency, $1.15\times$ edges). Together, these results demonstrate that all three agents and adaptive dual updates are necessary to jointly optimize EM, latency, and edge growth under requirements.
+
+
+\subsection{Case Study}
+\label{app:case}
+
+\begin{tcolorbox}[title={Question: \emph{Who co-starred with Brian Backer?}}]
+
+\textbf{(1) Subgraph Architect.}
+Anchors: \textcolor{red}{\textit{Brian Backer}} (actor).
+\begin{itemize}
+  \item Add \texttt{(Moving Violations, starred\_actors, Brian Backer)}
+  % \item Add \texttt{(Moving Violations, starred\_actors, Jennifer Tilly)}
+  % \item Add \texttt{(Moving Violations, starred\_actors, John Murray)}
+  \item Add \texttt{(\dots)}
+  \item \textbf{Stop} (edge budget nearly met)
+\end{itemize}
+
+\medskip
+\textbf{(2) Path Navigator}
+Path discovered:
+\[
+\texttt{Actor\_A}\ \xleftarrow{\ \texttt{starred\_actors}\ }\ \texttt{Movie}\ 
+\xrightarrow{\ \texttt{starred\_actors}\ }\ \texttt{Actor\_B}\,.
+\]
+At hop~2, backtracking is not triggered; \textsc{Stop} fires with high confidence due to saturated utility.
+
+\medskip
+% \textbf{(3) Context Curator.}
+% Under a token budget of \textcolor{black}{$\beta_{\text{tok}}=512$}, the curator prioritizes evidence that fits the two-hop co-starring pattern and selects the top contexts: `Moving Violations --- starred\_actors: Jennifer Tilly'' and Moving Violations --- starred\_actors: John Murray''. The total token mass is  \textcolor{black}{$\approx 36$ ($36<\beta_{\text{tok}}$)}, so \textsc{Stop} is triggered.  \textcolor{black}{End-to-end latency: $238.6\,\mathrm{ms}$}. These two snippets are then passed to the LLM answerer as evidence, which returns the correct co-star set:  \textcolor{red} 
+% {{\textit{Jennifer Tilly \& John Murray}}}. The complete process is illustrated in Figure \ref{fig:case}.
+\textbf{(3) Context Curator.}
+With \textcolor{black}{$\beta_{\text{tok}}=512$}, the curator selects two snippets: ``Moving Violations --- starred\_actors: Jennifer Tilly'' and ``Moving Violations --- starred\_actors: John Murray''. Token mass is \textcolor{black}{$\approx 36$ ($<\beta_{\text{tok}}$)}, so \textsc{Stop} triggers; latency is \textcolor{black}{$238.6\,\mathrm{ms}$}. The reader returns \textcolor{red}{\textit{Jennifer Tilly \& John Murray}}. (The complete process is illustrated in Figure~\ref{fig:case})
+\end{tcolorbox}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/case.pdf}
+  \caption{End-to-End Case Study Overview.}
+  \label{fig:case}
+\end{figure}
+
+
+\section{Conclusion}
+This work formulates KGQA as dynamic learnable context construction: instead of a fixed $k$-hop neighborhood, the system must decide what context to assemble, how to obtain it, and when to stop under per-query limits on edits, interaction steps, and tokens. \method instantiates this by decomposing context into three components: \emph{(i) subgraph} structure, \emph{(ii) path} traces, and \emph{(iii) textual} evidence, and assigning them to three simple agents (Architect, Navigator, Curator) that make discrete, auditable choices. LC-MAPPO optimizes the overall workflow by pricing resources via a centralized multi-head critic with dual variables, so agents continue only when the predicted marginal utility exceeds the current price. This requirement-conditioned controller yields compact provenance and predictable latency/cost, and empirically traces stronger accuracy–efficiency frontiers than heuristic expansion or unconstrained agent loops.
+
+
+
+
+
+
+
+\newpage
+\section*{Ethics Statement}
+\label{app:ethical}
+We comply with the ICLR Code of Ethics. This work uses only publicly available benchmark datasets and does not involve human-subject data or personally identifiable information; therefore, IRB approval was not required. The methods are intended for benign research uses and are not designed to facilitate privacy violations or discriminatory outcomes. The authors declare no conflict of interest.
+
+\section*{Acknowledgements}
+This research is supported by Seatrium New Energy Laboratory, Singapore Ministry of Education (MOE) Tier 1 (RT5/23 and RG24/24), the Nanyang Technological University (NTU) Centre for Computational Technologies in Finance (NTU-CCTF), and the Research Innovation and Enterprise (RIE) 2025 Industry Alignment Fund - Industry Collaboration Projects (IAF-ICP) (Award I2301E0026), administered by Agency for Science, Technology and Research (A*STAR).
+
+
+\section*{Reproducibility Statement}
+\label{app:repro}
+
+We provide an anonymized code archive in the supplementary materials. The model and objective are specified in Section~\ref{sec:method}, and pseudocode in Appendix~\ref{appendix:algs}. Datasets and preprocessing are described in Section~\ref{sec:experiments} and Appendix~\ref{app:impl}. Metrics, baseline settings, and normalization are defined in Section~\ref{sec:experiments}; seeds, environment details, and run scripts are included in the archive.
+
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\clearpage
+\appendix
+
+
+\addcontentsline{toc}{part}{Appendix} 
+\etocsettocstyle{\section*{Appendix Contents}}{} 
+\etocsetnexttocdepth{subsection} 
+\localtableofcontents
+\bigskip
+
+
+\newpage
+
+\section{Large Language Models Usage Disclosure}
+\label{app:llm-usage}
+
+\textbf{Scope of use.}
+We used large language models in three defined roles:
+\begin{enumerate}[leftmargin=1.25em,itemsep=2pt,topsep=2pt]
+\item \textbf{Writing assistance (polish/clarity only).}
+  Micro-edits for grammar, concision, tense/voice consistency, LaTeX phrasing, section headings, figure/table captions, and title/abstract variants.
+\item \textbf{Retrieval \& discovery (related work support).}
+  Query about recommended papers related to my idea.
+\item \textbf{Research ideation (early brainstorming).}
+  Generating alternative task framings, evaluating feasibility of this, naming options for modules.
+\end{enumerate}
+\paragraph{Author responsibility.}
+The authors are solely responsible for the methods, experiments, analyses, and claims. LLMs supported drafting, search query design, and ideation; they did not generate or select results.
+
+\newpage
+\section{Notation Table}
+\label{app:notation}
+\begin{table}[H]
+\centering
+% \footnotesize
+\caption{Symbols and notation used throughout the paper.}
+\label{tab:notation}
+\begin{tabularx}{\textwidth}{@{}lL@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} \\
+\midrule
+$\mathcal{K}=(V,R,E)$ & Global knowledge graph with entities $V$, relations $R$, and edges $E\subseteq V\times R\times V$ \\
+$G_t=(V_t,E_t)$; $G^\ast$ & Query‑conditioned subgraph at step $t$; final subgraph at termination \\
+$\mathcal{F}_t$ & Frontier node set at step $t$ \\
+$\mathcal{P}_t$ & Candidate pool (textualized nodes/edges/paths and optional retrieval hits) at step $t$ \\
+$\mathcal{A}_t$ & Typed outgoing candidates (actions) available to the navigator at step $t$ \\
+$q$; $y,\hat y$ & Input question; gold / predicted answers \\
+$p_t$; $\Pi=\{p_1,\dots,p_m\}$ & Path prefix maintained by the navigator; set of discovered paths (provenance) \\
+$\pi_B,\pi_T,\pi_S$ & Policies for \textsc{Edit} (Subgraph Architect), \textsc{Traverse} (Path Navigator), \textsc{Curate} (Context Curator) \\
+$a_t^B,a_t^T,a_t^S$ & Actions at step $t$ for edit / traverse / curate modules \\
+$s_t$ & State summary at step $t$: $(q, G_t, \mathcal{F}_t, \mathcal{P}_t, \mathbf{b}_t)$ \\
+$\mathbf{b}_t$ & Remaining budget vector at step $t$ \\
+$\beta=(\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}})$ & Episode budget vector for edge growth, latency (steps), and selected tokens \\
+$C=(C_{\text{edge}},C_{\text{lat}},C_{\text{tok}})$ & Cumulative costs (accepted edits / interaction steps / selected tokens) \\
+$c_t^{(k)}$ & Instantaneous cost increment at step $t$ for $k\in\{\text{edge},\text{lat},\text{tok}\}$; $\sum_t c_t^{(k)}=C_k$ \\
+$\boldsymbol{\lambda}=(\lambda_{\text{edge}},\lambda_{\text{lat}},\lambda_{\text{tok}})$ & Lagrange multipliers (prices) for edge/step/token costs \\
+$R_{\mathrm{acc}}(\tau),\ r^{\mathrm{acc}}_t,\ r'_t$ & Episode‑level task reward, per‑step (unshaped) task reward, and shaped return $r'_t=r^{\mathrm{acc}}_t-\sum_{k}\lambda_k\,c_t^{(k)}$ \\
+$\mathcal{L}(\pi,\boldsymbol{\lambda})$ & Lagrangian objective $\mathbb{E}[\,R_{\mathrm{acc}}(\tau)-\boldsymbol{\lambda}^{\top}C(\tau)\,]$ for the CMDP \\
+$Q^{\text{task}},Q^{\text{edge}},Q^{\text{lat}},Q^{\text{tok}}$ & Centralized‑critic action‑values (task head and three cost heads) \\
+$A^{i,h}_t$, $A^{i,\lambda}_t$; $i\in\{B,T,S\}$ & Counterfactual advantage for agent $i$ and head $h$; Lagrangian‑shaped advantage for PPO \\
+$D^\star$ & Ordered, curated evidence list passed to the reader \\
+$\operatorname{tok}(\cdot)$ & Token count operator for a textual unit \\
+$e=(u,r,v)$ & KG edge (triple) with head entity $u$, relation $r$, tail entity $v$ \\
+$\mathcal{E}^{\mathrm{cand}}_t$ & Frontier‑adjacent candidate edges considered by the Architect at step $t$ \\
+$s(e\mid q,G_t)$ & Fused edge‑utility score used by the Architect for edit decisions \\
+$H,\ \bar d,\ |\mathcal{P}_t|,\ K$ & Hop cap; average local branching factor; candidate pool size; selected list length ($K$ dynamic) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\newpage
+
+\section{Algorithm}
+\label{appendix:algs}
+
+\begin{algorithm}[H]
+\caption{\method: Training with a constrained centralized\mbox{-}critic PPO (LC\mbox{-}MAPPO)}
+\label{alg:lc2}
+\begin{algorithmic}[1]
+\State \textbf{Input:} dataset $\mathcal{D}$ of (question, answer) pairs; budgets $\beta=\{\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}}\}$; learning rates.
+\State \textbf{Initialize:} actor params for \textsc{Edit}/\textsc{Traverse}/\textsc{Curate} ($\theta_B,\theta_T,\theta_S$); centralized critic $\psi$ with multi\mbox{-}head outputs $\{Q^{\text{task}},Q^{\text{edge}},Q^{\text{lat}},Q^{\text{tok}}\}$; duals $\lambda=\{\lambda_{\text{edge}},\lambda_{\text{lat}},\lambda_{\text{tok}}\}\!\ge\!0$.
+\For{epoch $=1,\dots,E$}
+  \State \textbf{Rollout.} Sample a minibatch $\mathcal{B}\!\subset\!\mathcal{D}$. For each question $q\!\in\!\mathcal{B}$:
+  \State \quad Reset $G_0,\mathcal{F}_0,\mathcal{P}_0$, budgets $b_0$, buffer $\mathcal{T}\!\leftarrow\!\varnothing$; $t\!\leftarrow\!0$.
+  \While{\textsc{not\_terminal} and $t<T_{\max}$}
+    \State \quad $a^B_t\!\sim\!\pi_B(\cdot\mid s_t)$; apply edit (add/delete/stop) to $G_t$; accrue $c^{\text{edge}}_t$.
+    \State \quad $a^T_t\!\sim\!\pi_T(\cdot\mid s_t)$; continue or \textsc{stop} exploration; accrue $c^{\text{lat}}_t$.
+    \State \quad $a^S_t\!\sim\!\pi_S(\cdot\mid s_t)$; curate context or \textsc{stop}; accrue $c^{\text{tok}}_t$.
+    \State \quad Log $(s_t,\mathbf{a}_t,\log\pi_t,c_t)$ to $\mathcal{T}$; update state $s_{t+1}$; $t\!\leftarrow\!t{+}1$.
+  \EndWhile
+  \State \quad Produce answer $\hat{y}$; compute terminal task reward $r^{\text{acc}}$; finalize episode $\mathcal{T}$.
+  \State \textbf{Critic update.} Compute targets with GAE/TD for each head using $\mathcal{T}$; update $\psi$ (task \& cost heads).
+  \State \textbf{Advantages.} Form shaped rewards $r'_t \!=\! r^{\text{acc}}_t - \lambda_{\text{edge}}c^{\text{edge}}_t - \lambda_{\text{lat}}c^{\text{lat}}_t - \lambda_{\text{tok}}c^{\text{tok}}_t$; compute GAE; for each agent $i\!\in\!\{B,T,S\}$, compute \emph{counterfactual} advantages
+  \[
+      A_i(s_t,\mathbf{a}_t)=Q^{\text{task}}(s_t,\mathbf{a}_t)-\mathbb{E}_{a'_i}\!\left[Q^{\text{task}}\!\left(s_t,(\mathbf{a}_{-i},a'_i)\right)\right].
+  \]
+  \State \textbf{Actor update.} Apply PPO to $\{\theta_B,\theta_T,\theta_S\}$ with clipped ratios, entropy bonus, and using the agent-specific $A_i$.
+  \State \textbf{Dual update.} For each $k\!\in\!\{\text{edge},\text{lat},\text{tok}\}$:
+  \[
+      \lambda_k \leftarrow \big[\lambda_k + \rho\big(\widehat{\mathbb{E}}[C_k]-\beta_k\big)\big]_+.
+  \]
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Budgeted Inference (\method, decentralized execution)}
+\label{alg:inference}
+\begin{algorithmic}[1]
+\State \textbf{Input:} question $q$; global budgets $\beta=\{\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}}\}$; trained agents $\pi_B$ (Subgraph Architect), $\pi_T$ (Path Navigator), $\pi_S$ (Context Curator).
+\State Initialize $G_0\!\leftarrow\!\varnothing$; frontier $\mathcal{F}_0\!\leftarrow\!\text{anchors}(q)$; pool $\mathcal{P}_0\!\leftarrow\!\varnothing$; counters $e{=}0$, $\ell{=}0$, $\tau{=}0$.
+\While{$\ell < \beta_{\text{lat}}$ \textbf{and} not \textsc{stopped}}
+  \State $a^B\!\sim\!\pi_B(\cdot\mid q,G_t,\mathcal{F}_t,\beta{-}\text{usage})$ \Comment{Add/Delete/Stop edits}
+  \State Apply $a^B$; update $G_t$, $\mathcal{F}_t$; $e\!\leftarrow\!e{+}\text{edit\_count}(a^B)$
+  \If{$e>\beta_{\text{edge}}$} \textbf{break} \EndIf
+  \State $a^T\!\sim\!\pi_T(\cdot\mid q,G_t,\mathcal{F}_t,\beta{-}\text{usage})$ \Comment{Next hop or \textsc{stop}}
+  \State Apply $a^T$; update traversal traces; push touched edges/nodes into candidate pool $\mathcal{P}_t$
+  \State $a^S\!\sim\!\pi_S(\cdot\mid q,\mathcal{P}_t,\beta{-}\text{usage})$ \Comment{Select or \textsc{stop}}
+  \State Update selected set $D^\star$ and token mass $\tau$; \textbf{if} $\tau>\beta_{\text{tok}}$ \textbf{then} prune last add or force \textsc{stop}
+  \State $\ell\!\leftarrow\!\ell{+}1$
+\EndWhile
+\State \textbf{return} reader answer $\hat y \leftarrow \mathrm{Reader}(q, D^\star)$ and the trace $\langle G^\ast,\text{paths},D^\star\rangle$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Counterfactual Advantage (per head) with Centralized Critic}
+\label{alg:coma_head}
+\begin{algorithmic}[1]
+\State \textbf{Given:} critic heads $\{Q^{h}\}$ for $h\in\{\text{task},\text{edge},\text{lat},\text{tok}\}$; joint action $\mathbf a_t$; per-agent agents $\{\pi_i\}$
+\For{agent $i \in \{\mathrm{B},\mathrm{T},\mathrm{S}\}$}
+  \For{head $h$}
+    \State $b^{i,h}(s_t,\mathbf a_t^{-i}) \leftarrow \mathbb E_{a_i\sim \pi_i(\cdot\mid o_t^i)}\!\big[Q^h(s_t,(a_i,\mathbf a_t^{-i}))\big]$
+    \State $A^{i,h}_t \leftarrow Q^h(s_t,\mathbf a_t) - b^{i,h}(s_t,\mathbf a_t^{-i})$
+  \EndFor
+  \State Lagrangian advantage: $A^{i,\mathrm{lag}}_t \leftarrow A^{i,\mathrm{task}}_t - \lambda_{\text{edge}}A^{i,\text{edge}}_t - \lambda_{\text{lat}}A^{i,\text{lat}}_t - \lambda_{\text{tok}}A^{i,\text{tok}}_t$
+\EndFor
+\State \textbf{return} $\{A^{i,\mathrm{lag}}_t\}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Context Curator (list-wise, dynamic $K$) — one pass}
+\label{alg:selector}
+\begin{algorithmic}[1]
+\State \textbf{Input:} question $q$, candidate pool $\mathcal{P}$ with token counts $\text{tok}(\cdot)$, budget $\beta_{\text{tok}}$
+\State Initialize $D^\star\!\leftarrow\!\langle\rangle$, used\_tokens $T\!\leftarrow\!0$, remaining $\mathcal{R}\!\leftarrow\!\mathcal{P}$
+\While{$\mathcal{R}\neq\varnothing$}
+  \State Score all $d\!\in\!\mathcal{R}$ with list-wise scorer $s(d\mid q,\mathcal{R},D^\star)$
+  \State $d^\star \leftarrow \arg\max_{d\in\mathcal{R}} s(d)$
+  \If{$T + \text{tok}(d^\star) > \beta_{\text{tok}}$} \textbf{break} \EndIf
+  \State Append $d^\star$ to $D^\star$; $T\!\leftarrow\!T+\text{tok}(d^\star)$; $\mathcal{R}\!\leftarrow\!\mathcal{R}\setminus\{d^\star\}$
+  \State With probability $\pi_S(\textsc{stop}\mid q,\mathcal{R},D^\star,\beta{-}\text{usage})$ do \textbf{break}
+\EndWhile
+\State \textbf{return} $D^\star$
+\end{algorithmic}
+\end{algorithm}
+
+
+\newpage
+
+\section{Implementation Details \& Supplementary Experiment}
+\label{app:impl}
+
+\textbf{Hardware.}
+All experiments are run on a single NVIDIA L20 (48\,GB) GPU with 20 vCPU
+Intel Xeon Platinum 8457C, 100\,GB RAM, and two SSD partitions
+(system: 128\,GB; data: 1024\,GB). The OS image is \texttt{Ubuntu 22.04} with \texttt{Miniconda (Python 3.10)}.
+
+% {\color{black}
+\textbf{Software \& API.}
+We use PyTorch (CUDA 11.8 build). Retrieval \emph{does not} use a generative LLM: we produce dense embeddings with sentence-transformers (\texttt{thenlper/gte-small}) and perform lightweight NER with \emph{spaCy}; sparse recall uses BM25. Vectors are L2-normalized and queried with FAISS \texttt{IndexFlatIP} (cosine-equivalent). 
+Unless stated otherwise, the \emph{shared reader LLM} for all RAG/agent baselines is \texttt{Qwen3--32B}. We also evaluate \texttt{GPT-OSS-120B} and \texttt{LLaMA3.3-70B} for ablations/comparisons and final answer generation, invoked via SiliconFlow / Groq APIs. Token budgets and token counting always use the \emph{reader’s} tokenizer.
+
+
+
+\textbf{Datasets \& Knowledge Graphs (KGs).} We test CLAUSE on three large-scale, real-world, noisy KGs, and provide construction details. We do \emph{not} share a single KG across datasets; each benchmark uses its own canonical KG (Table~\ref{tab:datasets-kgs}). Our graphs are cross-domain: \textsc{MetaQA} relies on a movie/entertainment-domain KB, \textsc{HotpotQA} uses a Wikidata-derived subgraph built from general encyclopedic entities, and \textsc{FactKG} is grounded in the DBpedia open-domain fact graph. Anchoring links surface mentions to KG entities via NER and an alias dictionary; ties or unresolved mentions fall back to dense nearest neighbors in the alias embedding space. For \textsc{HotpotQA}, we first run entity recognition and alias matching over the questions and supporting paragraphs, link mentions to Wikidata entities, and then extract a local neighborhood (within a fixed hop radius) for these entities from a frozen Wikidata dump, yielding a subgraph with roughly millions of nodes and tens of millions of edges. In Table~\ref{tab:datasets-kgs}, we report the scale of this subgraph using $\mathcal{O}(10^{\cdot})$ notation because the exact node/edge counts can vary slightly with the chosen Wikidata version and neighborhood radius, while the order of magnitude is sufficient to convey that the setting is web-scale.
+
+
+\begin{table}[H]
+\centering
+\caption{\textcolor{black}{Benchmarks and knowledge graphs. We report the KG identity, scale, and the exact anchoring protocol. All RAG/agent baselines share the same reader and tokenizer.}}
+\label{tab:datasets-kgs}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.08}
+\arrayrulecolor{black}
+\begin{tabular}{
+  >{\color{black}}l
+  >{\color{black}}l
+  >{\color{black}}c
+  >{\color{black}}c
+  >{\color{black}}c}
+\toprule
+\textbf{Benchmark} & \textbf{KG source} & \textbf{\#Nodes} & \textbf{\#Edges} & \textbf{\#Relations} \\
+\midrule
+\textsc{MetaQA} (1/2/3-hop) 
+& \citep{zhang2017variational}
+& $4.3\times 10^{4}$ 
+& $1.35\times 10^{5}$ 
+& 9 \\
+
+\textsc{HotpotQA} (distractor) 
+& ~\citep{yang2018hotpotqa}
+& $\mathcal{O}(10^{6})$ 
+& $\mathcal{O}(10^{7})$ 
+& $\mathcal{O}(10^{3})$ \\
+
+
+\textsc{FactKG} 
+& \citep{kim2023factkg} 
+& $\sim 4\times 10^{6}$ 
+& $\sim 1\times 10^{8}$ 
+& $\sim 10^{3}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% }
+
+
+
+\paragraph{Default inference settings.}
+Unless stated otherwise, we adopt the following default configuration: the token budget is set to $\beta_{\text{tok}} = 512$; the reranker runs for 15 steps with a minimum of $K_{\min}=2$ picks; the traversal is capped at 4 hops (with an earlier stop if the learned stopping policy fires); and the curator operates on a candidate pool of size 128 with a dense-fallback pool of 64 candidates.
+
+
+% {\color{black}
+\paragraph{Supplementary experiments with alternative LLM backbones.}
+We further report results when using two alternative reader LLM backbones, LLaMA3.3-70B and GPT-OSS-120B, for all RAG/agent baselines and \method{}. The detailed numerical results are given in Tables~\ref{tab:mainqa_em_llama} and~\ref{tab:mainqa_em_gpt}. Across all three backbones (Qwen3-32B, LLaMA3.3-70B, and GPT-OSS-120B), \method{} consistently achieves the best EM on HotpotQA, FactKG, and MetaQA. At the same time, the absolute gap between different backbones becomes much smaller once they are coupled with our budget-aware neuro-symbolic controller: Qwen3-32B+\method{} already matches or nearly matches the performance of larger backbones, indicating that \method{} can largely close the performance gap between medium and large LLMs while keeping the reader size flexible.
+% }
+
+
+
+
+{\color{black}
+\begin{table}[htbp]
+\centering
+\caption{\textcolor{black}{Main QA results: EM@1 on HotpotQA, FactKG, and MetaQA using LLaMA3.3-70B.}}
+\label{tab:mainqa_em_llama}
+\small
+\arrayrulecolor{black}
+% \begin{tabular}{l|l|c|c|c|c|c}
+\begin{tabular}{
+  >{\color{black}}l|
+  >{\color{black}}l|
+  >{\color{black}}c|
+  >{\color{black}}c|
+  >{\color{black}}c|
+  >{\color{black}}c|
+  >{\color{black}}c}
+\hline
+\textbf{Family} & \textbf{Method} & \textbf{HotpotQA} & \textbf{FactKG} &
+\multicolumn{3}{c}{\textcolor{black}{\textbf{MetaQA}}} \\
+\cline{5-7}
+ &  & \textbf{(Distractor)} &  & \textbf{1-hop} & \textbf{2-hop} & \textbf{3-hop} \\
+\hline
+% \multirow{3}{*}{Pretrained-LLMs}
+% & GPT-OSS-120B    & 44.5 & 68.0 & 62.7 & 41.5 & 52.3 \\
+% & LLaMA3.3-70B    & 41.0 & 66.7 & 57.2 & 29.0 & 44.2 \\
+% & Qwen3-32B       & 37.9 & 60.1 & 52.5 & 22.8 & 39.0 \\
+% \hline
+\multirow{4}{*}{\shortstack[l]{RAG-based\\(LLaMA3.3-70B)}}
+& Vanilla RAG     & 63.8 & 78.3 & 62.0 & 38.6 & 45.4 \\
+& Hybrid RAG      & 66.7 & 82.0 & 64.3 & 43.0 & 45.8 \\
+& LightRAG        & 48.6 & 68.2 & 59.6 & 36.8 & 45.0 \\
+& GraphRAG        & 51.4 & 73.4 & 65.0 & 49.5 & 50.3 \\
+\hline
+\multirow{4}{*}{\shortstack[l]{Agent-based \\(LLaMA3.3-70B)}}
+& ReAct                 & 65.0 & 79.5 & 83.0 & 53.3 & 50.6 \\
+& Graph-of-Thoughts     & 60.3 & 75.2 & 81.0 & 49.0 & 47.6 \\
+& AutoGen               & 65.2 & 77.3 & 86.2 & 56.5 & 55.1 \\
+& KG-Agent              & 69.3 & 83.3 & 88.0 & 78.8 & 76.3 \\
+\hline
+\multirow{1}{*}{\textbf{Ours}}
+& \textbf{\method}      & \textbf{73.5} & \textbf{85.0} & \textbf{92.7} & \textbf{87.7} & \textbf{87.2} \\
+\hline
+\end{tabular}
+\end{table}
+}
+
+
+
+
+{\color{black}
+\begin{table}[htbp]
+\centering
+\caption{\textcolor{black}{Main QA results: EM@1 on HotpotQA, FactKG, and MetaQA using GPT-OSS-120B.}}
+\label{tab:mainqa_em_gpt}
+\small
+% \setlength{\tabcolsep}{5pt}
+% \renewcommand{\arraystretch}{1.1}
+\arrayrulecolor{black}
+\begin{tabular}{
+  >{\color{black}}l|
+  >{\color{black}}l|
+  >{\color{black}}c|
+  >{\color{black}}c|
+  >{\color{black}}c|
+  >{\color{black}}c|
+  >{\color{black}}c}
+\hline
+\textbf{Family} & \textbf{Method} & \textbf{HotpotQA} & \textbf{FactKG} &
+\multicolumn{3}{c}{\textcolor{black}{\textbf{MetaQA}}} \\
+\cline{5-7}
+ &  & \textbf{(Distractor)} &  & \textbf{1-hop} & \textbf{2-hop} & \textbf{3-hop} \\
+\hline
+% \multirow{3}{*}{Pretrained-LLMs}
+% & GPT-OSS-120B    & 44.5 & 68.0 & 62.7 & 41.5 & 52.3 \\
+% & LLaMA3.3-70B    & 41.0 & 66.7 & 57.2 & 29.0 & 44.2 \\
+% & Qwen3-32B       & 37.9 & 60.1 & 52.5 & 22.8 & 39.0 \\
+% \hline
+\multirow{4}{*}{\shortstack[l]{RAG-based\\(GPT-OSS-120B)}}
+& Vanilla RAG     & 65.9 & 79.2 & 64.8 & 44.9 & 52.5 \\
+& Hybrid RAG      & 68.9 & 82.9 & 67.0 & 49.2 & 52.8 \\
+& LightRAG        & 50.7 & 69.2 & 62.9 & 43.0 & 52.4 \\
+& GraphRAG        & 53.5 & 74.3 & 67.8 & 55.6 & 54.3 \\
+\hline
+\multirow{4}{*}{\shortstack[l]{Agent-based \\(GPT-OSS-120B)}}
+& ReAct                 & 65.5 & 80.6 & 84.1 & 65.5 & 53.5 \\
+& Graph-of-Thoughts     & 61.0 & 76.0 & 81.7 & 49.3 & 52.6 \\
+& AutoGen               & 66.6 & 78.3 & 87.0 & 66.0 & 55.8 \\
+& KG-Agent              & 69.8 & 84.2 & 88.9 & 79.4 & 76.9 \\
+\hline
+\multirow{1}{*}{\textbf{Ours}}
+& \textbf{\method}      & \textbf{75.0} & \textbf{85.8} & \textbf{92.2} & \textbf{88.0} & \textbf{87.5} \\
+\hline
+\end{tabular}
+\end{table}
+}
+
+
+
+\newpage
+
+
+\section{Complexity Analysis}
+\label{app:complexity}
+
+\subsection{Time Complexity}
+Let $|V^\ast|,|E^\ast|$ be the sizes of the constructed subgraph, $b$ the average out-degree on active frontiers, $H$ the hop cap, $P$ the candidate-pool size, $K$ the selected context length (dynamic), and $d$ the embedding width of light encoders.
+
+\paragraph{Subgraph Architect (anchoring \& edit).}
+Each edit round ranks at most $C_B$ candidate edges (retrieval + local expansion). With precomputed entity/relation embeddings and cached neighbor lists, scoring is $O(C_B d)$; applying batched edits is $O(\Delta E)$ where $\Delta E$ is the number of accepted edits. Over $T_B$ rounds,
+\[
+T_{\text{edit}} \;=\; O(T_B\cdot C_B d + \sum_{t}{\Delta E_t}) \;\subseteq\; O(\beta_{\text{lat}}\cdot C_B d + \beta_{\text{edge}}).
+\]
+
+\paragraph{Path Navigator (traverse).}
+At each hop, neighborhood scoring is $O(b d)$ (or $O(\deg(v))$ with simple degree-based features). For $T_T \le H$ hops and small beam $B_{\text{beam}}$:
+\[
+T_{\text{traverse}} \;=\; O(T_T \cdot B_{\text{beam}} \cdot b d) \;\subseteq\; O(\beta_{\text{lat}}\cdot b d).
+\]
+
+\paragraph{Context Curator (curate).}
+A single-pass pointer/list-wise scorer over $P$ items costs $O(P d)$ per step; selecting $K$ items without replacement:
+\[
+T_{\text{curate}} \;=\; O(K \cdot P d) \quad \text{(naive)}, 
+\qquad 
+O(P d + K\log P) \quad \text{(with heap/top-$K$)}.
+\]
+Given a token budget $\beta_{\text{tok}}$ and average item length $\bar t$, $K \le \beta_{\text{tok}}/\bar t$.
+
+\paragraph{Reader call.}
+The reader sees only the curated $K$ items with token mass $\le \beta_{\text{tok}}$. Reader runtime is thus $O(\beta_{\text{tok}})$ (with a fixed decoder).
+
+\paragraph{Training cost (LC-MAPPO).}
+Let $S$ be steps per trajectory, $M$ mini-batch size of trajectories, and $\#\text{heads}=4$ (task/edge/lat/tok). The critic’s forward/backward per update is $O(M S d \cdot \#\text{heads})$; actor updates add $O(M S |\mathcal{A}_i|)$ across the three agents. Because costs are attributed at source, the critic’s label construction is linear in $S$ with negligible overhead.
+
+\subsection{Space Complexity}
+The dominant terms are (i) subgraph cache $O(|V^\ast|+|E^\ast|)$, (ii) candidate pool $O(P)$, and (iii) replay/rollout buffers $O(M S)$ during training. Budgets bound $|E^\ast|$ and $S$ by $\beta_{\text{edge}}$ and $\beta_{\text{lat}}$ respectively.
+
+\paragraph{End-to-end bound under budgets.}
+With explicit budgets,
+\[
+T_{\text{end2end}}
+=\underbrace{O(\beta_{\text{lat}} C_B d + \beta_{\text{edge}})}_{\text{edit}}
++\underbrace{O(\beta_{\text{lat}} b d)}_{\text{traverse}}
++\underbrace{O(P d + K \log P)}_{\text{curate}}
++\underbrace{O(\beta_{\text{tok}})}_{\text{reader}}
+\]
+so latency scales linearly in $\beta_{\text{lat}}$ and $\beta_{\text{tok}}$, allowing direct runtime control.
+
+
+
+\newpage
+
+% {\color{black}
+\section{Training Cost and Scalability to Large and Noisy KGs}
+\label{app:train-cost-scale}
+
+Let $m{=}3$ agents (Architect, Navigator, Curator), $H_{\text{heads}}{=}4$, batch $(M,S)$, and width $d$. One update decomposes as
+\[
+T_{\text{update}}
+= T_{\text{env}}(M,S) + T_{\text{actor}}(M,S) + T_{\text{critic}}(M,S) + T_{\text{io/cache}}.
+\]
+$T_{\text{env}}$ scales with edge scoring and neighbor expansions (counts $\sum_t C_B$ and $\sum_t b_t$), alias ANN fallbacks, and accepted edits $C_{\text{edge}}$. $\;T_{\text{actor}}$ covers $\approx MS$ forward passes per agent with candidate sizes $(C_B,b,P)$; $\;T_{\text{critic}}$ uses $MS$ samples with $H_{\text{heads}}$ and a GAE horizon; $\;T_{\text{io/cache}}$ captures FAISS lookups and adjacency fetches. The three‑agent CTDE design does not triple cost: encoders are shared for representation reuse across settings (small per-agent MLP heads) \citep{zhou2025self}, action sets are typed and small (Architect: $C_B\!\ll\!|E|$; Navigator: $b$; Curator: pruned $P$), and a single centralized critic has $H_{\text{heads}}$ heads. Thus, constants grow with $m$ and $H_{\text{heads}}$, while dependence remains linear in $S$ and tokens. A per‑episode spend model is
+\[
+\mathrm{Cost}\;\approx\;
+c_{\text{sym}}\!\cdot\!\big(\beta_{\text{lat}} C_B d + \beta_{\text{edge}} + \beta_{\text{lat}} b d + P d + K\log P\big)
+\;+\;
+c_{\text{LLM}}\!\cdot\! \beta_{\text{tok}},
+\]
+with $\beta_{\text{tok}}$ fixed/small and the symbolic term linear in the budgets, yielding bounded and predictable cost.
+
+
+For memory and indexing, entity/alias embeddings and FAISS live on CPU; GPU holds the active subgraph $G_t$ and batched activations:
+\[
+\text{RAM}\;\approx\;O(|V|\,d)\;+\;O(\text{FAISS})\;+\;O(|V^\ast|{+}|E^\ast|)\;+\;O(MS).
+\]
+Product quantization or 8‑bit embeddings reduce ANN footprint by $\times 3$–$\times 8$. For large KGs, frontierization and budgeted pricing make per‑step work depend on local branching $(b)$ and $(\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}})$ rather than $|E|$: we use IVF{+}HNSW or IVF{+}PQ for alias lookup, degree/type‑aware neighbor sampling to cap $C_B$ and $b$, partitioned/frontier caches, and hub pricing via a degree prior in $s(e\mid q,G_t)$. Noise is mitigated via price‑aware acceptance $s(e)-\lambda_{\text{edge}}c_{\text{edge}}{>}0$, listwise de‑duplication, and type/logic constraints. For reproducibility, report per epoch: $(M,S)$ and total env steps; feasible rate under $(\beta_{\text{edge}},\beta_{\text{lat}},\beta_{\text{tok}})$; seconds/update split (env/actor/critic/I/O); averages of $C_B$, $b$, $P$, $K$; FAISS ms/query and cache hit rate; peak CPU/GPU RAM; index size; and average reader tokens.
+
+% }
+
+
+
+\newpage
+
+\section{Trade-off Analysis }
+\label{app:tradeoff}
+
+\subsection{Lagrangian shaping: costs as prices, duals as shadow values}
+\label{app:tradeoff:lagrangian}
+
+Recall the constrained objective (Eq.~\ref{eq:cmdp})
+\(
+\max_\pi \;\mathbb{E}[R_{\mathrm{acc}}(\tau)] \;\text{s.t.}\;
+\mathbb{E}[C_k(\tau)] \le \beta_k,\ k\!\in\!\{\text{edge},\text{lat},\text{tok}\}.
+\)
+The Lagrangian is
+\(
+\mathcal{L}(\pi,\lambda) = \mathbb{E}\big[R_{\mathrm{acc}} - \sum_k \lambda_k(C_k-\beta_k)\big],
+\)
+and the actor updates optimize the \emph{shaped} return $R' = R_{\mathrm{acc}} - \sum_k \lambda_k C_k$ (Eq.~\ref{eq:shaped}) while dual ascent updates $\lambda$ to enforce the constraints.
+
+\begin{proposition}[Shadow-price interpretation]
+\label{prop:shadow}
+Let $J^\star(\beta)$ be the optimal value of the CMDP as a function of the budget vector $\beta$. Under standard regularity, the optimal duals $\lambda^\star$ satisfy the envelope property
+\(
+\frac{\partial J^\star(\beta)}{\partial \beta_k} = \lambda^\star_k.
+\)
+Hence, $\lambda^\star_k$ is the \emph{marginal EM gain per unit relaxation} of budget $k$ (edge, latency, or tokens).
+\end{proposition}
+\begin{proof}[Sketch]
+This is a standard consequence of the envelope theorem for convex CMDPs and KKT conditions (Appendix~\ref{appendix:convergence}). \qedhere
+\end{proof}
+
+\paragraph{Practical reading.}
+$\lambda_{\text{lat}}$ quantifies the EM increase obtainable by allowing one more interaction step on average; $\lambda_{\text{tok}}$ quantifies EM gain per additional token; $\lambda_{\text{edge}}$ quantifies the benefit of expanding the subgraph. Increasing any $\lambda_k$ acts like raising the price of that resource, biasing policies toward using less of it.
+
+
+\newpage
+\section{Proof of Convergence of LC-MAPPO}
+\label{appendix:convergence}
+This appendix states conditions under which the proposed LC-MAPPO converges to a stationary point of the CMDP Lagrangian and satisfies the KKT conditions. We follow the two/three–time–scale view in the assumptions (A1)–(A6): the centralized critic tracks action-values (fast), the actor ascends the (penalized) objective (medium), and the dual variables perform projected ascent on constraint violation (slow).
+
+% {\color{black} 
+
+\subsection{Assumptions}
+
+\textbf{A1 (Bounded Rewards and Costs).}
+There exists $C_r>0$ such that
+\[
+|r(s,a)| \le C_r, \qquad |c_k(s,a)| \le C_r,
+\quad \forall (s,a),\, k .
+\]
+Thus $J_r(\theta)$ and $J_{c_k}(\theta)$ are finite and admit stochastic
+gradients with bounded second moments.
+
+% \medskip
+\textbf{A2 (Smoothness).}
+For any fixed dual vector $\lambda$, the penalized objective
+\[
+F(\theta;\lambda)
+= J_r(\theta) - \sum_k \lambda_k \left(J_{c_k}(\theta)-\beta_k\right)
+\]
+is $L_F$-smooth in $\theta$:
+\[
+\|\nabla_\theta F(\theta;\lambda) - \nabla_\theta F(\theta';\lambda)\|
+\le L_F\|\theta-\theta'\|.
+\]
+
+% \medskip
+\textbf{A3 (Asymptotic Unbiasedness).}
+The stochastic policy gradient estimator $\hat g_t$ satisfies
+\[
+\mathbb{E}[\hat g_t \mid \mathcal{F}_t]
+= \nabla_\theta F(\theta_t;\lambda) + \varepsilon_t,
+\qquad \varepsilon_t\to 0 .
+\]
+
+% \medskip
+\textbf{A4 (Bounded Variance).}
+There exists $C_g>0$ such that
+\[
+\mathbb{E}\|\hat g_t\|^2 \le C_g, \qquad \forall t.
+\]
+
+% \medskip
+\textbf{A5 (Step-Size and Time-Scale Separation).}
+The actor step-size $\{\alpha_t\}$ satisfies
+\[
+\sum_{t=0}^\infty \alpha_t = \infty,
+\qquad
+\sum_{t=0}^\infty \alpha_t^2 < \infty .
+\]
+The dual step-size $\rho_t$ is slower, i.e., $\rho_t \ll \alpha_t$.
+All stochastic gradients admit bounded second moments.
+
+% \medskip
+\textbf{A6 (Small Trust-Region Bias).}
+Let $\hat\theta_{t+1}=\theta_t-\alpha_t g_t$ be the ideal gradient step.
+The actual PPO/COMA update $\theta_{t+1}$ satisfies
+\[
+|F(\theta_{t+1};\lambda)-F(\hat\theta_{t+1};\lambda)|
+\le C_b \alpha_t^2 .
+\]
+
+% }
+
+\subsection{Primal (Actor) Convergence for Fixed Duals}
+\label{sec:Actor}
+
+Fix $\lambda$ and define the \emph{penalized} objective $L(\theta,\lambda)=J_R(\theta)-\sum_k \lambda_k\,(J_{C_k}(\theta)-\beta_k)$, and its minimization surrogate
+\begin{equation}
+\label{eq:defF}
+F(\theta;\lambda)\triangleq -\,L(\theta,\lambda).
+\end{equation}
+Assume $F(\cdot;\lambda)$ is $L_\theta$-smooth in $\theta$ (from (A2) and bounded rewards/costs (A1)). Denote by $g_t\!=\!\nabla_\theta F(\theta_t;\lambda)$ the exact gradient and by $\widehat{g}_t$ the PPO/GAE/COMA-based stochastic gradient used by LC-MAPPO. The actor step is
+\begin{equation}
+\label{eq:actor_step}
+\theta_{t+1} \;=\; \theta_t - \alpha_t\,\widehat{g}_t,
+\end{equation}
+with $\{\alpha_t\}$ satisfying (A5). Let the \emph{ideal} step be $\widehat{\theta}_{t+1}\triangleq \theta_t - \alpha_t\,g_t$. By the $L_\theta$-smoothness (second-order Taylor bound),
+\begin{equation}
+\label{eq:taylor1}
+F(\theta_{t+1};\lambda)
+\;\le\; F(\widehat{\theta}_{t+1};\lambda)
++ \big\langle \theta_{t+1}-\widehat{\theta}_{t+1},\, \nabla F(\widehat{\theta}_{t+1};\lambda) \big\rangle
++ \frac{L_\theta}{2}\,\|\theta_{t+1}-\widehat{\theta}_{t+1}\|^2.
+\end{equation}
+Taking expectations conditioned on the filtration $\mathcal F_t$ (all randomness up to $t$) and using the surrogate’s (asymptotic) unbiasedness (A3)–(A4) and small-trust-region bias (A6),
+\begin{align}
+\mathbb E\!\left[F(\theta_{t+1};\lambda)\,\middle|\,\mathcal F_t\right]
+&\le \mathbb E\!\left[F(\widehat{\theta}_{t+1};\lambda)\,\middle|\,\mathcal F_t\right]
++ \frac{L_\theta}{2}\,\mathbb E\!\left[\|\theta_{t+1}-\widehat{\theta}_{t+1}\|^2\,\middle|\,\mathcal F_t\right] \nonumber\\[-0.2em]
+&\stackrel{(a)}{=} F(\widehat{\theta}_{t+1};\lambda)
++ \frac{L_\theta}{2}\,\alpha_t^2\,\mathbb E\!\left[\|\widehat{g}_t - g_t\|^2\,\middle|\,\mathcal F_t\right], \label{eq:step_a}
+\end{align}
+where $(a)$ uses $\theta_{t+1}-\widehat{\theta}_{t+1}=-\alpha_t(\widehat{g}_t-g_t)$ and $\mathbb E[\widehat{g}_t\,|\,\mathcal F_t]=g_t+\varepsilon_t$ with $\|\varepsilon_t\|\le c_{\text{TR}}\epsilon\bar D_{\mathrm{KL}}+c_Q\delta_Q$ capturing trust-region and critic-tracking biases (constants from (A3),(A6)). Next, smoothness around $\theta_t$ gives
+\begin{equation}
+\label{eq:taylor2}
+F(\widehat{\theta}_{t+1};\lambda)
+\;\le\; F(\theta_t;\lambda)
++ \big\langle \widehat{\theta}_{t+1}-\theta_t,\, \nabla F(\theta_t;\lambda) \big\rangle
++ \frac{L_\theta}{2}\,\|\widehat{\theta}_{t+1}-\theta_t\|^2,
+\end{equation}
+which, using $\widehat{\theta}_{t+1}-\theta_t=-\alpha_t g_t$, yields
+\begin{equation}
+\label{eq:descent_exact}
+F(\widehat{\theta}_{t+1};\lambda)
+\;\le\; F(\theta_t;\lambda)
+- \alpha_t \|g_t\|^2 + \frac{L_\theta}{2}\alpha_t^2 \|g_t\|^2.
+\end{equation}
+Combining Eq.~\ref{eq:step_a} and Eq.~\ref{eq:descent_exact} and taking the total expectation,
+\begin{align}
+\mathbb E\!\left[F(\theta_{t+1};\lambda)\right]-\mathbb E\!\left[F(\theta_t;\lambda)\right]
+&\le -\alpha_t\,\mathbb E\!\left[\|g_t\|^2\right]
++ \frac{L_\theta}{2}\alpha_t^2\,\mathbb E\!\left[\|g_t\|^2\right]
++ \frac{L_\theta}{2}\alpha_t^2\,\mathbb E\!\left[\|\widehat{g}_t-g_t\|^2\right] \nonumber\\
+&\le -\frac{\alpha_t}{2}\,\mathbb E\!\left[\|g_t\|^2\right]
++ C_1\,\alpha_t^2 + C_2\,\alpha_t^2\Big(\epsilon^2\bar D_{\mathrm{KL}}^2+\delta_Q^2\Big),
+\label{eq:key_ineq}
+\end{align}
+for bounded second moments (A5) and small enough $\alpha_t$ so that $1-\tfrac{L_\theta}{2}\alpha_t\ge \tfrac{1}{2}$. Summing Eq.~\ref{eq:key_ineq} over $t$ and using $\sum_t \alpha_t=\infty$, $\sum_t \alpha_t^2<\infty$ (A5), Robbins–Siegmund implies
+\begin{equation}
+\sum_{t=0}^{\infty}\alpha_t\,\mathbb E\!\left[\|g_t\|^2\right] < \infty
+\quad \Longrightarrow \quad
+\liminf_{t\to\infty}\mathbb E\!\left[\|\nabla_\theta F(\theta_t;\lambda)\|^2\right]=0.
+\end{equation}
+Hence any limit point $\theta^\star(\lambda)$ is stationary for $F(\cdot;\lambda)$, equivalently stationary for $L(\cdot,\lambda)$.
+
+\subsection{Dual (Multiplier) Convergence and KKT}
+\label{sec:Multiplier}
+
+The dual update is
+\begin{equation}
+\label{eq:dual_update}
+\lambda_{k,t+1} \;=\; \Big[\lambda_{k,t} + \rho_t\big(\widehat{J}_{C_k}(\theta_t)-\beta_k\big)\Big]_+,
+\end{equation}
+with $\rho_t$ satisfying (A5) and $\rho_t\ll\alpha_t$ (actor faster than duals). On the slower time scale, the actor tracks $\theta^\star(\lambda_t)$ from Part~A, so the dual recursion behaves as a projected gradient ascent on the concave dual function $D(\lambda)=\max_\theta L(\theta,\lambda)$. Standard two–time–scale results then yield convergence of $\{\lambda_t\}$ to the dual-optimal set $\Lambda^\star$ and primal feasibility:
+\begin{equation}
+\lim_{t\to\infty} \big(J_{C_k}(\theta_t)-\beta_k\big)_+ = 0, \qquad
+\lim_{t\to\infty} \mathrm{dist}(\lambda_t,\Lambda^\star)=0.
+\end{equation}
+Finally, any limit point $(\theta^\star,\lambda^\star)$ satisfies the KKT conditions of the CMDP:
+\begin{equation}
+\nabla_\theta L(\theta^\star,\lambda^\star)=\mathbf 0,\quad
+J_{C_k}(\theta^\star)\le \beta_k,\quad
+\lambda_k^\star\ge 0,\quad
+\lambda_k^\star\big(J_{C_k}(\theta^\star)-\beta_k\big)=0,\ \forall k.
+\end{equation}
+
+\subsection{Proof Template Mirroring A Smoothness Step}
+For completeness, we restate the key inequality in the style of the referenced lemma.
+Let $F$ be as in Eq.~\ref{eq:defF}, $g_t=\nabla F(\theta_t;\lambda)$, and define
+$\widehat{\theta}_{t+1}=\theta_t-\alpha_t g_t$ and $\theta_{t+1}=\theta_t-\alpha_t\widehat{g}_t$.
+By $L_\theta$-smoothness:
+\begin{equation}\label{eq:smooth_chain_1}
+F(\theta_{t+1}) \le F(\widehat{\theta}_{t+1})
++ \big\langle \theta_{t+1}-\widehat{\theta}_{t+1}, \nabla F(\widehat{\theta}_{t+1}) \big\rangle
++ \tfrac{L_\theta}{2}\|\theta_{t+1}-\widehat{\theta}_{t+1}\|^2.
+\end{equation}
+Taking expectations and using $\mathbb E[\widehat{g}_t\,|\,\mathcal F_t]=g_t+\varepsilon_t$,
+\begin{equation}\label{eq:smooth_chain_2}
+\mathbb E\!\left[F(\theta_{t+1})\right]
+\le \mathbb E\!\left[F(\widehat{\theta}_{t+1})\right]
++ \tfrac{L_\theta}{2}\alpha_t^2\,\mathbb E\!\left[\|\widehat{g}_t-g_t\|^2\right].
+\end{equation}
+Also,
+\begin{equation}\label{eq:smooth_chain_3}
+F(\widehat{\theta}_{t+1}) \le F(\theta_t) + \langle \widehat{\theta}_{t+1}-\theta_t, \nabla F(\theta_t)\rangle
++ \tfrac{L_\theta}{2}\|\widehat{\theta}_{t+1}-\theta_t\|^2
+= F(\theta_t) - \alpha_t\|g_t\|^2 + \tfrac{L_\theta}{2}\alpha_t^2\|g_t\|^2.
+\end{equation}
+Combining Eqs.~\ref{eq:smooth_chain_2}--\ref{eq:smooth_chain_3} and adding/subtracting $\varepsilon_t$ as in Eq.~\ref{eq:key_ineq} gives
+\begin{equation}\label{eq:smooth_chain_4}
+\mathbb E\!\left[F(\theta_{t+1})\right]-\mathbb E\!\left[F(\theta_t)\right]
+\le -\alpha_t\,\mathbb E\!\left[\|g_t\|^2\right]
++ \tfrac{L_\theta}{2}\alpha_t^2\,\mathbb E\!\left[\|g_t\|^2\right]
++ \tfrac{L_\theta}{2}\alpha_t^2\,\mathbb E\!\left[\|\widehat{g}_t-g_t\|^2\right].
+\end{equation}
+which is the LC--MAPPO analogue of the inequality chain in
+Eqs.~\ref{eq:smooth_chain_1}--\ref{eq:smooth_chain_4};
+the rest follows by summability of $\{\alpha_t^2\}$ and two--time--scale analysis for $\{\lambda_t\}$.
+
+
+
+\end{document}
+

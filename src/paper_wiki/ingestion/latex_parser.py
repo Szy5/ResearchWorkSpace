@@ -272,6 +272,15 @@ class LaTeXParser:
         """
         text = self._strip_comments(text)
         text = self._replace_float_env_with_captions(text)
+        # 在清洗前把 [FIGURE: ...] 标记藏起来，防止路径中的 _ 被 _clean_inline_latex 替换成空格。
+        figure_markers: dict[str, str] = {}
+
+        def _hide_figure(m: re.Match) -> str:  # type: ignore[type-arg]
+            key = f"XFIGUREX{len(figure_markers)}XFIGUREX"
+            figure_markers[key] = m.group(0)
+            return key
+
+        text = re.sub(r"\[FIGURE:[^\]]*\]", _hide_figure, text)
         text = re.sub(r"\\(?:vspace|hspace|setlength|addtolength)\*?(?:\[[^\]]*\])?\{[^{}]*\}", " ", text)
         text = re.sub(r"\\label\{[^{}]*\}", " ", text)
         text = re.sub(r"\\ref\{([^{}]*)\}", r"\1", text)
@@ -283,27 +292,35 @@ class LaTeXParser:
         text = self._clean_inline_latex(text)
         text = re.sub(r"\n{3,}", "\n\n", text)
         text = re.sub(r"[ \t]{2,}", " ", text)
+        # 还原 [FIGURE: ...] 标记，路径保持原始形式。
+        for key, marker in figure_markers.items():
+            text = text.replace(key, marker)
         return text.strip()
 
     def _replace_float_env_with_captions(self, text: str) -> str:
-        """删除大段图表/算法环境，但保留 caption，因为 caption 常含方法和实验关键信息。"""
-        envs = [
-            "figure",
-            "figure*",
-            "algorithm",
-            "algorithm*",
-            "lstlisting",
-            "wrapfigure",
-            "table",
-            "table*",
-        ]
-        for env in envs:
+        """删除大段图表/算法环境，但保留 caption；figure 环境额外保留图片路径供 LLM 引用。"""
+        figure_envs = {"figure", "figure*", "wrapfigure"}
+        other_envs = ["algorithm", "algorithm*", "lstlisting", "table", "table*"]
+
+        for env in list(figure_envs) + other_envs:
             escaped = re.escape(env)
             pattern = re.compile(rf"\\begin\{{{escaped}\}}(.*?)\\end\{{{escaped}\}}", re.DOTALL | re.IGNORECASE)
 
-            def repl(match: re.Match[str]) -> str:
-                captions = re.findall(r"\\caption(?:\[[^\]]*\])?\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", match.group(1))
-                return "\n".join(f"Caption: {self._clean_inline_latex(caption)}" for caption in captions)
+            def repl(match: re.Match[str], _env: str = env) -> str:
+                body = match.group(1)
+                captions = re.findall(r"\\caption(?:\[[^\]]*\])?\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", body)
+                caption_lines = [f"Caption: {self._clean_inline_latex(c)}" for c in captions]
+
+                if _env in figure_envs:
+                    graphic = re.search(r"\\includegraphics(?:\[[^\]]*\])?\{([^{}]+)\}", body)
+                    label = re.search(r"\\label\{([^{}]+)\}", body)
+                    if graphic:
+                        path = graphic.group(1)
+                        lbl = label.group(1) if label else ""
+                        figure_line = f"[FIGURE: {path} | {lbl}]" if lbl else f"[FIGURE: {path}]"
+                        return "\n".join([figure_line] + caption_lines)
+
+                return "\n".join(caption_lines)
 
             text = pattern.sub(repl, text)
         return text

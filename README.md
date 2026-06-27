@@ -1,203 +1,284 @@
 # Paper-Wiki
 
-Paper-Wiki 是一个个人科研论文知识库项目。当前代码只实现 **Layer 0 原始资料解析** 和 **Layer 1 单篇论文三件套生成**：
+<p align="center">
+  <img src="img/pic_1.png" alt="Paper-Wiki：从论文 LaTeX 到结构化知识库" width="720"/>
+</p>
 
-- `summary.md`：论文精读摘要
-- `prior_works.json`：直接前作与思想谱系
-- `sci_pattern.json`：科学创新范式分类
+<p align="center">
+  <strong>把科研论文 LaTeX 源码，自动转化为结构化、可积累的个人论文知识库。</strong>
+</p>
 
-当前版本不会更新 `wiki/`，也不会构建向量库、图谱查询或 HTTP API。
+<p align="center">
+  <a href="https://github.com/Szy5/ResearchWorkSpace"><img src="https://img.shields.io/badge/python-3.11+-blue.svg" alt="Python 3.11+"></a>
+  <a href="https://github.com/Szy5/ResearchWorkSpace"><img src="https://img.shields.io/badge/status-Layer%200%2F1-green.svg" alt="Layer 0/1"></a>
+  <a href="https://github.com/Szy5/ResearchWorkSpace"><img src="https://img.shields.io/badge/LLM-OpenAI--compatible-orange.svg" alt="OpenAI-compatible LLM"></a>
+</p>
 
-## 目录约定
+---
 
-```text
-raw/{paper-slug}/
-  论文 LaTeX 源文件，只读
+## 简介
 
-artifacts/{paper-slug}/
-  summary.md
-  prior_works.json
-  sci_pattern.json
+Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `raw/` 下的 LaTeX 论文源码，调用 LLM 生成每篇论文的 **Layer 1 三件套**，为后续 Wiki、图谱与 RAG 检索打下基础。
 
-prompts/
-  LLM prompt 模板和科学范式 taxonomy
+当前已实现：
+
+| 层级 | 能力 | 状态 |
+|------|------|------|
+| Layer 0 | LaTeX 解析、章节抽取、图表路径保留 | ✅ |
+| Layer 1 | `summary.md` / `prior_works.json` / `sci_pattern.json` | ✅ |
+| Layer 2 | Wiki、概念页、科学发现图谱 | 🚧 规划中 |
+| Layer 3 | 向量检索、图谱查询、HTTP API | 🚧 规划中 |
+
+**设计灵感：** [LLM Wiki](docs/llm_wiki.md) · [Sci-Reasoning](https://github.com/AmberLJC/Sci-Reasoning)
+
+---
+
+## 特性
+
+- **LaTeX 原生输入** — 递归内联 `\input` / `\include`，自动识别主文件与 introduction / method / experiments 等章节
+- **三件套生成** — 精读摘要、前作谱系、科学创新范式分类，输出经 Pydantic 校验
+- **Prompt 可切换** — CLI 透传三个 prompt 文件，方便调试与迭代
+- **增量写入** — 每步生成后立即落盘，单步失败不丢已完成产物
+- **Markdown 增强** — 摘要支持公式、图片引用与格式规范；图片路径自动指向 `raw/{slug}/figures/`
+
+---
+
+## 快速开始
+
+```bash
+# 1. 克隆并安装
+git clone https://github.com/Szy5/ResearchWorkSpace.git
+cd ResearchWorkSpace
+conda create -n paper-wiki -c conda-forge python=3.11 -y && conda activate paper-wiki
+pip install -r requirements.txt && pip install -e .
+
+# 2. 配置 LLM（复制模板后填入密钥）
+cp .env.example .env
+
+# 3. 放入论文 LaTeX 到 raw/{paper-slug}/，先解析再生成
+paper-wiki parse GraphWalker
+paper-wiki ingest GraphWalker --overwrite
 ```
 
-`paper-slug` 就是论文目录名，例如 `GraphWalker`。
+产物输出到 `artifacts/GraphWalker/`：
 
-## 1. 创建环境
+```
+artifacts/GraphWalker/
+├── summary.md          # 精读摘要（含 YAML frontmatter）
+├── prior_works.json    # 直接前作与思想谱系
+└── sci_pattern.json    # 科学创新范式分类
+```
 
-本项目使用 conda 管理 Python 环境：
+---
+
+## 安装
+
+### 环境要求
+
+- Python **3.11+**
+- 任意 **OpenAI 兼容** API（OpenAI / Azure / 自建网关等）
+
+### 依赖安装
 
 ```bash
 conda create -n paper-wiki -c conda-forge --override-channels python=3.11 -y
 conda activate paper-wiki
-```
-
-安装依赖和本地命令：
-
-```bash
 pip install -r requirements.txt
 pip install --no-build-isolation -e .
 ```
 
-如果你的默认 pip 镜像缺包，可以使用官方 PyPI：
+若 pip 镜像缺包，可改用官方 PyPI：
 
 ```bash
 pip install -i https://pypi.org/simple -r requirements.txt
 pip install -i https://pypi.org/simple --no-build-isolation -e .
 ```
 
-## 2. 配置模型
+### 配置
 
-在项目根目录创建或修改 `.env`：
-
-```bash
-MODEL_NAME=你的模型名
-BASE_URL=你的 OpenAI-compatible API 地址
-API_KEY=你的 API Key
-```
-
-也兼容 OpenAI 官方变量名：
+在项目根目录创建 `.env`（可参考 `.env.example`）：
 
 ```bash
-OPENAI_MODEL=你的模型名
-OPENAI_BASE_URL=你的 API 地址
-OPENAI_API_KEY=你的 API Key
+MODEL_NAME=your-model-name
+BASE_URL=https://your-api-base-url/v1
+API_KEY=your-api-key
 ```
 
-不要把 `.env` 或密钥内容提交到版本控制。
+也兼容 OpenAI 官方变量名：`OPENAI_MODEL` / `OPENAI_BASE_URL` / `OPENAI_API_KEY`。
 
-## 3. 放入论文
+> ⚠️ 请勿将 `.env` 或 API Key 提交到版本控制。
 
-把论文 LaTeX 源码放到 `raw/{paper-slug}/` 下。解析器会优先寻找：
+---
 
-1. `main.tex`
-2. `paper.tex`
-3. `article.tex`
-4. 包含 `\begin{document}` 的 `.tex` 文件
-5. 最大的 `.tex` 文件
+## 使用
 
-解析器会递归内联 `\input{...}` 和 `\include{...}`。
+### 1. 添加论文
 
-## 4. 先做 Layer0 解析检查
+将 LaTeX 源码放入 `raw/{paper-slug}/`。`paper-slug` 即目录名，例如 `GraphWalker`。
 
-在真正调用模型前，建议先运行：
+解析器会按以下优先级寻找主文件：
+
+1. `main.tex` → `paper.tex` → `article.tex`
+2. 包含 `\begin{document}` 的 `.tex`
+3. 体积最大的 `.tex`
+
+### 2. 解析检查（Layer 0，不调用 LLM）
 
 ```bash
 paper-wiki parse GraphWalker
+paper-wiki parse GraphWalker --verbose   # DEBUG 日志
 ```
 
-默认会输出 INFO 级别日志，能看到入口文件、内联文件数量、章节命中情况等关键进度。需要更细的调试信息时使用：
+关注输出中的 `entry_file`、`matched_sections`、`estimated_tokens`，确认解析无误后再 ingest。
 
-```bash
-paper-wiki parse GraphWalker --verbose
-```
-
-你需要关注输出里的这些字段：
-
-- `entry_file`：是否识别到了正确主文件
-- `source_files`：是否内联了预期的章节文件
-- `matched_sections`：是否命中 `introduction`、`related_work`、`method`、`experiments`
-- `estimated_tokens`：输入给 LLM 的大致 token 规模
-
-## 5. 生成 Layer1 三件套
-
-确认 parse 没问题后运行：
+### 3. 生成三件套（Layer 1）
 
 ```bash
 paper-wiki ingest GraphWalker
-```
-
-如果目标目录已经有产物，默认不会覆盖。需要重生成时使用：
-
-```bash
-paper-wiki ingest GraphWalker --overwrite
-```
-
-如果模型调用或 JSON 校验失败，CLI 会输出当前失败阶段和错误信息。需要异常堆栈和更详细的内部日志时使用：
-
-```bash
 paper-wiki ingest GraphWalker --overwrite --verbose
 ```
 
-生成结果位于：
+默认不覆盖已有产物；需重生成时加 `--overwrite`。
 
-```text
-artifacts/GraphWalker/summary.md
-artifacts/GraphWalker/prior_works.json
-artifacts/GraphWalker/sci_pattern.json
+### 4. 自定义 Prompt
+
+```bash
+paper-wiki ingest GraphWalker --overwrite \
+  --summary-prompt paper_summary_v2.py \
+  --prior-works-prompt prior_work_prompt.py \
+  --sci-pattern-prompt sci_pattern_classify_prompt.py
 ```
 
-## 6. 人工审查
+路径可为 `prompts/` 下的相对路径，或绝对路径。
 
-生成后的文件还不能直接进入未来 Layer2 图谱，尤其是 `prior_works.json`。
+### 5. 人工审查
 
-建议检查：
+生成结果默认 `reviewed: false`。入库前建议核对：
 
-- `summary.md` frontmatter 中 `title`、`authors`、`contribution_type` 是否正确
-- `summary.md` 正文是否有明显幻觉或遗漏
-- `prior_works.json` 中论文标题、年份、作者、角色是否真实准确
-- `sci_pattern.json` 的主要范式是否符合你的判断
+- `summary.md` 标题、作者、贡献类型与正文是否有幻觉
+- `prior_works.json` 前作标题、年份、角色是否准确
+- `sci_pattern.json` 范式分类是否符合你的判断
 
-人工确认后，未来 Layer2 才应该把 `reviewed` 产物纳入 wiki、图谱或 RAG 索引。
+---
 
-## 7. 运行测试
+## CLI 参考
+
+| 命令 | 说明 |
+|------|------|
+| `paper-wiki parse <slug>` | 解析 LaTeX，打印 Layer 0 摘要 |
+| `paper-wiki ingest <slug>` | 生成 Layer 1 三件套 |
+
+**`ingest` 常用选项**
+
+| 选项 | 说明 |
+|------|------|
+| `--overwrite`, `-f` | 覆盖已有产物 |
+| `--verbose`, `-v` | DEBUG 日志与异常堆栈 |
+| `--summary-prompt` | 摘要 prompt（默认 `paper_summary_v2.py`） |
+| `--prior-works-prompt` | 前作 prompt（默认 `prior_work_prompt.py`） |
+| `--sci-pattern-prompt` | 范式 prompt（默认 `sci_pattern_classify_prompt.py`） |
+
+---
+
+## 项目结构
+
+```
+Paper-wiki/
+├── raw/{paper-slug}/       # Layer 0：LaTeX 源码（只读）
+├── artifacts/{paper-slug}/ # Layer 1：三件套输出
+├── prompts/                # LLM prompt 模板与范式 taxonomy
+├── src/paper_wiki/         # 核心代码
+│   ├── cli/                # Typer CLI
+│   ├── core/               # 配置、模型、枚举
+│   └── ingestion/          # 解析器、生成器、Pipeline
+├── tests/                  # 单元测试与集成测试
+└── docs/                   # 需求与技术方案文档
+```
+
+---
+
+## 架构概览
+
+```
+  raw/{slug}/          prompts/
+  LaTeX + figures  +   模板 / taxonomy
+        │                    │
+        └────────┬───────────┘
+                 ▼
+          ┌──────────────┐
+          │  LaTeX Parser │  Layer 0
+          └──────┬───────┘
+                 ▼
+          ┌──────────────┐
+          │  LLM Pipeline │  Layer 1
+          └──────┬───────┘
+                 ▼
+     summary.md · prior_works.json · sci_pattern.json
+                 │
+                 ▼  （规划中）
+          wiki/ · 图谱 · RAG API   Layer 2 / 3
+```
+
+---
+
+## 开发与测试
 
 ```bash
 pytest
 ```
 
-当前测试覆盖：
+测试覆盖：LaTeX 解析与章节匹配、Pydantic schema 校验、mock LLM 端到端 ingest。
 
-- LaTeX 入口文件识别、`\input` 内联和章节匹配
-- Pydantic schema 校验
-- mock LLM 的端到端 ingest 流程
+更多约定见 [AGENTS.md](AGENTS.md)；设计文档见 [docs/](docs/)。
 
-## 8. 日志说明
+---
 
-CLI 使用 Python 标准库 logging，不需要额外安装依赖。
+## 常见问题
 
-默认日志级别是 `INFO`，会显示：
+<details>
+<summary><b>parse 没有命中章节？</b></summary>
 
-- LaTeX 解析开始和结束
-- 入口文件识别结果
-- 四类目标章节是否命中
-- 每个 Layer1 产物的生成阶段
-- LLM 调用开始和完成
-- 产物写入路径
+检查主文件是否正确，或章节标题是否过于特殊。关键词维护于 `src/paper_wiki/ingestion/latex_parser.py` 的 `TARGET_SECTIONS`。
+</details>
 
-`--verbose` 会切到 `DEBUG`，额外显示：
+<details>
+<summary><b>ingest JSON 校验失败？</b></summary>
 
-- 实际内联的 `.tex` 文件列表
-- `\input` / `\include` 内联细节
-- JSON schema 校验重试信息
-- CLI 异常堆栈
+模型输出不符合 schema 时会自动重试。仍失败时可换更强模型，或调整对应 prompt。
+</details>
 
-日志不会输出 `.env` 中的 API Key。
+<details>
+<summary><b>summary 里图片预览空白？</b></summary>
 
-## 9. 常见问题
+LaTeX 图多为 `.pdf`，多数 Markdown 预览不支持内嵌 PDF。路径已指向 `raw/{slug}/figures/`；可 Ctrl+点击链接，或安装 VS Code 的 <code>vscode-pdf</code> 插件查看。
+</details>
 
-### 找不到 conda 包
+<details>
+<summary><b>conda / pip 装包失败？</b></summary>
 
-可以改用 `conda-forge`：
+conda 使用 <code>conda-forge</code> 渠道；pip 可加 <code>-i https://pypi.org/simple</code> 使用官方源。
+</details>
 
-```bash
-conda create -n paper-wiki -c conda-forge --override-channels python=3.11 -y
-```
+---
 
-### pip 镜像缺包
+## 路线图
 
-使用官方 PyPI：
+- [x] Layer 0 LaTeX 解析
+- [x] Layer 1 三件套生成与 prompt 透传
+- [x] 摘要 Markdown 图片引用与格式规范
+- [ ] Layer 2 Wiki 与科学发现图谱
+- [ ] Layer 3 向量检索与 API
 
-```bash
-pip install -i https://pypi.org/simple -r requirements.txt
-```
+---
 
-### parse 没有命中章节
+## 相关链接
 
-检查主文件是否正确，或 LaTeX 章节标题是否过于特殊。当前关键词在 `src/paper_wiki/ingestion/latex_parser.py` 的 `TARGET_SECTIONS` 中维护。
+- 仓库：[github.com/Szy5/ResearchWorkSpace](https://github.com/Szy5/ResearchWorkSpace)
+- 需求文档：[docs/Paper-Wiki 需求文档.md](docs/Paper-Wiki%20需求文档.md)
+- 技术方案：[docs/Paper-Wiki 技术方案_v1.md](docs/Paper-Wiki%20技术方案_v1.md)
 
-### ingest 报 JSON 校验失败
+---
 
-说明模型输出不符合 schema。代码会自动重试数次；仍失败时可以换更强模型，或调整对应 generator 的 prompt。
+<p align="center">
+  如果这个项目对你有帮助，欢迎 Star ⭐
+</p>

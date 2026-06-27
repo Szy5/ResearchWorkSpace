@@ -1,0 +1,1197 @@
+@article{rashid2018qmix,
+author = {Rashid, Tabish and Samvelyan, Mikayel and De Witt, Christian Schroeder and Farquhar, Gregory and Foerster, Jakob and Whiteson, Shimon},
+title = {Monotonic value function factorisation for deep multi-agent reinforcement learning},
+year = {2020},
+issue_date = {January 2020},
+publisher = {JMLR.org},
+volume = {21},
+number = {1},
+issn = {1532-4435},
+abstract = {In many real-world settings, a team of agents must coordinate its behaviour while acting in a decentralised fashion. At the same time, it is often possible to train the agents in a centralised fashion where global state information is available and communication constraints are lifted. Learning joint action-values conditioned on extra state information is an attractive way to exploit centralised learning, but the best strategy for then extracting decentralised policies is unclear. Our solution is QMIX, a novel value-based method that can train decentralised policies in a centralised end-to-end fashion. QMIX employs a mixing network that estimates joint action-values as a monotonic combination of per-agent values. We structurally enforce that the joint-action value is monotonic in the per-agent values, through the use of non-negative weights in the mixing network, which guarantees consistency between the centralised and decentralised policies. To evaluate the performance of QMIX, we propose the StarCraft Multi-Agent Challenge (SMAC) as a new benchmark for deep multi-agent reinforcement learning. We evaluate QMIX on a challenging set of SMAC scenarios and show that it significantly outperforms existing multi-agent reinforcement learning methods.},
+journal = {J. Mach. Learn. Res.},
+month = jan,
+articleno = {178},
+numpages = {51},
+keywords = {reinforcement learning, multi-agent learning, multi-agent coordination}
+}
+
+@inproceedings{foerster2018coma,
+author = {Foerster, Jakob N. and Farquhar, Gregory and Afouras, Triantafyllos and Nardelli, Nantas and Whiteson, Shimon},
+title = {Counterfactual multi-agent policy gradients},
+year = {2018},
+isbn = {978-1-57735-800-8},
+publisher = {AAAI Press},
+abstract = {Many real-world problems, such as network packet routing and the coordination of autonomous vehicles, are naturally modelled as cooperative multi-agent systems. There is a great need for new reinforcement learning methods that can efficiently learn decentralised policies for such systems. To this end, we propose a new multi-agent actor-critic method called counterfactual multi-agent (COMA) policy gradients. COMA uses a centralised critic to estimate the Q-function and decentralised actors to optimise the agents' policies. In addition, to address the challenges of multi-agent credit assignment, it uses a counterfactual baseline that marginalises out a single agent's action, while keeping the other agents' actions fixed. COMA also uses a critic representation that allows the counterfactual baseline to be computed efficiently in a single forward pass. We evaluate COMA in the testbed of StarCraft unit micromanagement, using a decentralised variant with significant partial observability. COMA significantly improves average performance over other multi-agent actor-critic methods in this setting, and the best performing agents are competitive with state-of-the-art centralised controllers that get access to the full state.},
+booktitle = {Proceedings of the Thirty-Second AAAI Conference on Artificial Intelligence and Thirtieth Innovative Applications of Artificial Intelligence Conference and Eighth AAAI Symposium on Educational Advances in Artificial Intelligence},
+articleno = {363},
+numpages = {9},
+location = {New Orleans, Louisiana, USA},
+series = {AAAI'18/IAAI'18/EAAI'18}
+}
+
+@inproceedings{achiam2017constrained,
+author = {Achiam, Joshua and Held, David and Tamar, Aviv and Abbeel, Pieter},
+title = {Constrained policy optimization},
+year = {2017},
+publisher = {JMLR.org},
+abstract = {For many applications of reinforcement learning it can be more convenient to specify both a reward function and constraints, rather than trying to design behavior through the reward function. For example, systems that physically interact with or around humans should satisfy safety constraints. Recent advances in policy search algorithms (Mnih et al., 2016; Schulman et al., 2015; Lillicrap et al., 2016; Levine et al., 2016) have enabled new capabilities in high-dimensional control, but do not consider the constrained setting. We propose Constrained Policy Optimization (CPO), the first general-purpose policy search algorithm for constrained reinforcement learning with guarantees for near-constraint satisfaction at each iteration. Our method allows us to train neural network policies for high-dimensional control while making guarantees about policy behavior all throughout training. Our guarantees are based on a new theoretical result, which is of independent interest: we prove a bound relating the expected returns of two policies to an average divergence between them. We demonstrate the effectiveness of our approach on simulated robot locomotion tasks where the agent must satisfy constraints motivated by safety.},
+booktitle = {Proceedings of the 34th International Conference on Machine Learning - Volume 70},
+pages = {22–31},
+numpages = {10},
+location = {Sydney, NSW, Australia},
+series = {ICML'17}
+}
+
+
+@inproceedings{schulman2015trpo,
+  title={Trust region policy optimization},
+  author={Schulman, John and Levine, Sergey and Abbeel, Pieter and Jordan, Michael and Moritz, Philipp},
+  booktitle={International conference on machine learning},
+  pages={1889--1897},
+  year={2015},
+  organization={PMLR}
+}
+
+
+@article{schulman2017ppo,
+  title={Proximal policy optimization algorithms},
+  author={Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},
+  journal={arXiv preprint arXiv:1707.06347},
+  year={2017}
+}
+
+@inproceedings{yu2021mappo,
+ author = {Yu, Chao and Velu, Akash and Vinitsky, Eugene and Gao, Jiaxuan and Wang, Yu and Bayen, Alexandre and WU, YI},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
+ pages = {24611--24624},
+ publisher = {Curran Associates, Inc.},
+ title = {The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/9c1535a02f0ce079433344e14d910597-Paper-Datasets_and_Benchmarks.pdf},
+ volume = {35},
+ year = {2022}
+}
+
+
+@article{sutton2000policy,
+  title={Policy gradient methods for reinforcement learning with function approximation},
+  author={Sutton, Richard S and McAllester, David and Singh, Satinder and Mansour, Yishay},
+  journal={Advances in neural information processing systems},
+  volume={12},
+  year={1999}
+}
+
+@article{konda2000actor,
+  title={Actor-critic algorithms},
+  author={Konda, Vijay and Tsitsiklis, John},
+  journal={Advances in neural information processing systems},
+  volume={12},
+  year={1999}
+}
+
+
+@book{altman1999constrained,
+  title={Constrained Markov decision processes},
+  author={Altman, Eitan},
+  year={2021},
+  publisher={Routledge}
+}
+
+
+@book{borkar2009stochastic,
+  title={Stochastic approximation: a dynamical systems viewpoint},
+  author={Borkar, Vivek S and Borkar, Vivek S},
+  volume={100},
+  year={2008},
+  publisher={Springer}
+}
+
+@inproceedings{minerva_2018,
+  title={Go for a Walk and Arrive at the Answer: Reasoning Over Paths in Knowledge Bases using Reinforcement Learning},
+  author={Das, Rajarshi and Dhuliawala, Shehzaad and Zaheer, Manzil and Vilnis, Luke and Durugkar, Ishan and Krishnamurthy, Akshay and Smola, Alex and McCallum, Andrew},
+  booktitle={International Conference on Learning Representations},
+  year={2018}
+}
+
+@inproceedings{rnnlogic_2020,
+  title={{RNNLogic}: Learning Logic Rules for Reasoning on Knowledge Graphs},
+  author={Qu, Meng and Chen, Junkun and Xhonneux, Louis-Pascal and Bengio, Yoshua and Tang, Jian},
+  booktitle={International Conference on Learning Representations}
+}
+
+@inproceedings{yang2017neurallp,
+ author = {Yang, Fan and Yang, Zhilin and Cohen, William W},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {I. Guyon and U. Von Luxburg and S. Bengio and H. Wallach and R. Fergus and S. Vishwanathan and R. Garnett},
+ pages = {},
+ publisher = {Curran Associates, Inc.},
+ title = {Differentiable Learning of Logical Rules for Knowledge Base Reasoning},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/0e55666a4ad822e0e34299df3591d979-Paper.pdf},
+ volume = {30},
+ year = {2017}
+}
+
+
+
+@inproceedings{zhu2025kg2rag,
+  title={Knowledge Graph-Guided Retrieval Augmented Generation},
+  author={Zhu, Xiangrong and Xie, Yuexiang and Liu, Yi and Li, Yaliang and Hu, Wei},
+  booktitle={Proceedings of the 2025 Conference of the Nations of the Americas Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)},
+  pages={8912--8924},
+  year={2025}
+}
+
+@article{yu2025graphrag,
+  title={{GraphRAG-R1: Graph Retrieval-Augmented Generation with Process-Constrained Reinforcement Learning}},
+  author={Yu, Chuanyue and Zhao, Kuo and Li, Yuhan and Chang, Heng and Feng, Mingjian and Jiang, Xiangzhe and Sun, Yufei and Li, Jia and Zhang, Yuzhi and Li, Jianxin and others},
+  journal={arXiv preprint arXiv:2507.23581},
+  year={2025}
+}
+
+@article{lu2025gragr1,
+  title={{Graph-R1: Towards agentic graphrag framework via end-to-end reinforcement learning}},
+  author={Luo, Haoran and Chen, Guanting and Lin, Qika and Guo, Yikai and Xu, Fangzhi and Kuang, Zemin and Song, Meina and Wu, Xiaobao and Zhu, Yifan and Tuan, Luu Anh and others},
+  journal={arXiv preprint arXiv:2507.21892},
+  year={2025}
+}
+
+@article{mei2025survey,
+  title={A survey of context engineering for large language models},
+  author={Mei, Lingrui and Yao, Jiayu and Ge, Yuyao and Wang, Yiwei and Bi, Baolong and Cai, Yujun and Liu, Jiazhi and Li, Mingyu and Li, Zhong-Zhi and Zhang, Duzhen and others},
+  journal={arXiv preprint arXiv:2507.13334},
+  year={2025}
+}
+
+@inproceedings{rashtchian2025sufficient,
+  title={Sufficient Context: A New Lens on Retrieval Augmented Generation Systems},
+  author={Joren, Hailey and Zhang, Jianyi and Ferng, Chun-Sung and Juan, Da-Cheng and Taly, Ankur and Rashtchian, Cyrus},
+  booktitle={The Thirteenth International Conference on Learning Representations}
+}
+
+@inproceedings{anantha2024context,
+  title={Context Tuning for Retrieval Augmented Generation},
+  author={Anantha, Raviteja and Vodianik, Danil},
+  booktitle={Proceedings of the 1st Workshop on Uncertainty-Aware NLP (UncertaiNLP 2024)},
+  pages={15--22},
+  year={2024}
+}
+
+@inproceedings{option_critic_2017,
+  title     = {The Option-Critic Architecture},
+  author    = {Bacon, Pierre-Luc and Harb, Jean and Precup, Doina},
+  booktitle = {Proceedings of the Thirty-First AAAI Conference on Artificial Intelligence (AAAI-17)},
+  pages     = {1726--1734},
+  year      = {2017},
+  publisher = {AAAI Press},
+  url       = {https://cdn.aaai.org/ojs/10916/10916-13-14444-1-2-20201228.pdf}
+}
+
+
+@inproceedings{scholak2021picard,
+  title={{PICARD}: Parsing Incrementally for Constrained Auto-Regressive Decoding from Language Models},
+  author={Scholak, Torsten and Schucher, Nathan and Bahdanau, Dzmitry},
+  booktitle={Proceedings of the 2021 Conference on Empirical Methods in Natural Language Processing},
+  pages={9895--9901},
+  year={2021}
+}
+
+@inproceedings{jiang2024kg,
+    title = "{KG}-Agent: An Efficient Autonomous Agent Framework for Complex Reasoning over Knowledge Graph",
+    author = "Jiang, Jinhao  and
+      Zhou, Kun  and
+      Zhao, Wayne Xin  and
+      Song, Yang  and
+      Zhu, Chen  and
+      Zhu, Hengshu  and
+      Wen, Ji-Rong",
+    editor = "Che, Wanxiang  and
+      Nabende, Joyce  and
+      Shutova, Ekaterina  and
+      Pilehvar, Mohammad Taher",
+    booktitle = "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2025",
+    address = "Vienna, Austria",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.acl-long.468/",
+    doi = "10.18653/v1/2025.acl-long.468",
+    pages = "9505--9523",
+    ISBN = "979-8-89176-251-0",
+    abstract = "In this paper, we aim to improve the reasoning ability of large language models(LLMs) over knowledge graphs(KGs) to answer complex questions. Inspired by existing methods that design the interaction strategy between LLMs and KG, we propose an autonomous LLM-based agent framework, called \textbf{KG-Agent}, which enables a small LLM to actively make decisions until finishing the reasoning process over KGs. In KG-Agent, we integrate the LLM, multifunctional toolbox, KG-based executor, and knowledge memory, and develop an iteration mechanism that autonomously selects the tool and then updates the memory for reasoning over KG. To guarantee the effectiveness, we leverage program language to formulate the multi-hop reasoning process over the KG and synthesize a code-based instruction dataset to fine-tune the base LLM. Extensive experiments demonstrate that only using 10K samples for tuning LLaMA2-7B can outperform competitive methods using larger LLMs or more data, on both in-domain and out-domain datasets. Our code and data will be publicly released."
+}
+
+@article{zhao2025agentigraphmultiagentknowledgegraph,
+  title={{AGENTiGraph}: A Multi-Agent Knowledge Graph Framework for Interactive, Domain-Specific LLM Chatbots},
+  author={Zhao, Xinjie and Blum, Moritz and Gao, Fan and Chen, Yingjian and Yang, Boming and Marquez-Carpintero, Luis and Pina-Navarro, M{\'o}nica and Fu, Yanran and Morikawa, So and Iwasawa, Yusuke and others},
+  journal={arXiv preprint arXiv:2508.02999},
+  year={2025}
+}
+
+@misc{lu2025karmaleveragingmultiagentllms,
+  title         = {{KARMA}: Leveraging Multi-Agent LLMs for Automated Knowledge Graph Enrichment},
+  author        = {Lu, Yuxing and Wang, Jinzhuo},
+  year          = {2025},
+  eprint        = {2502.06472},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  doi           = {10.48550/arXiv.2502.06472},
+  url           = {https://arxiv.org/abs/2502.06472}
+}
+
+
+@misc{agarwal2025ragulatingcompliancemultiagentknowledge,
+  title         = {RAGulating Compliance: A Multi-Agent Knowledge Graph for Regulatory QA},
+  author        = {Agarwal, Bhavik and Jomraj, Hemant Sunil and Kaplunov, Simone and Krolick, Jack and Rojkova, Viktoria},
+  year          = {2025},
+  eprint        = {2508.09893},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  doi           = {10.48550/arXiv.2508.09893},
+  url           = {https://arxiv.org/abs/2508.09893}
+}
+
+
+@misc{yu2025ragkgilmultiagenthybridframework,
+  title         = {{RAG-KG-IL}: A Multi-Agent Hybrid Framework for Unified Knowledge Graph and Information Layer},
+  author        = {Yu, Hong Qing and McQuade, Frank},
+  year          = {2025},
+  eprint        = {2503.13514},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  doi           = {10.48550/arXiv.2503.13514},
+  url           = {https://arxiv.org/abs/2503.13514}
+}
+
+
+
+@inproceedings{lewis2020rag,
+author = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K\"{u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt\"{a}schel, Tim and Riedel, Sebastian and Kiela, Douwe},
+title = {Retrieval-augmented generation for knowledge-intensive NLP tasks},
+year = {2020},
+isbn = {9781713829546},
+publisher = {Curran Associates Inc.},
+address = {Red Hook, NY, USA},
+abstract = {Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) — models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, and another which can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state of the art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline.},
+booktitle = {Proceedings of the 34th International Conference on Neural Information Processing Systems},
+articleno = {793},
+numpages = {16},
+location = {Vancouver, BC, Canada},
+series = {NIPS '20}
+}
+
+@inproceedings{yang2018hotpotqa,
+    title = "{H}otpot{QA}: A Dataset for Diverse, Explainable Multi-hop Question Answering",
+    author = "Yang, Zhilin  and
+      Qi, Peng  and
+      Zhang, Saizheng  and
+      Bengio, Yoshua  and
+      Cohen, William  and
+      Salakhutdinov, Ruslan  and
+      Manning, Christopher D.",
+    editor = "Riloff, Ellen  and
+      Chiang, David  and
+      Hockenmaier, Julia  and
+      Tsujii, Jun{'}ichi",
+    booktitle = "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+    month = oct # "-" # nov,
+    year = "2018",
+    address = "Brussels, Belgium",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/D18-1259/",
+    doi = "10.18653/v1/D18-1259",
+    pages = "2369--2380",
+    abstract = "Existing question answering (QA) datasets fail to train QA systems to perform complex reasoning and provide explanations for answers. We introduce HotpotQA, a new dataset with 113k Wikipedia-based question-answer pairs with four key features: (1) the questions require finding and reasoning over multiple supporting documents to answer; (2) the questions are diverse and not constrained to any pre-existing knowledge bases or knowledge schemas; (3) we provide sentence-level supporting facts required for reasoning, allowing QA systems to reason with strong supervision and explain the predictions; (4) we offer a new type of factoid comparison questions to test QA systems' ability to extract relevant facts and perform necessary comparison. We show that HotpotQA is challenging for the latest QA systems, and the supporting facts enable models to improve performance and make explainable predictions."
+}
+
+@misc{pan2023llmkg,
+      title={Large Language Models and Knowledge Graphs: Opportunities and Challenges}, 
+      author={Jeff Z. Pan and Simon Razniewski and Jan-Christoph Kalo and Sneha Singhania and Jiaoyan Chen and Stefan Dietze and Hajira Jabeen and Janna Omeliyanenko and Wen Zhang and Matteo Lissandrini and Russa Biswas and Gerard de Melo and Angela Bonifati and Edlira Vakaj and Mauro Dragoni and Damien Graux},
+      year={2023},
+      eprint={2308.06374},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2308.06374}, 
+}
+
+@inproceedings{yasunaga2021qagnn,
+    title = "{QA}-{GNN}: Reasoning with Language Models and Knowledge Graphs for Question Answering",
+    author = "Yasunaga, Michihiro  and
+      Ren, Hongyu  and
+      Bosselut, Antoine  and
+      Liang, Percy  and
+      Leskovec, Jure",
+    editor = "Toutanova, Kristina  and
+      Rumshisky, Anna  and
+      Zettlemoyer, Luke  and
+      Hakkani-Tur, Dilek  and
+      Beltagy, Iz  and
+      Bethard, Steven  and
+      Cotterell, Ryan  and
+      Chakraborty, Tanmoy  and
+      Zhou, Yichao",
+    booktitle = "Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies",
+    month = jun,
+    year = "2021",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2021.naacl-main.45/",
+    doi = "10.18653/v1/2021.naacl-main.45",
+    pages = "535--546",
+    abstract = "The problem of answering questions using knowledge from pre-trained language models (LMs) and knowledge graphs (KGs) presents two challenges: given a QA context (question and answer choice), methods need to (i) identify relevant knowledge from large KGs, and (ii) perform joint reasoning over the QA context and KG. Here we propose a new model, QA-GNN, which addresses the above challenges through two key innovations: (i) relevance scoring, where we use LMs to estimate the importance of KG nodes relative to the given QA context, and (ii) joint reasoning, where we connect the QA context and KG to form a joint graph, and mutually update their representations through graph-based message passing. We evaluate QA-GNN on the CommonsenseQA and OpenBookQA datasets, and show its improvement over existing LM and LM+KG models, as well as its capability to perform interpretable and structured reasoning, e.g., correctly handling negation in questions."
+}
+
+@inproceedings{das2018minerva,
+  title={Go for a Walk and Arrive at the Answer: Reasoning Over Paths in Knowledge Bases using Reinforcement Learning},
+  author={Das, Rajarshi and Dhuliawala, Shehzaad and Zaheer, Manzil and Vilnis, Luke and Durugkar, Ishan and Krishnamurthy, Akshay and Smola, Alex and McCallum, Andrew},
+  booktitle={International Conference on Learning Representations},
+  year={2018}
+}
+
+@inproceedings{sun2018graftnet,
+  title={Open Domain Question Answering Using Early Fusion of Knowledge Bases and Text},
+  author={Sun, Haitian and Dhingra, Bhuwan and Zaheer, Manzil and Mazaitis, Kathryn and Salakhutdinov, Ruslan and Cohen, William},
+  booktitle={Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},
+  pages={4231--4242},
+  year={2018}
+}
+
+@inproceedings{sun2019pullnet,
+    title = "{P}ull{N}et: Open Domain Question Answering with Iterative Retrieval on Knowledge Bases and Text",
+    author = "Sun, Haitian  and
+      Bedrax-Weiss, Tania  and
+      Cohen, William",
+    editor = "Inui, Kentaro  and
+      Jiang, Jing  and
+      Ng, Vincent  and
+      Wan, Xiaojun",
+    booktitle = "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)",
+    month = nov,
+    year = "2019",
+    address = "Hong Kong, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/D19-1242/",
+    doi = "10.18653/v1/D19-1242",
+    pages = "2380--2390",
+    abstract = "We consider open-domain question answering (QA) where answers are drawn from either a corpus, a knowledge base (KB), or a combination of both of these. We focus on a setting in which a corpus is supplemented with a large but incomplete KB, and on questions that require non-trivial (e.g., ``multi-hop'') reasoning. We describe PullNet, an integrated framework for (1) learning what to retrieve and (2) reasoning with this heterogeneous information to find the best answer. PullNet uses an {iterative} process to construct a question-specific subgraph that contains information relevant to the question. In each iteration, a graph convolutional network (graph CNN) is used to identify subgraph nodes that should be expanded using retrieval (or ``pull'') operations on the corpus and/or KB. After the subgraph is complete, another graph CNN is used to extract the answer from the subgraph. This retrieve-and-reason process allows us to answer multi-hop questions using large KBs and corpora. PullNet is weakly supervised, requiring question-answer pairs but not gold inference paths. Experimentally PullNet improves over the prior state-of-the art, and in the setting where a corpus is used with incomplete KB these improvements are often dramatic. PullNet is also often superior to prior systems in a KB-only setting or a text-only setting."
+}
+
+@inproceedings{ding2024epr,
+author = {Ding, Wentao and Li, Jinmao and Luo, Liangchuan and Qu, Yuzhong},
+title = {Enhancing Complex Question Answering over Knowledge Graphs through Evidence Pattern Retrieval},
+year = {2024},
+isbn = {9798400701719},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3589334.3645563},
+doi = {10.1145/3589334.3645563},
+abstract = {Information retrieval (IR) methods for KGQA consist of two stages: subgraph extraction and answer reasoning. We argue that current subgraph extraction methods underestimate the importance of structural dependencies among evidence facts. We propose Evidence Pattern Retrieval (EPR) to explicitly model the structural dependencies during subgraph extraction. We implement EPR by indexing the atomic adjacency pattern formed by resource pairs. Given a question, we perform dense retrieval to obtain atomic patterns. We then enumerate their combinations to construct candidate evidence patterns. These evidence patterns are scored using a neural model, and the best one is selected to extract a subgraph for downstream answer reasoning. Experimental results demonstrate that the EPR-based approach has significantly improved the F1 scores of IR-KGQA methods by over 10 points on ComplexWebQuestions and achieves competitive performance on WebQuestionsSP.},
+booktitle = {Proceedings of the ACM Web Conference 2024},
+pages = {2106–2115},
+numpages = {10},
+keywords = {evidence pattern, information retrieval, knowledge graph, question answering},
+location = {Singapore, Singapore},
+series = {WWW '24}
+}
+
+@misc{zhou2024efficient,
+      title={A Survey on Efficient Inference for Large Language Models}, 
+      author={Zixuan Zhou and Xuefei Ning and Ke Hong and Tianyu Fu and Jiaming Xu and Shiyao Li and Yuming Lou and Luning Wang and Zhihang Yuan and Xiuhong Li and Shengen Yan and Guohao Dai and Xiao-Ping Zhang and Yuhan Dong and Yu Wang},
+      year={2024},
+      eprint={2404.14294},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2404.14294}, 
+}
+
+@misc{wan2023efficientllms,
+      title={Efficient Large Language Models: A Survey}, 
+      author={Zhongwei Wan and Xin Wang and Che Liu and Samiul Alam and Yu Zheng and Jiachen Liu and Zhongnan Qu and Shen Yan and Yi Zhu and Quanlu Zhang and Mosharaf Chowdhury and Mi Zhang},
+      year={2024},
+      eprint={2312.03863},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2312.03863}, 
+}
+
+@inproceedings{jiang2019adversarialhotpot,
+    title = "Avoiding Reasoning Shortcuts: Adversarial Evaluation, Training, and Model Development for Multi-Hop {QA}",
+    author = "Jiang, Yichen  and
+      Bansal, Mohit",
+    editor = "Korhonen, Anna  and
+      Traum, David  and
+      M{\`a}rquez, Llu{\'i}s",
+    booktitle = "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+    month = jul,
+    year = "2019",
+    address = "Florence, Italy",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/P19-1262/",
+    doi = "10.18653/v1/P19-1262",
+    pages = "2726--2736",
+    abstract = "Multi-hop question answering requires a model to connect multiple pieces of evidence scattered in a long context to answer the question. In this paper, we show that in the multi-hop HotpotQA (Yang et al., 2018) dataset, the examples often contain reasoning shortcuts through which models can directly locate the answer by word-matching the question with a sentence in the context. We demonstrate this issue by constructing adversarial documents that create contradicting answers to the shortcut but do not affect the validity of the original answer. The performance of strong baseline models drops significantly on our adversarial test, indicating that they are indeed exploiting the shortcuts rather than performing multi-hop reasoning. After adversarial training, the baseline{'}s performance improves but is still limited on the adversarial test. Hence, we use a control unit that dynamically attends to the question at different reasoning hops to guide the model{'}s multi-hop reasoning. We show that our 2-hop model trained on the regular data is more robust to the adversaries than the baseline. After adversarial training, it not only achieves significant improvements over its counterpart trained on regular data, but also outperforms the adversarially-trained baseline significantly. Finally, we sanity-check that these improvements are not obtained by exploiting potential new shortcuts in the adversarial data, but indeed due to robust multi-hop reasoning skills of the models."
+}
+
+@inproceedings{wei2022cot,
+ author = {Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and ichter, brian and Xia, Fei and Chi, Ed and Le, Quoc V and Zhou, Denny},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {S. Koyejo and S. Mohamed and A. Agarwal and D. Belgrave and K. Cho and A. Oh},
+ pages = {24824--24837},
+ publisher = {Curran Associates, Inc.},
+ title = {Chain-of-Thought Prompting Elicits Reasoning in Large Language Models},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2022/file/9d5609613524ecf4f15af0f7b31abca4-Paper-Conference.pdf},
+ volume = {35},
+ year = {2022}
+}
+
+@inproceedings{kojima2022zeroshot,
+author = {Kojima, Takeshi and Gu, Shixiang Shane and Reid, Machel and Matsuo, Yutaka and Iwasawa, Yusuke},
+title = {Large language models are zero-shot reasoners},
+year = {2022},
+isbn = {9781713871088},
+publisher = {Curran Associates Inc.},
+address = {Red Hook, NY, USA},
+abstract = {Pretrained large language models (LLMs) are widely used in many sub-fields of natural language processing (NLP) and generally known as excellent few-shot learners with task-specific exemplars. Notably, chain of thought (CoT) prompting, a recent technique for eliciting complex multi-step reasoning through step-by-step answer examples, achieved the state-of-the-art performances in arithmetics and symbolic reasoning, difficult system-2 tasks that do not follow the standard scaling laws for LLMs. While these successes are often attributed to LLMs' ability for few-shot learning, we show that LLMs are decent zero-shot reasoners by simply adding "Let's think step by step" before each answer. Experimental results demonstrate that our Zero-shot-CoT, using the same single prompt template, significantly outperforms zero-shot LLM performances on diverse benchmark reasoning tasks including arithmetics (MultiArith, GSM8K, AQUA-RAT, SVAMP), symbolic reasoning (Last Letter, Coin Flip), and other logical reasoning tasks (Date Understanding, Tracking Shuffled Objects), without any hand-crafted few-shot examples, e.g. increasing the accuracy on MultiArith from 17.7\% to 78.7\% and GSM8K from 10.4\% to 40.7\% with large-scale InstructGPT model (text-davinci-002), as well as similar magnitudes of improvements with another off-the-shelf large model, 540B parameter PaLM. The versatility of this single prompt across very diverse reasoning tasks hints at untapped and understudied fundamental zero-shot capabilities of LLMs, suggesting high-level, multi-task broad cognitive capabilities may be extracted by simple prompting. We hope our work not only serves as the minimal strongest zero-shot baseline for the challenging reasoning benchmarks, but also highlights the importance of carefully exploring and analyzing the enormous zero-shot knowledge hidden inside LLMs before crafting finetuning datasets or few-shot exemplars.},
+booktitle = {Proceedings of the 36th International Conference on Neural Information Processing Systems},
+articleno = {1613},
+numpages = {15},
+location = {New Orleans, LA, USA},
+series = {NIPS '22}
+}
+
+@inproceedings{wu2025cotlength,
+  title={When More is Less: Understanding Chain-of-Thought Length in LLMs},
+  author={Wu, Yuyang and Wang, Yifei and Du, Tianqi and Jegelka, Stefanie and Wang, Yisen},
+  booktitle={Workshop on Reasoning and Planning for Large Language Models}
+}
+
+@article{graves2016act,
+  title={Adaptive Computation Time for Recurrent Neural Networks},
+  author={Graves, Alex},
+  journal={arXiv preprint arXiv:1603.08983},
+  year={2016}
+}
+
+@inproceedings{xin2020deebert,
+  title={{DeeBERT: Dynamic Early Exiting for Accelerating BERT Inference}},
+  author={Xin, Ji and Tang, Raphael and Lee, Jaejun and Yu, Yaoliang and Lin, Jimmy},
+  booktitle={Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  pages={2246--2251},
+  year={2020}
+}
+
+
+@article{zhou2020pabee,
+  title={Bert loses patience: Fast and robust inference with early exit},
+  author={Zhou, Wangchunshu and Xu, Canwen and Ge, Tao and McAuley, Julian and Xu, Ke and Wei, Furu},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={18330--18341},
+  year={2020}
+}
+
+@book{altman1999cmdp,
+  title={Constrained Markov Decision Processes},
+  author={Altman, Eitan},
+  publisher={Chapman \& Hall/CRC},
+  year={1999}
+}
+
+@misc{tessler2018rcpo,
+      title={Reward Constrained Policy Optimization}, 
+      author={Chen Tessler and Daniel J. Mankowitz and Shie Mannor},
+      year={2018},
+      eprint={1805.11074},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/1805.11074}, 
+}
+
+
+@article{lowe2017maddpg,
+  title={{Multi-Agent Actor-Critic for Mixed Cooperative-Competitive Environments}},
+  author={Lowe, Ryan and Tamar, Aviv and Harb, Jean and Pieter Abbeel, OpenAI and Mordatch, Igor},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}
+
+@inproceedings{xiong2017deeppath,
+  title={{DeepPath: A Reinforcement Learning Method for Knowledge Graph Reasoning}},
+  author={Xiong, Wenhan and Hoang, Thien and Wang, William Yang},
+  booktitle={Proceedings of the 2017 Conference on Empirical Methods in Natural Language Processing},
+  pages={564--573},
+  year={2017}
+}
+
+@misc{edge2024graphrag,
+      title={From Local to Global: A Graph RAG Approach to Query-Focused Summarization}, 
+      author={Darren Edge and Ha Trinh and Newman Cheng and Joshua Bradley and Alex Chao and Apurva Mody and Steven Truitt and Dasha Metropolitansky and Robert Osazuwa Ness and Jonathan Larson},
+      year={2025},
+      eprint={2404.16130},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2404.16130}, 
+}
+
+@misc{yao2023react,
+      title={ReAct: Synergizing Reasoning and Acting in Language Models}, 
+      author={Shunyu Yao and Jeffrey Zhao and Dian Yu and Nan Du and Izhak Shafran and Karthik Narasimhan and Yuan Cao},
+      year={2023},
+      eprint={2210.03629},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2210.03629}, 
+}
+
+@inproceedings{asai2023selfrag,
+  title={{Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection}},
+  author={Asai, Akari and Wu, Zeqiu and Wang, Yizhong and Sil, Avi and Hajishirzi, Hannaneh},
+  booktitle={International Conference on Learning Representations},
+  year={2024}
+}
+
+@inproceedings{jeong2024adaptiverag,
+    title = "Adaptive-{RAG}: Learning to Adapt Retrieval-Augmented Large Language Models through Question Complexity",
+    author = "Jeong, Soyeong  and
+      Baek, Jinheon  and
+      Cho, Sukmin  and
+      Hwang, Sung Ju  and
+      Park, Jong",
+    editor = "Duh, Kevin  and
+      Gomez, Helena  and
+      Bethard, Steven",
+    booktitle = "Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers)",
+    month = jun,
+    year = "2024",
+    address = "Mexico City, Mexico",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.naacl-long.389/",
+    doi = "10.18653/v1/2024.naacl-long.389",
+    pages = "7036--7050",
+    abstract = "Retrieval-Augmented Large Language Models (LLMs), which incorporate the non-parametric knowledge from external knowledge bases into LLMs, have emerged as a promising approach to enhancing response accuracy in several tasks, such as Question-Answering (QA). However, even though there are various approaches dealing with queries of different complexities, they either handle simple queries with unnecessary computational overhead or fail to adequately address complex multi-step queries; yet, not all user requests fall into only one of the simple or complex categories. In this work, we propose a novel adaptive QA framework that can dynamically select the most suitable strategy for (retrieval-augmented) LLMs from the simplest to the most sophisticated ones based on the query complexity. Also, this selection process is operationalized with a classifier, which is a smaller LM trained to predict the complexity level of incoming queries with automatically collected labels, obtained from actual predicted outcomes of models and inherent inductive biases in datasets. This approach offers a balanced strategy, seamlessly adapting between the iterative and single-step retrieval-augmented LLMs, as well as the no-retrieval methods, in response to a range of query complexities. We validate our model on a set of open-domain QA datasets, covering multiple query complexities, and show that ours enhances the overall efficiency and accuracy of QA systems, compared to relevant baselines including the adaptive retrieval approaches. Code is available at: https://github.com/starsuzi/Adaptive-RAG."
+}
+
+@inproceedings{zhang2024retrievalqa,
+    title = "{R}etrieval{QA}: Assessing Adaptive Retrieval-Augmented Generation for Short-form Open-Domain Question Answering",
+    author = "Zhang, Zihan  and
+      Fang, Meng  and
+      Chen, Ling",
+    editor = "Ku, Lun-Wei  and
+      Martins, Andre  and
+      Srikumar, Vivek",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL 2024",
+    month = aug,
+    year = "2024",
+    address = "Bangkok, Thailand",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.findings-acl.415/",
+    doi = "10.18653/v1/2024.findings-acl.415",
+    pages = "6963--6975",
+    abstract = "Adaptive retrieval-augmented generation (ARAG) aims to dynamically determine the necessity of retrieval for queries instead of retrieving indiscriminately to enhance the efficiency and relevance of the sourced information. However, previous works largely overlook the evaluation of ARAG approaches, leading to their effectiveness being understudied. This work presents a benchmark, RetrievalQA, comprising 1,271 short-form questions covering new world and long-tail knowledge. The knowledge necessary to answer the questions is absent from LLMs; therefore, external information must be retrieved to answer correctly. This makes RetrievalQA a suitable testbed to evaluate existing ARAG methods. We observe that calibration-based methods heavily rely on threshold tuning, while vanilla prompting is inadequate for guiding LLMs to make reliable retrieval decisions. Based on our findings, we propose Time-Aware Adaptive Retrieval (TA-ARE), a simple yet effective method that helps LLMs assess the necessity of retrieval without calibration or additional training."
+}
+
+@inproceedings{ma2024tog2,
+ author = {Ma, Shengjie and Xu, Chengjin and Jiang, Xuhui and Li, Muzhi and Qu, Huaren and Yang, Cehao and Mao, Jiaxin and Guo, Jian},
+ booktitle = {International Conference on Learning Representations},
+ editor = {Y. Yue and A. Garg and N. Peng and F. Sha and R. Yu},
+ pages = {52782--52806},
+ title = {Think-on-Graph 2.0: Deep and Faithful Large Language Model Reasoning with Knowledge-guided Retrieval Augmented Generation},
+ url = {https://proceedings.iclr.cc/paper_files/paper/2025/file/830b1abc6d2da85f23d41169fa44d185-Paper-Conference.pdf},
+ volume = {2025},
+ year = {2025}
+}
+
+
+@inproceedings{stooke2020pidlagrangian,
+  title={{Responsive Safety in Reinforcement Learning by {PID} Lagrangian Methods}},
+  author={Stooke, Adam and Achiam, Joshua and Abbeel, Pieter},
+  booktitle={International Conference on Machine Learning},
+  pages={9133--9143},
+  year={2020},
+  organization={PMLR}
+}
+
+
+@inproceedings{wachi2024safesurvey,
+  title={{A Survey of Constraint Formulations in Safe Reinforcement Learning}},
+  author={Wachi, Akifumi and Shen, Xun and Sui, Yanan},
+  booktitle={Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence},
+  pages={8262--8271},
+  year={2024}
+}
+
+@inproceedings{karpukhin2020dense,
+    title = "Dense Passage Retrieval for Open-Domain Question Answering",
+    author = "Karpukhin, Vladimir  and
+      Oguz, Barlas  and
+      Min, Sewon  and
+      Lewis, Patrick  and
+      Wu, Ledell  and
+      Edunov, Sergey  and
+      Chen, Danqi  and
+      Yih, Wen-tau",
+    editor = "Webber, Bonnie  and
+      Cohn, Trevor  and
+      He, Yulan  and
+      Liu, Yang",
+    booktitle = "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+    month = nov,
+    year = "2020",
+    address = "Online",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2020.emnlp-main.550/",
+    doi = "10.18653/v1/2020.emnlp-main.550",
+    pages = "6769--6781",
+    abstract = "Open-domain question answering relies on efficient passage retrieval to select candidate contexts, where traditional sparse vector space models, such as TF-IDF or BM25, are the de facto method. In this work, we show that retrieval can be practically implemented using dense representations alone, where embeddings are learned from a small number of questions and passages by a simple dual-encoder framework. When evaluated on a wide range of open-domain QA datasets, our dense retriever outperforms a strong Lucene-BM25 system greatly by 9{\%}-19{\%} absolute in terms of top-20 passage retrieval accuracy, and helps our end-to-end QA system establish new state-of-the-art on multiple open-domain QA benchmarks."
+}
+
+@article{izacard2022atlas,
+  author  = {Gautier Izacard and Patrick Lewis and Maria Lomeli and Lucas Hosseini and Fabio Petroni and Timo Schick and Jane Dwivedi-Yu and Armand Joulin and Sebastian Riedel and Edouard Grave},
+  title   = {Atlas: Few-shot Learning with Retrieval Augmented Language Models},
+  journal = {Journal of Machine Learning Research},
+  year    = {2023},
+  volume  = {24},
+  number  = {251},
+  pages   = {1--43},
+  url     = {http://jmlr.org/papers/v24/23-0037.html}
+}
+
+@misc{cohen2016tensorlog,
+      title={TensorLog: A Differentiable Deductive Database}, 
+      author={William W. Cohen},
+      year={2016},
+      eprint={1605.06523},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/1605.06523}, 
+}
+
+@misc{qu2021rnnlogic,
+      title={RNNLogic: Learning Logic Rules for Reasoning on Knowledge Graphs}, 
+      author={Meng Qu and Junkun Chen and Louis-Pascal Xhonneux and Yoshua Bengio and Jian Tang},
+      year={2021},
+      eprint={2010.04029},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2010.04029}, 
+}
+
+@inproceedings{press2022selfask,
+    title = "Measuring and Narrowing the Compositionality Gap in Language Models",
+    author = "Press, Ofir  and
+      Zhang, Muru  and
+      Min, Sewon  and
+      Schmidt, Ludwig  and
+      Smith, Noah  and
+      Lewis, Mike",
+    editor = "Bouamor, Houda  and
+      Pino, Juan  and
+      Bali, Kalika",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2023",
+    month = dec,
+    year = "2023",
+    address = "Singapore",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.findings-emnlp.378/",
+    doi = "10.18653/v1/2023.findings-emnlp.378",
+    pages = "5687--5711",
+    abstract = "We investigate the ability of language models to perform compositional reasoning tasks where the overall solution depends on correctly composing the answers to sub-problems. We measure how often models can correctly answer all sub-problems but not generate the overall solution, a ratio we call the compositionality gap. We evaluate this ratio by asking multi-hop questions with answers that require composing multiple facts unlikely to have been observed together during pretraining. In the GPT-3 family of models, as model size increases we show that the single-hop question answering performance improves faster than the multi-hop performance does, therefore the compositionality gap does not decrease. This surprising result suggests that while more powerful models memorize and recall more factual knowledge, they show no corresponding improvement in their ability to perform this kind of compositional reasoning. We then demonstrate how elicitive prompting (such as chain of thought) narrows the compositionality gap by reasoning explicitly instead of implicitly. We present a new method, self-ask, that further improves on chain of thought. In our method, the model explicitly asks itself (and then answers) follow-up questions before answering the initial question. We finally show that self-ask{'}s structured prompting lets us easily plug in a search engine to answer the follow-up questions, which additionally improves accuracy."
+}
+
+@inproceedings{shinn2023reflexion,
+ author = {Shinn, Noah and Cassano, Federico and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {A. Oh and T. Naumann and A. Globerson and K. Saenko and M. Hardt and S. Levine},
+ pages = {8634--8652},
+ publisher = {Curran Associates, Inc.},
+ title = {Reflexion: language agents with verbal reinforcement learning},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2023/file/1b44b878bb782e6954cd888628510e90-Paper-Conference.pdf},
+ volume = {36},
+ year = {2023}
+}
+
+
+@inproceedings{schick2023toolformer,
+ author = {Schick, Timo and Dwivedi-Yu, Jane and Dessi, Roberto and Raileanu, Roberta and Lomeli, Maria and Hambro, Eric and Zettlemoyer, Luke and Cancedda, Nicola and Scialom, Thomas},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {A. Oh and T. Naumann and A. Globerson and K. Saenko and M. Hardt and S. Levine},
+ pages = {68539--68551},
+ publisher = {Curran Associates, Inc.},
+ title = {Toolformer: Language Models Can Teach Themselves to Use Tools},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2023/file/d842425e4bf79ba039352da0f658a906-Paper-Conference.pdf},
+ volume = {36},
+ year = {2023}
+}
+
+@inproceedings{shen2023hugginggpt,
+ author = {Shen, Yongliang and Song, Kaitao and Tan, Xu and Li, Dongsheng and Lu, Weiming and Zhuang, Yueting},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {A. Oh and T. Naumann and A. Globerson and K. Saenko and M. Hardt and S. Levine},
+ pages = {38154--38180},
+ publisher = {Curran Associates, Inc.},
+ title = {HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2023/file/77c33e6a367922d003ff102ffb92b658-Paper-Conference.pdf},
+ volume = {36},
+ year = {2023}
+}
+
+
+@inproceedings{liu2023agentbench,
+ author = {Liu, Xiao and Yu, Hao and Zhang, Hanchen and Xu, Yifan and Lei, Xuanyu and Lai, Hanyu and Gu, Yu and Ding, Hangliang and Men, Kaiwen and Yang, Kejuan and Zhang, Shudan and Deng, Xiang and Zeng, Aohan and Du, Zhengxiao and Zhang, Chenhui and Shen, Sheng and Zhang, Tianjun and Su, Yu and Sun, Huan and Huang, Minlie and Dong, Yuxiao and Tang, Jie},
+ booktitle = {International Conference on Learning Representations},
+ editor = {B. Kim and Y. Yue and S. Chaudhuri and K. Fragkiadaki and M. Khan and Y. Sun},
+ pages = {52989--53046},
+ title = {AgentBench: Evaluating LLMs as Agents},
+ url = {https://proceedings.iclr.cc/paper_files/paper/2024/file/e9df36b21ff4ee211a8b71ee8b7e9f57-Paper-Conference.pdf},
+ volume = {2024},
+ year = {2024}
+}
+
+@misc{wang2023voyager,
+      title={Voyager: An Open-Ended Embodied Agent with Large Language Models}, 
+      author={Guanzhi Wang and Yuqi Xie and Yunfan Jiang and Ajay Mandlekar and Chaowei Xiao and Yuke Zhu and Linxi Fan and Anima Anandkumar},
+      year={2023},
+      eprint={2305.16291},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2305.16291}, 
+}
+
+@inproceedings{serafini2016ltn,
+  title     = {Logic Tensor Networks: Deep Learning and Logical Reasoning},
+  author    = {Serafini, Luciano and d'Avila Garcez, Artur S.},
+  booktitle = {Proceedings of the 10th International Workshop on Neural-Symbolic Learning and Reasoning (NeSy)},
+  year      = {2016},
+  note      = {arXiv:1609.04165}
+}
+
+@article{rocktaschel2017endtoend,
+  title   = {End-to-End Differentiable Proving},
+  author  = {Rockt{\"a}schel, Tim and Riedel, Sebastian},
+  journal = {arXiv preprint arXiv:1705.11040},
+  year    = {2017}
+}
+
+@inproceedings{evans2018dilp,
+  title     = {Differentiable Inductive Logic Programming},
+  author    = {Evans, Richard and Grefenstette, Edward},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2018}
+}
+
+@inproceedings{manhaeve2018deepproblog,
+  title     = {DeepProbLog: Neural Probabilistic Logic Programming},
+  author    = {Manhaeve, Robin and Dumancic, Sebastijan and Kimmig, Angelika and Demeester, Thomas and De Raedt, Luc},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2018}
+}
+
+@inproceedings{dong2019nlm,
+  title     = {Neural Logic Machines},
+  author    = {Dong, Honghua and Mao, Jiayuan and Lin, Tian and Wang, Chong and Li, Lihong and Zhou, Denny},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019}
+}
+
+@inproceedings{lamb2020gnn,
+  title={{Graph Neural Networks Meet Neural-Symbolic Computing:$\{$A$\}$ Survey and Perspective}},
+  author={Lamb, Luis C and Gori, Marco and Prates, Marcelo OR and Avelar, Pedro HC and Vardi, Moshe Y and others},
+  booktitle={IJCAI},
+  pages={4877--4884},
+  year={2020},
+  organization={International Joint Conferences on Artificial Intelligence}
+}
+
+@article{garcez2020thirdwave,
+  title   = {Neurosymbolic {AI}: The 3rd Wave},
+  author  = {d'Avila Garcez, Artur S. and Lamb, Luis C.},
+  journal = {AI Magazine},
+  year    = {2020},
+  note    = {Tutorial/position overview}
+}
+
+@article{zhang2021neural,
+title = {Neural, symbolic and neural-symbolic reasoning on knowledge graphs},
+journal = {AI Open},
+volume = {2},
+pages = {14-35},
+year = {2021},
+issn = {2666-6510},
+doi = {https://doi.org/10.1016/j.aiopen.2021.03.001},
+url = {https://www.sciencedirect.com/science/article/pii/S2666651021000061},
+author = {Jing Zhang and Bo Chen and Lingxi Zhang and Xirui Ke and Haipeng Ding},
+keywords = {Knowledge graph reasoning, Knowledge graph embedding, Symbolic reasoning, Neural-symbolic reasoning},
+abstract = {Knowledge graph reasoning is the fundamental component to support machine learning applications such as information extraction, information retrieval, and recommendation. Since knowledge graphs can be viewed as the discrete symbolic representations of knowledge, reasoning on knowledge graphs can naturally leverage the symbolic techniques. However, symbolic reasoning is intolerant of the ambiguous and noisy data. On the contrary, the recent advances of deep learning have promoted neural reasoning on knowledge graphs, which is robust to the ambiguous and noisy data, but lacks interpretability compared to symbolic reasoning. Considering the advantages and disadvantages of both methodologies, recent efforts have been made on combining the two reasoning methods. In this survey, we take a thorough look at the development of the symbolic, neural and hybrid reasoning on knowledge graphs. We survey two specific reasoning tasks — knowledge graph completion and question answering on knowledge graphs, and explain them in a unified reasoning framework. We also briefly discuss the future directions for knowledge graph reasoning.}
+}
+
+@misc{DeSmetDeRaedt2025,
+      title={Defining neurosymbolic AI}, 
+      author={Lennert De Smet and Luc De Raedt},
+      year={2025},
+      eprint={2507.11127},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2507.11127}, 
+}
+
+@article{Zhang2021AIOpen,
+  title   = {Neural, symbolic and neural-symbolic reasoning on knowledge graphs},
+  author  = {Zhang, J. and Yao, L. and Chen, X. and Wang, X. and Wang, J. and Benatallah, B.},
+  journal = {AI Open},
+  year    = {2021},
+  volume  = {2},
+  pages   = {14--35}
+}
+
+@article{DeLong2024NeSyKG,
+   title={Neurosymbolic AI for Reasoning Over Knowledge Graphs: A Survey},
+   volume={36},
+   ISSN={2162-2388},
+   url={http://dx.doi.org/10.1109/TNNLS.2024.3420218},
+   DOI={10.1109/tnnls.2024.3420218},
+   number={5},
+   journal={IEEE Transactions on Neural Networks and Learning Systems},
+   publisher={Institute of Electrical and Electronics Engineers (IEEE)},
+   author={DeLong, Lauren Nicole and Mir, Ramon Fernández and Fleuriot, Jacques D.},
+   year={2025},
+   month=may, pages={7822–7842} }
+
+@InProceedings{Stooke2020PIDL,
+  title = 	 {Responsive Safety in Reinforcement Learning by {PID} Lagrangian Methods},
+  author =       {Stooke, Adam and Achiam, Joshua and Abbeel, Pieter},
+  booktitle = 	 {Proceedings of the 37th International Conference on Machine Learning},
+  pages = 	 {9133--9143},
+  year = 	 {2020},
+  editor = 	 {III, Hal Daumé and Singh, Aarti},
+  volume = 	 {119},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {13--18 Jul},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v119/stooke20a/stooke20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v119/stooke20a.html},
+  abstract = 	 {Lagrangian methods are widely used algorithms for constrained optimization problems, but their learning dynamics exhibit oscillations and overshoot which, when applied to safe reinforcement learning, leads to constraint-violating behavior during agent training. We address this shortcoming by proposing a novel Lagrange multiplier update method that utilizes derivatives of the constraint function. We take a controls perspective, wherein the traditional Lagrange multiplier update behaves as \emph{integral} control; our terms introduce \emph{proportional} and \emph{derivative} control, achieving favorable learning dynamics through damping and predictive measures. We apply our PID Lagrangian methods in deep RL, setting a new state of the art in Safety Gym, a safe RL benchmark. Lastly, we introduce a new method to ease controller tuning by providing invariance to the relative numerical scales of reward and cost. Our extensive experiments demonstrate improved performance and hyperparameter robustness, while our algorithms remain nearly as simple to derive and implement as the traditional Lagrangian approach.}
+}
+
+
+@inproceedings{rafailov2023dpo,
+ author = {Rafailov, Rafael and Sharma, Archit and Mitchell, Eric and Manning, Christopher D and Ermon, Stefano and Finn, Chelsea},
+ booktitle = {Advances in Neural Information Processing Systems},
+ editor = {A. Oh and T. Naumann and A. Globerson and K. Saenko and M. Hardt and S. Levine},
+ pages = {53728--53741},
+ publisher = {Curran Associates, Inc.},
+ title = {Direct Preference Optimization: Your Language Model is Secretly a Reward Model},
+ url = {https://proceedings.neurips.cc/paper_files/paper/2023/file/a85b405ed65c6477a4fe8302b5e06ce7-Paper-Conference.pdf},
+ volume = {36},
+ year = {2023}
+}
+
+@misc{shao2024deepseekmath,
+      title={DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models}, 
+      author={Zhihong Shao and Peiyi Wang and Qihao Zhu and Runxin Xu and Junxiao Song and Xiao Bi and Haowei Zhang and Mingchuan Zhang and Y. K. Li and Y. Wu and Daya Guo},
+      year={2024},
+      eprint={2402.03300},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2402.03300}, 
+}
+
+@inproceedings{kim2023factkg,
+    title = "{F}act{KG}: Fact Verification via Reasoning on Knowledge Graphs",
+    author = "Kim, Jiho  and
+      Park, Sungjin  and
+      Kwon, Yeonsu  and
+      Jo, Yohan  and
+      Thorne, James  and
+      Choi, Edward",
+    editor = "Rogers, Anna  and
+      Boyd-Graber, Jordan  and
+      Okazaki, Naoaki",
+    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2023",
+    address = "Toronto, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.acl-long.895/",
+    doi = "10.18653/v1/2023.acl-long.895",
+    pages = "16190--16206",
+    abstract = "In real world applications, knowledge graphs (KG) are widely used in various domains (e.g. medical applications and dialogue agents). However, for fact verification, KGs have not been adequately utilized as a knowledge source. KGs can be a valuable knowledge source in fact verification due to their reliability and broad applicability. A KG consists of nodes and edges which makes it clear how concepts are linked together, allowing machines to reason over chains of topics. However, there are many challenges in understanding how these machine-readable concepts map to information in text. To enable the community to better use KGs, we introduce a new dataset, FactKG: Fact Verificationvia Reasoning on Knowledge Graphs. It consists of 108k natural language claims with five types of reasoning: One-hop, Conjunction, Existence, Multi-hop, and Negation. Furthermore, FactKG contains various linguistic patterns, including colloquial style claims as well as written style claims to increase practicality. Lastly, we develop a baseline approach and analyze FactKG over these reasoning types. We believe FactKG can advance both reliability and practicality in KG-based fact verification."
+}
+
+@inproceedings{zhang2017variational,
+author = {Zhang, Yuyu and Dai, Hanjun and Kozareva, Zornitsa and Smola, Alexander J. and Song, Le},
+title = {Variational reasoning for question answering with knowledge graph},
+year = {2018},
+isbn = {978-1-57735-800-8},
+publisher = {AAAI Press},
+abstract = {Knowledge graph (KG) is known to be helpful for the task of question answering (QA), since it provides well-structured relational information between entities, and allows one to further infer indirect facts. However, it is challenging to build QA systems which can learn to reason over knowledge graphs based on question-answer pairs alone. First, when people ask questions, their expressions are noisy (for example, typos in texts, or variations in pronunciations), which is non-trivial for the QA system to match those mentioned entities to the knowledge graph. Second, many questions require multi-hop logic reasoning over the knowledge graph to retrieve the answers. To address these challenges, we propose a novel and unified deep learning architecture, and an end-to-end variational learning algorithm which can handle noise in questions, and learn multi-hop reasoning simultaneously. Our method achieves state-of-the-art performance on a recent benchmark dataset in the literature. We also derive a series of new benchmark datasets, including questions for multi-hop reasoning, questions paraphrased by neural translation model, and questions in human voice. Our method yields very promising results on all these challenging datasets.},
+booktitle = {Proceedings of the Thirty-Second AAAI Conference on Artificial Intelligence and Thirtieth Innovative Applications of Artificial Intelligence Conference and Eighth AAAI Symposium on Educational Advances in Artificial Intelligence},
+articleno = {745},
+numpages = {8},
+location = {New Orleans, Louisiana, USA},
+series = {AAAI'18/IAAI'18/EAAI'18}
+}
+
+@article{robertson2009bm25,
+author = {Robertson, Stephen and Zaragoza, Hugo},
+title = {The Probabilistic Relevance Framework: BM25 and Beyond},
+year = {2009},
+issue_date = {April 2009},
+publisher = {Now Publishers Inc.},
+address = {Hanover, MA, USA},
+volume = {3},
+number = {4},
+issn = {1554-0669},
+url = {https://doi.org/10.1561/1500000019},
+doi = {10.1561/1500000019},
+abstract = {The Probabilistic Relevance Framework (PRF) is a formal framework for document retrieval, grounded in work done in the 1970—1980s, which led to the development of one of the most successful text-retrieval algorithms, BM25. In recent years, research in the PRF has yielded new retrieval models capable of taking into account document meta-data (especially structure and link-graph information). Again, this has led to one of the most successful Web-search and corporate-search algorithms, BM25F. This work presents the PRF from a conceptual point of view, describing the probabilistic modelling assumptions behind the framework and the different ranking algorithms that result from its application: the binary independence model, relevance feedback models, BM25 and BM25F. It also discusses the relation between the PRF and other statistical models for IR, and covers some related topics, such as the use of non-textual features, and parameter optimisation for models with free parameters.},
+journal = {Found. Trends Inf. Retr.},
+month = apr,
+pages = {333–389},
+numpages = {57}
+}
+
+@misc{nogueira2019passage,
+      title={Passage Re-ranking with BERT}, 
+      author={Rodrigo Nogueira and Kyunghyun Cho},
+      year={2020},
+      eprint={1901.04085},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/1901.04085}, 
+}
+
+@inproceedings{yao2022react,
+  title={{ReAct: Synergizing Reasoning and Acting in Language Models}},
+  author={Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2023}
+}
+
+
+@inproceedings{besta2023graphofthoughts,
+author = {Besta, Maciej and Blach, Nils and Kubicek, Ales and Gerstenberger, Robert and Podstawski, Micha\l{} and Gianinazzi, Lukas and Gajda, Joanna and Lehmann, Tomasz and Niewiadomski, Hubert and Nyczyk, Piotr and Hoefler, Torsten},
+title = {Graph of thoughts: solving elaborate problems with large language models},
+year = {2024},
+isbn = {978-1-57735-887-9},
+publisher = {AAAI Press},
+url = {https://doi.org/10.1609/aaai.v38i16.29720},
+doi = {10.1609/aaai.v38i16.29720},
+abstract = {We introduce Graph of Thoughts (GoT): a framework that advances prompting capabilities in large language models (LLMs) beyond those offered by paradigms such as Chain-of-Thought or Tree of Thoughts (ToT). The key idea and primary advantage of GoT is the ability to model the information generated by an LLM as an arbitrary graph, where units of information ("LLM thoughts") are vertices, and edges correspond to dependencies between these vertices. This approach enables combining arbitrary LLM thoughts into synergistic outcomes, distilling the essence of whole networks of thoughts, or enhancing thoughts using feedback loops. We illustrate that GoT offers advantages over state of the art on different tasks, for example increasing the quality of sorting by 62\% over ToT, while simultaneously reducing costs by >31\%. We ensure that GoT is extensible with new thought transformations and thus can be used to spearhead new prompting schemes. This work brings the LLM reasoning closer to human thinking or brain mechanisms such as recurrence, both of which form complex networks.},
+booktitle = {Proceedings of the Thirty-Eighth AAAI Conference on Artificial Intelligence and Thirty-Sixth Conference on Innovative Applications of Artificial Intelligence and Fourteenth Symposium on Educational Advances in Artificial Intelligence},
+articleno = {1972},
+numpages = {9},
+series = {AAAI'24/IAAI'24/EAAI'24}
+}
+
+@misc{wu2023autogen,
+      title={AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation}, 
+      author={Qingyun Wu and Gagan Bansal and Jieyu Zhang and Yiran Wu and Beibin Li and Erkang Zhu and Li Jiang and Xiaoyun Zhang and Shaokun Zhang and Jiale Liu and Ahmed Hassan Awadallah and Ryen W White and Doug Burger and Chi Wang},
+      year={2023},
+      eprint={2308.08155},
+      archivePrefix={arXiv},
+      primaryClass={cs.AI},
+      url={https://arxiv.org/abs/2308.08155}, 
+}
+
+@article{yu2022surprising,
+  title={The surprising effectiveness of {PPO} in cooperative multi-agent games},
+  author={Yu, Chao and Velu, Akash and Vinitsky, Eugene and Gao, Jiaxuan and Wang, Yu and Bayen, Alexandre and Wu, Yi},
+  journal={Advances in neural information processing systems},
+  volume={35},
+  pages={24611--24624},
+  year={2022}
+}
+
+
+@inproceedings{tessler2018reward,
+  title     = {{Reward Constrained Policy Optimization}},
+  author    = {Tessler, Chen and Mankowitz, Daniel J. and Mannor, Shie},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019},
+  url       = {https://openreview.net/forum?id=SkfrvsA9FX}
+}
+
+
+
+
+
+
+
+
+@book{Puterman1994,
+  author    = {Puterman, Martin L.},
+  title     = {Markov Decision Processes: Discrete Stochastic Dynamic Programming},
+  publisher = {John Wiley \& Sons},
+  year      = {1994}
+}
+
+@book{Altman1999,
+  author    = {Altman, Eitan},
+  title     = {Constrained Markov Decision Processes},
+  publisher = {Chapman and Hall/CRC},
+  year      = {1999}
+}
+
+@inproceedings{KakadeLangford2002,
+  author    = {Kakade, Sham M. and Langford, John},
+  title     = {Conservative Policy Iteration},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {15},
+  year      = {2002}
+}
+
+@inproceedings{SchulmanTRPO2015,
+  author    = {Schulman, John and Levine, Sergey and Moritz, Philipp and Jordan, Michael I. and Abbeel, Pieter},
+  title     = {Trust Region Policy Optimization},
+  booktitle = {Proceedings of the 32nd International Conference on Machine Learning (ICML)},
+  pages     = {1889--1897},
+  year      = {2015},
+  organization = {PMLR}
+}
+
+@misc{SchulmanPPO2017,
+  author       = {Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},
+  title        = {Proximal Policy Optimization Algorithms},
+  year         = {2017},
+  eprint       = {1707.06347},
+  archivePrefix= {arXiv},
+  primaryClass = {cs.LG},
+  url          = {https://arxiv.org/abs/1707.06347}
+}
+
+@inproceedings{SuttonPG2000,
+  author    = {Sutton, Richard S. and McAllester, David A. and Singh, Satinder and Mansour, Yishay},
+  title     = {Policy Gradient Methods for Reinforcement Learning with Function Approximation},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2000},
+  pages     = {1057--1063}
+}
+
+@article{Greensmith2004,
+  author  = {Greensmith, Evan and Bartlett, Peter L. and Baxter, Jonathan},
+  title   = {Variance Reduction Techniques for Gradient Estimates in Reinforcement Learning},
+  journal = {Journal of Machine Learning Research},
+  volume  = {5},
+  pages   = {1471--1530},
+  year    = {2004}
+}
+
+@inproceedings{SchulmanGAE2016,
+  author    = {Schulman, John and Moritz, Philipp and Levine, Sergey and Jordan, Michael I. and Abbeel, Pieter},
+  title     = {High-Dimensional Continuous Control Using Generalized Advantage Estimation},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2016}
+}
+
+@inproceedings{FoersterCOMA2018,
+  author    = {Foerster, Jakob and Farquhar, Gregory and Afouras, Triantafyllos and Nardelli, Nantas and Whiteson, Shimon},
+  title     = {Counterfactual Multi-Agent Policy Gradients},
+  booktitle = {Proceedings of the 35th International Conference on Machine Learning (ICML)},
+  year      = {2018},
+  organization = {PMLR}
+}
+
+@book{Borkar2008,
+  author    = {Borkar, Vivek S.},
+  title     = {Stochastic Approximation: A Dynamical Systems Viewpoint},
+  publisher = {Hindustan Book Agency / Cambridge University Press},
+  year      = {2008}
+}
+
+@article{RobbinsMonro1951,
+  author  = {Robbins, Herbert and Monro, Sutton},
+  title   = {A Stochastic Approximation Method},
+  journal = {The Annals of Mathematical Statistics},
+  volume  = {22},
+  number  = {3},
+  pages   = {400--407},
+  year    = {1951}
+}
+
+@article{KondaTsitsiklis2003,
+  author  = {Konda, Vijay R. and Tsitsiklis, John N.},
+  title   = {On Actor--Critic Algorithms},
+  journal = {SIAM Journal on Control and Optimization},
+  volume  = {42},
+  number  = {4},
+  pages   = {1143--1166},
+  year    = {2003}
+}
+
+@article{Bhatnagar2009,
+  author  = {Bhatnagar, Shalabh and Sutton, Richard S. and Ghavamzadeh, Mohammad and Lee, Mark},
+  title   = {Natural Actor--Critic Algorithms},
+  journal = {Automatica},
+  volume  = {45},
+  number  = {11},
+  pages   = {2471--2482},
+  year    = {2009}
+}
+
+@InProceedings{AchiamCPO2017,
+  title = 	 {Constrained Policy Optimization},
+  author =       {Joshua Achiam and David Held and Aviv Tamar and Pieter Abbeel},
+  booktitle = 	 {Proceedings of the 34th International Conference on Machine Learning},
+  pages = 	 {22--31},
+  year = 	 {2017},
+  editor = 	 {Precup, Doina and Teh, Yee Whye},
+  volume = 	 {70},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--11 Aug},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v70/achiam17a/achiam17a.pdf},
+  url = 	 {https://proceedings.mlr.press/v70/achiam17a.html},
+  abstract = 	 {For many applications of reinforcement learning it can be more convenient to specify both a reward function and constraints, rather than trying to design behavior through the reward function. For example, systems that physically interact with or around humans should satisfy safety constraints. Recent advances in policy search algorithms (Mnih et al., 2016, Schulman et al., 2015, Lillicrap et al., 2016, Levine et al., 2016) have enabled new capabilities in high-dimensional control, but do not consider the constrained setting. We propose Constrained Policy Optimization (CPO), the first general-purpose policy search algorithm for constrained reinforcement learning with guarantees for near-constraint satisfaction at each iteration. Our method allows us to train neural network policies for high-dimensional control while making guarantees about policy behavior all throughout training. Our guarantees are based on a new theoretical result, which is of independent interest: we prove a bound relating the expected returns of two policies to an average divergence between them. We demonstrate the effectiveness of our approach on simulated robot locomotion tasks where the agent must satisfy constraints motivated by safety.}
+}
+
+@inproceedings{zhou2025self,
+  title={Self-supervised transfer learning with shared encoders for cross-domain cloud optimization},
+  author={Zhou, Yining},
+  booktitle={2025 5th International Conference on Electronic Information Engineering and Computer Science (EIECS)},
+  pages={1435--1439},
+  year={2025},
+  organization={IEEE}
+}
+
+@misc{han2026readbeforeyouthink,
+      title={Read Before You Think: Mitigating LLM Comprehension Failures with Step-by-Step Reading}, 
+      author={Feijiang Han and Hengtao Cui and Licheng Guo and Zelong Wang and Zhiyuan Lyu},
+      year={2025},
+      eprint={2504.09402},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2504.09402}, 
+}
+
+@inproceedings{guo-etal-2025-lightrag,
+    title = "{L}ight{RAG}: Simple and Fast Retrieval-Augmented Generation",
+    author = "Guo, Zirui  and
+      Xia, Lianghao  and
+      Yu, Yanhua  and
+      Ao, Tu  and
+      Huang, Chao",
+    editor = "Christodoulopoulos, Christos  and
+      Chakraborty, Tanmoy  and
+      Rose, Carolyn  and
+      Peng, Violet",
+    booktitle = "Findings of the Association for Computational Linguistics: EMNLP 2025",
+    month = nov,
+    year = "2025",
+    address = "Suzhou, China",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.findings-emnlp.568/",
+    doi = "10.18653/v1/2025.findings-emnlp.568",
+    pages = "10746--10761",
+    ISBN = "979-8-89176-335-7",
+    abstract = "Retrieval-Augmented Generation (RAG) systems enhance large language models (LLMs) by integrating external knowledge sources, enabling more accurate and contextually relevant responses tailored to user needs. However, existing RAG systems have significant limitations, including reliance on flat data representations and inadequate contextual awareness, which can lead to fragmented answers that fail to capture complex interdependencies. To address these challenges, we propose LightRAG, a novel framework that incorporates graph structures into text indexing and retrieval processes. This innovative approach employs a dual-level retrieval system that enhances comprehensive information retrieval from both low- and high-level knowledge discovery. Additionally, the integration of graph structures with vector representations facilitates efficient retrieval of related entities and their relationships, significantly improving response times while maintaining contextual relevance. This capability is further enhanced by an incremental update algorithm that ensures the timely integration of new data, allowing the system to remain effective and responsive in rapidly changing data environments. Extensive experimental validation demonstrates considerable improvements in retrieval accuracy and efficiency compared to existing approaches. We have made our LightRAG framework open source and anonymously available at the link: https://anonymous.4open.science/r/LightRAG-2BEE."
+}
+
+@misc{han2025retrievalaugmentedgenerationgraphsgraphrag,
+      title={Retrieval-Augmented Generation with Graphs (GraphRAG)}, 
+      author={Haoyu Han and Yu Wang and Harry Shomer and Kai Guo and Jiayuan Ding and Yongjia Lei and Mahantesh Halappanavar and Ryan A. Rossi and Subhabrata Mukherjee and Xianfeng Tang and Qi He and Zhigang Hua and Bo Long and Tong Zhao and Neil Shah and Amin Javari and Yinglong Xia and Jiliang Tang},
+      year={2025},
+      eprint={2501.00309},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2501.00309}, 
+}

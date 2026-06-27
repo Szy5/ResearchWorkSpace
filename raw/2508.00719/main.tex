@@ -1,0 +1,97 @@
+\documentclass{article} % For LaTeX2e
+
+\usepackage[preprint]{neurips_2024}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\usepackage{hyperref}
+\usepackage{url}
+% \usepackage[numbers]{natbib}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+% \usepackage[numbers]{natbib}
+\usepackage{hyperref}       % hyperlinks           % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,trees}
+
+\usepackage{array}  
+\usepackage{color}
+\usepackage{newfloat}
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{subfig}
+\usepackage{tabularray}
+\usepackage[most]{tcolorbox}
+\usepackage{caption}
+\usepackage{courier}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{newfloat}
+\usepackage{listings}
+\usepackage{amssymb}   
+\usepackage{amsmath}
+\usepackage{tabularray}
+%\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{makecell}
+\usepackage{wrapfig}
+\usepackage{multirow}
+
+\title{DAMR: Efficient and Adaptive Context-Aware Knowledge Graph Question Answering with LLM-Guided MCTS}
+\allowdisplaybreaks[4]
+\newcommand{\method}{DAMR}
+
+
+
+\author{%
+  Yingxu Wang\\
+  MBZUAI \\
+  yingxv.wang@gmail.com
+  \And
+  Shiqi Fan\\
+  PolyU\\
+  fsq@mail.nwpu.edu.cn
+  \And
+  Mengzhu Wang\\
+  Hebei University of Technology\\
+  dreamkily@gmail.com
+  \And
+  Siyang Gao, Chao Wang\\
+  CityU\\
+  {siyangao@cityu.edu.hk, chanceycn@gmail.com}
+  \And
+  Nan Yin \\
+  HKUST \\
+  yinnan8911@gmail.com
+}
+
+\begin{document}
+
+
+\maketitle
+\begin{abstract}
+Knowledge Graph Question Answering (KGQA) aims to interpret natural language queries and perform structured reasoning over knowledge graphs by leveraging their relational and semantic structures to retrieve accurate answers. 
+Existing methods primarily follow either the retrieve-then-reason paradigm, which relies on Graph Neural Networks (GNNs) or heuristic rules to extract static candidate paths, or dynamic path generation strategies that employ large language models (LLMs) with prompting to jointly perform retrieval and reasoning. 
+However, the former lacks adaptability due to static path extraction and the absence of contextual refinement, while the latter suffers from high computational costs and limited evaluation accuracy because of their dependence on fixed scoring functions and repeated LLM calls.
+To address these issues, this paper proposes \textbf{D}ynamically \textbf{A}daptive \textbf{M}CTS-based \textbf{R}easoning (\method{}), a novel framework that integrates LLM-guided Monte Carlo Tree Search (MCTS) with adaptive path evaluation to enable efficient and context-aware KGQA. 
+\method{} leverages MCTS as a backbone, where an LLM-based planner selects the top-$k$ semantically relevant relations at each expansion step to effectively reduce the search space. To enhance evaluation accuracy, we introduce a lightweight Transformer-based scorer that performs context-aware plausibility estimation by jointly encoding the question and relation sequence through cross-attention, thereby capturing fine-grained semantic shifts during multi-hop reasoning. Furthermore, to mitigate the scarcity of high-quality supervision, \method{} incorporates a dynamic pseudo-path refinement mechanism that periodically generates training signals from partial paths explored during search, enabling the scorer to continually adapt to the evolving distribution of reasoning trajectories.
+Extensive experiments on multiple KGQA benchmarks show that \method{} significantly outperforms state-of-the-art methods. 
+\end{abstract}
+
+
+\input{code/1_intro}
+\input{code/2_related}
+% \input{code/3_preliminary}
+\input{code/4_method}
+\input{code/5_experiments}
+\input{code/6_conclusion}
+
+
+\bibliographystyle{plain}
+\bibliography{main}
+\input{code/7_appendix}
+\end{document}
