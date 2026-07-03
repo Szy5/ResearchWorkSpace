@@ -10,6 +10,7 @@ from paper_wiki.ingestion.generators.prior_works_generator import PriorWorksGene
 from paper_wiki.ingestion.generators.summary_generator import SummaryGenerator
 from paper_wiki.ingestion.latex_parser import LaTeXParser
 from paper_wiki.ingestion.llm_client import LLMClient, build_llm_client
+from paper_wiki.ingestion.summary_figure_converter import convert_summary_pdf_figures
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +68,20 @@ class IngestPipeline:
         summary = self.summary_generator.generate(parsed, prompt_file=summary_prompt)
         summary_path.write_text(summary, encoding="utf-8")
         logger.info("已写入：%s", summary_path)
+
+        figure_result = convert_summary_pdf_figures(
+            summary_path,
+            slug=slug,
+            raw_dir=self.settings.resolved_raw_dir(),
+            artifact_dir=artifact_dir,
+        )
+        if figure_result.converted:
+            logger.info(
+                "summary 图片已转换：slug=%s, converted=%d, skipped=%d",
+                slug,
+                len(figure_result.converted),
+                len(figure_result.skipped),
+            )
 
         logger.info("步骤 3/4：生成 prior_works.json")
         prior_works = self.prior_works_generator.generate(parsed, prompt_file=prior_works_prompt)

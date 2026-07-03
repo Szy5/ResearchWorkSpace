@@ -1,8 +1,22 @@
-# Paper-Wiki 技术方案 v1.0
+# Paper-Wiki 技术方案 v1.3
 
-> 作者：架构设计草稿 | 日期：2026-06-24 | 状态：待 Review
+> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-07-03 | 状态：持续维护
 
 ---
+
+## 零、当前实现状态
+
+本文档是长期维护文档，既记录已经落地的工程设计，也保留后续 Layer 2/Layer 3 的规划。每次功能实现、架构调整或范围变更后，都应同步更新本节与相关设计章节。
+
+| 层次 | 当前状态 | 已落地内容 | 尚未落地内容 |
+| ---- | -------- | ---------- | ------------ |
+| Layer 0 | 已实现 | `LaTeXParser`、入口文件识别、`\input` / `\include` 内联、核心章节抽取、`paper-wiki parse` | 更复杂 LaTeX 语义解析、PDF OCR/正文回退 |
+| Layer 1 | 已实现 | `IngestPipeline`、`SummaryGenerator`、`PriorWorksGenerator`、`PatternGenerator`、Pydantic 校验、prompt 切换、单篇/多篇 `paper-wiki ingest`、raw 扫描式 `paper-wiki ingest-all`，并将主论文元信息统一保存在 `summary.md` frontmatter | 单步骤重跑 `--only`、正式 review 命令 |
+| Layer 2 | 部分实现 | `graph/` 包、reviewed artifacts 读取、Paper 节点与 typed prior-work 关系建模、`graph_state/` 快照、`graph_updates.jsonl` 事件日志、`paper-wiki graph plan/apply`、Neo4j 幂等入库；详见 [Neo4j 科学发现图谱需求与技术方案](./Neo4j%20科学发现图谱需求与技术方案.md) | `wiki/` 包、全局目录、概念页、日志、更多图谱查询 |
+| Layer 3 | 未实现 | 无 | `retrieval/` 包、向量库、GraphRAG、FastAPI API |
+| 测试 | 部分实现 | parser、models、mock LLM pipeline、CLI 多 slug ingest、raw 待处理发现、graph planner 增量事件 | graph/retrieval/api/e2e 测试 |
+
+当前实现范围必须继续遵守 Layer 0/Layer 1 边界：ingest 只生成 `artifacts/{paper-slug}/` 三件套，不写入 `wiki/`、图谱、embedding 或检索索引。
 
 ## 一、技术选型
 
@@ -10,13 +24,13 @@
 | 层次           | 选型                         | 理由                         |
 | ------------ | -------------------------- | -------------------------- |
 | 语言           | Python 3.11+               | 生态最丰富，LLM/向量库均有一流支持        |
-| LLM API      | OpenAI（主）/ DeepSeek（备）     | Openai性价比高                 |
+| LLM API      | OpenAI-compatible API（已实现 OpenAI/DeepSeek 配置分支） | 通过统一 SDK 与 `.env` 支持模型切换 |
 | LaTeX 解析     | 自实现预处理（正则 + 文件拼接）          | 轻量，无需引入重型 LaTeX 解析器        |
-| 向量库          | ChromaDB                   | 本地持久化、内置元数据过滤、无需部署         |
-| Embedding 模型 | BGE等开源模型（主）                | 精度与成本平衡                    |
-| 图计算          | NetworkX                   | 纯 Python，图算法丰富，适合中小规模      |
-| 图持久化         | JSON 文件 + neo4j            | Git 友好，无需数据库               |
-| HTTP API     | FastAPI                    | 异步、自动 OpenAPI 文档、类型安全      |
+| 向量库          | ChromaDB（规划）              | 本地持久化、内置元数据过滤、无需部署         |
+| Embedding 模型 | BGE / OpenAI embedding（规划） | 精度与成本平衡                    |
+| 图计算          | NetworkX（规划）              | 纯 Python，图算法丰富，适合中小规模      |
+| 图持久化         | JSON 文件（规划）               | Git 友好，无需数据库               |
+| HTTP API     | FastAPI（规划）               | 异步、自动 OpenAPI 文档、类型安全      |
 | 数据模型         | Pydantic v2                | 验证 + 序列化 + JSON schema 一体化 |
 | CLI          | Typer                      | 基于 Pydantic，与 FastAPI 风格统一 |
 | 配置管理         | pydantic-settings + `.env` | 统一管理 API Key 和路径配置         |
@@ -90,6 +104,8 @@ graph TB
 
 ## 三、包结构设计
 
+本节同时展示已实现包与规划包。当前代码仓库已经落地 `core/`、`ingestion/`、`cli/`、`graph/`；`wiki/`、`retrieval/`、`api/` 仍属于后续阶段，不应在非相关任务中提前实现。
+
 ```
 paper_wiki/                         # 主 Python 包
 │
@@ -109,21 +125,29 @@ paper_wiki/                         # 主 Python 包
 │   │   └── pattern_generator.py    # 生成 sci_pattern.json
 │   └── pipeline.py                 # Ingest 流程编排入口
 │
-├── wiki/                           # Layer 1 → Layer 2
+├── graph/                          # Layer 1 → Layer 2（已部分实现）
+│   ├── __init__.py
+│   ├── artifact_reader.py          # 读取 reviewed artifacts
+│   ├── models.py                   # 图谱节点、关系、事件与状态模型
+│   ├── planner.py                  # artifact -> graph state / JSONL events
+│   ├── neo4j_store.py              # Neo4j 幂等写入与查询
+│   └── state_store.py              # graph_state / graph_updates 持久化
+│
+├── wiki/                           # Layer 1 → Layer 2（规划，未实现）
 │   ├── __init__.py
 │   ├── graph.py                    # 科学发现图谱
 │   ├── index.py                    # wiki/index.md 维护
 │   ├── concepts.py                 # wiki/concepts/ 维护
 │   └── log.py                      # wiki/log.md 维护
 │
-├── retrieval/                      # Layer 2 → Layer 3
+├── retrieval/                      # Layer 2 → Layer 3（规划，未实现）
 │   ├── __init__.py
 │   ├── embedder.py                 # 向量化文档，写入 ChromaDB
 │   ├── vector_store.py             # ChromaDB 封装
 │   ├── graph_query.py              # 图谱遍历查询（溯源、路径、邻居）
 │   └── search.py                   # 统一检索入口（向量 + 图谱混合）
 │
-├── api/                            # HTTP API
+├── api/                            # HTTP API（规划，未实现）
 │   ├── __init__.py
 │   ├── app.py                      # FastAPI 应用入口
 │   └── routes/
@@ -139,21 +163,21 @@ tests/
 ├── unit/                           # 单元测试（无 LLM 调用）
 │   ├── test_latex_parser.py
 │   ├── test_models.py
-│   └── test_graph.py
+│   └── test_cli.py
 ├── integration/                    # 集成测试（Mock LLM）
-│   ├── test_pipeline.py
-│   └── test_search.py
+│   └── test_pipeline.py
 └── fixtures/
     ├── sample_paper/               # 测试用论文片段
     │   ├── main.tex
-    │   └── paper.pdf
+    │   └── sections/
     └── expected/                   # 期望输出（快照测试）
         ├── summary.md
         ├── prior_works.json
         └── sci_pattern.json
 
 prompts/                            # Prompt 模板（与代码解耦）
-├── ingest_paper.md
+├── paper_summary.py
+├── paper_summary_v2.py
 ├── prior_work_prompt.py
 ├── sci_pattern_classify_prompt.py
 └── pattern_taxonomy.json
@@ -444,7 +468,7 @@ class LaTeXParser:
 
 ### 5.2 `ingestion/llm_client.py`
 
-**职责**：抽象 LLM API 调用，屏蔽具体模型差异，支持模型切换。
+**职责**：抽象 LLM API 调用，屏蔽具体模型差异，支持 OpenAI-compatible 模型切换。
 
 ```mermaid
 classDiagram
@@ -453,19 +477,12 @@ classDiagram
         +complete(system: str, user: str) str
         +complete_json(system: str, user: str, schema: type) BaseModel
     }
-    class ClaudeClient {
-        -api_key: str
-        -model: str
-        +complete()
-        +complete_json()
-    }
     class OpenAIClient {
         -api_key: str
         -model: str
         +complete()
         +complete_json()
     }
-    LLMClient <|-- ClaudeClient
     LLMClient <|-- OpenAIClient
 ```
 
@@ -473,15 +490,15 @@ classDiagram
 
 **关键设计**：
 
-- `complete_json()` 内置 JSON 解析重试（最多 3 次），处理 LLM 输出非法 JSON 的情况
-- 通过 `config.py` 中的 `LLM_PROVIDER` 环境变量决定使用哪个实现
-- 所有调用记录 token 使用量（用于成本追踪）
+- `complete_json()` 内置 JSON 解析重试，处理 LLM 输出非法 JSON 的情况
+- 通过 `API_KEY` / `BASE_URL` / `MODEL_NAME` 以及 OpenAI-style aliases 配置模型
+- 当前已实现 OpenAI-compatible 客户端；token 用量与成本追踪仍未实现
 
 ---
 
 ### 5.3 `ingestion/pipeline.py`
 
-**职责**：Ingest 流程的编排入口，协调 Parser + 三个 Generator + Wiki 更新。
+**职责**：Ingest 流程的编排入口，当前只协调 Parser + 三个 Generator，并写入 Layer 1 artifacts。Wiki 更新属于后续 `review` 阶段，尚未实现。
 
 ```mermaid
 sequenceDiagram
@@ -494,7 +511,7 @@ sequenceDiagram
     participant PatternGen
     participant WikiManager
 
-    User->>CLI: paper-wiki ingest {slug}
+    User->>CLI: paper-wiki ingest {slug} [slug ...] / ingest-all
     CLI->>Pipeline: run(slug)
     Pipeline->>LaTeXParser: parse(raw/slug/)
     LaTeXParser-->>Pipeline: ParsedPaper
@@ -511,7 +528,7 @@ sequenceDiagram
     Pipeline->>Pipeline: 写入 artifacts/{slug}/
     Pipeline-->>User: 三件套生成完毕，请人工审查
 
-    Note over User: 人工审查，修改错误
+    Note over User,WikiManager: 以下为规划中的 review 入库阶段
     User->>CLI: paper-wiki review {slug}
     CLI->>WikiManager: update_all(slug)
     WikiManager->>WikiManager: 更新图谱、index.md、log.md
@@ -519,15 +536,23 @@ sequenceDiagram
 
 
 
-**关键设计**：
+**已实现关键设计**：
+
+- Pipeline 保持单篇论文职责，CLI 负责把单个或多个 slug 逐个送入 Pipeline
+- CLI 的 `ingest-all` 会扫描 `raw/` 下包含 `.tex` 的论文目录，默认只选择未生成完整三件套的 slug；`--overwrite` 会选择全部 raw 论文
+- 默认不覆盖已有 artifact，只有传入 `--overwrite` 时才允许重写三件套
+- 支持切换 summary、prior works、sci pattern 三类 prompt
+- ingest 不写入 `wiki/`、图谱、embedding 或检索索引
+
+**规划设计**：
 
 - `ingest` 和 `review` 是两个独立命令，强制分离"生成"与"入库"
 - Pipeline 支持 `--only summary|prior_works|pattern` flag，可单独重跑某一步
-- 幂等设计：重跑同一个 slug 会覆盖现有 artifact 而非追加
+- review 阶段只接收 `reviewed=true` 的 artifact，并触发 Wiki / Graph / Index 更新
 
 ---
 
-### 5.4 `wiki/graph.py`
+### 5.4 `wiki/graph.py`（规划，未实现）
 
 **职责**：维护科学发现图谱，提供增删查操作，持久化为 JSON 文件。
 
@@ -559,7 +584,7 @@ classDiagram
 
 ---
 
-### 5.5 `retrieval/` 模块
+### 5.5 `retrieval/` 模块（规划，未实现）
 
 **两种检索模式**：
 
@@ -598,7 +623,7 @@ graph TB
 
 ---
 
-## 六、API 设计
+## 六、API 设计（规划，未实现）
 
 ### 6.1 路由总览
 
@@ -644,22 +669,28 @@ class SearchResult(BaseModel):
 ## 七、CLI 命令设计
 
 ```bash
-# 核心工作流
-paper-wiki ingest {slug}              # 生成三件套（不入库）
-paper-wiki review {slug}              # 审查后入库（更新图谱+索引）
-paper-wiki ingest {slug} --review     # 生成后直接入库（跳过人工审查，谨慎使用）
+# 已实现：Layer 0 / Layer 1
+paper-wiki parse {slug}                       # 解析 LaTeX，打印 Layer 0 摘要
+paper-wiki ingest {slug}                      # 生成单篇三件套（不入库）
+paper-wiki ingest {slug1} {slug2} --overwrite # 批量生成多篇三件套
+paper-wiki ingest-all                         # 扫描 raw/，生成未完成三件套的论文
+paper-wiki graph plan {slug} [slug ...]      # 从 reviewed artifacts 生成图谱快照和 JSONL 事件
+paper-wiki graph apply                        # 把未应用事件写入 Neo4j
 
-# 查询
+# 规划：人工审查与入库
+paper-wiki review {slug}              # 审查后入库（更新图谱+索引）
+
+# 规划：查询
 paper-wiki search "RAG with graph"
 paper-wiki graph ancestors lora-2022 --depth 3
 paper-wiki graph path gpt3-2020 rlhf-2022
 
-# 维护
+# 规划：维护
 paper-wiki lint                        # Wiki 健康检查
 paper-wiki rebuild-index               # 重建向量索引
 paper-wiki status                      # 显示库统计（论文数、图谱节点/边数等）
 
-# 服务
+# 规划：服务
 paper-wiki serve --port 8000           # 启动 HTTP API
 ```
 
@@ -723,7 +754,7 @@ sequenceDiagram
 
 ```mermaid
 graph LR
-    P[prompts/ingest_paper.md] -->|读取| SG[SummaryGenerator]
+    P[prompts/paper_summary_v2.py] -->|读取| SG[SummaryGenerator]
     SG -->|调用| LLM[LLMClient]
 ```
 
@@ -731,11 +762,11 @@ graph LR
 
 ### 9.2 LLM 可替换
 
-通过 `LLMClient` 抽象层，切换 Claude ↔ OpenAI 只需改一个环境变量 `LLM_PROVIDER=openai`。
+通过 `LLMClient` 抽象层隔离模型调用。当前已实现 OpenAI-compatible 客户端，可通过 `.env` 中的 `API_KEY`、`BASE_URL`、`MODEL_NAME` 切换 OpenAI、DeepSeek 或兼容网关；Claude 等非 OpenAI-compatible 客户端仍属于规划。
 
 ### 9.3 幂等设计
 
-所有写操作均为幂等：对同一个 slug 重跑 ingest 会覆盖 artifacts，重建索引会先清空 ChromaDB collection 再重新索引。这意味着任何操作失败后都可以安全重试。
+当前 Layer 1 写操作采用显式覆盖策略：默认拒绝覆盖已有三件套，只有传入 `--overwrite` 时才重写 artifacts。`ingest-all` 默认通过完整三件套是否存在来跳过已处理论文，传入 `--overwrite` 时会把所有 raw 论文送入同一条 pipeline 重跑。后续重建索引应先清空目标 ChromaDB collection 再重新索引，保证失败后可以安全重试。
 
 ### 9.4 渐进式引入
 
@@ -748,7 +779,8 @@ gantt
     section Phase 1 核心
     LaTeXParser + LLMClient         :p1a, 2026-06-25, 3d
     三个 Generator                   :p1b, after p1a, 3d
-    CLI ingest/review 命令           :p1c, after p1b, 2d
+    CLI parse/ingest 命令            :done, p1c, after p1b, 2d
+    CLI review 命令                  :p1d, after p1c, 2d
 
     section Phase 2 Wiki
     GraphManager                    :p2a, after p1c, 3d

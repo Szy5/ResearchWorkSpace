@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>把科研论文 LaTeX 源码，自动转化为结构化、可积累的个人论文知识库。</strong>
+  <strong>把科研论文自动转化为结构化、可积累的个人论文知识库。</strong>
 </p>
 
 <p align="center">
@@ -22,12 +22,12 @@ Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `raw/` 下
 
 当前已实现：
 
-| 层级 | 能力 | 状态 |
-|------|------|------|
-| Layer 0 | LaTeX 解析、章节抽取、图表路径保留 | ✅ |
-| Layer 1 | `summary.md` / `prior_works.json` / `sci_pattern.json` | ✅ |
-| Layer 2 | Wiki、概念页、科学发现图谱 | 🚧 规划中 |
-| Layer 3 | 向量检索、图谱查询、HTTP API | 🚧 规划中 |
+| 层级    | 能力                                                         | 状态        |
+| ------- | ------------------------------------------------------------ | ----------- |
+| Layer 0 | LaTeX 解析、章节抽取、图表路径保留                           | ✅          |
+| Layer 1 | `summary.md` / `prior_works.json` / `sci_pattern.json` | ✅          |
+| Layer 2 | Neo4j 科学发现图谱增量入库（`graph plan/apply`）           | ✅ 部分实现 |
+| Layer 3 | 向量检索、图谱查询、HTTP API                                 | 🚧 规划中   |
 
 **设计灵感：** [LLM Wiki](docs/llm_wiki.md) · [Sci-Reasoning](https://github.com/AmberLJC/Sci-Reasoning)
 
@@ -37,6 +37,9 @@ Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `raw/` 下
 
 - **LaTeX 原生输入** — 递归内联 `\input` / `\include`，自动识别主文件与 introduction / method / experiments 等章节
 - **三件套生成** — 精读摘要、前作谱系、科学创新范式分类，输出经 Pydantic 校验
+- **主论文元信息单点维护** — 主论文 metadata 统一保存在 `summary.md` frontmatter，`prior_works.json` / `sci_pattern.json` 不再重复保存
+- **自动发现待处理论文** — 一条命令扫描 `raw/`，只为未生成完整三件套的论文执行 ingest
+- **Neo4j 增量入库** — `graph plan` 生成 JSONL 事件，`graph apply` 幂等写入 Paper 节点和前作关系
 - **Prompt 可切换** — CLI 透传三个 prompt 文件，方便调试与迭代
 - **增量写入** — 每步生成后立即落盘，单步失败不丢已完成产物
 - **Markdown 增强** — 摘要支持公式、图片引用与格式规范；图片路径自动指向 `raw/{slug}/figures/`
@@ -136,9 +139,13 @@ paper-wiki parse GraphWalker --verbose   # DEBUG 日志
 ```bash
 paper-wiki ingest GraphWalker
 paper-wiki ingest GraphWalker --overwrite --verbose
+paper-wiki ingest GraphWalker 2508.00719 --overwrite
+paper-wiki ingest-all --overwrite
 ```
 
 默认不覆盖已有产物；需重生成时加 `--overwrite`。
+传入多个 slug 时会按顺序逐篇生成；若某篇失败，CLI 会继续处理后续论文，并在结束时返回非零退出码。
+`--ingest-all` 会扫描 `raw/` 下所有包含 `.tex` 的论文目录，默认跳过已经拥有完整 `summary.md`、`prior_works.json`、`sci_pattern.json` 的论文；加 `--overwrite` 时会重跑所有 raw 论文。
 
 ### 4. 自定义 Prompt
 
@@ -159,24 +166,38 @@ paper-wiki ingest GraphWalker --overwrite \
 - `prior_works.json` 前作标题、年份、角色是否准确
 - `sci_pattern.json` 范式分类是否符合你的判断
 
+### 6. 图谱入库（Layer 2）
+
+```bash
+paper-wiki graph plan 2307.07697
+paper-wiki graph apply
+```
+
+`graph plan` 只读取 reviewed `artifacts/{slug}/`，更新本地 `graph_state/` 和 `graph_updates/graph_updates.jsonl`。`graph apply` 会读取未应用事件并幂等写入 Neo4j。
+
 ---
 
 ## CLI 参考
 
-| 命令 | 说明 |
-|------|------|
-| `paper-wiki parse <slug>` | 解析 LaTeX，打印 Layer 0 摘要 |
-| `paper-wiki ingest <slug>` | 生成 Layer 1 三件套 |
+| 命令                                        | 说明                                                             |
+| ------------------------------------------- | ---------------------------------------------------------------- |
+| `paper-wiki parse <slug>`                 | 解析 LaTeX，打印 Layer 0 摘要                                    |
+| `paper-wiki ingest <slug> [slug ...]`     | 生成一篇或多篇 Layer 1 三件套                                    |
+| `paper-wiki ingest-all`                   | 扫描`raw/`，为未生成完整三件套的论文批量生成 Layer 1 artifacts |
+| `paper-wiki graph plan <slug> [slug ...]` | 从 reviewed artifacts 生成 Layer 2 图谱快照和增量 JSONL 事件     |
+| `paper-wiki graph apply`                  | 把图谱 JSONL 增量事件幂等写入 Neo4j                              |
 
 **`ingest` 常用选项**
 
-| 选项 | 说明 |
-|------|------|
-| `--overwrite`, `-f` | 覆盖已有产物 |
-| `--verbose`, `-v` | DEBUG 日志与异常堆栈 |
-| `--summary-prompt` | 摘要 prompt（默认 `paper_summary_v2.py`） |
-| `--prior-works-prompt` | 前作 prompt（默认 `prior_work_prompt.py`） |
-| `--sci-pattern-prompt` | 范式 prompt（默认 `sci_pattern_classify_prompt.py`） |
+| 选项                     | 说明                                                  |
+| ------------------------ | ----------------------------------------------------- |
+| `--overwrite`, `-f`  | 覆盖已有产物                                          |
+| `--verbose`, `-v`    | DEBUG 日志与异常堆栈                                  |
+| `--summary-prompt`     | 摘要 prompt（默认`paper_summary_v2.py`）            |
+| `--prior-works-prompt` | 前作 prompt（默认`prior_work_prompt.py`）           |
+| `--sci-pattern-prompt` | 范式 prompt（默认`sci_pattern_classify_prompt.py`） |
+
+`ingest-all` 支持同一组选项；默认只处理未生成完整三件套的 raw 论文，`--overwrite` 会重跑全部 raw 论文。
 
 ---
 
@@ -239,33 +260,38 @@ pytest
 <summary><b>parse 没有命中章节？</b></summary>
 
 检查主文件是否正确，或章节标题是否过于特殊。关键词维护于 `src/paper_wiki/ingestion/latex_parser.py` 的 `TARGET_SECTIONS`。
+
 </details>
 
 <details>
 <summary><b>ingest JSON 校验失败？</b></summary>
 
 模型输出不符合 schema 时会自动重试。仍失败时可换更强模型，或调整对应 prompt。
+
 </details>
 
 <details>
 <summary><b>summary 里图片预览空白？</b></summary>
 
 LaTeX 图多为 `.pdf`，多数 Markdown 预览不支持内嵌 PDF。路径已指向 `raw/{slug}/figures/`；可 Ctrl+点击链接，或安装 VS Code 的 <code>vscode-pdf</code> 插件查看。
+
 </details>
 
 <details>
 <summary><b>conda / pip 装包失败？</b></summary>
 
 conda 使用 <code>conda-forge</code> 渠道；pip 可加 <code>-i https://pypi.org/simple</code> 使用官方源。
+
 </details>
 
 ---
 
 ## 路线图
 
-- [x] Layer 0 LaTeX 解析
-- [x] Layer 1 三件套生成与 prompt 透传
-- [x] 摘要 Markdown 图片引用与格式规范
+- [X] Layer 0 LaTeX 解析
+- [X] Layer 1 三件套生成与 prompt 透传
+- [X] raw 待处理论文自动发现与批量 ingest
+- [X] 摘要 Markdown 图片引用与格式规范
 - [ ] Layer 2 Wiki 与科学发现图谱
 - [ ] Layer 3 向量检索与 API
 

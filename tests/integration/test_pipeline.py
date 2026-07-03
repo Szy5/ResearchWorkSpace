@@ -55,5 +55,7 @@ def test_pipeline_writes_layer1_artifacts(tmp_path: Path) -> None:
     assert result.prior_works_path.exists()
     assert result.sci_pattern_path.exists()
     assert "reviewed: false" in result.summary_path.read_text(encoding="utf-8")
-    assert '"target_slug": "sample_paper"' in result.prior_works_path.read_text(encoding="utf-8")
+    assert '"prior_works": [' in result.prior_works_path.read_text(encoding="utf-8")
     assert '"primary_pattern": "P05"' in result.sci_pattern_path.read_text(encoding="utf-8")
+    assert '"target_slug"' not in result.prior_works_path.read_text(encoding="utf-8")
+    assert '"target_title"' not in result.sci_pattern_path.read_text(encoding="utf-8")

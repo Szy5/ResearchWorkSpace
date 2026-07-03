@@ -67,7 +67,7 @@ class SummaryGenerator:
             alt, path = match.group(1), match.group(2).strip()
             if path.startswith(("http://", "https://", "/", raw_prefix)):
                 return match.group(0)
-            if path.startswith("figures/"):
+            if path.lower().startswith("figures/"):
                 return f"![{alt}]({raw_prefix}{path})"
             if path.startswith(f"raw/{slug}/"):
                 return f"![{alt}](../../{path})"

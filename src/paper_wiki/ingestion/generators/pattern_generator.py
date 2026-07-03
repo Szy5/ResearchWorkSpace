@@ -61,8 +61,6 @@ class PatternGenerator:
 
         pattern_names = self._pattern_name_map(taxonomy)
         doc = SciPatternDoc(
-            target_slug=parsed.slug,
-            target_title=parsed.title,
             primary_pattern=classification.primary_pattern,
             primary_pattern_name=pattern_names.get(classification.primary_pattern.value, ""),
             secondary_patterns=classification.secondary_patterns,

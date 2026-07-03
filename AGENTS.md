@@ -55,3 +55,10 @@ pytest
 - `summary.md` must include YAML frontmatter and `reviewed: false` until a human review happens.
 - Do not let ingestion update `wiki/index.md`, graph files, concepts, embeddings, or any retrieval index in the Layer0/Layer1 phase.
 - When adding tests, prefer deterministic parser and mock-LLM tests; real API smoke tests should be explicit and should not expose secrets.
+
+## Documentation Maintenance
+
+- Treat `docs/Paper-Wiki 需求文档.md` and `docs/Paper-Wiki 技术方案_v1.md` as long-lived maintenance documents, not one-off design drafts.
+- When implementing, removing, or materially changing behavior, update the requirements document so it clearly distinguishes implemented, unimplemented, and undecided requirements.
+- When changing architecture, package structure, CLI behavior, data models, configuration, or workflow boundaries, update the technical design document in the same change.
+- Keep documentation aligned with the current Layer 0/Layer 1 implementation boundary unless the user explicitly asks to start Layer 2 or Layer 3 work.

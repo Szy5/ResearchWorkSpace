@@ -14,6 +14,13 @@ def test_rewrite_figure_paths_from_latex_relative_path() -> None:
     )
 
 
+def test_rewrite_figure_paths_handles_capitalized_figures_dir() -> None:
+    generator = SummaryGenerator(_DummyLLM(), prompts_dir=None)  # type: ignore[arg-type]
+    content = "![example](Figures/example.pdf)"
+    rewritten = generator._rewrite_figure_paths(content, "2401.01335v3")
+    assert rewritten == "![example](../../raw/2401.01335v3/Figures/example.pdf)"
+
+
 def test_rewrite_figure_paths_skips_absolute_and_already_rewritten() -> None:
     generator = SummaryGenerator(_DummyLLM(), prompts_dir=None)  # type: ignore[arg-type]
     content = (

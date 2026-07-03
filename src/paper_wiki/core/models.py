@@ -58,10 +58,6 @@ class PriorWorkEntry(BaseModel):
 class PriorWorksDoc(BaseModel):
     """prior_works.json 的完整结构。"""
 
-    target_slug: str
-    target_title: str
-    target_venue: str = ""
-    target_year: int | None = None
     prior_works: list[PriorWorkEntry] = Field(default_factory=list)
     synthesis_narrative: str
 
@@ -77,8 +73,6 @@ class PriorWorksDoc(BaseModel):
 class SciPatternDoc(BaseModel):
     """sci_pattern.json 的完整结构，记录主要/次要科学创新范式。"""
 
-    target_slug: str
-    target_title: str
     primary_pattern: PatternID
     primary_pattern_name: str = ""
     secondary_patterns: list[PatternID] = Field(default_factory=list)

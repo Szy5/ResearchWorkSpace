@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class _PriorWorksLLMResponse(BaseModel):
-    """模型原始 JSON 形状；后续会补充 target_slug 等本地字段。"""
+    """模型原始 JSON 形状；主论文元信息由 summary.md frontmatter 维护。"""
 
     prior_works: list[PriorWorkEntry] = Field(default_factory=list)
     synthesis_narrative: str
@@ -42,12 +42,7 @@ class PriorWorksGenerator:
             user = self._default_user_prompt(parsed)
         # complete_json 会自动处理 JSON fence、格式错误重试和 Pydantic 校验。
         response = self.llm.complete_json(system, user, _PriorWorksLLMResponse)
-        doc = PriorWorksDoc(
-            target_slug=parsed.slug,
-            target_title=parsed.title,
-            prior_works=response.prior_works,
-            synthesis_narrative=response.synthesis_narrative,
-        )
+        doc = PriorWorksDoc(prior_works=response.prior_works, synthesis_narrative=response.synthesis_narrative)
         logger.info("prior_works.json 生成完成：slug=%s, prior_works=%d", parsed.slug, len(doc.prior_works))
         return doc
 
