@@ -89,6 +89,12 @@ prior_work_system_prompt="""
 
 ---
 
+## 引用格式要求
+
+`relationship_sentence` 与 `synthesis_narrative` 中提到论文、模型、数据集名称时使用直引号 "…"，禁止使用中文书名号《…》。
+
+---
+
 ## 输出格式：JSON
 
 ```json

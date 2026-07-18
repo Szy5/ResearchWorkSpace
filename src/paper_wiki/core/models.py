@@ -5,6 +5,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field, field_validator
 
+from paper_wiki.assets.models import PaperAssetsBundle
 from paper_wiki.core.enums import (
     ConfidenceLevel,
     ContributionType,
@@ -31,7 +32,7 @@ class PaperMeta(BaseModel):
 
 
 class ParsedPaper(BaseModel):
-    """Layer0 解析结果，是后续三个 Layer1 生成器的共同输入。"""
+    """Layer0 解析结果；主要供 parse 调试入口使用。"""
 
     slug: str
     raw_text: str
@@ -81,27 +82,14 @@ class SciPatternDoc(BaseModel):
     reasoning: str
 
 
-class SummaryFrontmatter(BaseModel):
-    """summary.md 的 YAML frontmatter；reviewed 默认必须是 false。"""
-
-    slug: str
-    title: str
-    authors: list[str] = Field(default_factory=list)
-    year: int | None = None
-    venue: str = ""
-    arxiv_id: str = ""
-    tags: list[str] = Field(default_factory=list)
-    contribution_type: ContributionType | None = None
-    reviewed: bool = False
-    added_date: date = Field(default_factory=date.today)
-
-
 class IngestResult(BaseModel):
-    """一次 ingest 的返回对象，包含产物路径和 Layer0 解析摘要。"""
+    """一次 ingest 的返回对象，包含产物路径和 canonical assets bundle。"""
 
     slug: str
     artifact_dir: Path
+    manifest_path: Path | None = None
     summary_path: Path
     prior_works_path: Path
     sci_pattern_path: Path
-    parsed: ParsedPaper
+    generated_paths: dict[str, Path] = Field(default_factory=dict)
+    assets: PaperAssetsBundle

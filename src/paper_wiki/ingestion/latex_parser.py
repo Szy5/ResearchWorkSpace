@@ -27,7 +27,7 @@ TARGET_SECTIONS: dict[str, list[str]] = {
 }
 
 # 给 LLM 的正文顺序：先给摘要和主张相关章节，再给实验与相关工作。
-# 这样在截断时能优先保留最影响三件套质量的信息。
+# 这样在截断时能优先保留最影响语义产物质量的信息。
 ASSEMBLY_ORDER = ["abstract", "introduction", "method", "related_work", "experiments"]
 
 

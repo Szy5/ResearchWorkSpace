@@ -6,8 +6,9 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
+from paper_wiki.assets.models import PaperAssetsBundle
 from paper_wiki.core.enums import ConfidenceLevel, PatternID
-from paper_wiki.core.models import ParsedPaper, SciPatternDoc
+from paper_wiki.core.models import SciPatternDoc
 from paper_wiki.ingestion.llm_client import LLMClient
 from paper_wiki.ingestion.prompt_loader import load_prompt_module, resolve_prompt_path
 
@@ -29,19 +30,20 @@ class _PatternLLMResponse(BaseModel):
 class PatternGenerator:
     """生成 sci_pattern.json，把论文创新归入 Sci-Reasoning 范式体系。"""
 
-    def __init__(self, llm: LLMClient, prompts_dir: Path) -> None:
+    def __init__(self, llm: LLMClient, prompts_dir: Path, max_context_chars: int | None = None) -> None:
         self.llm = llm
         self.prompts_dir = prompts_dir
+        self.max_context_chars = max_context_chars
 
-    def generate(self, parsed: ParsedPaper, prompt_file: str | None = None) -> SciPatternDoc:
+    def generate(self, bundle: PaperAssetsBundle, prompt_file: str | None = None) -> SciPatternDoc:
         """加载 taxonomy 与 prompt，解析 classifications 并写入单篇 sci_pattern.json。"""
-        logger.info("开始生成 sci_pattern.json：slug=%s", parsed.slug)
+        logger.info("开始生成 sci_pattern.json：slug=%s", bundle.slug)
         taxonomy = json.loads((self.prompts_dir / "pattern_taxonomy.json").read_text(encoding="utf-8"))
         taxonomy_text = json.dumps(taxonomy, ensure_ascii=False, indent=2)
         papers_text = (
-            f"Title: {parsed.title}\n"
-            f"Abstract: {parsed.abstract or 'N/A'}\n\n"
-            f"Content:\n{parsed.raw_text}"
+            f"Title: {bundle.title}\n"
+            f"Abstract: {bundle.abstract or 'N/A'}\n\n"
+            f"Content:\n{bundle.llm_context(max_chars=self.max_context_chars)}"
         )
 
         prompt_path = resolve_prompt_path(self.prompts_dir, prompt_file or "sci_pattern_classify_prompt.py")
@@ -72,7 +74,7 @@ class PatternGenerator:
         )
         logger.info(
             "sci_pattern.json 生成完成：slug=%s, primary_pattern=%s, confidence=%s",
-            parsed.slug,
+            bundle.slug,
             doc.primary_pattern.value,
             doc.confidence.value,
         )

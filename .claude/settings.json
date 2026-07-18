@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pytest -q)",
+      "Bash(python -c ' *)",
+      "Bash(ARTIFACTS_DIR=/tmp/tmpn2ikf9mc/artifacts GRAPH_STATE_DIR=/tmp/tmpn2ikf9mc/graph_state GRAPH_UPDATES_DIR=/tmp/tmpn2ikf9mc/graph_updates python -m paper_wiki.cli.main graph plan smoke-test)",
+      "Bash(echo \"---jsonl---\")",
+      "Read(//tmp/tmpn2ikf9mc/graph_updates/**)",
+      "Bash(rm -rf /tmp/tmpn2ikf9mc)",
+      "Bash(python -m paper_wiki.cli.main graph plan --help)"
+    ],
+    "additionalDirectories": [
+      "/tmp/tmpn2ikf9mc"
+    ]
+  }
+}

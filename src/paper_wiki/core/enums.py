@@ -13,7 +13,7 @@ class PriorWorkRole(str, Enum):
 
 
 class ContributionType(str, Enum):
-    """summary.md frontmatter 中记录的四类贡献类型。"""
+    """manifest.json paper metadata 中记录的四类贡献类型。"""
 
     PROBLEM_DEFINITION = "问题定义型"
     MECHANISM_EXPLANATION = "机制解释型"

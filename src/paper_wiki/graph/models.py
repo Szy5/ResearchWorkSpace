@@ -6,7 +6,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-from paper_wiki.core.models import PriorWorksDoc, SciPatternDoc, SummaryFrontmatter
+from paper_wiki.assets.models import AssetsManifest
+from paper_wiki.core.models import PriorWorksDoc, SciPatternDoc
 
 PriorWorkRelationType = Literal[
     "BASELINE",
@@ -17,14 +18,17 @@ PriorWorkRelationType = Literal[
     "RELATED_PROBLEM",
 ]
 
+PatternClassificationRole = Literal["primary", "secondary"]
+
 
 class ArtifactBundle(BaseModel):
-    """一篇论文的 reviewed Layer1 三件套及其路径。"""
+    """一篇论文的 reviewed Layer1 语义产物集合及其路径。"""
 
     slug: str
-    summary: SummaryFrontmatter
+    manifest: AssetsManifest
     prior_works: PriorWorksDoc
     sci_pattern: SciPatternDoc
+    manifest_path: Path
     summary_path: Path
     prior_works_path: Path
     sci_pattern_path: Path
@@ -37,18 +41,27 @@ class PaperNode(BaseModel):
     slug: str = ""
     paper_key: str
     title: str
-    authors: list[str] = Field(default_factory=list)
     year: int | None = None
     venue: str = ""
     arxiv_id: str = ""
-    primary_pattern_id: str = ""
-    primary_pattern_name: str = ""
-    secondary_pattern_ids: list[str] = Field(default_factory=list)
-    secondary_pattern_names: list[str] = Field(default_factory=list)
+    abstract: str = ""
     synthesis_narrative: str = ""
     sci_pattern_reason: str = ""
     is_stub: bool = False
-    added_date: str | None = None
+
+
+class AuthorNode(BaseModel):
+    """Neo4j Author 节点的规范化载荷。"""
+
+    author_key: str
+    name: str
+
+
+class PatternNode(BaseModel):
+    """Neo4j Pattern 节点的规范化载荷。"""
+
+    pattern_id: str
+    name: str
 
 
 class PriorWorkRelation(BaseModel):
@@ -61,11 +74,36 @@ class PriorWorkRelation(BaseModel):
     source_slug: str
 
 
+class AuthorshipRelation(BaseModel):
+    """Neo4j Author -> Paper 署名关系。"""
+
+    relation_key: str
+    author_key: str
+    paper_key: str
+    author_order: int
+    source_slug: str
+
+
+class PatternClassificationRelation(BaseModel):
+    """Neo4j Paper -> Pattern 范式分类关系。"""
+
+    relation_key: str
+    paper_key: str
+    pattern_id: str
+    role: PatternClassificationRole
+    confidence: str | None = None
+    source_slug: str
+
+
 class GraphState(BaseModel):
     """本地图谱快照，用于生成增量事件。"""
 
     papers: dict[str, PaperNode] = Field(default_factory=dict)
     relations: dict[str, PriorWorkRelation] = Field(default_factory=dict)
+    authors: dict[str, AuthorNode] = Field(default_factory=dict)
+    patterns: dict[str, PatternNode] = Field(default_factory=dict)
+    authorships: dict[str, AuthorshipRelation] = Field(default_factory=dict)
+    pattern_classifications: dict[str, PatternClassificationRelation] = Field(default_factory=dict)
 
 
 class UpsertPaperEvent(BaseModel):
@@ -100,7 +138,79 @@ class DeletePriorWorkRelationEvent(BaseModel):
     created_at: str
 
 
-GraphEvent = UpsertPaperEvent | UpsertPriorWorkRelationEvent | DeletePriorWorkRelationEvent
+class UpsertAuthorEvent(BaseModel):
+    event_id: str
+    op: Literal["upsert_author"] = "upsert_author"
+    author_key: str
+    source_slug: str
+    artifact_hash: str
+    created_at: str
+    payload: AuthorNode
+
+
+class UpsertPatternEvent(BaseModel):
+    event_id: str
+    op: Literal["upsert_pattern"] = "upsert_pattern"
+    pattern_id: str
+    source_slug: str
+    artifact_hash: str
+    created_at: str
+    payload: PatternNode
+
+
+class UpsertAuthorshipEvent(BaseModel):
+    event_id: str
+    op: Literal["upsert_authorship"] = "upsert_authorship"
+    author_key: str
+    paper_key: str
+    source_slug: str
+    artifact_hash: str
+    created_at: str
+    payload: AuthorshipRelation
+
+
+class DeleteAuthorshipEvent(BaseModel):
+    event_id: str
+    op: Literal["delete_authorship"] = "delete_authorship"
+    author_key: str
+    paper_key: str
+    source_slug: str
+    created_at: str
+
+
+class UpsertPatternClassificationEvent(BaseModel):
+    event_id: str
+    op: Literal["upsert_pattern_classification"] = "upsert_pattern_classification"
+    paper_key: str
+    pattern_id: str
+    role: PatternClassificationRole
+    source_slug: str
+    artifact_hash: str
+    created_at: str
+    payload: PatternClassificationRelation
+
+
+class DeletePatternClassificationEvent(BaseModel):
+    event_id: str
+    op: Literal["delete_pattern_classification"] = "delete_pattern_classification"
+    paper_key: str
+    pattern_id: str
+    role: PatternClassificationRole
+    source_slug: str
+    created_at: str
+
+
+GraphEvent = (
+    UpsertPaperEvent
+    | UpsertPriorWorkRelationEvent
+    | DeletePriorWorkRelationEvent
+    | UpsertAuthorEvent
+    | UpsertPatternEvent
+    | UpsertAuthorshipEvent
+    | DeleteAuthorshipEvent
+    | UpsertPatternClassificationEvent
+    | DeletePatternClassificationEvent
+)
 
 
 class GraphPlanResult(BaseModel):
@@ -110,6 +220,8 @@ class GraphPlanResult(BaseModel):
     events: list[GraphEvent] = Field(default_factory=list)
     paper_keys: list[str] = Field(default_factory=list)
     relation_keys: list[str] = Field(default_factory=list)
+    author_keys: list[str] = Field(default_factory=list)
+    pattern_ids: list[str] = Field(default_factory=list)
 
 
 class ApplyCheckpoint(BaseModel):
