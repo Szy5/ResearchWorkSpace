@@ -158,6 +158,22 @@ def test_repository_derives_reviewed_from_both_sub_flags(tmp_path: Path) -> None
     assert after_prior_works.meta.reviewed is True, "both sub-flags are now set"
 
 
+def test_repository_batch_review_sets_both_review_gates(tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+    _write_demo_artifact(settings.resolved_artifacts_dir())
+    repository = PaperRepository(settings)
+
+    [reviewed] = repository.set_reviewed(["demo-paper"], reviewed=True)
+    assert reviewed.meta.reviewed is True
+    assert reviewed.meta.meta_reviewed is True
+    assert reviewed.meta.prior_works_reviewed is True
+
+    [pending] = repository.set_reviewed(["demo-paper"], reviewed=False)
+    assert pending.meta.reviewed is False
+    assert pending.meta.meta_reviewed is False
+    assert pending.meta.prior_works_reviewed is False
+
+
 def test_legacy_manifest_with_reviewed_true_implicitly_migrates_sub_flags(tmp_path: Path) -> None:
     settings = _settings(tmp_path)
     _write_demo_artifact(settings.resolved_artifacts_dir())

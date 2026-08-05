@@ -1,6 +1,6 @@
 # Paper-Wiki 技术方案 v1.5
 
-> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-07-14 | 状态：持续维护
+> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-08-02 | 状态：持续维护
 
 ---
 
@@ -14,8 +14,8 @@
 | Layer 1 | 已实现 | `assets/` 包、`PaperAssetsBuilder`、`AssetsReader`、`PaperAssetsBundle` canonical input、最小 assets contract、`paper-wiki assets <slug...>`、`IngestPipeline` 先构建/复用 assets 再按独立 step 生成 `summary.md`、`prior_works.json`、`sci_pattern.json`，并在 summary 新生成后追加 JSON 语义产物派生的范式/前作综合补充；`SummaryGenerator`、`PriorWorksGenerator`、`PatternGenerator`、Pydantic 校验、prompt 切换、单篇/多篇 `paper-wiki ingest`、`--only` 单语义产物重跑、raw 扫描式 `paper-wiki ingest-all`，并将主论文元信息和 review 状态统一保存在 `manifest.json` 的 `paper` 字段 | 正式 review 命令 |
 | 发现层 | 已实现 | `discovery/` 包、`paper-wiki search`、`paper-wiki fetch`、`paper-wiki recommend run`、arXiv export API 检索、按 arXiv ID 下载源码/PDF 到 `raw/{slug}/`、RSS 优先且 export API submittedDate fallback 的每日候选池（`normalize_arxiv_id` 已剥离 RSS `oai:arXiv.org:` 前缀）、Zotero 语料、sentence-transformers 重排序、`.recommendations/{date}.json` / `latest.json` 快照、Web 接入（`/api/recommendations/*`、`/api/search`、`/api/papers/fetch`） | 多源检索、本地 reviewed 论文语料源 |
 | Layer 2 | 部分实现 | `graph/` 包、reviewed artifacts 读取、Paper 节点与 typed prior-work 关系建模、`graph_state/` 快照、`graph_updates.jsonl` 事件日志、`paper-wiki graph plan/apply`、Neo4j 幂等入库；详见 [Neo4j 科学发现图谱需求与技术方案](./Neo4j%20科学发现图谱需求与技术方案.md) | `wiki/` 包、全局目录、概念页、日志、更多图谱查询 |
-| 发布扩展 | 已实现 | `publishing/` 包、`paper-wiki publish wechat`、artifact HTML 定位、HTML 基础校验、本地图片上传替换、微信公众号草稿创建 | 自动群发/发布、发布记录归档、完整微信 HTML 兼容性 lint |
-| Web 原型 | 已实现 | `web/` FastAPI 入口层、`PaperRepository` 文件系统状态读写、manifest 乐观锁、内存 `JobManager`（`JobRecord.result` 携带任务返回值）、`recommendations`/`search` router、`papers` router 上的 `fetch`/`batch-ingest`、`paper-wiki web`、`web/frontend` Vite React 原型（`TodayFeed`/`SearchAndAdd`/`Dashboard`/`PaperDetail`）、Web API/前端测试 | 上传入口、图谱可视化、多平台发布、鉴权、持久化任务队列 |
+| 发布扩展 | 已实现 | `publishing/` 包、`paper-wiki publish wechat`、artifact HTML 定位、图片上传替换、草稿创建；确定性 Markdown→摸鱼绿公众号 HTML 渲染器，输出保存在 `artifacts/.publishing/` 并通过 Web 预览/后台发布 | 自动群发、多平台发布、发布统计 |
+| Web 原型 | 已实现 | FastAPI + React 工作站；推荐/检索、论文审查、Paper 管理（筛选/批量审查）、Markdown 公众号发布；`JobManager` 使用线程池并将任务落盘到 `artifacts/.jobs/`，`GET /api/jobs` 支持恢复与历史查询，前端批量暂存写入 localStorage | 图谱管理、论文删除/回收站、失败任务一键重试、鉴权、可跨进程恢复执行的队列 |
 | Layer 3 | 未实现 | 无 | `retrieval/` 包、向量库、GraphRAG、FastAPI API |
 | 测试 | 部分实现 | parser、assets builder、models、mock LLM pipeline、CLI 多 slug ingest/assets、raw 待处理发现、discovery 单元/集成测试（含 RSS `oai:` id 归一化回归测试）、Web discovery 路由单元测试、graph planner 增量事件、微信公众号发布 mock 测试；当前 `pytest` 66 passed | graph/retrieval/api/e2e 测试、真实微信 API smoke test |
 
@@ -770,6 +770,16 @@ sequenceDiagram
 - `ingest` 和 `review` 是两个独立命令，强制分离"生成"与"入库"
 - Pipeline 支持 `--only summary|prior_works|sci_pattern` flag，可单独重跑某一步
 - review 阶段只接收 `manifest.paper.reviewed=true` 的 artifact，并触发 Wiki / Graph / Index 更新
+
+---
+
+### 5.4.1 Web 管理、Markdown 发布与任务生命周期（已实现）
+
+- `web/services/job_manager.py` 仍用进程内线程池执行同步生成任务，但每次状态变化会原子写入 `artifacts/.jobs/{job_id}.json`。`GET /api/jobs` 支持按 `slug`、`target`、`status` 查询，供管理页展示历史和页面恢复轮询。
+- 页面切换或浏览器刷新不会取消 worker。批量候选、状态和 job 映射保存在 `localStorage`；推荐刷新从任务列表找回。服务进程退出后不恢复执行，启动时把遗留 `pending/running` 标记为失败并保留原因。
+- `POST /api/papers/batch-review` 同时设置 `meta_reviewed` 与 `prior_works_reviewed`；管理页以表格方式提供关键词、reviewed、primary pattern 过滤、多选和批量审查。删除、图谱纠错和失败任务重试仍未实现。
+- `/api/publishing/markdown/*` 把 UTF-8 Markdown、可选正文图片/封面保存到 `artifacts/.publishing/{document_id}/`。`publishing/markdown_renderer.py` 确定性输出摸鱼绿主题正文片段，只使用内联样式和 `span leaf`，不包含脚本、外链 CSS 或文档外壳；草稿发布复用现有图片替换和 WeChat client，并作为后台 job 执行。
+- 今日推荐卡片使用固定两列布局：文本占剩余宽度，缩略图始终位于整个卡片的右侧。
 
 ---
 

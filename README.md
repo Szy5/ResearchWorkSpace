@@ -15,9 +15,9 @@ Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `raw/` 下
 | Layer 0 | LaTeX 解析、章节抽取、图表路径保留                                                 | ✅           |
 | Layer 1 | deterministic assets +`summary.md` / `prior_works.json` / `sci_pattern.json` | ✅           |
 | 发现层  | Paper2Search / Paper2Recommend：arXiv 检索、按 ID 拉取、Zotero 口味推荐            | ✅ CLI + Web |
-| Layer 2 | Neo4j 科学发现图谱增量入库（Paper / Author / Pattern 三种节点）                   | ✅           |
-| 发布    | `artifacts/{slug}/` HTML 发布到微信公众号草稿                                    | ✅           |
-| Web v1  | FastAPI 后端 + Vite React 工作站：今日推荐/检索添加/审查发布                       | ✅ 原型实现  |
+| Layer 2 | Neo4j 科学发现图谱增量入库（Paper / Author / Pattern 三种节点）                    | ✅           |
+| 发布    | Paper HTML 或页面上传的 Markdown 转公众号 HTML，并创建微信公众号草稿               | ✅           |
+| Web v1  | FastAPI + React 工作站：推荐/检索/审查/管理/Markdown 发布/持久任务                   | ✅           |
 | Layer 3 | 向量检索、图谱查询、HTTP API                                                       | 🚧 规划中    |
 
 **设计灵感：** [LLM Wiki](docs/llm_wiki.md) · [Sci-Reasoning](https://github.com/AmberLJC/Sci-Reasoning)
@@ -139,12 +139,12 @@ RECOMMEND_EMBEDDING_MODEL=avsolatorio/GIST-small-Embedding-v0
 
 不落盘，只打印候选列表，用于决定要不要 `fetch`。
 
-| 参数                     | 类型 | 必填 | 默认值                    | 说明                        |
-| ------------------------ | ---- | ---- | ------------------------- | --------------------------- |
-| `query`（位置参数）    | str  | 是   | -                          | arXiv 关键词检索查询        |
-| `--start-year`         | int  | 否   | `2020`                   | 起始年份                    |
-| `--end-year`           | int  | 否   | `2026`                   | 结束年份                    |
-| `--max-results`, `-n` | int  | 否   | 读取 `SEARCH_MAX_RESULTS` | 最大返回条数                |
+| 参数                      | 类型 | 必填 | 默认值                     | 说明                      |
+| ------------------------- | ---- | ---- | -------------------------- | ------------------------- |
+| `query`（位置参数）     | str  | 是   | -                          | arXiv 关键词检索查询      |
+| `--start-year`          | int  | 否   | `2020`                   | 起始年份                  |
+| `--end-year`            | int  | 否   | `2026`                   | 结束年份                  |
+| `--max-results`, `-n` | int  | 否   | 读取`SEARCH_MAX_RESULTS` | 最大返回条数              |
 | `--verbose`, `-v`     | flag | 否   | `False`                  | 输出 DEBUG 日志和异常堆栈 |
 
 ```bash
@@ -155,12 +155,12 @@ paper-wiki search "graph neural network" --start-year 2024 --end-year 2026 -n 10
 
 按 arXiv ID 下载 LaTeX 源码和 PDF 到 `raw/{slug}/`，`slug` 由 arXiv ID 自动推出。
 
-| 参数                    | 类型 | 必填 | 默认值    | 说明                                    |
-| ----------------------- | ---- | ---- | ---------- | ---------------------------------------- |
-| `arxiv_id`（位置参数） | str  | 是   | -          | 例如`2401.12345`                       |
-| `--and-ingest`        | flag | 否   | `False`   | 下载完成后立即运行 Layer 1 ingest        |
-| `--overwrite`, `-f`  | flag | 否   | `False`   | 允许覆盖已有`raw/{slug}/`              |
-| `--verbose`, `-v`    | flag | 否   | `False`   | 输出 DEBUG 日志和异常堆栈              |
+| 参数                     | 类型 | 必填 | 默认值    | 说明                              |
+| ------------------------ | ---- | ---- | --------- | --------------------------------- |
+| `arxiv_id`（位置参数） | str  | 是   | -         | 例如`2401.12345`                |
+| `--and-ingest`         | flag | 否   | `False` | 下载完成后立即运行 Layer 1 ingest |
+| `--overwrite`, `-f`  | flag | 否   | `False` | 允许覆盖已有`raw/{slug}/`       |
+| `--verbose`, `-v`    | flag | 否   | `False` | 输出 DEBUG 日志和异常堆栈         |
 
 ```bash
 paper-wiki fetch 2406.00552
@@ -171,11 +171,11 @@ paper-wiki fetch 2406.00552 --and-ingest --overwrite
 
 基于 Zotero 语料的阅读口味，从当日 arXiv 候选池里挑出 Top K，写入 `artifacts/.recommendations/{date}.json` 和 `latest.json`。
 
-| 参数              | 类型 | 必填 | 默认值               | 说明                              |
-| ----------------- | ---- | ---- | --------------------- | ---------------------------------- |
-| `--max-papers`, `-n` | int  | 否   | 读取 `MAX_PAPER_NUM` | 推荐 Top K 数量                    |
-| `--arxiv-query`  | str  | 否   | 读取 `ARXIV_QUERY`   | 覆盖候选池查询                    |
-| `--verbose`, `-v` | flag | 否   | `False`              | 输出 DEBUG 日志和异常堆栈        |
+| 参数                     | 类型 | 必填 | 默认值                | 说明                      |
+| ------------------------ | ---- | ---- | --------------------- | ------------------------- |
+| `--max-papers`, `-n` | int  | 否   | 读取`MAX_PAPER_NUM` | 推荐 Top K 数量           |
+| `--arxiv-query`        | str  | 否   | 读取`ARXIV_QUERY`   | 覆盖候选池查询            |
+| `--verbose`, `-v`    | flag | 否   | `False`             | 输出 DEBUG 日志和异常堆栈 |
 
 ```bash
 paper-wiki recommend run --max-papers 15
@@ -185,10 +185,10 @@ paper-wiki recommend run --max-papers 15
 
 只解析 `raw/{slug}` 的 LaTeX 并打印摘要，方便在生成产物前确认主文件识别、章节命中和 token 规模是否正常。
 
-| 参数                  | 类型 | 必填 | 默认值  | 说明                       |
-| --------------------- | ---- | ---- | -------- | --------------------------- |
-| `slug`（位置参数）  | str  | 是   | -        | `raw/{slug}` 目录名       |
-| `--verbose`, `-v`   | flag | 否   | `False` | 输出 DEBUG 级别日志       |
+| 参数                  | 类型 | 必填 | 默认值    | 说明                  |
+| --------------------- | ---- | ---- | --------- | --------------------- |
+| `slug`（位置参数）  | str  | 是   | -         | `raw/{slug}` 目录名 |
+| `--verbose`, `-v` | flag | 否   | `False` | 输出 DEBUG 级别日志   |
 
 ```bash
 paper-wiki parse GraphWalker
@@ -201,11 +201,11 @@ paper-wiki parse GraphWalker --verbose
 
 只构建 `artifacts/{slug}/manifest.json` 和 `assets/` 下的通用论文资产（`paper.md`/`sections.json`/`figures/`/`references.json`），不调用 LLM。
 
-| 参数                    | 类型      | 必填 | 默认值  | 说明                        |
-| ----------------------- | --------- | ---- | -------- | ---------------------------- |
-| `slugs`（位置参数）   | list[str] | 是   | -        | 一个或多个`raw/{slug}` 目录名 |
-| `--overwrite`, `-f`  | flag      | 否   | `False` | 允许覆盖已有 assets        |
-| `--verbose`, `-v`    | flag      | 否   | `False` | 输出 DEBUG 日志和异常堆栈 |
+| 参数                    | 类型      | 必填 | 默认值    | 说明                            |
+| ----------------------- | --------- | ---- | --------- | ------------------------------- |
+| `slugs`（位置参数）   | list[str] | 是   | -         | 一个或多个`raw/{slug}` 目录名 |
+| `--overwrite`, `-f` | flag      | 否   | `False` | 允许覆盖已有 assets             |
+| `--verbose`, `-v`   | flag      | 否   | `False` | 输出 DEBUG 日志和异常堆栈       |
 
 ```bash
 paper-wiki assets GraphWalker
@@ -216,15 +216,15 @@ paper-wiki assets GraphWalker 2508.00719 --overwrite
 
 在 assets 基础上调用 LLM，生成 `summary.md`、`prior_works.json`、`sci_pattern.json` 三个独立产物。会先构建或复用 assets，三者共享同一份 assets 输入但可以独立生成或重跑。
 
-| 参数                        | 类型      | 必填 | 默认值                                  | 说明                                                                                       |
-| --------------------------- | --------- | ---- | ---------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `slugs`（位置参数）       | list[str] | 是   | -                                        | 一个或多个`raw/{slug}` 目录名                                                              |
-| `--overwrite`, `-f`      | flag      | 否   | `False`                                 | 允许覆盖所选 Layer 1 语义产物                                                              |
-| `--verbose`, `-v`        | flag      | 否   | `False`                                 | 输出 DEBUG 日志和异常堆栈                                                                 |
-| `--only`                 | list[str] | 否   | 不传=全部三个                           | 只生成指定产物，可重复传入：`summary`/`prior_works`/`sci_pattern`（也接受 `prior-works`/`pattern`） |
-| `--summary-prompt`       | str       | 否   | `paper_summary_v3.py`                  | 摘要 prompt 文件；可传`prompts/` 下相对路径或绝对路径                                     |
-| `--prior-works-prompt`   | str       | 否   | `prior_work_prompt.py`                 | 前作谱系 prompt 文件                                                                      |
-| `--sci-pattern-prompt`   | str       | 否   | `sci_pattern_classify_prompt.py`       | 科学范式 prompt 文件                                                                      |
+| 参数                     | 类型      | 必填 | 默认值                             | 说明                                                                                                          |
+| ------------------------ | --------- | ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `slugs`（位置参数）    | list[str] | 是   | -                                  | 一个或多个`raw/{slug}` 目录名                                                                               |
+| `--overwrite`, `-f`  | flag      | 否   | `False`                          | 允许覆盖所选 Layer 1 语义产物                                                                                 |
+| `--verbose`, `-v`    | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                                                                                     |
+| `--only`               | list[str] | 否   | 不传=全部三个                      | 只生成指定产物，可重复传入：`summary`/`prior_works`/`sci_pattern`（也接受 `prior-works`/`pattern`） |
+| `--summary-prompt`     | str       | 否   | `paper_summary_v3.py`            | 摘要 prompt 文件；可传`prompts/` 下相对路径或绝对路径                                                       |
+| `--prior-works-prompt` | str       | 否   | `prior_work_prompt.py`           | 前作谱系 prompt 文件                                                                                          |
+| `--sci-pattern-prompt` | str       | 否   | `sci_pattern_classify_prompt.py` | 科学范式 prompt 文件                                                                                          |
 
 ```bash
 paper-wiki ingest GraphWalker --overwrite
@@ -242,14 +242,14 @@ paper-wiki ingest GraphWalker --overwrite \
 
 扫描 `raw/` 下所有论文目录，只为缺少所选产物的论文生成（不重复调用 LLM），加 `--overwrite` 才会重跑全部。
 
-| 参数                      | 类型      | 必填 | 默认值                            | 说明                                                                        |
-| -------------------------- | --------- | ---- | ---------------------------------- | ----------------------------------------------------------------------------- |
-| `--overwrite`, `-f`      | flag      | 否   | `False`                          | 重跑`raw/` 下所有论文；默认只处理缺产物的论文                              |
-| `--verbose`, `-v`        | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                                                 |
-| `--only`                 | list[str] | 否   | 不传=全部三个                     | 同`ingest` 的 `--only`                                                     |
-| `--summary-prompt`       | str       | 否   | `paper_summary_v3.py`            | 同`ingest`                                                                 |
-| `--prior-works-prompt`   | str       | 否   | `prior_work_prompt.py`           | 同`ingest`                                                                 |
-| `--sci-pattern-prompt`   | str       | 否   | `sci_pattern_classify_prompt.py` | 同`ingest`                                                                 |
+| 参数                     | 类型      | 必填 | 默认值                             | 说明                                            |
+| ------------------------ | --------- | ---- | ---------------------------------- | ----------------------------------------------- |
+| `--overwrite`, `-f`  | flag      | 否   | `False`                          | 重跑`raw/` 下所有论文；默认只处理缺产物的论文 |
+| `--verbose`, `-v`    | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                       |
+| `--only`               | list[str] | 否   | 不传=全部三个                      | 同`ingest` 的 `--only`                      |
+| `--summary-prompt`     | str       | 否   | `paper_summary_v3.py`            | 同`ingest`                                    |
+| `--prior-works-prompt` | str       | 否   | `prior_work_prompt.py`           | 同`ingest`                                    |
+| `--sci-pattern-prompt` | str       | 否   | `sci_pattern_classify_prompt.py` | 同`ingest`                                    |
 
 ```bash
 paper-wiki ingest-all
@@ -270,12 +270,12 @@ paper-wiki ingest-all --overwrite --only summary
 
 只读取 `meta_reviewed && prior_works_reviewed` 均为 `true` 的 `artifacts/{slug}/`，把 Paper / Author / Pattern 节点和三类关系（前作关系、`AUTHORED`、`CLASSIFIED_AS`）与本地快照 `graph_state/` 做 diff，追加幂等事件到 `graph_updates/graph_updates.jsonl`。**不连接 Neo4j**，可以反复跑做 dry-run。
 
-| 参数                      | 类型            | 必填              | 默认值    | 说明                                                                 |
-| -------------------------- | --------------- | ------------------ | ---------- | ---------------------------------------------------------------------- |
-| `slugs`（位置参数）      | list[str] \| 空 | 与`--all` 二选一 | -          | 一个或多个`artifacts/{slug}` 目录名                                  |
-| `--all`                  | flag            | 否                | `False`   | 扫描`artifacts/` 下所有已审查完成的论文并全部 plan，不需要手动列 slug |
-| `--include-unreviewed`   | flag            | 否                | `False`   | 允许为未审查完成的 artifact 也生成图谱事件（调试用）                |
-| `--verbose`, `-v`      | flag            | 否                | `False`   | 输出 DEBUG 日志和异常堆栈                                          |
+| 参数                     | 类型           | 必填               | 默认值    | 说明                                                                    |
+| ------------------------ | -------------- | ------------------ | --------- | ----------------------------------------------------------------------- |
+| `slugs`（位置参数）    | list[str]\| 空 | 与`--all` 二选一 | -         | 一个或多个`artifacts/{slug}` 目录名                                   |
+| `--all`                | flag           | 否                 | `False` | 扫描`artifacts/` 下所有已审查完成的论文并全部 plan，不需要手动列 slug |
+| `--include-unreviewed` | flag           | 否                 | `False` | 允许为未审查完成的 artifact 也生成图谱事件（调试用）                    |
+| `--verbose`, `-v`    | flag           | 否                 | `False` | 输出 DEBUG 日志和异常堆栈                                               |
 
 ```bash
 paper-wiki graph plan 2307.07697
@@ -287,10 +287,10 @@ paper-wiki graph plan --all
 
 读取 `graph_updates/graph_updates.jsonl` 中未应用的事件（按 `checkpoint.json` 记录的位置），幂等 `MERGE` 进 Neo4j，写完更新 checkpoint。
 
-| 参数                                        | 类型 | 必填 | 默认值   | 说明                                                                |
-| -------------------------------------------- | ---- | ---- | --------- | --------------------------------------------------------------------- |
-| `--since-checkpoint` / `--from-start`   | flag | 否   | `since-checkpoint` | 默认只应用 checkpoint 之后的新事件；`--from-start` 从第一行重新应用全部事件 |
-| `--verbose`, `-v`                        | flag | 否   | `False`  | 输出 DEBUG 日志和异常堆栈                                          |
+| 参数                                      | 类型 | 必填 | 默认值               | 说明                                                                          |
+| ----------------------------------------- | ---- | ---- | -------------------- | ----------------------------------------------------------------------------- |
+| `--since-checkpoint` / `--from-start` | flag | 否   | `since-checkpoint` | 默认只应用 checkpoint 之后的新事件；`--from-start` 从第一行重新应用全部事件 |
+| `--verbose`, `-v`                     | flag | 否   | `False`            | 输出 DEBUG 日志和异常堆栈                                                     |
 
 ```bash
 paper-wiki graph apply
@@ -305,11 +305,11 @@ paper-wiki graph apply --from-start   # 全量重放，配合 clear_graph() 做�
 
 调用本机 Cursor 无头模式，把 `artifacts/{slug}/summary.md` 排版成公众号 HTML。
 
-| 参数                  | 类型 | 必填 | 默认值                     | 说明                        |
-| --------------------- | ---- | ---- | --------------------------- | ---------------------------- |
+| 参数                  | 类型 | 必填 | 默认值                      | 说明                        |
+| --------------------- | ---- | ---- | --------------------------- | --------------------------- |
 | `slug`（位置参数）  | str  | 是   | -                           | `artifacts/{slug}` 目录名 |
-| `--theme`           | str  | 否   | 读取 `CURSOR_RENDER_THEME` | 排版主题                    |
-| `--verbose`, `-v` | flag | 否   | `False`                    | 输出 DEBUG 日志和异常堆栈 |
+| `--theme`           | str  | 否   | 读取`CURSOR_RENDER_THEME` | 排版主题                    |
+| `--verbose`, `-v` | flag | 否   | `False`                   | 输出 DEBUG 日志和异常堆栈   |
 
 ```bash
 paper-wiki publish render-html GraphWalker
@@ -319,17 +319,17 @@ paper-wiki publish render-html GraphWalker
 
 读取 `artifacts/{slug}/` 下已有的 HTML 文件，上传正文中的本地图片并替换为微信图片 URL，创建公众号图文草稿。**不会**触发 ingest、graph plan 或覆盖原始 HTML。
 
-| 参数                   | 类型 | 必填 | 默认值                  | 说明                                                                |
-| ---------------------- | ---- | ---- | ------------------------ | ---------------------------------------------------------------------- |
-| `slug`（位置参数）   | str  | 是   | -                        | `artifacts/{slug}` 目录名                                          |
-| `--html`             | str  | 是   | -                        | `artifacts/{slug}/` 下要发布的 HTML 文件名或相对路径              |
-| `--title`            | str  | 否   | 使用 HTML 文件名        | 微信草稿标题                                                       |
-| `--author`           | str  | 否   | 读取 `WECHAT_AUTHOR`     | 作者                                                               |
-| `--digest`           | str  | 否   | 无                       | 图文摘要                                                           |
-| `--cover`            | Path | 否   | 读取 `WECHAT_COVER_PATH` | 封面图路径；可传 artifact 内相对路径或项目根相对路径              |
-| `--thumb-media-id`   | str  | 否   | 读取 `WECHAT_THUMB_MEDIA_ID` | 已上传封面永久素材 ID，传了就跳过封面上传                       |
-| `--save-rendered`    | flag | 否   | `False`                 | 把图片 URL 替换后的 HTML 另存为 `{原文件名}_wechat_rendered.html` |
-| `--verbose`, `-v`  | flag | 否   | `False`                 | 输出 DEBUG 日志和异常堆栈                                         |
+| 参数                  | 类型 | 必填 | 默认值                        | 说明                                                               |
+| --------------------- | ---- | ---- | ----------------------------- | ------------------------------------------------------------------ |
+| `slug`（位置参数）  | str  | 是   | -                             | `artifacts/{slug}` 目录名                                        |
+| `--html`            | str  | 是   | -                             | `artifacts/{slug}/` 下要发布的 HTML 文件名或相对路径             |
+| `--title`           | str  | 否   | 使用 HTML 文件名              | 微信草稿标题                                                       |
+| `--author`          | str  | 否   | 读取`WECHAT_AUTHOR`         | 作者                                                               |
+| `--digest`          | str  | 否   | 无                            | 图文摘要                                                           |
+| `--cover`           | Path | 否   | 读取`WECHAT_COVER_PATH`     | 封面图路径；可传 artifact 内相对路径或项目根相对路径               |
+| `--thumb-media-id`  | str  | 否   | 读取`WECHAT_THUMB_MEDIA_ID` | 已上传封面永久素材 ID，传了就跳过封面上传                          |
+| `--save-rendered`   | flag | 否   | `False`                     | 把图片 URL 替换后的 HTML 另存为`{原文件名}_wechat_rendered.html` |
+| `--verbose`, `-v` | flag | 否   | `False`                     | 输出 DEBUG 日志和异常堆栈                                          |
 
 ```bash
 paper-wiki publish wechat GraphWalker \
@@ -347,12 +347,12 @@ paper-wiki publish wechat GraphWalker \
 
 后端读取同一份 `artifacts/` 状态，不引入额外数据库。
 
-| 参数                | 类型 | 必填 | 默认值        | 说明                    |
-| ------------------- | ---- | ---- | -------------- | ------------------------- |
-| `--host`          | str  | 否   | `127.0.0.1`   | 监听地址                |
-| `--port`          | int  | 否   | `8000`        | 监听端口                |
-| `--reload`        | flag | 否   | `False`       | 开发模式自动重载        |
-| `--verbose`, `-v` | flag | 否   | `False`       | 输出 DEBUG 级别日志    |
+| 参数                  | 类型 | 必填 | 默认值        | 说明                |
+| --------------------- | ---- | ---- | ------------- | ------------------- |
+| `--host`            | str  | 否   | `127.0.0.1` | 监听地址            |
+| `--port`            | int  | 否   | `8000`      | 监听端口            |
+| `--reload`          | flag | 否   | `False`     | 开发模式自动重载    |
+| `--verbose`, `-v` | flag | 否   | `False`     | 输出 DEBUG 级别日志 |
 
 ```bash
 paper-wiki web --host 127.0.0.1 --port 8000 --reload
@@ -366,7 +366,11 @@ npm install
 npm run dev
 ```
 
-浏览器打开 Vite 输出的本地地址，默认把 `/api` 代理到 `http://127.0.0.1:8000`。首页是 `TodayFeed`（今日推荐，读 `.recommendations/latest.json`，支持勾选批量生成），顶部导航另有"检索 / 添加"（`SearchAndAdd`，关键词检索或按 arXiv ID 拉取）、"全部论文"与"待审查 (N)"。批量生成、检索、按 ID 拉取分别对应 `POST /api/papers/batch-ingest`、`GET /api/search`、`POST /api/papers/fetch`，均为异步 job，前端轮询 `GET /api/jobs/{job_id}` 直到 `succeeded`/`failed`。
+浏览器打开 Vite 输出的本地地址，默认把 `/api` 代理到 `http://127.0.0.1:8000`。首页展示今日推荐和检索入口；"全部论文/待审查"用于单篇审查，"管理"提供论文表格筛选、批量审查和任务历史，"公众号发布"支持上传 UTF-8 Markdown、可选正文图片/封面、预览摸鱼绿主题 HTML，并提交微信公众号草稿。
+
+推荐刷新、批量 ingest 和 Markdown 发布都由后台 job 执行。任务状态按 job 独立落盘到 `artifacts/.jobs/{job_id}.json`，前端暂存区同时保存在浏览器 `localStorage`；切换页面或刷新浏览器后会从 `GET /api/jobs` 找回并继续展示进度。页面离开不会取消服务端任务；如果服务进程本身在任务完成前退出，重启后该任务会被标记失败并提示重新提交。
+
+Markdown 发布中间产物保存在 `artifacts/.publishing/{document_id}/`，包括 `source.md`、`article.html`、可选图片与 `meta.json`。生成的 HTML 仅使用公众号兼容的正文片段和内联样式；上传微信前仍会复用现有本地图片上传替换、封面素材和草稿创建逻辑。
 
 ---
 
@@ -513,8 +517,13 @@ conda 使用 `conda-forge` 渠道；pip 可加 `-i https://pypi.org/simple` 使�
 - [X] Web 原型 v1：论文列表、审查编辑、异步 ingest、微信发布入口
 - [X] Paper2Search / Paper2Recommend：arXiv 检索、按 ID 拉取、Zotero 口味每日推荐（CLI）
 - [X] Web 接入发现层：今日推荐 `TodayFeed`、检索/添加 `SearchAndAdd`、批量生成汇入待审查队列
+- [X] Markdown 上传、公众号 HTML 预览与后台草稿发布
+- [X] Paper 管理页：组合筛选、批量审查、后台任务历史
+- [X] 推荐/批量生成任务离页继续执行、任务落盘与页面恢复
 - [X] Layer 2 Neo4j 科学发现图谱增量入库：Paper / Author / Pattern 三种节点，`graph plan --all` 批量入库
-- [ ] Layer 2 Wiki 页面生成
+
+
+
 - [ ] Layer 3 向量检索与 API
 
 ---
@@ -522,7 +531,7 @@ conda 使用 `conda-forge` 渠道；pip 可加 `-i https://pypi.org/simple` 使�
 ## 相关链接
 
 - 仓库：[github.com/Szy5/ResearchWorkSpace](https://github.com/Szy5/ResearchWorkSpace)
-- 需求文档：[docs/项目-需求文档.md](<docs/项目-需求文档.md>)
+- 需求文档：[docs/项目-需求文档.md](docs/项目-需求文档.md)
 - 技术方案：[docs/Paper-Wiki 技术方案_v1.md](<docs/Paper-Wiki%20技术方案_v1.md>)
 - Layer 2 图谱方案：[docs/Neo4j 科学发现图谱需求与技术方案.md](<docs/Neo4j%20科学发现图谱需求与技术方案.md>)
 

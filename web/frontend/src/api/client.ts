@@ -113,6 +113,16 @@ export type PublishWeChatPayload = {
   save_rendered?: boolean
 }
 
+export type MarkdownDocument = {
+  document_id: string
+  filename: string
+  title: string
+  created_at: string
+  html_path: string
+  cover_path: string | null
+  html?: string | null
+}
+
 type RequestOptions = {
   method?: string
   body?: unknown
@@ -194,6 +204,23 @@ export function getJob(jobId: string) {
   return request<JobResponse>(`/api/jobs/${encodeURIComponent(jobId)}`)
 }
 
+export function listJobs(params: { slug?: string; target?: string; status?: string; limit?: number } = {}) {
+  const search = new URLSearchParams()
+  if (params.slug) search.set('slug', params.slug)
+  if (params.target) search.set('target', params.target)
+  if (params.status) search.set('status', params.status)
+  if (params.limit) search.set('limit', String(params.limit))
+  const suffix = search.toString() ? `?${search.toString()}` : ''
+  return request<JobResponse[]>(`/api/jobs${suffix}`)
+}
+
+export function batchReview(slugs: string[], reviewed: boolean) {
+  return request<PaperDetail[]>('/api/papers/batch-review', {
+    method: 'POST',
+    body: { slugs, reviewed }
+  })
+}
+
 export function publishWeChat(slug: string, payload: PublishWeChatPayload) {
   return request(`/api/papers/${encodeURIComponent(slug)}/publish/wechat`, {
     method: 'POST',
@@ -240,12 +267,51 @@ export function batchIngest(items: BatchIngestItem[], overwrite = false) {
   })
 }
 
+export async function renderMarkdownDocument(input: {
+  file: File
+  images?: File[]
+  cover?: File | null
+  theme?: string
+}) {
+  const form = new FormData()
+  form.append('file', input.file)
+  for (const image of input.images ?? []) form.append('images', image)
+  if (input.cover) form.append('cover', input.cover)
+  form.append('theme', input.theme ?? '摸鱼绿')
+  const response = await fetch('/api/publishing/markdown/render', { method: 'POST', body: form })
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({ detail: response.statusText }))
+    throw new Error(payload.detail ?? response.statusText)
+  }
+  return response.json() as Promise<MarkdownDocument>
+}
+
+export function listMarkdownDocuments() {
+  return request<MarkdownDocument[]>('/api/publishing/markdown')
+}
+
+export function getMarkdownDocument(documentId: string) {
+  return request<MarkdownDocument>(`/api/publishing/markdown/${encodeURIComponent(documentId)}`)
+}
+
+export function publishMarkdownDocument(
+  documentId: string,
+  payload: { title?: string; author?: string; digest?: string; thumb_media_id?: string }
+) {
+  return request<JobResponse>(`/api/publishing/markdown/${encodeURIComponent(documentId)}/publish`, {
+    method: 'POST',
+    body: payload
+  })
+}
+
 /** Poll a job until it reaches a terminal state, calling onUpdate on every tick. */
 export function pollJob(jobId: string, onUpdate?: (job: JobResponse) => void, intervalMs = 900): Promise<JobResponse> {
   return new Promise((resolve, reject) => {
+    let failures = 0
     const timer = window.setInterval(() => {
       getJob(jobId)
         .then((job) => {
+          failures = 0
           onUpdate?.(job)
           if (job.status === 'succeeded' || job.status === 'failed') {
             window.clearInterval(timer)
@@ -253,8 +319,11 @@ export function pollJob(jobId: string, onUpdate?: (job: JobResponse) => void, in
           }
         })
         .catch((err) => {
-          window.clearInterval(timer)
-          reject(err instanceof Error ? err : new Error(String(err)))
+          failures += 1
+          if (failures >= 5) {
+            window.clearInterval(timer)
+            reject(err instanceof Error ? err : new Error(String(err)))
+          }
         })
     }, intervalMs)
   })

@@ -3,7 +3,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
+import json
 import logging
+from pathlib import Path
 import threading
 from threading import Lock
 from typing import Any
@@ -54,12 +56,16 @@ class JobNotFoundError(Exception):
 
 
 class JobManager:
-    """In-memory v1 job queue backed by a thread pool."""
+    """Thread-pool job queue with lightweight filesystem-backed history."""
 
-    def __init__(self, *, max_workers: int = 2) -> None:
+    def __init__(self, *, max_workers: int = 2, storage_dir: Path | None = None) -> None:
         self._executor = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="paper-wiki-job")
         self._jobs: dict[str, JobRecord] = {}
         self._lock = Lock()
+        self._storage_dir = storage_dir
+        if self._storage_dir is not None:
+            self._storage_dir.mkdir(parents=True, exist_ok=True)
+            self._load_history()
         # Progress capture needs INFO-level business logs to propagate; make sure
         # the paper_wiki namespace allows that even if configure_logging() (which
         # only runs via the `paper-wiki web` CLI entrypoint) never ran in this
@@ -77,6 +83,7 @@ class JobManager:
         )
         with self._lock:
             self._jobs[job.job_id] = job
+            self._persist_locked(job)
         self._executor.submit(self._run, job.job_id, task)
         return self.get(job.job_id)
 
@@ -86,6 +93,25 @@ class JobManager:
             if job is None:
                 raise JobNotFoundError(f"unknown job id: {job_id}")
             return job.model_copy(deep=True)
+
+    def list(
+        self,
+        *,
+        slug: str | None = None,
+        target: str | None = None,
+        status: str | None = None,
+        limit: int = 100,
+    ) -> list[JobRecord]:
+        with self._lock:
+            jobs = [job.model_copy(deep=True) for job in self._jobs.values()]
+        if slug is not None:
+            jobs = [job for job in jobs if job.slug == slug]
+        if target is not None:
+            jobs = [job for job in jobs if job.target == target]
+        if status is not None:
+            jobs = [job for job in jobs if job.status == status]
+        jobs.sort(key=lambda job: job.created_at, reverse=True)
+        return jobs[: max(1, min(limit, 500))]
 
     def shutdown(self) -> None:
         self._executor.shutdown(wait=False, cancel_futures=False)
@@ -111,7 +137,39 @@ class JobManager:
     def _update(self, job_id: str, **changes: Any) -> None:
         with self._lock:
             job = self._jobs[job_id]
-            self._jobs[job_id] = job.model_copy(update=changes)
+            updated = job.model_copy(update=changes)
+            self._jobs[job_id] = updated
+            self._persist_locked(updated)
+
+    def _load_history(self) -> None:
+        assert self._storage_dir is not None
+        for path in sorted(self._storage_dir.glob("*.json")):
+            try:
+                job = JobRecord.model_validate_json(path.read_text(encoding="utf-8"))
+            except Exception as exc:
+                logging.getLogger(__name__).warning("跳过不可读取的任务记录：%s, error=%s", path, exc)
+                continue
+            if job.status in {"pending", "running"}:
+                job = job.model_copy(
+                    update={
+                        "status": "failed",
+                        "finished_at": self._now(),
+                        "error": "服务进程在任务完成前退出，请重新提交任务。",
+                    }
+                )
+                self._persist_locked(job)
+            self._jobs[job.job_id] = job
+
+    def _persist_locked(self, job: JobRecord) -> None:
+        if self._storage_dir is None:
+            return
+        path = self._storage_dir / f"{job.job_id}.json"
+        tmp_path = path.with_suffix(".json.tmp")
+        tmp_path.write_text(
+            json.dumps(job.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        tmp_path.replace(path)
 
     def _now(self) -> str:
         return datetime.now(timezone.utc).isoformat()

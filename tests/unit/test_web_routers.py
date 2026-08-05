@@ -152,3 +152,61 @@ def test_web_routes_serve_artifact_files(tmp_path: Path) -> None:
     assert fallback.status_code == 200
     assert fallback.content == b"demo-image"
     assert traversal.status_code in {400, 404}
+
+
+def test_web_routes_batch_review(tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+    _write_demo_artifact(settings.resolved_artifacts_dir())
+
+    with TestClient(create_app(settings=settings)) as client:
+        response = client.post(
+            "/api/papers/batch-review",
+            json={"slugs": ["demo-paper"], "reviewed": True},
+        )
+
+    assert response.status_code == 200
+    assert response.json()[0]["meta"]["reviewed"] is True
+
+
+def test_markdown_upload_render_and_background_publish(monkeypatch, tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+
+    def fake_publish(settings: Settings, options, *, client=None) -> WeChatDraftResult:
+        return WeChatDraftResult(
+            slug=options.slug,
+            title=options.title or "Demo",
+            media_id="markdown-media-1",
+            html_path=settings.resolved_artifacts_dir() / options.slug / options.html_path,
+            thumb_media_id="thumb-1",
+            uploaded_image_count=0,
+        )
+
+    monkeypatch.setattr(
+        "paper_wiki.web.routers.markdown_publishing.publish_artifact_html_to_wechat",
+        fake_publish,
+    )
+
+    with TestClient(create_app(settings=settings)) as client:
+        rendered = client.post(
+            "/api/publishing/markdown/render",
+            files={"file": ("demo.md", b"# Demo\n\n## Part\n\nContent", "text/markdown")},
+            data={"theme": "摸鱼绿"},
+        )
+        assert rendered.status_code == 200
+        document = rendered.json()
+        assert document["title"] == "Demo"
+        assert "<section" in document["html"]
+
+        preview = client.get(f"/api/publishing/markdown/{document['document_id']}/preview")
+        assert preview.status_code == 200
+        assert "Demo" in preview.text
+
+        submitted = client.post(
+            f"/api/publishing/markdown/{document['document_id']}/publish",
+            json={"title": "Demo Draft", "thumb_media_id": "thumb-1"},
+        )
+        assert submitted.status_code == 202
+        job = _poll_job(client, submitted.json()["job_id"])
+
+    assert job["status"] == "succeeded"
+    assert job["result"]["media_id"] == "markdown-media-1"

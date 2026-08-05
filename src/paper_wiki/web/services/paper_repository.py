@@ -154,6 +154,33 @@ class PaperRepository:
 
         return self.get_paper(slug)
 
+    def set_reviewed(self, slugs: list[str], *, reviewed: bool) -> list[PaperDetail]:
+        """Set both review gates for a management-page batch operation."""
+        results: list[PaperDetail] = []
+        for slug in dict.fromkeys(slugs):
+            validate_slug(slug)
+            artifact_dir = self.settings.resolved_artifacts_dir() / slug
+            manifest_path = artifact_dir / "manifest.json"
+            if not manifest_path.is_file():
+                raise PaperNotFoundError(f"assets manifest does not exist: {manifest_path}")
+            lock = FileLock(str(artifact_dir / ".paper-wiki.lock"))
+            with lock:
+                manifest = self._read_manifest_path(manifest_path)
+                values = manifest.paper.model_dump()
+                values.update(
+                    reviewed=reviewed,
+                    meta_reviewed=reviewed,
+                    prior_works_reviewed=reviewed,
+                )
+                try:
+                    manifest.paper = PaperAssetMeta.model_validate(values)
+                except ValidationError as exc:
+                    raise PaperValidationError(str(exc)) from exc
+                manifest.updated_at = self._now()
+                self._write_json_atomic(manifest_path, manifest.model_dump(mode="json"))
+            results.append(self.get_paper(slug))
+        return results
+
     def resolve_artifact_file(self, slug: str, relative_path: str) -> Path:
         validate_slug(slug)
         clean_path = Path(relative_path)

@@ -1,16 +1,18 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { CheckCircle2, FileSearch, RefreshCw, Search, Sparkles } from 'lucide-react'
+import { CheckCircle2, FileSearch, RefreshCw, Search, Send, Settings, Sparkles } from 'lucide-react'
 import { Group, Panel, Separator } from 'react-resizable-panels'
 import { listPapers, PaperListItem } from './api/client'
 import Dashboard from './pages/Dashboard'
 import PaperDetail from './pages/PaperDetail'
 import Home from './pages/Home'
+import Management from './pages/Management'
+import MarkdownPublisher from './pages/MarkdownPublisher'
 import SideNav from './components/SideNav'
 import GenerationTray from './components/GenerationTray'
 import { useBatchGeneration } from './hooks/useBatchGeneration'
 import useMediaQuery from './hooks/useMediaQuery'
 
-type View = 'home' | 'papers'
+type View = 'home' | 'papers' | 'manage' | 'publish'
 
 export default function App() {
   const [view, setView] = useState<View>('home')
@@ -92,7 +94,9 @@ export default function App() {
       icon: <CheckCircle2 size={16} />,
       active: view === 'papers' && libraryFilter === false,
       onClick: () => openPapersView(false)
-    }
+    },
+    { key: 'publish', label: '公众号发布', icon: <Send size={16} />, active: view === 'publish', onClick: () => setView('publish') },
+    { key: 'manage', label: '管理', icon: <Settings size={16} />, active: view === 'manage', onClick: () => setView('manage') }
   ]
 
   return (
@@ -118,7 +122,7 @@ export default function App() {
           </div>
         ) : null}
         <main
-          className={`min-h-0 flex-1 px-5 py-5 ${view === 'home' ? 'overflow-y-auto' : 'overflow-y-auto lg:overflow-hidden'}`}
+          className={`min-h-0 flex-1 px-5 py-5 ${view === 'papers' ? 'overflow-y-auto lg:overflow-hidden' : 'overflow-y-auto'}`}
         >
           {view === 'home' ? (
             <Home
@@ -169,6 +173,13 @@ export default function App() {
                 <PaperDetail slug={selectedSlug} onChanged={onLibraryChanged} />
               </div>
             )
+          ) : null}
+          {view === 'publish' ? <MarkdownPublisher /> : null}
+          {view === 'manage' ? (
+            <Management
+              onChanged={() => void loadReviewCount()}
+              onOpenPaper={(slug) => { setLibraryFilter(undefined); setSelectedSlug(slug); setView('papers') }}
+            />
           ) : null}
         </main>
       </div>

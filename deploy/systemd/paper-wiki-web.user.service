@@ -1,0 +1,14 @@
+[Unit]
+Description=Paper-Wiki Web backend (FastAPI/uvicorn, user-level, no root)
+After=network.target
+
+[Service]
+Type=simple
+# TODO: 换成实际项目路径和 python 环境里的 paper-wiki 可执行文件绝对路径
+WorkingDirectory=%h/paper-wiki
+ExecStart=%h/paper-wiki/.venv/bin/paper-wiki web --host 127.0.0.1 --port 8080
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -46,7 +46,7 @@ export default function CandidateCard({
 
   return (
     <div
-      className={`candidate-card flex gap-3 ${selected ? 'candidate-card-selected' : ''} ${status === 'failed' ? 'candidate-card-failed' : ''}`}
+      className={`candidate-card grid items-stretch gap-3 ${thumbnail ? 'grid-cols-[minmax(0,1fr)_80px] sm:grid-cols-[minmax(0,1fr)_96px]' : 'grid-cols-1'} ${selected ? 'candidate-card-selected' : ''} ${status === 'failed' ? 'candidate-card-failed' : ''}`}
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-start gap-3">
@@ -86,7 +86,7 @@ export default function CandidateCard({
         <img
           src={thumbnail}
           alt=""
-          className="aspect-[3/4] w-20 flex-none self-center rounded-lg border border-line object-cover object-top sm:w-24"
+          className="h-full min-h-28 w-full rounded-lg border border-line object-cover object-top"
         />
       ) : null}
     </div>

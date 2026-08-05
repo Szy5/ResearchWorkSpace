@@ -5,6 +5,7 @@ import {
   SearchCandidate,
   fetchPaper,
   getRecommendationsToday,
+  listJobs,
   pollJob,
   refreshRecommendations,
   searchPapers
@@ -159,7 +160,29 @@ function RecommendedFeed({ stagedKeys, onStage }: Pick<Props, 'stagedKeys' | 'on
 
   useEffect(() => {
     void loadSnapshot()
+    void resumeRefresh()
   }, [])
+
+  async function resumeRefresh() {
+    try {
+      const jobs = await listJobs({ target: 'recommend_refresh', limit: 1 })
+      const latest = jobs[0]
+      if (!latest || (latest.status !== 'pending' && latest.status !== 'running')) return
+      setRefreshing(true)
+      setRefreshProgress(latest.progress || '后台生成中...')
+      const settled = await pollJob(latest.job_id, (update) => setRefreshProgress(update.progress))
+      if (settled.status === 'succeeded') {
+        await loadSnapshot()
+      } else {
+        setError(settled.error ?? 'Refresh failed')
+      }
+    } catch {
+      // Task recovery is best-effort; the current snapshot remains usable.
+    } finally {
+      setRefreshing(false)
+      setRefreshProgress(null)
+    }
+  }
 
   async function loadSnapshot() {
     setLoading(true)
@@ -179,6 +202,7 @@ function RecommendedFeed({ stagedKeys, onStage }: Pick<Props, 'stagedKeys' | 'on
     setRefreshProgress(null)
     try {
       const job = await refreshRecommendations()
+      window.localStorage.setItem('paper-wiki.recommendation-job', job.job_id)
       const settled = await pollJob(job.job_id, (update) => setRefreshProgress(update.progress))
       if (settled.status === 'succeeded') {
         setSnapshot(settled.result as unknown as RecommendationSnapshot)
@@ -188,6 +212,7 @@ function RecommendedFeed({ stagedKeys, onStage }: Pick<Props, 'stagedKeys' | 'on
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     } finally {
+      window.localStorage.removeItem('paper-wiki.recommendation-job')
       setRefreshing(false)
       setRefreshProgress(null)
     }

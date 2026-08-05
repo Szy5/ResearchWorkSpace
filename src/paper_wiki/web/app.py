@@ -5,12 +5,13 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from paper_wiki.core.config import Settings, get_settings
 from paper_wiki.ingestion.pipeline import IngestPipeline
 from paper_wiki.web.error_handlers import register_error_handlers
 from paper_wiki.web.middleware import RequestIDMiddleware
-from paper_wiki.web.routers import jobs, papers, publish, recommendations, search
+from paper_wiki.web.routers import jobs, markdown_publishing, papers, publish, recommendations, search
 from paper_wiki.web.services.job_manager import JobManager
 from paper_wiki.web.services.paper_repository import PaperRepository
 
@@ -22,7 +23,9 @@ def create_app(
     job_manager: JobManager | None = None,
 ) -> FastAPI:
     resolved_settings = settings or get_settings()
-    resolved_job_manager = job_manager or JobManager()
+    resolved_job_manager = job_manager or JobManager(
+        storage_dir=resolved_settings.resolved_artifacts_dir() / ".jobs"
+    )
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
@@ -49,10 +52,17 @@ def create_app(
     app.include_router(publish.router)
     app.include_router(recommendations.router)
     app.include_router(search.router)
+    app.include_router(markdown_publishing.router)
 
     @app.get("/api/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    # 反代/无 root 部署场景下没有 nginx 时，由后端进程直接把前端构建产物也一起提供，
+    # 挂在路由注册之后，避免 "/" 吞掉 /api/* 请求；前端不存在（未 build 或本地开发）时跳过。
+    frontend_dist = resolved_settings.project_root / "web" / "frontend" / "dist"
+    if frontend_dist.is_dir():
+        app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="frontend")
 
     return app
 

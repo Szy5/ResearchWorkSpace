@@ -107,6 +107,11 @@ class IngestRequest(BaseModel):
         return value
 
 
+class BatchReviewRequest(BaseModel):
+    slugs: list[str] = Field(min_length=1, max_length=500)
+    reviewed: bool
+
+
 class RenderBlogHtmlRequest(BaseModel):
     theme: str | None = None
 

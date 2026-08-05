@@ -24,6 +24,7 @@ describe('App', () => {
 
   beforeEach(() => {
     vi.restoreAllMocks()
+    window.localStorage.clear()
     failSummarySave = false
     vi.stubGlobal(
       'fetch',
@@ -649,6 +650,7 @@ function jobResponse(overrides: Record<string, unknown>) {
 describe('App / generation tray', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    window.localStorage.clear()
   })
 
   function stubFetch(onJobPoll?: () => Response | Promise<Response>) {

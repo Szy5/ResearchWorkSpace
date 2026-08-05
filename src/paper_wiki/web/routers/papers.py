@@ -14,6 +14,7 @@ from paper_wiki.web.dependencies import get_job_manager, get_paper_repository, g
 from paper_wiki.web.schemas.discovery import BatchIngestRequest, FetchRequest
 from paper_wiki.web.schemas.job import JobResponse
 from paper_wiki.web.schemas.paper import (
+    BatchReviewRequest,
     IngestRequest,
     PaperDetail,
     PaperListItem,
@@ -34,6 +35,14 @@ def list_papers(
     repository: PaperRepository = Depends(get_paper_repository),
 ) -> list[PaperListItem]:
     return repository.list_papers(reviewed=reviewed, query=q)
+
+
+@router.post("/batch-review", response_model=list[PaperDetail])
+def batch_review(
+    payload: BatchReviewRequest,
+    repository: PaperRepository = Depends(get_paper_repository),
+) -> list[PaperDetail]:
+    return repository.set_reviewed(payload.slugs, reviewed=payload.reviewed)
 
 
 @router.get("/{slug}", response_model=PaperDetail)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 import time
 
 from paper_wiki.web.services.job_manager import JobManager
@@ -59,3 +60,18 @@ def test_job_progress_falls_back_for_unrecognized_log_text() -> None:
     _wait_for(lambda: manager.get(job.job_id).status == "succeeded")
 
     assert manager.get(job.job_id).progress == "⚙️ 处理中..."
+
+
+def test_job_history_survives_manager_recreation(tmp_path: Path) -> None:
+    storage_dir = tmp_path / ".jobs"
+    manager = JobManager(storage_dir=storage_dir)
+    job = manager.submit(slug="demo", target="ingest", task=lambda: {"slug": "demo"})
+    _wait_for(lambda: manager.get(job.job_id).status == "succeeded")
+    manager.shutdown()
+
+    restored = JobManager(storage_dir=storage_dir)
+    history = restored.list(slug="demo")
+
+    assert [item.job_id for item in history] == [job.job_id]
+    assert history[0].result == {"slug": "demo"}
+    restored.shutdown()

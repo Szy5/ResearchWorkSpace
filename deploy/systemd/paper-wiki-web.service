@@ -1,0 +1,23 @@
+[Unit]
+Description=Paper-Wiki Web backend (FastAPI/uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+# TODO: 替换成实际部署用户和项目路径
+User=paperwiki
+Group=paperwiki
+WorkingDirectory=/opt/paper-wiki
+# 用 conda 环境时把下面这行换成对应 python 环境里的 paper-wiki 可执行文件绝对路径，
+# 例如 /home/paperwiki/miniconda3/envs/paper-wiki/bin/paper-wiki
+ExecStart=/opt/paper-wiki/.venv/bin/paper-wiki web --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+
+# 基本安全加固：仅放开进程需要写入的目录
+NoNewPrivileges=true
+ProtectSystem=full
+ReadWritePaths=/opt/paper-wiki/artifacts /opt/paper-wiki/graph_state /opt/paper-wiki/graph_updates /opt/paper-wiki/raw
+
+[Install]
+WantedBy=multi-user.target
