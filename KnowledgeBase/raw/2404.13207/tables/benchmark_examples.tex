@@ -1,0 +1,125 @@
+
+% \begin{table}<t>
+%     \resizebox{1.0\textwidth}{!}{
+%     \begin{tabular}{ccc}
+%         \toprule
+%         & {Target} & {Example query} \\
+%         \midrule
+%         \hline
+%         \multirow{4}{*}{\amazont} & \multirow{ 4}{*}{\texttt{product}} & \cellcolor{cyan!5} {\textit{Looking for \textcolor{OliveGreen}{durable} \textcolor{MidnightBlue}{Dart World brand} {dart flights} that}}\\
+%          & & \cellcolor{cyan!5} {\textit{\textcolor{OliveGreen}{resist easy tearing}. Any recommendations?}}  \\
+%         % \cellcolor{cyan!5} {\textit{Can you help me find a \textcolor{OliveGreen}{push-along} tricycle \textcolor{MidnightBlue}{from Radio Flyer} that's  }}  \\
+%         % & & \cellcolor{cyan!5} {\textit{\textcolor{OliveGreen}{both fun and safe for my kid}?}}  \\
+%         \noalign{\vspace{0.75ex}}
+%         &&\cellcolor{cyan!5} {\textit{What are recommended {scuba diving weights} \textcolor{OliveGreen}{for experienced divers} }}\\
+%         &&\cellcolor{cyan!5} {\textit{that would \textcolor{MidnightBlue}{fit well with my Gorilla PRO XL waterproof bag}?}}\\
+%         \noalign{\vspace{0.7ex}}
+%         \midrule
+%         \noalign{\vspace{0.7ex}}
+%         \multirow{ 3}{*}{\magt} & \multirow{ 3}{*}{\texttt{paper}} & \cellcolor{yellow!10} {\textit{Search {publications} \textcolor{MidnightBlue}{by Hao-Sheng Zeng} on \textcolor{OliveGreen}{non-Markovian dynamics}.}} \\
+%         \noalign{\vspace{0.75ex}}
+%         & &  \cellcolor{yellow!10}\textit{What are some \textcolor{OliveGreen}{nanofluid heat transfer} {research papers} published by}\\
+%         & &  \cellcolor{yellow!10}\textit{scholars \textcolor{MidnightBlue}{from Philadelphia University}?} \cellcolor{yellow!10}\\
+%         \noalign{\vspace{0.7ex}}
+%         \midrule
+%         \noalign{\vspace{0.75ex}}
+%         \multirow{6}{*}{\primekgt} & \multirow{ 2}{*}{\texttt{drug}} &  \cellcolor{pink!20}\textit{Could you provide a list of \textcolor{OliveGreen}{investigational} {drugs} that }\\
+%         && \cellcolor{pink!20}\textit{\textcolor{MidnightBlue}{interact with genes or proteins active in the epididymal region}?}\\
+%         \noalign{\vspace{0.7ex}}
+%         % & \multirow{ 1}{*}{\texttt{disease}}
+%         % & \cellcolor{pink!20}\textit{Is my \textcolor{OliveGreen}{constant fatigue} due to conditions \textcolor{MidnightBlue}{related to bartonellosis}?}\\
+%         & \multirow{ 2}{*}{\texttt{disease}}
+%         & \cellcolor{pink!20}\textit{Search for {diseases} \textcolor{MidnightBlue}{without known treatments} and induce}\\
+%         && \cellcolor{pink!20}\textit{\textcolor{OliveGreen}{pruritus in pregnant women}, potentially \textcolor{MidnightBlue}{associated with Autoimmune}.}\\
+%         \noalign{\vspace{0.75ex}}
+%         & \texttt{pathway} & \cellcolor{pink!20}\textit{Please find {pathways} \textcolor{MidnightBlue}{involving the POLR3D gene} \textcolor{OliveGreen}{within nucleoplasm}.}\\
+%         \noalign{\vspace{0.75ex}}
+%         & \texttt{gene} & \cellcolor{pink!20}\textit{Which {gene} on \textcolor{OliveGreen}{chromosome 4} are \textcolor{MidnightBlue}{expressed in multicellular organisms}?}\\
+%         \bottomrule
+%     \end{tabular}
+%     }
+%     \vspace{2pt}
+%     \caption{Example queries from \benchmarkt, where \textcolor{MidnightBlue}{relational} and \textcolor{OliveGreen}{textual} aspects are highlighted.}
+%     \label{tab:benchmark_examples}
+%     \vspace{-10pt}
+% \end{table}
+
+
+% \begin{table}<t>
+%     \resizebox{1.0\textwidth}{!}{
+%     \begin{tabular}{lcl}
+%         \toprule
+%         &{Example query} & {Answer(s):}  \texttt{node\_id}$_{<\texttt{name/title}>}$\\
+%         \midrule
+%         \hline
+%         \multirow{4}{*}{\small \amazont}& \cellcolor{cyan!5} {\textit{Looking for \textcolor{OliveGreen}{durable} \textcolor{MidnightBlue}{Dart World brand} {dart flights} that}} & \cellcolor{cyan!5} {\texttt{1082} {\tiny{<Amazon Standard Flights>}}} \\
+%          & \cellcolor{cyan!5} {\textit{\textcolor{OliveGreen}{resist easy tearing}. Any recommendations?}}  & \cellcolor{cyan!5} {{\texttt{236112}} {\tiny{<Dart World Broken Glass Flight> (12 more)}}}  \\
+%         \noalign{\vspace{0.75ex}}
+%         &\cellcolor{cyan!5} {\textit{What are recommended {scuba diving weights} \textcolor{OliveGreen}{for experienced divers} }} & \cellcolor{cyan!5} {\texttt{1725} {\tiny{<Sea Pearls Vinyl Coated Lace Thru Weight>}}}\\
+%         &\cellcolor{cyan!5} {\textit{that would \textcolor{MidnightBlue}{fit well with my Gorilla PRO XL waterproof bag}?}}& \cellcolor{cyan!5} {}\\
+%         \midrule
+%         \multirow{ 4}{*}{\small \magt}  & \cellcolor{yellow!10} {\textit{Search {publications} \textcolor{MidnightBlue}{by Hao-Sheng Zeng} on \textcolor{OliveGreen}{non-Markovian dynamics}.}} & \cellcolor{yellow!10} {{\texttt{1565109}} {\tiny{<Distribution of non-Markovian intervals...>}}} \\
+%         &\cellcolor{yellow!10}{} &\cellcolor{yellow!10} {{\texttt{1628038}} {\tiny{<Comparison between non-Markovian...>}}}\\
+%         \noalign{\vspace{0.75ex}}
+%         & \cellcolor{yellow!10}\textit{What are some \textcolor{OliveGreen}{nanofluid heat transfer} {research papers} published by} & \cellcolor{yellow!10} {\texttt{1564849} {\tiny{<A Numerical Study on Convection}}}\\
+%         &  \cellcolor{yellow!10}\textit{scholars \textcolor{MidnightBlue}{from Philadelphia University}?}  & \cellcolor{yellow!10} {{\tiny{Around A Suqare Cylinder using AL2O3-H2O Nanofluid>}}}\\
+%         \midrule
+%         \multirow{6}{*}{\small  \primekgt} &  \cellcolor{pink!20}\textit{Could you provide a list of \textcolor{OliveGreen}{investigational} {drugs} that } & \cellcolor{pink!20}\texttt{19756} {\tiny{<(S)-3-phenyllactic Acid>}}\\
+%         &\cellcolor{pink!20}\textit{\textcolor{MidnightBlue}{interact with genes or proteins active in the epididymal region}?} & \cellcolor{pink!20}\texttt{19882} {\tiny{<Anisomycin>}}, \texttt{19883} {\tiny{<Puromycin>}}\\
+%         \noalign{\vspace{0.75ex}}
+%         % & \multirow{ 1}{*}{\texttt{disease}}
+%         % & \cellcolor{pink!20}\textit{Is my \textcolor{OliveGreen}{constant fatigue} due nto conditions \textcolor{MidnightBlue}{related to bartonellosis}?}\\
+%         & \cellcolor{pink!20}\textit{Search for {diseases} \textcolor{MidnightBlue}{without known treatments} and induce} & \cellcolor{pink!20}\texttt{27746} {\tiny{<Intrahepatic Cholestasis>}}\\
+%         &\cellcolor{pink!20}\textit{\textcolor{OliveGreen}{pruritus in pregnant women}, potentially \textcolor{MidnightBlue}{associated with Autoimmune}.} & \cellcolor{pink!20}\\
+%         \noalign{\vspace{0.75ex}}
+%         & \cellcolor{pink!20}\textit{Please find {pathways} \textcolor{MidnightBlue}{involving the POLR3D gene} \textcolor{OliveGreen}{within nucleoplasm}.}& \cellcolor{pink!20}{\small{\texttt{128961}}}{\tiny{<RNA Polymerase III Chain Elongation> (4 more)}} \\
+%         \noalign{\vspace{0.75ex}}
+%         & \cellcolor{pink!20}\textit{Which {gene} on \textcolor{OliveGreen}{chromosome 4} are \textcolor{MidnightBlue}{expressed in multicellular organisms}?} & \texttt{1151} {\tiny{<NFKB1>}}, \texttt{13501} {\tiny{<MT2P1>}}\cellcolor{pink!20}\\
+%         \bottomrule
+%     \end{tabular}
+%     }
+%     \vspace{2pt}
+%     \caption{Example queries from \benchmarkt, where \textcolor{MidnightBlue}{relational} and \textcolor{OliveGreen}{textual} aspects are highlighted.}\small{
+%     \label{tab:benchmark_examples}
+%     \vspace{-10pt}
+% \end{table}
+
+
+\begin{table}
+    \resizebox{1.00\textwidth}{!}{
+    \begin{tabular}{lcl}
+        \toprule
+        &{Example query} & Title of ground-truth items(s) \\
+        \midrule
+        \hline
+        \multirow{4}{*}{\amazont}& \cellcolor{cyan!5} {\textit{Looking for \textcolor{OliveGreen}{durable} \textcolor{MidnightBlue}{Dart World brand} {dart flights} that}} & \cellcolor{cyan!5}  {\small{<Amazon Standard Flights>}} \\
+         & \cellcolor{cyan!5} {\textit{\textcolor{OliveGreen}{resist easy tearing}. Any recommendations?}}  & \cellcolor{cyan!5} {{\small{<Dart World Broken Glass Flight> (+12 more)}}}  \\
+        \noalign{\vspace{0.75ex}}
+        &\cellcolor{cyan!5} {\textit{What are recommended {scuba diving weights} \textcolor{OliveGreen}{for experienced divers} }} & \cellcolor{cyan!5} {{\small{<Sea Pearls Vinyl Coated Lace Thru Weight>}}}\\
+        &\cellcolor{cyan!5} {\textit{that would \textcolor{MidnightBlue}{fit well with my Gorilla PRO XL waterproof bag}?}}& \cellcolor{cyan!5} {}\\
+        \midrule
+        \multirow{ 4}{*}{\magt}  & \cellcolor{yellow!10} {\textit{Search {publications} \textcolor{MidnightBlue}{by Hao-Sheng Zeng} on \textcolor{OliveGreen}{non-Markovian dynamics}.}} & \cellcolor{yellow!10} {{\small{<Distribution of non-Markovian intervals...>}}} \\
+        &\cellcolor{yellow!10}{} &\cellcolor{yellow!10} {{\small{<Comparison between non-Markovian...>}}}\\
+        \noalign{\vspace{0.75ex}}
+        & \cellcolor{yellow!10}\textit{What are some \textcolor{OliveGreen}{nanofluid heat transfer} {research papers} published by} & \cellcolor{yellow!10} {{\small{<A Numerical Study on Convection Around A}}}\\
+        &  \cellcolor{yellow!10}\textit{scholars \textcolor{MidnightBlue}{from Philadelphia University}?}  & \cellcolor{yellow!10} {{\small{Suqare Cylinder using AL2O3-H2O Nanofluid>}}}\\
+        \midrule
+        \multirow{6}{*}{\primekgt} &  \cellcolor{pink!20}\textit{Could you provide a list of \textcolor{OliveGreen}{investigational} {drugs} that } & \cellcolor{pink!20}{ \small{<(S)-3-phenyllactic Acid>}},\\
+        &\cellcolor{pink!20}\textit{\textcolor{MidnightBlue}{interact with genes or proteins active in the epididymal region}?} & \cellcolor{pink!20}{ \small{<Anisomycin>}}, {\small{<Puromycin>}}\\
+        \noalign{\vspace{0.75ex}}
+        & \cellcolor{pink!20}\textit{Search for {diseases} \textcolor{MidnightBlue}{without known treatments} and induce} & \cellcolor{pink!20} {\small{<Intrahepatic Cholestasis>}}\\
+        &\cellcolor{pink!20}\textit{\textcolor{OliveGreen}{pruritus in pregnant women}, potentially \textcolor{MidnightBlue}{associated with Autoimmune}.} & \cellcolor{pink!20}\\
+        \noalign{\vspace{0.75ex}}
+        & \cellcolor{pink!20}\textit{Please find {pathways} \textcolor{MidnightBlue}{involving the POLR3D gene} \textcolor{OliveGreen}{within nucleoplasm}.}& \cellcolor{pink!20}{\small{<RNA Polymerase III Chain Elongation>}} \\ %  (4 more)
+        \noalign{\vspace{0.75ex}}
+        & \cellcolor{pink!20}\textit{Which gene or protein \textcolor{MidnightBlue}{associated with lichen amyloidosis} can }& {\small{<OSMR>}},  {\small{<IL31RA>}}\cellcolor{pink!20}\\
+        & \cellcolor{pink!20}\textit{\textcolor{OliveGreen}{bind interleukin-31 to activate the PI3K/AKT and MAPK pathways}?}& \cellcolor{pink!20}\\
+        %& \cellcolor{pink!20}\textit{Which {gene} on \textcolor{OliveGreen}{chromosome 4} are \textcolor{MidnightBlue}{expressed in multicellular organisms}?} & {\small{<NFKB1>}},  {\small{<MT2P1>}}\cellcolor{pink!20}\\
+        \bottomrule
+    \end{tabular}
+    }
+    \vspace{2pt}
+    \caption{\benchmarkh QA examples which involve semi-structured (\textcolor{MidnightBlue}{relational} and \textcolor{OliveGreen}{textual}) information. }
+    \label{tab:benchmark_examples}
+    \vspace{-15pt}
+\end{table}

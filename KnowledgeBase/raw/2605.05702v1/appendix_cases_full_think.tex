@@ -1,0 +1,442 @@
+\subsection{Representative Case Studies}
+\label{app:cases:full}
+
+This section presents three representative cases with complete reasoning traces.
+Each case illustrates a different aspect of our framework: (1)~how Waypoint Coverage Reward (WCR) assigns graded partial credit to incorrect Solver trajectories, (2)~how the Proposer uses KG-grounded construction to generate multi-hop questions by traversing a subgraph extracted via LLM-guided subgraph extraction, and (3)~how the trained Solver performs evidence-grounded multi-hop reasoning on a validation question.
+
+% Define colors
+\definecolor{OursMain}{HTML}{E8924A}
+\definecolor{SSPMain}{HTML}{4F71BC}
+\definecolor{BgOuter}{HTML}{F8F9FA}
+\definecolor{BgThink}{HTML}{E3F2FD}
+\definecolor{TagThink}{HTML}{1565C0}
+\definecolor{TagSearch}{HTML}{6D4C41}
+\definecolor{TagInfo}{HTML}{00695C}
+\definecolor{TagAnswer}{HTML}{AD1457}
+\definecolor{TagWaypoint}{HTML}{5E35B1}
+
+\newtcolorbox{casebox}[2]{%
+  enhanced jigsaw,
+  breakable,
+  colback=gray!5,
+  colframe=#1,
+  boxrule=1.5pt,
+  arc=2pt,
+  pad at break*=3mm,
+  colbacktitle=#1,
+  coltitle=white,
+  before skip=4pt,
+  after skip=6pt,
+  title={\textbf{#2}},
+}
+
+\newtcolorbox{thinkpanel}{%
+  enhanced jigsaw,
+  colback=BgThink,
+  colframe=BgThink,
+  boxrule=0pt,
+  arc=1pt,
+  left=2mm,
+  right=2mm,
+  top=1mm,
+  bottom=1mm,
+  before skip=2pt,
+  after skip=2pt,
+}
+
+\newtcolorbox{casepagebox}[2]{%
+  enhanced jigsaw,
+  colback=gray!5,
+  colframe=#1,
+  boxrule=1.5pt,
+  arc=2pt,
+  colbacktitle=#1,
+  coltitle=white,
+  before skip=4pt,
+  after skip=6pt,
+  title={\textbf{#2}},
+  fontupper=\small,
+}
+
+\Needspace{12\baselineskip}
+\subsubsection{Solver Case with Partial Waypoint Coverage}
+
+This case demonstrates how WCR provides a meaningful training signal for an incorrect trajectory.
+Although the Solver fails to produce the correct final answer, its reasoning trace covers 3 out of 4 waypoint entities on the construction path, yielding a non-zero process reward under WCR (Eq.~\ref{eq:wcr_reward}).
+\paragraph{Case 1: Partial Coverage despite Incorrect Answer.}
+\begin{casebox}{OursMain}{Case Study: WCR Partial Credit}
+
+\noindent\colorbox{TagSearch!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagSearch}{\textbf{Question}}}}
+
+Which organization preserves archival material associated with the physician-naturalist who joined an early U.S. expedition co-led by a Scottish-born Natchez scientist to explore the Red and Ouachita Rivers?
+
+\vspace{3mm}
+\noindent\colorbox{TagAnswer!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagAnswer}{\textbf{Ground Truth}}}}
+
+American Philosophical Society
+
+\vspace{3mm}
+\noindent\colorbox{TagInfo!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagInfo}{\textbf{Construction Path}}}}
+
+{\small Annis Field Dunbar $\to$ William Dunbar $\to$ Dunbar and Hunter Expedition $\to$ George Hunter $\to$ American Philosophical Society}
+
+\vspace{3mm}
+\noindent\colorbox{TagWaypoint!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagWaypoint}{\textbf{Waypoint Entities}}}}
+
+Annis Field Dunbar, William Dunbar, Dunbar and Hunter Expedition, George Hunter \quad (highlighted in \colorbox{yellow!30}{yellow} below)
+
+\vspace{3mm}
+\noindent\colorbox{OursMain!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{OursMain}{\textbf{Solver Trajectory}}}}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I need to identify the unnamed early U.S. expedition, the physician-naturalist who joined it, and then the organization that preserves related archival material. The question gives descriptions rather than entity names, so I need to search from the clues.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}early U.S. expedition Scottish-born Natchez scientist physician naturalist Red Ouachita Rivers\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``William Dunbar (explorer)''...} \textit{Doc 2: ``Dunbar and Hunter Expedition''...} \textit{Doc 3: ``Ouachita River expedition''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{The clues point to the \colorbox{yellow!30}{\textbf{Dunbar and Hunter Expedition}}, connected to \colorbox{yellow!30}{\textbf{William Dunbar}}. I need the physician-naturalist on that expedition and the archive-holding organization.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}Dunbar and Hunter Expedition physician naturalist archive organization\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``George Hunter (chemist)''...} \textit{Doc 2: ``Dunbar and Hunter Expedition''...} \textit{Doc 3: ``National Anthropological Archives''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{The physician-naturalist appears to be \colorbox{yellow!30}{\textbf{George Hunter}}, who joined the \colorbox{yellow!30}{\textbf{Dunbar and Hunter Expedition}}. I still need the organization preserving his archival material.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}George Hunter Dunbar expedition archival material organization\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``National Anthropological Archives''...} \textit{Doc 2: ``George Hunter papers''...} \textit{Doc 3: ``William Dunbar correspondence''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{The search results confirm that the \colorbox{yellow!30}{\textbf{Dunbar and Hunter Expedition}} involved \colorbox{yellow!30}{\textbf{William Dunbar}} and \colorbox{yellow!30}{\textbf{George Hunter}}. The archive result is still ambiguous, so I will search specifically for the holding institution.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}George Hunter papers holding institution archive\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``National Anthropological Archives''...} \textit{Doc 2: ``Society of American Archivists''...} \textit{Doc 3: ``George Hunter papers''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{The documents point to archival collections related to \colorbox{yellow!30}{\textbf{George Hunter}}, but I may be mixing collection descriptions with the exact holding organization. National Anthropological Archives appears relevant, so I will verify once more.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}National Anthropological Archives George Hunter Dunbar Hunter expedition\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``National Anthropological Archives''...} \textit{Doc 2: ``Dunbar and Hunter Expedition''...} \textit{Doc 3: ``George Hunter''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I have identified the relevant chain through \colorbox{yellow!30}{\textbf{William Dunbar}}, the \colorbox{yellow!30}{\textbf{Dunbar and Hunter Expedition}}, and \colorbox{yellow!30}{\textbf{George Hunter}}. The archive source still seems to point to National Anthropological Archives, though I am not fully certain.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}George Hunter expedition archives National Anthropological Archives\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``National Anthropological Archives''...} \textit{Doc 2: ``Society of American Archivists''...} \textit{Doc 3: ``George Hunter collection''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{The answer should be an archive-holding organization. I have followed the clue chain to \colorbox{yellow!30}{\textbf{George Hunter}} through the expedition, but I will answer with the organization that appeared most consistently in my searches.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}archive holding organization George Hunter papers\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1: ``National Anthropological Archives''...} \textit{Doc 2: ``George Hunter papers''...} \textit{Doc 3: ``Archival collection guide''...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+
+\vspace{2mm}
+\textcolor{TagAnswer}{\texttt{<answer>}} National Anthropological Archives \textcolor{TagAnswer}{\texttt{</answer>}}
+
+\end{casebox}
+
+\noindent Analysis.
+The final answer is incorrect, but the Solver's trajectory covers 3 of the 4 construction-path waypoints (William Dunbar, Dunbar and Hunter Expedition, and George Hunter), yielding raw coverage $g_i(q)=0.75$ (Eq.~\ref{eq:raw_coverage}).
+Because these names are not given in the question, the matches reflect entities discovered through search rather than prompt copying.
+WCR therefore assigns non-zero partial credit (Eq.~\ref{eq:wcr_reward}), whereas binary outcome reward would assign zero.
+This illustrates the graded credit mechanism of Section~\ref{sec:process_reward}: partially on-track trajectories receive differentiated rewards that help GRPO separate informative failures from uninformative ones.
+
+
+%% ================================================================
+%% Proposer Case Study
+%% ================================================================
+
+\Needspace{12\baselineskip}
+\subsubsection{Proposer Case: KG-Grounded Question Construction}
+\label{app:cases:proposer}
+
+\begin{casepagebox}{SSPMain}{Case Study: KG-Grounded Proposer}
+
+\noindent\colorbox{TagInfo!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagInfo}{\textbf{Construction Path (6 entities)}}}}
+
+{\small Diana Arachi $\xrightarrow{\text{educated at}}$ University of Technology Sydney $\xrightarrow{\text{subsidiary}}$ Jumbunna Institute for Indigenous Education and Research $\xrightarrow{\text{director}}$ Larissa Behrendt $\xrightarrow{\text{educated at}}$ Harvard Law School $\xrightarrow{\text{first dean}}$ Christopher Columbus Langdell}
+
+\vspace{3mm}
+\noindent\colorbox{TagAnswer!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagAnswer}{\textbf{Answer (Terminal Entity): }} Christopher Columbus Langdell}}
+
+\vspace{3mm}
+\noindent\colorbox{TagSearch!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagSearch}{\textbf{Generated Question}}}}
+
+A Sri Lankan-born Australian journalist, known for her works on multicultural identity and the immigrant experience, studied at a public research university in Sydney.
+That university houses an institute for Indigenous education and research whose director---an Aboriginal Australian legal scholar of Eualeyai and Kamillaroi heritage---earned a Doctor of Juridical Science from a prestigious American law school.
+Who served as the first dean of that law school and is credited with introducing the case method of legal education?
+
+\vspace{3mm}
+\noindent\colorbox{SSPMain!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{SSPMain}{\textbf{Proposer Trajectory}}}}
+
+% --- Round 1: Seed node exploration ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I need to create a question that uniquely identifies the correct answer ``Christopher Columbus Langdell'' using the given knowledge-graph subgraph.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}Diana Arachi journalist\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``Helena Ara\'{u}jo''): ...she attended her high school senior year at Immaculata High School...}
+
+\textit{Doc 2 (Title: ``Alissar Caracalla''): ...She received her BA in International Communications and Choreography from Loyola Marymount University...}
+
+\textit{Doc 3 (Title: ``Diana Arismendi''): ...Arismendi studied at the Escuela de M\'{u}sica...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+% --- Round 2: Explore UTS and discover Jumbunna Institute ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I could not find Diana Arachi directly. I need to find more about the University of Technology Sydney and its connection to the path.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}University of Technology Sydney Indigenous education institute\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``\colorbox{yellow!30}{\textbf{Jumbunna Institute for Indigenous Education and Research}}''): The Jumbunna Institute for Indigenous Education and Research is a research institute within the University of Technology Sydney (UTS). It is dedicated to Indigenous education, research, and community engagement...}
+
+\textit{Doc 2 (Title: ``University of Technology Sydney''): The University of Technology Sydney (UTS) is a public research university located in Sydney, Australia. ...UTS enrolls 45,930 students...}
+
+\textit{Doc 3 (Title: ``University of Technology Sydney''): ...UTS ranked 1st in Australia and 15th globally...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+% --- Round 3: Discover Larissa Behrendt ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that University of Technology Sydney has a subsidiary called \colorbox{yellow!30}{\textbf{Jumbunna Institute for Indigenous Education and Research}}. Now I need to find the director.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}Jumbunna Institute for Indigenous Education and Research director\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``Larissa Behrendt''): Larissa Yasmin Behrendt (born 1 April 1969) is a Eualeyai/Kamillaroi woman, Aboriginal Australian legal academic. She is currently a Professor of Indigenous Research and Director of Research at the \colorbox{yellow!30}{\textbf{Jumbunna Institute}} for Indigenous Education and Research at the University of Technology Sydney...}
+
+\textit{Doc 2 (Title: ``Aileen Moreton-Robinson''): ...an Australian academic, indigenous feminist...}
+
+\textit{Doc 3 (Title: ``Larissa Behrendt''): ...She is currently a Professor of Indigenous Research and Director...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+\end{casepagebox}
+
+\Needspace{10\baselineskip}
+\begin{casepagebox}{SSPMain}{Case Study: KG-Grounded Proposer (Continued)}
+\noindent\colorbox{SSPMain!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{SSPMain}{\textbf{Proposer Trajectory (Continued)}}}}
+
+\vspace{3mm}
+
+% --- Round 4: Discover Harvard Law School ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that the Jumbunna Institute for Indigenous Education and Research is directed by \colorbox{yellow!30}{\textbf{Larissa Behrendt}}. Now I need to find where she studied.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}Larissa Behrendt educated at law school\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``\colorbox{yellow!30}{\textbf{Larissa Behrendt}}''): ...She completed a Bachelor of Jurisprudence and Bachelor of Laws degree at the University of New South Wales in 1992...she completed a Master of Laws at \colorbox{yellow!30}{\textbf{Harvard Law School}} in 1994, and a Doctor of Juridical Science from the same institution in 1998...}
+
+\textit{Doc 2 (Title: ``Larissa Behrendt''): ...She is currently a Professor of Indigenous Research and Director of Research at the Jumbunna Institute...}
+
+\textit{Doc 3 (Title: ``Larissa Behrendt''): ...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+% --- Round 5: Discover Christopher Columbus Langdell ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that Larissa Behrendt earned a Doctor of Juridical Science from \colorbox{yellow!30}{\textbf{Harvard Law School}}. Now I need to find the first dean of Harvard Law School.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}Harvard Law School first dean\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``\colorbox{yellow!30}{\textbf{Christopher Columbus Langdell}}''): Christopher Columbus Langdell (May 22, 1826 -- July 6, 1906) was an American legal educator who served as the first Dane Professor of Law and then the first dean of \colorbox{yellow!30}{\textbf{Harvard Law School}} from 1870 to 1895. He is credited with pioneering the case method of teaching law...}
+
+\textit{Doc 2 (Title: ``Harvard Law School''): ...Harvard Law School's founding is traditionally linked to the establishment of a law professorship in 1815\ldots\ Christopher Columbus Langdell served as the first dean beginning in 1870...}
+
+\textit{Doc 3 (Title: ``Case method''): The case method is a teaching approach that originated in law schools\ldots\ It was pioneered by Christopher Columbus Langdell at Harvard Law School in the 1870s...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+% --- Round 6: Gather descriptive details for the seed node ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that \colorbox{yellow!30}{\textbf{Christopher Columbus Langdell}} was the first dean of Harvard Law School and pioneered the case method. Now I need to find descriptive details about Diana Arachi to use as clues without naming her.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}Diana Arachi Sri Lankan Australian multicultural\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``\colorbox{yellow!30}{\textbf{Diana Arachi}}''): Diana Arachi is a Sri Lankan-born Australian author and journalist. She is known for her work exploring themes of multicultural identity, immigration, and cross-cultural experiences in Australia. She graduated from the \colorbox{yellow!30}{\textbf{University of Technology Sydney}} (UTS)...}
+
+\textit{Doc 2 (Title: ``Sri Lankan Australians''): ...Sri Lankan Australians are Australians who were born in Sri Lanka or who have Sri Lankan ancestry...}
+
+\textit{Doc 3 (Title: ``Diana Arachi''): ...Arachi has contributed to various Australian media outlets and has written extensively on the experiences of immigrants in Australian society...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I now have all the facts. I will describe Diana Arachi without naming her to identify UTS, describe the Jumbunna director without naming her to lead to Harvard Law School, and ask about the first dean.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\vspace{2mm}
+\textcolor{TagSearch}{\texttt{<question>}} A Sri Lankan-born Australian journalist, known for her works on multicultural identity and the immigrant experience, studied at a public research university in Sydney. That university houses an institute for Indigenous education and research whose director---an Aboriginal Australian legal scholar of Eualeyai and Kamillaroi heritage---earned a Doctor of Juridical Science from a prestigious American law school. Who served as the first dean of that law school and is credited with introducing the case method of legal education? \textcolor{TagSearch}{\texttt{</question>}}
+
+\end{casepagebox}
+
+\noindent Analysis.
+The Proposer uses the KG path as a scaffold for a multi-hop question, searching from Diana Arachi through UTS, Jumbunna Institute, Larissa Behrendt, and Harvard Law School before reaching Langdell.
+The final question hides the entity names while preserving distinctive clues for the intended solve path, so the Solver must identify the journalist, locate the Sydney university and its Indigenous research institute, trace the director to her law school, and then answer with the first dean.
+This illustrates how KG-grounded construction supplies relational structure that standard isolated-answer prompting lacks.
+
+
+%% ================================================================
+%% Solver Case Study
+%% ================================================================
+
+\Needspace{12\baselineskip}
+\subsubsection{Solver Case: Evidence-Grounded Multi-Hop Reasoning}
+\label{app:cases:solver}
+
+\begin{casepagebox}{OursMain}{Case Study: Solver on HotpotQA (Validation)}
+\noindent\colorbox{TagSearch!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagSearch}{\textbf{Question}}}}
+
+When was the judge born who made notable contributions to the trial of the man who tortured, raped, and murdered eight student nurses from South Chicago Community Hospital on the night of July 13--14, 1966?
+
+\vspace{3mm}
+\noindent\colorbox{TagAnswer!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{TagAnswer}{\textbf{Ground Truth: }} June 4, 1931}}
+
+\vspace{3mm}
+\noindent\colorbox{OursMain!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{OursMain}{\textbf{Solver Trajectory}}}}
+
+% --- Round 1: Identify the criminal ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I need to find the judge who made notable contributions to the trial of the man who tortured, raped, and murdered eight student nurses from South Chicago Community Hospital on the night of July 13--14, 1966. Then, I need to find the birth year of that judge.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}man who tortured, raped, and murdered eight student nurses from South Chicago Community Hospital on the night of July 13-14, 1966\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``\colorbox{yellow!30}{\textbf{Richard Speck}}''): Richard Benjamin Speck (December 6, 1941 -- December 5, 1991) was an American mass murderer who \colorbox{yellow!30}{systematically tortured, raped, and murdered eight student nurses} from South Chicago Community Hospital on the night of July 13 into the early morning hours of July 14, 1966. He was convicted at trial and sentenced to death...}
+
+\textit{Doc 2 (Title: ``Chicago Massacre: Richard Speck''): ...an intoxicated Speck, needing money for a trip to New Orleans, breaks into Sharon's dormitory...}
+
+\textit{Doc 3 (Title: ``Daily Calumet''): ...the 1966 murders of six student nurses by drifter Richard Speck...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+% --- Round 2: Identify the judge ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that the man who tortured, raped, and murdered eight student nurses from South Chicago Community Hospital on the night of July 13--14, 1966 is \colorbox{yellow!30}{\textbf{Richard Speck}}. Now I need to find the judge who made notable contributions to the trial of Richard Speck.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}judge who made notable contributions to the trial of Richard Speck\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``Richard Speck''): ...He was convicted at trial and sentenced to death, but the sentence was later overturned due to issues with jury selection...}
+
+\textit{Doc 2 (Title: ``\colorbox{yellow!30}{\textbf{Louis B. Garippo}}''): Louis B. Garippo (\colorbox{yellow!30}{June 4, 1931} -- May 31, 2016) was a former Cook County judge and supervisor in the state's attorney's office best known as the presiding judge over the trial of John Wayne Gacy. He also \colorbox{yellow!30}{made notable contributions during the trial of Richard Speck} and the controversy which surrounded Chief Illiniwek. Garippo was born and raised in the Galewood neighborhood of Chicago, Illinois on June 4, 1931...}
+
+\textit{Doc 3 (Title: ``Richard Speck''): ...Illinois Supreme Court Justice John J. Stamos, Cook County's state attorney when Speck was tried...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+\end{casepagebox}
+
+\Needspace{10\baselineskip}
+\begin{casepagebox}{OursMain}{Case Study: Solver on HotpotQA (Continued)}
+\noindent\colorbox{OursMain!20}{\parbox{\dimexpr\linewidth-2\fboxsep}{\textcolor{OursMain}{\textbf{Solver Trajectory (Continued)}}}}
+
+\vspace{3mm}
+
+% --- Round 3: Confirm birth date ---
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that the judge who made notable contributions to the trial of Richard Speck is \colorbox{yellow!30}{\textbf{Louis B. Garippo}}. Now I need to find the birth date of Louis B. Garippo.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\textcolor{TagSearch}{\texttt{<search>}}birth year of Louis B. Garippo\textcolor{TagSearch}{\texttt{</search>}}
+
+\textcolor{TagInfo}{\texttt{<information>}}
+
+\textit{Doc 1 (Title: ``\colorbox{yellow!30}{\textbf{Louis B. Garippo}}''): ...He died on May 31, 2016 at an assisted living facility in Glenview as result of congestive heart failure at 84 years old. Louis B. Garippo (\colorbox{yellow!30}{June 4, 1931}...}
+
+\textit{Doc 2 (Title: ``Louis B. Garippo''): ...Garippo received his Bachelor's degree from the University of Notre Dame in 1952 after his completion of Fenwick High School four years prior...}
+
+\textit{Doc 3 (Title: ``Louis B. Garippo''): Louis B. Garippo (June 4, 1931 -- May 31, 2016) was a former Cook County judge... He also made notable contributions during the trial of Richard Speck...}
+
+\textcolor{TagInfo}{\texttt{</information>}}
+\vspace{3mm}
+
+\begin{thinkpanel}
+\textcolor{TagThink}{\texttt{<think>}} \textit{I found out that the judge who made notable contributions to the trial of Richard Speck is \colorbox{yellow!30}{\textbf{Louis B. Garippo}}, and his birth date is \colorbox{yellow!30}{\textbf{June 4, 1931}}.} \textcolor{TagThink}{\texttt{</think>}}
+\end{thinkpanel}
+
+\vspace{2mm}
+\textcolor{TagAnswer}{\texttt{<answer>}} June 4, 1931 \textcolor{TagAnswer}{\texttt{</answer>}}
+
+\end{casepagebox}
+
+\noindent Analysis.
+The Solver decomposes the held-out HotpotQA question into three steps: identify Richard Speck, find the trial judge Louis B.\ Garippo, and retrieve his birth date.
+Each step is grounded in the preceding search results, leading to the correct answer.
+This illustrates the evidence-grounded reasoning that KG-grounded construction and WCR are designed to encourage (Sections~\ref{sec:subgraph} and~\ref{sec:process_reward}).

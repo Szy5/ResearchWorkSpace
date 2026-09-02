@@ -1,0 +1,56 @@
+\begin{figure}[h]
+\centering
+\begin{reasonbox}[title=KG-R1 Server Error Examples]
+\setlength{\parskip}{0.3em}
+\setlength{\parindent}{0pt}
+\raggedright
+\small
+KG\_SERVER\_ERROR: Invalid Action
+
+\texttt{<error>}Action "get\_entity\_info" not available (use: get\_head\_relations, get\_tail\_relations, get\_head\_entities, get\_tail\_entities)\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_FORMAT\_ERROR: Missing Required Fields
+
+\texttt{<error>}Missing required fields for get\_tail\_entities: relation\_name\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_FORMAT\_ERROR: Wrong Argument Count
+
+\texttt{<error>}get\_tail\_relations accepts only one entity argument\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_SAMPLE\_NOT\_FOUND: Sample Missing
+
+\texttt{<error>}Sample "sample\_12345" not found in KG\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_ENTITY\_NOT\_FOUND: Entity Not in KG
+
+\texttt{<error>}Entity "Barack Obamaa" not found in KG\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_RELATION\_NOT\_FOUND: Invalid Relation
+
+\texttt{<error>}Relation "location.capital" not found in KG\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_NO\_RESULTS: No Relations Found
+
+\texttt{<error>}No tail relations found for entity "Random\_Entity\_123" in knowledge graph\texttt{</error>}
+
+\vspace{0.25em}\hrule\vspace{0.25em}
+
+KG\_NO\_RESULTS: No Entities Found
+
+\texttt{<error>}No tail entities found for relation "film.director.film" with head "Barack Obama" in knowledge graph\texttt{</error>}
+
+\end{reasonbox}
+\caption{KG-R1 error types with actual server error messages.}
+\end{figure}

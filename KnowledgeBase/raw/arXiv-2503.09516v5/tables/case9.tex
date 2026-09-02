@@ -1,0 +1,35 @@
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 9 (successful): The first query written by the LLM is not very meaningful. However, upon that, LLM starts to write the query and solve the problem step by step.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Who is older, Jed Hoyer or John William Henry II? \\
+        \hline
+        \textbf{Ground Truth}: John William Henry II \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to determine if Jed Hoyer or John William Henry II is older. I'll search for their ages.} \\
+\search{Jed Hoyer or John William Henry II} \\
+\info{Doc 1(Title: "Jed Hoyer") career saves record with Sam Elias and Nick Miceli. During his time at Wesleyan University he was also initiated into and is a brother of Delta Kappa Epsilon. He spent Summer 1995 on the roster of the Waterbury Barons of the New England Collegiate Baseball League seeing innings on the mound and at shortstop. Hoyer worked in the admissions office and then the alumni/development office, and was also a baseball coach at the university after graduating. He worked in the admissions department of Kenyon College before joining the Red Sox at 28. He married Merrill Muckerman in June 2010 in ...
+} \\
+\hdashline
+\think{I found out that Jed Hoyer is a person. Now I need to find his age and compare it to John William Henry II's age.} \\
+\search{John William Henry II} \\
+\info{Doc 1(Title: "John W. Henry") the firm's management had fallen from \$2.5 billion in 2006 to less than \$100 million as of late 2012. As of July 2017, ""Forbes"" estimated his net worth to be \$2.6 billion. John William Henry II was born on September 13, 1949 in Quincy, Illinois. His parents were soybean farmers, and he split his time growing up between Illinois and Arkansas. His asthmatic condition at the age of 15 prompted his family to move to Apple Valley, California. After his graduation from Victor Valley High School in Victorville, he attended Victor Valley College, then the University of California (at Riverside, ...
+} \\
+\hdashline
+\think{I found out that John William Henry II was born on September 13, 1949. Now I need to find Jed Hoyer's birth year to compare.} \\
+\search{Jed Hoyer birth year} \\
+\info{Doc 1(Title: "Jed Hoyer") career saves record with Sam Elias and Nick Miceli. During his time at Wesleyan University he was also initiated into and is a brother of Delta Kappa Epsilon. He spent Summer 1995 on the roster of the Waterbury Barons of the New England Collegiate Baseball League seeing innings on the mound and at shortstop. Hoyer worked in the admissions office and then the alumni/development office, and was also a baseball coach at the university after graduating. He worked in the admissions department of Kenyon College before joining the Red Sox at 28. He married Merrill Muckerman in June 2010 in ...
+} \\
+\hdashline
+\think{I found out that Jed Hoyer was born on December 7, 1973. Now I can compare his birth year to John William Henry II's birth year.} \\
+\answer{John William Henry II}\\
+        \hline
+    \end{tabular}
+\end{table}
+

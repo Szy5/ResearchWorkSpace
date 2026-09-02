@@ -96,10 +96,10 @@ export default function PaperDetail({ slug, onChanged }: Props) {
   if (!slug) {
     return (
       <section className="flex min-h-[calc(100vh-112px)] items-center justify-center lg:h-full lg:min-h-0">
-        <div className="text-center">
+        <div className="empty-state max-w-sm">
           <FileJson className="mx-auto mb-3 text-moss" size={32} />
-          <h1 className="font-serif text-lg font-semibold">Paper detail</h1>
-          <p className="mt-1 text-sm text-body">Select a paper from the list.</p>
+          <h1 className="font-serif text-xl tracking-tight">选择一篇论文</h1>
+          <p className="mt-2 text-sm leading-6 text-body">从左侧列表打开详情，审查摘要、前作与发布状态。</p>
         </div>
       </section>
     )
@@ -222,7 +222,7 @@ export default function PaperDetail({ slug, onChanged }: Props) {
               <div className="flex items-start justify-between gap-3">
                 {metaMode === 'edit' ? (
                   <input
-                    className="w-full rounded-lg border border-line bg-canvas px-2 py-1 font-serif text-[26px] font-semibold leading-tight outline-none focus:border-moss"
+                    className="field-input w-full font-serif text-[26px] font-medium leading-tight"
                     value={metaDraft?.title ?? ''}
                     onChange={(event) => setMetaDraft((prev) => (prev ? { ...prev, title: event.target.value } : prev))}
                   />
@@ -234,7 +234,7 @@ export default function PaperDetail({ slug, onChanged }: Props) {
               {metaMode === 'edit' ? (
                 <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
                   <input
-                    className="rounded-lg border border-line bg-canvas px-2 py-1 text-sm outline-none focus:border-moss sm:col-span-2"
+                    className="field-input sm:col-span-2"
                     placeholder="Authors (comma separated)"
                     value={metaDraft?.authorsText ?? ''}
                     onChange={(event) =>
@@ -242,20 +242,20 @@ export default function PaperDetail({ slug, onChanged }: Props) {
                     }
                   />
                   <input
-                    className="rounded-lg border border-line bg-canvas px-2 py-1 text-sm outline-none focus:border-moss"
+                    className="field-input"
                     placeholder="Venue"
                     value={metaDraft?.venue ?? ''}
                     onChange={(event) => setMetaDraft((prev) => (prev ? { ...prev, venue: event.target.value } : prev))}
                   />
                   <input
-                    className="rounded-lg border border-line bg-canvas px-2 py-1 text-sm outline-none focus:border-moss"
+                    className="field-input"
                     placeholder="Year"
                     type="number"
                     value={metaDraft?.year ?? ''}
                     onChange={(event) => setMetaDraft((prev) => (prev ? { ...prev, year: event.target.value } : prev))}
                   />
                   <input
-                    className="rounded-lg border border-line bg-canvas px-2 py-1 text-sm outline-none focus:border-moss sm:col-span-4"
+                    className="field-input sm:col-span-4"
                     placeholder="arXiv ID"
                     value={metaDraft?.arxivId ?? ''}
                     onChange={(event) =>
@@ -346,7 +346,7 @@ export default function PaperDetail({ slug, onChanged }: Props) {
               ) : null}
               <div className="mt-3 flex gap-2">
                 <input
-                  className="h-10 min-w-0 flex-1 rounded-lg border border-line px-3 text-sm outline-none focus:border-moss"
+                  className="field-input min-w-0 flex-1"
                   value={publishHtml}
                   onChange={(event) => setPublishHtml(event.target.value)}
                 />

@@ -1,0 +1,76 @@
+\documentclass[tikz,border=6pt]{standalone}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds,calc}
+
+% ---- Color palette (soft, publication-friendly) ----
+\definecolor{seedC}{RGB}{219,68,55}     % seed - warm red
+\definecolor{loopC}{RGB}{66,133,244}    % loop modules - blue
+\definecolor{consC}{RGB}{52,168,83}     % consolidation - green
+\definecolor{propC}{RGB}{120,120,120}   % properties - gray
+\definecolor{loopBG}{RGB}{232,240,254}  % loop background tint
+
+\begin{document}
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  >={Stealth[length=2.4mm]},
+  node distance=8mm and 10mm,
+  box/.style={
+    rectangle, rounded corners=2pt, draw, thick,
+    minimum width=26mm, minimum height=11mm,
+    align=center, text=black, fill=white
+  },
+  seed/.style={box, draw=seedC, fill=seedC!12, font=\sffamily\small\bfseries},
+  mod/.style ={box, draw=loopC, fill=loopC!8},
+  cons/.style={box, draw=consC, fill=consC!12, font=\sffamily\small\bfseries},
+  out/.style ={box, draw=consC, fill=consC!5, minimum width=30mm},
+  arr/.style ={->, thick, loopC},
+  marr/.style={->, thick, black!70},
+]
+
+% ---- Seed ----
+\node[seed] (seed) {Seed\\Entities};
+
+% ---- Iterative loop (2x2) ----
+\node[mod, right=18mm of seed] (query) {Query\\Generation};
+\node[mod, right=of query]     (web)   {Web\\Retrieval};
+\node[mod, below=of web]       (extr)  {Knowledge\\Acquisition};
+\node[mod, below=of query]     (gap)   {Gap\\Discovery};
+
+% loop arrows (clockwise cycle)
+\draw[arr] (query) -- (web);
+\draw[arr] (web)   -- (extr);
+\draw[arr] (extr)  -- (gap);
+\draw[arr] (gap)   -- (query);
+
+% seed feeds into the loop
+\draw[marr] (seed) -- (query);
+
+% ---- Consolidation ----
+\node[cons, right=20mm of web, yshift=-11mm] (cons) {Global Graph\\Consolidation};
+
+% loop -> consolidation
+\draw[marr] (web.east)  to[out=0,in=150] (cons.north west);
+\draw[marr] (extr.east) to[out=0,in=210] (cons.south west);
+
+% ---- Output graph ----
+\node[out, right=14mm of cons] (kg) {Enriched Knowledge Graph};
+\draw[marr] (cons) -- (kg);
+
+% ---- Background for loop ----
+\begin{scope}[on background layer]
+  \node[draw=loopC!50, dashed, rounded corners=4pt,
+        fill=loopBG, inner sep=6mm,
+        fit=(query)(web)(extr)(gap)] (loopbox) {};
+\end{scope}
+\node[loopC, font=\sffamily\footnotesize\itshape, above=1mm of loopbox.north]
+     {Iterative Web-Enhanced Expansion};
+
+% ---- Bottom properties tag under output ----
+\node[below=8mm of kg, align=center, text=propC, font=\sffamily\footnotesize]
+     (props)
+     {\textbf{Depth} $\cdot$ \textbf{Coverage} $\cdot$ \textbf{Topology}};
+\draw[propC, dashed, ->] (kg.south) -- (props.north);
+
+\end{tikzpicture}
+\end{document}

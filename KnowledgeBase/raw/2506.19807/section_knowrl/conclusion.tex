@@ -1,0 +1,27 @@
+\section{Conclusion}
+This paper studies the high levels of hallucination in both slow-thinking models. We analyze how the current outcome-reward-driven reinforcement learning method, despite enhancing reasoning, fails to ensure fact-based thinking. 
+To address this, we propose KnowRL, a knowledge-enhanced RL training method, and validate its effectiveness on multiple datasets. 
+Our experiments demonstrate that directly supervising the model's thinking process with factual rewards is a more robust strategy than solely optimizing for final answers.
+This process-oriented supervision is crucial, as it fundamentally teaches models not just what the correct answer is, but how to reason reliably and recognize the boundaries of their own knowledge. 
+We hope KnowRL offers the community an effective technical pathway to mitigate hallucinations in these slow-thinking models.
+
+
+% Our findings show that directly supervising the model's reasoning process is a more robust strategy than solely optimizing for final answers, as it fundamentally teaches the model how to reason reliably and recognize its own knowledge boundaries.
+% Thus, KnowRL can be seen as an effort to adapt and apply RL methodologies, often used for specialized reasoning tasks like mathematics, to the broader challenge of improving factuality in open-domain tasks. 
+
+% It should be noted that KnowRL represents a preliminary exploration into mitigating hallucinations in reasoning models through post-training. 
+% We hope KnowRL offers the community an effective technical pathway to mitigate hallucinations in these slow-thinking models.
+
+\section*{Limitations}
+Despite our best efforts, this work still has certain limitations that point to promising directions for future exploration and improvement.
+% \paragraph{Fundamental Mechanism Studies.} 
+% Further research is needed to investigate core theoretical questions, such as determining the performance ceiling of RL and identifying scenarios where RL approaches may not be optimal. Particularly, the underlying mechanisms behind multilingual hybrid reasoning phenomena warrant in-depth study, as such understanding could significantly advance interpretability research for slow-thinking models and reveal fundamental insights about the nature of chain-of-thought reasoning.
+
+\paragraph{Fundamental Mechanism Studies.} Our experiments observe a significant multilingual hybrid reasoning phenomenon, where factual supervision in one language (e.g., English) improves performance in another (e.g., Chinese). While this demonstrates the strong transferability and robustness of KnowRL, the underlying theoretical mechanism, specifically how the model internalizes and transfers these knowledge boundaries across language distributions, warrants deeper investigation. Unraveling this mechanism could provide fundamental insights into the nature of chain-of-thought reasoning in large language models.
+
+\paragraph{Extension to Multimodal Domains.} The current KnowRL framework is tailored for textual reasoning and factuality. However, real world information often spans multiple modalities, such as interpreting charts in financial reports or analyzing diagrams in physics problems. Extending the atomic fact verification mechanism to verify information across visual or audio modalities represents a significant opportunity. Future work could explore adapting KnowRL to Vision-Language Models (VLMs), enabling grounded reasoning in broader, multi-sensory contexts.
+
+
+\section*{Acknowledgement}
+We would like to express sincere gratitude to the  reviewers for their thoughtful and constructive feedback. This work was supported by the National Natural Science Foundation of China (No. 62576307, No. NSFCU23B2055, No. NSFCU19B2027), the Fundamental Research Funds for the Central Universities (226-2023-00138), Yongjiang Talent Introduction Programme (2021A-156-G), and Information Technology Center and State Key Lab of CAD\&CG, Zhejiang University. This work was supported by Ant Group and Zhejiang University - Ant Group Joint Laboratory of Knowledge Graph.
+

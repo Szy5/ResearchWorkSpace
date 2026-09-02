@@ -1,0 +1,37 @@
+\begin{algorithm}[H]
+\caption{KG-R1 Training with RL}
+\label{alg:kg_r1_training}
+\SetAlgoLined
+\KwIn{Dataset $D=\{(q,G,A_q)\}$, base LLM $\pi_0$, maximum number of turns $H$, rollouts $N$}
+\KwOut{Trained policy $\pi_\theta$}
+
+$\pi_\theta \leftarrow \pi_0$ \tcp{Initialize from base LLM}
+
+\ForEach{mini-batch of queries from $D$}{
+    \ForEach{$q$ in batch}{
+        \textbf{Collect} $N$ rollouts $\{\tau^{(n)}\}_{n=1}^N$\;
+        \For{$n \leftarrow 1$ \KwTo $N$}{
+            $\tau^{(n)} \leftarrow (p)$\tcp*{where p is the instruction prompt for $q$}
+            \For{$t \leftarrow 1$ \KwTo $H$\tcp*{Multi-turn interaction}}{
+                $r_t \sim \pi_\theta(\cdot \mid \tau^{(n)})$\tcp*{Generate response}
+                $a_t \leftarrow \Psi(r_t)$ where $a_t \in \mathcal{A}_{\text{query}} \cup \{\texttt{answer}\}$\;
+                \If{$a_t \in \mathcal{A}_{\text{query}}$}{
+                    Execute $a_t$, get $o_{t+1}$, and append to $\tau^{(n)}$\;
+                }
+                \Else{
+                    Extract $\hat{A}_q$ and \textbf{break}\;
+                }
+            }
+        }
+        \textbf{Compute rewards for collected rollouts:}\;
+        \Indp %
+        Turn: $r^{\text{turn},(n)}_t = w_{\text{fmt}}v_{\text{fmt}}(r_t) + w_{\text{kg}}v_{\text{kg}}(a_t,o_{t+1}) + w_{\text{ans}}v_{\text{ans}}(r_T)$\;
+        Global: $R^{\text{global},(n)} = w_{\text{H1}} \cdot \text{H1}(\hat{A}_q, A_q) + w_{\text{ret}} \cdot v_{\text{ret}}$\;
+        \Indm %
+    }
+    \textbf{Credit assignment:} $G_t^{(n)} = r^{\text{turn},(n)}_t + \lambda R^{\text{global},(n)}$\;
+    \textbf{Group baseline:} $\bar{G} = \frac{1}{|\mathcal{S}|} \sum_{(n,t) \in \mathcal{S}} G_t^{(n)}$, where $\mathcal{S} = \{(n,t) : t \leq T^{(n)}\}$\;
+    \textbf{Advantages:} $A_t^{(n)} = \frac{G_t^{(n)} - \bar{G}}{\text{std}_{(n,t) \in \mathcal{S}}(G) + \epsilon}$\;
+    \textbf{Update:} $\pi_\theta$ via GRPO with $J(\theta)$, entropy $\mathcal{H}$, and KL divergence to $\pi_0$\;
+}
+\end{algorithm}

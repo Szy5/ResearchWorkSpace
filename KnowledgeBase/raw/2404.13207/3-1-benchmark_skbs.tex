@@ -1,0 +1,30 @@
+\vspace{-3pt}
+\subsection{Semi-structured Knowledge Bases (SKBs)}
+\label{sec:skb}
+\vspace{-3pt}
+\input{tables/semistruct_stats}
+As shown Figure~\ref{fig:semistructure}, we construct three large-scale SKBs with the relational and textual information with each entity. 
+See Table~\ref{tab:statistics} for the basic data statistics and Appendix~\ref{app:skb} for details.
+% \karthik{Refer this table at the end of this section along with other Appendices. Seems out of place.}
+% See Table~\ref{tab:sources} for the comprehensive public sources we used to construct the SKBs. 
+
+\xhdr{Amazon Semi-structured Knowledge Base}  
+The SKB features four entity types: \texttt{product}, \texttt{brand}, \texttt{color}, and \texttt{category}, and five relation types:  \texttt{also\_bought, also\_viewed} between \texttt{product} entities, and
+\texttt{has\_brand/color/category} associated with the products. 
+We derive the textual information of \texttt{product} nodes by combining Amazon Product Reviews~\cite{ups-amazon_review} with Amazon Q\&A Data~\cite{image_amazon_qa}. 
+This provides a rich amount of texts, including product descriptions and customer reviews. 
+For other entities, we extract their names or titles as the textual attributes. Amazon SKB features an extensive textual data largely contributed from customer reviews and Q\&A.
+
+\xhdr{MAG Semi-structured Knowledge Base} 
+This SKB includes node entities of \texttt{paper}, \texttt{author}, \texttt{institute}, and \texttt{field\_of\_study}. We derive its relational structure by extracting a subgraph from obgn-mag~\cite{hu2021open}, which contains shared paper nodes with obgn-papers100M~\cite{hu2021open} and all non-paper nodes. We filter out non-English language papers as we only consider single-lingual queries. 
+The paper documents include their titles and abstracts. Additionally, we integrating details from the Microsoft Academic Graph database (version 2019-03-22)~\cite{mag, mag_data}, providing extra textual information like paper venue, author and institution names. 
+This SKB demonstrates a large number of relations associate with \texttt{paper} nodes, especially on citation and authorship relations. 
+
+
+\xhdr{Prime Semi-structured Knowledge Base} We leverage the exisiting knowledge graph PrimeKG~\cite{primekg} which contains ten entity types including \texttt{disease, gene/protein}, and eighteen relation types, such as \texttt{associated\_with, indication}.
+Compared to the Amazon and MAG SKBs, Prime SKB is denser and features a greater variety of relation types. While PrimeKG provides text information on \texttt{disease} and \texttt{drug} entities, 
+% including drug mechanisms and disease descriptions, 
+we integrate the data from multiple databases for \texttt{gene/protein} and \texttt{pathway} entities such as genomic position, gene activity summary and pathway orthologous event.
+
+
+

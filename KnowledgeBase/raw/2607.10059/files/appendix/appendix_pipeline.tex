@@ -1,0 +1,101 @@
+\section{\pipeline{} Pipeline Details}
+\label{app:pipeline}
+
+\subsection{Pipeline Overview}
+\label{app:pipeline-overview}
+
+\pipeline{} is the data-generation pipeline that produces the \benchmark{} dataset. It is organized in two layers that operate at different timescales.
+
+\textbf{Layer 1 (offline): environment-catalog construction.}
+Run once. Takes raw seed instructions sampled from upstream agent benchmarks and produces a fixed catalog of MCP environments together with the per-seed routing that tells the next layer which environments each seed should be instantiated against. This layer has four sub-stages, ordered so that each downstream stage's input is fully resolved by its predecessor: (i) seed augmentation, (ii) environment-cluster construction, (iii) per-environment schema synthesis, (iv) environment code generation. Each sub-stage uses a cross-family actor-critic loop in which an LLM from one provider proposes and an LLM from a different provider validates, mitigating intra-family agreement bias.
+
+\textbf{Layer 2 (per-pair): task generation.}
+For every augmented seed and its routed environment subset, this layer materializes a should-act and should-abstain task pair. It is a two-stage flow: stage~1 generates the act task (instruction, system prompt, execution DAG $G^+$); stage~2 derives the abstain variant by applying the category-specific minimal perturbation $\delta$ (we use the formal symbols $G^+$, $\delta$, and $C$ from Appendix~\ref{app:formal_framework} throughout). Both stages use the same actor LLM and a programmatic-plus-LLM validation cascade. Once stage~2 succeeds, a writer step persists the pair, derives the critical-action set $C$ for both variants, and exercises the act DAG against the live environment to capture a deterministic record of every tool's actual return; this record supports auditing and reproducibility but is not consumed in lieu of the live environment at evaluation time, which always runs the agent against a freshly-mounted environment instance (Appendix~\ref{app:experiment}).
+
+\textbf{Cross-family LLM configuration.}
+Throughout the pipeline, generation is performed by GPT-5.4 and validation is performed by Claude Sonnet 4.6. The intent is to reduce the chance that an actor-only loop accepts its own malformed outputs. The same convention is followed end-to-end: seed-rewrite validation, environment-schema validation, and the catalog publish gate are all Claude-family critics on GPT-family proposals.
+
+\textbf{Determinism and reproducibility of generation.}
+The pipeline is not deterministic at the LLM level (the actor and critic both sample), but every artifact is persisted with the prompts and feedback transcripts that produced it, and per-stage retry budgets are bounded so that a stage either succeeds within its budget or quarantines the failing attempt for inspection. The published environment catalog and the released benchmark are the post-validation artifacts; intermediate retries are not part of the released distribution.
+
+\subsection{Seed Collection and Pre-processing}
+\label{app:seed-collection}
+
+Raw seed instructions are drawn from eight existing agent benchmarks chosen to span complementary task domains, tool modalities, and failure surfaces: tau-bench~\citep{yao2024taubench} (airline/retail customer service), BFCL~\citep{patil2025bfcl} (irrelevance detection and missing-function splits), Agent-SafetyBench~\citep{zhang2025agentsafetybench} (safety-critical tasks across 349 environments), AppWorld~\citep{trivedi2024appworld} (consumer apps: email, music, payments, files), ToolBH~\citep{zhang2024toolbehonest} (solvable/unsolvable pairs under missing or limited tools), TOP-R~\citep{qiao2026topr} (privacy-sensitive trajectories), Upward Deceivers~\citep{guo2025agentsupwarddeceivers} (document tasks with deceptive environment content), and MCPVerse~\citep{lei2025mcpverse} (tasks against real MCP servers spanning code, maps, finance, and research).
+
+Each source is parsed into a common schema of instruction, abstention category, environment type, tool plan, and action type (informational or operational). Abstention categories are assigned through source-level labels where available (e.g., Agent-SafetyBench~\citep{zhang2025agentsafetybench} failure modes map directly to our taxonomy; BFCL's~\citep{patil2025bfcl} irrelevance split maps to \emph{insufficient\_tool\_capability}) and keyword-based heuristics otherwise. Each instruction is assigned to exactly one category to maintain independence in paired-accuracy analysis. Action type is classified primarily from the tool plan: tasks whose tools include a commit-class verb (send, delete, cancel, create, etc.) are labeled operational; all others informational.
+
+We apply multi-pass quality filtering: discarding entries with empty fields or short instructions, removing upstream artifacts (template-variable corruption in Upward Deceivers, typographic errors in tau-bench), and deduplicating at three granularity levels including a strict normalized fingerprint that catches near-duplicates differing only by a filename or timestamp. From the filtered pool we select 100 seeds per scenario (800 total) using a diversity-aware round-robin that cycles across sources and prioritizes underrepresented environments, targeting 50/50 informational-to-operational balance within every scenario. Raw environment labels from the eight sources are consolidated from over 300 unique names into 75 coarser categories, each containing at least three tasks.
+
+\subsection{Seed Augmentation}
+\label{app:seed-augmentation}
+
+The first sub-stage of Layer 1 takes a raw seed (a natural-language instruction labelled with a target abstention category) and produces an \emph{augmented seed}: a rewritten user instruction, a structured list of \emph{required capabilities}, a free-form abstain sketch describing how the abstain variant would surface, and an optional list of \emph{abstain-side capabilities} that the abstain perturbation will reference. The augmented seed is the unit of input consumed by the rest of Layer 1.
+
+\textbf{Capability vocabulary.}
+Capabilities are described at a level of abstraction one step finer than the env-side tool-kind taxonomy used at evaluation (Appendix~\ref{app:env-details}). The capability schema uses five kinds (read, search, verify, write, delete); these collapse to the three env-side kinds (lookup, verify, commit) at code-generation time via $\{\text{read}, \text{search}\} \to \text{lookup}$, $\text{verify} \to \text{verify}$, $\{\text{write}, \text{delete}\} \to \text{commit}$. The five-valued vocabulary is finer because it gives the rewrite LLM enough granularity to disambiguate read-vs-search semantics during environment design.
+
+\textbf{Act-side capability invariant.}
+The augmentation enforces an act-side invariant tied to the seed's deliverable semantics: an informational seed must declare zero capabilities of kind \emph{write} or \emph{delete}, while an operational seed must declare at least one. This invariant is the upstream source of the empty-$C$ property for informational tasks at evaluation time (Appendix~\ref{app:formal_framework}). The abstain-side capability list, by contrast, is allowed (and for two scenarios is required) to reference commit-class capabilities even when the act side is informational, so the eventual environment can carry the tempting tools the abstain variant needs.
+
+\textbf{Cross-family validation.}
+After the actor proposes a rewritten instruction and capability list, a critic from a different LLM family checks two things: a programmatic capability-kind check enforces the act-side invariant above; a semantic check then asks whether the rewrite preserves the seed's intent and whether the capability list materially covers the rewritten instruction's needs. Failures route back to the actor with a structured feedback message; the actor sees its prior attempt and the specific issues to address. Rewrites that exhaust the retry budget are marked as ``infeasible'' (a substantive verdict on the seed) or ``pipeline error'' (a transient infrastructure failure that should be retried), and the distinction is preserved in the released metadata so re-runs can ignore the latter without manually re-examining each case.
+
+\subsection{Environment Scaling}
+\label{app:env-scaling}
+
+Layer~1's three remaining sub-stages turn the augmented-seed pool into a usable environment catalog: (i) catalog construction with N-to-N capability routing, (ii) per-environment schema synthesis, and (iii) per-environment code generation.
+
+\textbf{Catalog construction and N-to-N routing.}
+The catalog construction stage takes the union of every augmented seed's required and abstain-side capabilities and proposes a set of environment clusters that collectively cover this universe. We do not impose a one-environment-per-seed assignment; instead, each capability is independently assigned to one or more environments, and each seed is then routed to the smallest subset of environments whose union covers all of its capabilities (a greedy set-cover assignment). The proposer iterates against a binary publish gate: every capability in the universe must be covered by at least one environment. While the gate is not yet satisfied, the cross-family critic returns a structured list of issues (redundant clusters, degenerate single-capability environments, capability-cluster mismatches) and the proposer amends the catalog. The repair loop runs under a bounded budget; capabilities that remain unassigned at budget exhaustion are reported as unresolved rather than silently absorbed, so the released catalog is always one whose publish gate has fully passed. This design produces multi-environment tasks naturally when a seed's capability surface spans multiple domains, while keeping single-environment seeds in single environments.
+
+\textbf{Per-environment schema synthesis.}
+For each environment cluster, the third sub-stage produces a structured \emph{environment schema}: a set of typed tool signatures (input parameters, return shape, kind label), a JSON state schema, and a textual environment description. The schema is generated by an actor-critic loop with three layered gates. The first is a \emph{capability-coverage gate}: every capability routed to the environment must be covered by at least one tool's declared coverage list, otherwise the proposer is told which capabilities are uncovered. The second is a \emph{structural gate}: every tool must declare a kind compatible with at least one of its covered capabilities, must list non-empty coverage, and must not name capabilities outside the routed surface. The third is the \emph{cross-family critic}, which reads the assembled schema and the underlying seeds and flags semantic problems (tool-naming drift, missing state fields, redundant tools, domain incoherence). Only schemas that pass all three gates within the retry budget are published; failed schemas are quarantined for inspection.
+
+\textbf{Environment code generation.}
+Once a schema is published, a separate code-generation pass instantiates each environment as an MCP server. This pass spawns a coding agent per environment that iteratively writes, runs, and debugs the implementation files (a Python tool implementation and a typed dataclass schema) until automated verification gates pass: the generated environment must import cleanly with the expected class name; every declared tool must be callable end-to-end with placeholder parameters that match the tool's input schema; the environment's example state must round-trip cleanly through the state-loading routine; and the declared tool count must match the schema. Only environments that pass all gates are promoted into the catalog. There is no human-in-the-loop check at this stage; the published catalog is the verified output of the automated cascade.
+
+\subsection{Task Pair Generation}
+\label{app:task-pair-gen}
+
+Layer~2 turns each augmented seed plus its routed environment subset into a should-act and should-abstain pair. The flow has two stages plus a writer.
+
+\textbf{Stage 1: act-task generation.}
+Stage 1 takes the rewritten instruction and the resolved environment subset and asks the actor LLM to produce: (i) the act-task instruction (a small refinement of the rewritten seed grounded in the actual tool schemas), (ii) a short scenario-defining system prompt, and (iii) the execution DAG~$G^+$ as a list of nodes (each a fully-resolved tool call with parameters) and edges (data dependencies). The actor is grounded on the environment's tool schemas, the JSON state schema, an example state, and the per-environment Python source; this multi-level grounding has been necessary in practice because schema-only grounding tends to produce DAGs that reference invented field names or that get the tool's return shape wrong. After generation, a programmatic validator enforces several invariants: every DAG node's tool name is namespaced and matches a known environment tool; every tool referenced has a declared kind; the action-type-to-DAG-shape invariant holds (informational seeds yield DAGs with no commit-class node, operational seeds yield DAGs with at least one); and the topology is acyclic. Failures route a feedback message back to the actor for retry.
+
+\textbf{Stage 2: abstain-variant generation.}
+Stage 2 takes the published act task and applies the category-specific transformation $\delta$ to derive the abstain variant. The transformer is selected by the seed's category and is the only stage in the pipeline that directly knows which sub-element of $(q, e, \TL)$ to mutate. Some categories transform the instruction text (S1, S2, S3, S4); some transform the environment data (S7, S8); some transform the tool inventory (S5) or runtime tool behavior (S6). The transformer also produces an \emph{abstention trigger} record that names $\delta$'s kind, the modified element, and a free-form description of why the perturbation makes proceeding incorrect; this record is preserved in the published task for downstream auditing. A category-specific validator then checks the perturbation's structural preconditions (for example, ambiguous-action-specification requires that the abstain variant introduce at least two alternative commit-class capabilities; high-stakes-action with informational acts requires that the abstain variant introduce one new commit tool). Failures retry within the same actor session so the actor sees its prior proposals.
+
+\textbf{Writing and replay.}
+A final writer step persists the pair: a metadata record (pair identifier, category, phase, transformation dimension, action type, source benchmark), the act and abstain task definitions, and per-environment initial state files. As part of writing, the writer derives the critical-action set $C$ for each variant by reading the act DAG's commit-class nodes and, for two scenarios, augmenting with the category-specific extras carried by the abstain variant (alternative tools for ambiguous-action-specification; the escalated tool for high-stakes-action). Finally, the writer executes the act DAG against the live environment one node at a time, recording each tool call's actual return values into a deterministic record on disk. This per-task replay serves as the last verification gate of the pipeline: a published task is one whose act DAG demonstrably runs end-to-end against the environment. The record itself is retained for auditing and downstream reproducibility, and is not used as a substitute for the live environment at agent-evaluation time (Appendix~\ref{app:experiment}).
+
+\subsection{Category Specifications}
+\label{app:category-specs}
+
+Each of the eight scenarios is implemented by a category specification that groups three pieces: (i) a \emph{scenario specification} with a description, the act-side instruction requirements, the perturbation specification (what $\delta$ does), and a list of boundary cases that should not be confused with this category; (ii) a \emph{transformer} that performs the perturbation and emits the abstention-trigger record; (iii) a \emph{validator} that enforces structural preconditions specific to the category. Table~\ref{tab:cat-specs} summarises the per-category transformation and validator structure; full per-category specifications are released alongside the dataset.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Per-category transformation and validation summary. The phase column names when the trigger becomes observable to the agent; the validator-gate column names the structural precondition the validator enforces on the abstain variant; the $\delta$-target column names which element of $T = (q, e, \TL)$ is mutated.}
+\label{tab:cat-specs}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{p{2.4cm}p{2.4cm}p{6.5cm}p{2.5cm}}
+\toprule
+\textbf{Scenario} & \textbf{Phase} & \textbf{Validator gate on abstain variant} & \textbf{$\delta$ target} \\
+\midrule
+S1 Missing Param.    & pre-execution & At least one parameter required by a node in $C$ becomes unresolvable from the rewritten instruction.        & instruction \\
+S2 Ambig.\ Action    & pre-execution & At least two alternative commit-class capabilities present (the alternatives the user might have meant).     & instruction \\
+S3 Conflict.\ Constr.& pre-execution & Constraint set in the instruction is unsatisfiable in any reading consistent with the user's intent.         & instruction \\
+S4 High-Stakes       & pre-execution & A new commit tool is introduced when the act is informational, or when the operational escalation crosses an irreversibility line; for operational acts whose escalation is along scope, audience, monetary, or sensitivity dimensions, the same commit tool is reused with escalated parameters. & instruction \\
+S5 Insuff.\ Capab.   & pre-execution & A tool required by the act DAG is removed from the environment surface; no substitute path exists.            & tool inventory \\
+S6 Tool Failure      & runtime       & A tool on every act-DAG path to $C$ is overridden to fail at call time, with no alternative path.            & tool behavior \\
+S7 Conflict.\ Evid.  & runtime       & Environment data is perturbed so a proposition the act DAG would observe contradicts $q$ or another tool's output. & env state \\
+S8 Emergent Risk     & runtime       & Environment data carries an explicit risk signal (e.g.\ a do-not-act tag) that becomes visible mid-execution. & env state \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\textbf{Boundary cases.}
+Each category specification carries an explicit list of boundary cases that look like the category but are not, with the goal of preventing semantic drift across $\delta$. For example, conflicting-constraints excludes cases where the user merely overrides a default (those express a coherent preference, not a logical contradiction); high-stakes-action excludes cases where the action is large in volume but not categorically different from a normal user request (200x quantities of a routine bulk action remain plausibly user-issued). The boundary lists are read into the actor's prompt at generation time and into the validator's checks, so a category-mismatch flag can route a failed instance to a different category or to quarantine.

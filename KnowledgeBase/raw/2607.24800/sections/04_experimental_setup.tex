@@ -1,0 +1,21 @@
+\section{Experimental Setup}
+\paragraph{Benchmark and metrics.}
+We evaluate on \stark PRIME, MAG, and Amazon. These graphs cover biomedical entities, academic papers, and products, respectively. We report the standard retrieval metrics \hit{1}, \hit{5}, \recall{20}, and \mrr. \hit{1} and \hit{5} measure whether at least one correct answer appears in the first one or five ranks. \recall{20} measures the fraction of gold answers recovered in the first twenty ranks. \mrr measures the reciprocal rank of the first correct answer and is sensitive to whether the correct node moves near the top of the list.
+
+\paragraph{Models and serving.}
+All experiments use open-weight \qwen controllers \cite{yang2025qwen3} served through vLLM. Validation ablations use Qwen3-14B. Held-out subset and constrained-budget experiments use Qwen3-30B-A3B-Instruct-2507 with tensor parallel serving. This local serving choice is reported for reproducibility and cost transparency; the research question is about adaptive retrieval behavior, not about a particular deployment constraint.
+
+\paragraph{Evaluation protocol.}
+The validation ablation uses 100 examples per graph and compares four controller variants under two maximum interaction budgets: 12 and 16. The held-out subset uses the stronger controller and compares the unconditioned agent against \tb on PRIME, MAG, and Amazon. Because long-running agent jobs can complete slightly different numbers of examples per condition, we report aggregate results and shared-ID paired results. Paired analysis is the most conservative comparison as it keeps only query IDs present in both conditions and computes \tb-minus-unconditioned deltas on the same examples.
+
+\paragraph{Constrained-budget probe.}
+To test whether degradation is caused mainly by excessive interaction length, we run a constrained-budget version of \tb with a lower step budget and tighter caps on global and neighborhood calls. This probe is not a separate model; it is a controlled change to the same profile/trace protocol. Its purpose is to distinguish ``the agent thinks too long'' from ``the agent chooses the wrong actions.''
+
+\paragraph{Implementation.}
+The implementation overlays \tb on an ARK-style code path where graph tools, answer formatting, and metric scripts are preserved, while prompts, trace logging, and run wrappers are extended. We avoid training or test-set tuning since the contribution is evaluated as a controller protocol over fixed tools and fixed metrics.
+
+\paragraph{Naming convention.}
+We avoid shorthand labels in the analysis. ``Unconditioned'' denotes the original controller without profile or trace hints. ``Profile-only'' and ``Trace-only'' are single-component ablations. ``\tb'' denotes the combined profile-plus-trace controller and its instrumentation. A label such as ``Unconditioned, 12 steps'' therefore means that the same controller is run with a maximum of 12 action-observation iterations; it does not refer to a separate model checkpoint.
+
+\paragraph{Evidence structure.}
+The reported tables are produced from JSON trajectory logs and metric summaries. Each per-query log contains the final ranked list, tool calls, observations, and derived counters. The package includes the table summaries and paired-diagnostic outputs used to construct the paper. The raw traces make it possible to audit whether a score difference arises from a ranking change, a missing completion, or a trajectory-level failure such as a repeated call.

@@ -1,0 +1,61 @@
+\section{Experimental Setups}
+\subsection{Dataset}
+We construct our synthetic training set using the LLaVA-OneVision~\cite{li2024llavaonevisioneasyvisualtask}, which covers diverse multimodal tasks including reasoning, math and coding, and captioning. To focus on multimodal evaluation, we restrict ourselves to the single-image subsets.
+To avoid dominance by any single sub-dataset, we impose a cap of 10k on the number of examples drawn from each sub-dataset, resulting in 100k prompts. This ensures balanced coverage across categories while maintaining manageable data size. 
+
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lcccccccccccc}
+\toprule
+ & \multicolumn{4}{c}{\textit{VLRB}} & \multicolumn{6}{c}{\textit{MMRB}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-11}
+\textbf{Model} & \cellcolor{gray!20}\textbf{Ave.} & \textbf{Gen.} & \textbf{Hallu.} & \textbf{Reason.} & \cellcolor{gray!20}\textbf{Ave.} & \textbf{Gen.} & \textbf{Know.} & \textbf{Reason.} & \textbf{Safe.} & \textbf{VQA} \\
+\midrule
+\multicolumn{11}{l}{\textit{Larger Models}} \\
+Claude-3.5 & \cellcolor{gray!20}0.536 & 0.434 & 0.550 & 0.623 & \cellcolor{gray!20}0.721 & 0.652 & 0.739 & 0.669 & 0.687 & 0.856 \\
+GPT-4o & \cellcolor{gray!20}0.624 & 0.491 & 0.676 & 0.705 & \cellcolor{gray!20}0.713 & 0.658 & 0.720 & 0.649 & 0.668 & 0.872 \\
+Llama-90B & \cellcolor{gray!20}0.539 & 0.426 & 0.573 & 0.617 & \cellcolor{gray!20}0.618 & 0.642 & 0.612 & 0.547 & 0.519 & 0.771 \\
+\midrule
+\multicolumn{11}{l}{\textit{Our Method (Based on Llama-3.2-11B-Vision-Instruct)}} \\
+Base & \cellcolor{gray!20}0.383 & 0.297 & 0.304 & 0.549 & \cellcolor{gray!20}0.499 & 0.590 & 0.506 & 0.517 & 0.317 & 0.565 \\
+Iteration 1 & \cellcolor{gray!20}0.452 & 0.398 & 0.362 & 0.596 & \cellcolor{gray!20}0.519 & \textbf{0.625} & 0.532 & 0.500 & 0.289 & 0.651 \\
+Iteration 2 & \cellcolor{gray!20}\underline{0.521} & \underline{0.453} & \textbf{0.529} & 0.580 & \cellcolor{gray!20}0.521 & 0.591 & 0.506 & 0.513 & 0.304 & \underline{0.693} \\
+Iteration 3 & \cellcolor{gray!20}0.488 & 0.425 & 0.426 & \textbf{0.612} & \cellcolor{gray!20}\underline{0.538} & \underline{0.599} & \underline{0.540} & \textbf{0.543} & 0.307 & \textbf{0.701} \\
+Iteration 4 & \cellcolor{gray!20}\textbf{0.538} & \textbf{0.503} & \underline{0.514} & \underline{0.596} & \cellcolor{gray!20}\textbf{0.539} & 0.591 & \textbf{0.556} & \underline{0.531} & \textbf{0.329} & 0.689 \\
+\bottomrule
+\end{tabular}
+\caption{Performance comparison on VLRB and MMRB benchmarks. Our iteratively trained judge model based on Llama-3.2-11B achieves competitive performance with significantly larger models across multiple evaluation dimensions.}
+\label{tab:vlrb_mmrb_results}
+\end{table*}
+
+\subsection{Evaluation}
+
+We evaluate our VLM judge and baselines on two comprehensive benchmarks: Multimodal RewardBench~\cite{mmrb} and VL-RewardBench~\cite{vlrb}. Both benchmarks measure judge performance across multiple dimensions including general instructions, hallucinations, correctness, reasoning, and VQA. Multimodal RewardBench comprises 5,211 preference pairs covering both long-form and short-answer formats, with labels derived from ground truth correctness or high-quality human expert annotations. VL-RewardBench spans general multimodal instructions, hallucination detection, and complex reasoning tasks, combining human-verified and AI-annotated preference labels to ensure comprehensive coverage of real-world scenarios.
+
+\subsection{Implementation details}
+
+We fine-tune the Llama-3.2-11B-Vision-Instruct model for 5 epochs using a learning rate of 1e-5 and a batch size of 2 per GPU across 8 GPUs (effective batch size of 16). We employ FSDP for distributed training and enable fast kernels for computational efficiency. We use cross-entropy loss computed over the generated reasoning traces from each iteration cycle. 
+We iterate the training process until overall performance plateaus, operationally 
+defined as less than 1\% relative improvement over three consecutive iterations on either of the benchmarks. 
+In our experiments, we observe diminishing returns after iteration 4, though individual dimensions may peak at different iterations due to varying learning 
+dynamics across task types. More details on the hyperparameters in data generation, sampling, and training can be found in Appendix~\ref{app:hyperparameters}.
+
+
+
+
+\section{Results}
+
+\subsection{Iterative Training Improvements} Table~\ref{tab:vlrb_mmrb_results} demonstrates the effectiveness of iterative training on our Llama3-11B based judge model. On VLRB, our model improves from 0.383 (base) to 0.538 (iteration 4), representing a 40.5\% relative gain. On MMRB, we observe improvement from 0.499 (base) to 0.539 (iteration 4), a 7.5\% relative gain. 
+The progression across iterations demonstrates relatively consistent improvement, though the improvement trajectory can vary across different dimensions.
+
+Compared with larger models, despite using only 11B parameters, our model achieves competitive performance on several dimensions: on general instruction following, our model (0.503) substantially outperforms the 90B parameter Llama-3.2-90B (0.426), Claude-3.5-Sonnet (0.434) and GPT-4o (0.491). Across VLRB hallucination and MMRB VQA, our model (0.514, 0.689) approaches larger models despite the base model's significantly weaker starting performance (0.304, 0.565).
+
+\subsection{Performance Gains Across Dimensions}
+
+Our iterative training exhibits dimension-specific learning dynamics that reveal the differential effectiveness of our synthetic data generation strategies. On VLRB, general instruction following demonstrates the largest relative gain of 69\% (0.297 $\rightarrow$ 0.503), indicating that our preference pair construction successfully captures the supervision signal necessary for open-ended multimodal instruction assessment. Hallucination detection on VLRB achieves 40.9\% relative improvement (0.304 $\rightarrow$ 0.514), validating our detail alteration methodology for training factual consistency discrimination. Reasoning evaluation shows 8.6\% relative improvement (0.549 $\rightarrow$ 0.596 at iteration 4), though exhibits non-monotonic optimization behavior with peak performance at iteration 3 (0.612), suggesting potential signs of overfitting in later iterations.
+
+On MMRB, VQA tasks yield substantial gains (18.0\% relative improvement, 0.565 $\rightarrow$ 0.689), confirming effective transfer from our majority voting-based preference construction for closed-ended answers. In contrast, several dimensions show relatively marginal improvement: reasoning capability increases from 0.517 to 0.531 (2.7\% relative gain), general evaluation (averaging correctness and preference) stayed flat from 0.590 $\rightarrow$ 0.591, and safety evaluation demonstrates limited responsiveness (0.317 $\rightarrow$ 0.329). These marginal gains indicate potential distributional mismatch between our synthetic data and the supervision required for these specific capabilities.
+

@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP",
+      "authors": "Patrick Lewis et al.",
+      "year": 2020,
+      "arxiv_id": "2005.11401",
+      "role": "Gap Identification",
+      "relationship_sentence": "The paper popularized the tightly coupled \"RAG\" paradigm (retrieve then condition generation end-to-end), whose coupling of retrieval and free-form generation highlights the very hallucination and entity-dilution problems that the current work explicitly addresses by decoupling retrieval from surface realization."
+    },
+    {
+      "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+      "authors": "Vladimir Karpukhin et al.",
+      "year": 2020,
+      "arxiv_id": "2004.04906",
+      "role": "Inspiration",
+      "relationship_sentence": "\"DPR\" introduced learned dense bi-encoder retrieval that the current system adapts conceptually for a conversational dense pool (fine-tuned Qwen 8B adapters) to recover intent-driven matches that lexical signals miss."
+    },
+    {
+      "title": "ColBERT: Efficient and Effective Passage Search via Contextualized Late Interaction",
+      "authors": "Omar Khattab and Matei Zaharia",
+      "year": 2020,
+      "arxiv_id": "2004.12832",
+      "role": "Inspiration",
+      "relationship_sentence": "\"ColBERT\" showed that late-interaction designs preserve exact token-level matching while using contextual encoders, motivating the paper's hybrid lexical--dense retrieval view to retain catalog cues alongside dense conversational signals."
+    },
+    {
+      "title": "Adapter-BERT: Parameter-Efficient Transfer Learning for NLP",
+      "authors": "Neil Houlsby et al.",
+      "year": 2019,
+      "arxiv_id": "1902.00751",
+      "role": "Foundation",
+      "relationship_sentence": "\"Adapter-BERT\" framed adapter modules as a compact way to specialize large pretrained models, directly underpinning the current paper's use of task-adapted \"Qwen 8B adapters\" to build a conversation-focused retrieval pool without full model re-training."
+    },
+    {
+      "title": "Fusion-in-Decoder: Unifying Retrieval and Generation for Open-Domain Q&A",
+      "authors": "Victor Izacard and Edouard Grave",
+      "year": 2021,
+      "arxiv_id": "2110.03061",
+      "role": "Related Problem",
+      "relationship_sentence": "\"FiD\" operationalized how multiple retrieved contexts can be fused in the decoder for faithful generation, which highlights both the advantages and the limitations of end-to-end fusion and motivates the current paper's choice to instead feed a structured evidence assignment into generation."
+    },
+    {
+      "title": "Reciprocal Rank Fusion for Combining Multiple Retrieval Results",
+      "authors": "Gordon V. Cormack and Mark D. Smucker",
+      "year": 2009,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "\"Reciprocal Rank Fusion (RRF)\" is the canonical lightweight rank-aggregation method used to merge lexical and dense views, and the current work builds on RRF as an initial cross-view fusion step before supervised calibration with gradient-boosted ranking."
+    }
+  ],
+  "synthesis_narrative": "Several lines of prior work combine to form the concrete technical context for the present system. \"RAG\" articulated a tightly coupled retrieve-then-generate paradigm and exposed how entangling retrieval and free-form generation can produce hallucinations and loss of exact entity cues; this gap-mapping motivates designs that preserve discrete catalog matches. Learned dense retrieval exemplified by \"DPR\" supplies the core idea of training encoder pools to capture conversational intent beyond surface keywords, while \"ColBERT\" demonstrated that late-interaction and hybrid designs can preserve token-level matches even when using contextual encoders—both directly inform the paper's hybrid lexical--dense pool. Practical parameter-efficient specialization via \"Adapter-BERT\" provides the methodological foundation for using lightweight adapters on a large model (here, \"Qwen 8B adapters\") to create a conversation-tuned retrieval view without full fine-tuning. On the generation side, \"FiD\" shows how multiple retrieved contexts can be fused for decoder conditioning, clarifying why naive end-to-end fusion can still fail to guarantee grounded, entity-accurate explanations. Finally, classic rank-aggregation like \"Reciprocal Rank Fusion (RRF)\" supplies a simple but effective baseline fusion that the authors use prior to supervised re-ranking. Together, these works expose a clear opportunity: combine a hybrid retrieval architecture that preserves exact catalog cues (lexical + adapter-tuned dense views), aggregate complementary signals robustly (RRF then supervised calibration), and then constrain generation with explicit, candidate-level evidence. That combination naturally leads to an operationally decoupled pipeline and to the paper's propose-assign-select (PAS) evidence-grounding scheme as the next logical step for reliable, inspectable conversational explanations."
+}

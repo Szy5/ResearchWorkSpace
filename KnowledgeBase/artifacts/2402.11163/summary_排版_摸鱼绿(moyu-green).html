@@ -1,0 +1,456 @@
+<section style="max-width:677px;margin:0 auto;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;color:#374151;line-height:1.75;letter-spacing:0.5px;overflow-x:hidden;">
+
+<section style="margin:24px 20px 32px;">
+  <section style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <p style="font-size:10px;color:#9CA3AF;margin:0;text-transform:uppercase;letter-spacing:2px;font-weight:600;">
+      <span leaf="">📦 6 Parts</span>
+    </p>
+    <p style="font-size:10px;color:#9CA3AF;margin:0;">
+      <span leaf="">👉 滑动</span>
+    </p>
+  </section>
+  <section style="overflow-x:scroll;-webkit-overflow-scrolling:touch;white-space:nowrap;padding-bottom:8px;">
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:linear-gradient(135deg,#059669,#10B981);border-radius:12px;padding:12px;margin-right:8px;">
+      <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 01</span></p>
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">研究动机</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.7);margin:0;"><span leaf="">为何做 KG-Agent</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 02</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">方法介绍</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">代理闭环设计</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 03</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">实验结果</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">10K 样本效能</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 04</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">简要总结</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">三点速记</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 05</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">科学范式</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">模块化流水线</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 06</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">先前工作</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">三条技术脉络</span></p>
+    </section>
+  </section>
+</section>
+
+
+<section style="margin:0 20px 24px;background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;text-align:center;">
+  <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;">
+    <span leaf="">论文速读 · KG-Agent</span>
+  </p>
+  <p style="margin:0;line-height:1.6;">
+    <span style="font-size:15px;color:#059669;font-weight:bold;border-bottom:3px solid #FDE68A;padding-bottom:2px;"><span leaf="">用约 10K 合成指令，让 LLaMA-7B 学会在知识图谱上自主推理</span></span>
+  </p>
+</section>
+
+<section style="padding:0 20px;margin-bottom:8px;"><p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">本文梳理论文 </span><strong style="color:#059669;"><span leaf="">KG-Agent</span></strong><span leaf="">：一个面向知识图谱复杂推理的自主代理框架，使较小规模大模型也能通过工具调用与记忆更新完成多跳推理。</span></p></section>
+
+<section style="margin-top:16px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;"><span leaf="">01</span></p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;"><span leaf="">研究动机与贡献</span></p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;"><span leaf="">MOTIVATION · WHY KG-AGENT</span></p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">为什么要把大模型和知识图谱（KG）结合？</span></p>
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">LLM 的短板</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">现代 </span><strong style="color:#059669;"><span leaf="">大语言模型（LLMs）</span></strong><span leaf=""> 在语言理解上很强，但在多跳、知识密集型推理上依赖内参知识并不稳定。知识图谱以三元组存储结构化事实，可作外部知识来源，但如何高效、灵活地让 LLM 利用 KG 仍是挑战。</span>
+  </p>
+</section>
+
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">现有路线的局限</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">现有方法主要有两类：</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">检索增强</span></span><span leaf="">（把相关三元组序列化进 prompt）和 </span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">协同增强</span></span><span leaf="">（设计 LLM 与 KG 的交互策略）。问题在于：交互策略常是人工预设，难适应复杂任务；且许多方法依赖封闭大模型 API，不利于开放小模型的实用化。</span>
+  </p>
+</section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">三大核心贡献</span></span></p>
+<section style="margin-bottom:24px;">
+
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">1</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><span leaf="">提出 </span><strong style="color:#059669;"><span leaf="">KG-Agent</span></strong><span leaf="">：基于 LLM 的自主代理框架，让较小模型在推理中主动决策、反复调用工具直至完成 KG 推理，减少对更大闭源模型的依赖。</span></p>
+  </section>
+
+
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">2</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><span leaf="">构建面向 KG 的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">多功能工具箱</span></span><span leaf="">，把筛选、计数、检索等图操作封装为可调用工具，使模型以离散、可执行的方式操纵结构化结果。</span></p>
+  </section>
+
+
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">3</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><span leaf="">用</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">程序化指令合成</span></span><span leaf="">把 KGQA 推理链转为可执行程序与指令对，约 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">10K</span></span><span leaf=""> 样本微调 </span><strong style="color:#059669;"><span leaf="">LLaMA-7B</span></strong><span leaf="">，显著提升域内与域外表现。</span></p>
+  </section>
+
+</section></section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;"><span leaf="">02</span></p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;"><span leaf="">方法介绍</span></p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;"><span leaf="">METHOD · AGENT LOOP</span></p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">总体思路：把经过指令微调的 </span><strong style="color:#059669;"><span leaf="">LLM</span></strong><span leaf="">、多功能工具箱、基于 KG 的执行器与记忆模块组成闭环代理。模型循环选择工具、交执行器运行、把结果写入记忆，并以此决定下一步，直到输出最终答案或 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">SPARQL</span></span><span leaf=""> 查询。</span></p>
+
+<section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin-bottom:8px;">
+  <section style="margin:0;border-radius:8px;overflow:hidden;">
+    <span leaf=""><img src="assets/figures/model.jpg" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span>
+  </section>
+</section>
+<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">
+  <span leaf="">— 图：KG-Agent 概览（上半部为代理运行流程，下半部展示指令微调数据合成与 prompt 模板示例）</span>
+</p>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">关键组件</span></span></p>
+
+<section style="background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 4px 16px rgba(5,150,105,0.12);margin-bottom:16px;">
+  <p style="font-size:14px;font-weight:800;color:#059669;margin:0 0 8px;"><span leaf="">多功能工具箱（Toolbox）</span></p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.8;text-align:justify;"><span leaf="">把 KG 推理中常见操作封装为工具，例如基于 SPARQL 的检索、集合运算（交并补）、聚合（计数、排序、Top-k）等。接口明确、离散，便于 LLM 学会何时调用何种操作。</span></p>
+</section>
+
+
+<section style="background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 4px 16px rgba(5,150,105,0.12);margin-bottom:16px;">
+  <p style="font-size:14px;font-weight:800;color:#059669;margin:0 0 8px;"><span leaf="">KG 执行器</span></p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.8;text-align:justify;"><span leaf="">接收工具调用生成的查询或指令（例如 SPARQL），在实际 KG 上执行并返回结构化结果，避免把大量原始三元组直接拼进 prompt。</span></p>
+</section>
+
+
+<section style="background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 4px 16px rgba(5,150,105,0.12);margin-bottom:16px;">
+  <p style="font-size:14px;font-weight:800;color:#059669;margin:0 0 8px;"><span leaf="">知识记忆（Memory）</span></p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.8;text-align:justify;"><span leaf="">记录中间实体集、推理步骤、上下文提示等，支持短期迭代决策与长期检索线索。每一轮 LLM 可读记忆并决定下一工具调用或终止。</span></p>
+</section>
+
+
+<section style="background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 4px 16px rgba(5,150,105,0.12);margin-bottom:16px;">
+  <p style="font-size:14px;font-weight:800;color:#059669;margin:0 0 8px;"><span leaf="">自主迭代机制</span></p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.8;text-align:justify;"><span leaf="">通过读问题 + 读记忆来选择工具（或直接输出答案），形成「感知—行动—观察—记忆更新」环路；本工作以监督学习与工具调用行为为主导。</span></p>
+</section>
+
+
+<section style="background:#fff;border-radius:12px;padding:16px 20px;box-shadow:0 4px 16px rgba(5,150,105,0.12);margin-bottom:16px;">
+  <p style="font-size:14px;font-weight:800;color:#059669;margin:0 0 8px;"><span leaf="">程序化指令合成与微调</span></p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.8;text-align:justify;"><span leaf="">从现有 KGQA 数据抽取推理链，生成等价程序，再构造「问题 → 代码式推理步骤 → 工具调用样例」指令对，对 LLaMA-7B 微调以习得操纵结构化数据的能力。</span></p>
+</section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:32px;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">简化代理循环</span></span></p>
+
+<section style="margin-bottom:20px;">
+  <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 01</span></span>
+    <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;"><span leaf="">读入</span></h4>
+  </section>
+  <p style="font-size:14px;margin:0 0 8px;color:#4B5563;line-height:1.9;text-align:justify;"><span leaf="">LLM 读取问题与记忆。</span></p>
+</section>
+
+
+<section style="margin-bottom:20px;">
+  <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 02</span></span>
+    <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;"><span leaf="">选工具</span></h4>
+  </section>
+  <p style="font-size:14px;margin:0 0 8px;color:#4B5563;line-height:1.9;text-align:justify;"><span leaf="">选择工具（如 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">query_entities</span></span><span leaf="">、</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">filter_by_relation</span></span><span leaf="">、</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">count</span></span><span leaf="">）。</span></p>
+</section>
+
+
+<section style="margin-bottom:20px;">
+  <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 03</span></span>
+    <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;"><span leaf="">执行</span></h4>
+  </section>
+  <p style="font-size:14px;margin:0 0 8px;color:#4B5563;line-height:1.9;text-align:justify;"><span leaf="">生成工具调用指令 → 执行器执行 → 返回结构化结果。</span></p>
+</section>
+
+
+<section style="margin-bottom:20px;">
+  <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 04</span></span>
+    <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;"><span leaf="">写记忆</span></h4>
+  </section>
+  <p style="font-size:14px;margin:0 0 8px;color:#4B5563;line-height:1.9;text-align:justify;"><span leaf="">更新记忆，记录新实体集与步骤。</span></p>
+</section>
+
+
+<section style="margin-bottom:20px;">
+  <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+    <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 05</span></span>
+    <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;"><span leaf="">终止判定</span></h4>
+  </section>
+  <p style="font-size:14px;margin:0 0 8px;color:#4B5563;line-height:1.9;text-align:justify;"><span leaf="">若满足终止条件则输出答案，否则回到步骤 1。</span></p>
+</section>
+
+
+<section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:24px;">
+  <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+    <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">感知</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;"><span leaf="">问题 + 记忆</span></p>
+    </section>
+    <section style="display:flex;align-items:center;color:#D1D5DB;font-size:14px;padding:0 4px;"><span leaf="">→</span></section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">行动</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">选工具并执行</span></p>
+    </section>
+    <section style="display:flex;align-items:center;color:#D1D5DB;font-size:14px;padding:0 4px;"><span leaf="">→</span></section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #A7F3D0;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#059669;margin:0 0 3px;"><span leaf="">记忆更新</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">写回再迭代</span></p>
+    </section>
+  </section>
+  <p style="font-size:12px;color:#9CA3AF;text-align:center;margin:12px 0 0;letter-spacing:0.5px;">
+    <span leaf="">自主决策环路：比固定交互策略更灵活</span>
+  </p>
+</section>
+</section>
+
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;"><span leaf="">03</span></p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;"><span leaf="">实验结果</span></p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;"><span leaf="">RESULTS · 10K SAMPLES</span></p>
+    </section>
+  </section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">评测任务与数据集</span></span></p>
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">域内 KGQA</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf=""></span><strong style="color:#059669;"><span leaf="">CWQ</span></strong><span leaf="">、</span><strong style="color:#059669;"><span leaf="">GrailQA</span></strong><span leaf="">、</span><strong style="color:#059669;"><span leaf="">WebQSP</span></strong><span leaf=""> 等（多跳、复杂查询）。</span>
+  </p>
+</section>
+
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">域外 / 零-shot ODQA</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf=""></span><strong style="color:#059669;"><span leaf="">WQ-Freebase</span></strong><span leaf="">、</span><strong style="color:#059669;"><span leaf="">TQ-Wiki</span></strong><span leaf=""> 等，用于测试迁移与泛化能力。</span>
+  </p>
+</section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:24px;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">主要结果亮点</span></span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">仅用约 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">10K</span></span><span leaf=""> 合成指令样本微调 </span><strong style="color:#059669;"><span leaf="">LLaMA-7B</span></strong><span leaf=""> 后，</span><strong style="color:#059669;"><span leaf="">KG-Agent</span></strong><span leaf=""> 在多项数据集上超越了以更大 LLM 或更多训练数据为基础的现有方法。</span></p>
+
+<section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:28px;">
+  <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+    <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">CWQ</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;"><span leaf="">约 +7.5% 相对 F1</span></p>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">GrailQA</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">约 +2.7% 相对提升</span></p>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">TQ-Wiki</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">约 +8.5% 相对准确率</span></p>
+    </section>
+  </section>
+</section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">域外零-shot 性能优于一些使用全量监督微调的模型；</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">数据量敏感性</span></span><span leaf=""> 方面，性能随微调样本量增长快速上升，但在 10K 左右已达很好效果，体现了「程序化合成指令 + 工具化接口」对小模型的高效性。</span></p>
+
+<section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin-bottom:8px;">
+  <section style="margin:0;border-radius:8px;overflow:hidden;">
+    <span leaf=""><img src="assets/figures/amount.jpg" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span>
+  </section>
+</section>
+<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">
+  <span leaf="">— 图：不同微调数据量下（WebQSP / CWQ）的 F1 与 Hits@1</span>
+</p>
+
+
+<section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin-bottom:8px;">
+  <section style="margin:0;border-radius:8px;overflow:hidden;">
+    <span leaf=""><img src="assets/figures/amount-2.jpg" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span>
+  </section>
+</section>
+<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">
+  <span leaf="">— 图：同上（另一视图 / 子集）</span>
+</p>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">实证结论</span></span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">以工具化、程序化的训练数据指导，较小模型也能学会在 KG 上进行多步、结构化推理。</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">自主代理式的工具选择与记忆更新</span></span><span leaf="">，使推理流程更灵活，可适应未预见的任务需求。</span></p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;"><span leaf="">04</span></p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;"><span leaf="">简要总结</span></p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;"><span leaf="">SUMMARY · TAKEAWAYS</span></p>
+    </section>
+  </section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">要点回顾</span></span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><strong style="color:#059669;"><span leaf="">KG-Agent</span></strong><span leaf=""> 将 LLM、工具箱、KG 执行器与记忆结合成自主代理，允许模型在 KG 上反复做工具选择和记忆更新，直至完成推理任务。</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">使用程序化指令合成，对 </span><strong style="color:#059669;"><span leaf="">LLaMA-7B</span></strong><span leaf=""> 进行约 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">10K</span></span><span leaf=""> 样本微调，就能在多个 KGQA 与 ODQA 任务上取得或超过现有 SOTA，显示了小模型通过「学会操纵结构化数据」获得的效率优势。</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">框架强调</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">模块化</span></span><span leaf="">（工具 / 执行器 / 记忆）与</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">可解释的中间结果</span></span><span leaf="">（可审计的工具调用与执行器返回），对实际应用友好。</span></p>
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:24px;margin-bottom:16px;"><span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">局限与未来方向</span></span></p>
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">合成质量依赖</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">当前依赖高质量程序合成——合成质量会影响微调效果；如何自动获得更广泛、鲁棒的合成数据是下一步工作。</span>
+  </p>
+</section>
+
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">结构化数据扩展</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">目前侧重 KG（图结构）；作者计划将框架推广到其他结构化数据（关系型数据库、表格等）。</span>
+  </p>
+</section>
+
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">工程与稳健性</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">实际应用中的延迟与执行器开销，以及在开放域 KG（长期更新、噪声事实）上的稳健性仍需评估。</span>
+  </p>
+</section>
+
+
+<section style="background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;margin-bottom:16px;text-align:center;">
+  <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;"><span leaf="">如果你只记三点</span></p>
+  <p style="margin:0 0 8px;line-height:1.6;">
+    <span style="font-size:14px;color:#059669;font-weight:bold;"><span leaf="">① 工具 + 记忆 + 程序化指令微调，让小模型能做复杂 KG 推理</span></span>
+  </p>
+  <p style="margin:0 0 8px;line-height:1.6;">
+    <span style="font-size:14px;color:#059669;font-weight:bold;"><span leaf="">② 10K 合成样本即可显著提升 LLaMA-7B 的多跳 KGQA 能力</span></span>
+  </p>
+  <p style="margin:0;line-height:1.6;">
+    <span style="font-size:14px;color:#059669;font-weight:bold;"><span leaf="">③ 代理式自主决策比固定交互策略更灵活，更易推广</span></span>
+  </p>
+</section>
+
+<p style="margin-bottom:8px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">阅读原文可进一步了解工具集合的具体接口、程序合成细节和完整实验表格与消融研究。</span></p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;"><span leaf="">05</span></p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;"><span leaf="">科学发现范式</span></p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;"><span leaf="">SCIENCE PATTERN</span></p>
+    </section>
+  </section>
+
+
+<section style="background:#F0FDF4;padding:12px 16px;border-radius:8px;border:1px solid #BBF7D0;margin-bottom:20px;">
+  <p style="font-size:13px;color:#374151;margin:0 0 8px;line-height:1.7;text-align:justify;">
+    <span leaf="">主要范式：</span><strong style="color:#059669;"><span leaf="">P04 Modular Pipeline Composition</span></strong>
+  </p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">次要范式：</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">P05 Data & Evaluation Engineering</span></span><span leaf="">、</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">P09 Inference-Time Control & Guided Sampling</span></span>
+  </p>
+</section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">分类理由：论文把复杂 KG 推理拆成可互换的模块（LLM、多功能工具箱、KG 执行器、知识记忆）并通过迭代机制组合它们，典型的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">模块化流水线</span></span><span leaf="">思路；同时合成了代码化的指令调优数据（数据 / 评估工程 P05），并在推理时以工具选择 / 记忆更新来实时控制行为（推理时控制 P09）。</span></p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;"><span leaf="">06</span></p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;"><span leaf="">先前工作分析</span></p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;"><span leaf="">PRIOR WORK</span></p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">近年工作在三个技术方向上为 KG-Agent 提供了直接构建模块与问题意识：</span></p>
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">协同交互方法</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">以 </span><strong style="color:#059669;"><span leaf="">StructGPT</span></strong><span leaf=""> 为代表，把 LLM 的语言理解与对 KG 的结构化查询结合起来，通过多轮交互或 SPARQL grounding 完成多跳问答。</span>
+  </p>
+</section>
+
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">语言代理范式</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf="">如 </span><strong style="color:#059669;"><span leaf="">ReAct</span></strong><span leaf="">、</span><strong style="color:#059669;"><span leaf="">AutoGPT</span></strong><span leaf="">、</span><strong style="color:#059669;"><span leaf="">ProgPrompt</span></strong><span leaf="">，把 chain-of-thought 与显式 action / 工具调用、程序化 prompt，以及短 / 长期记忆结合起来，实现自动化的工具选择、执行与记忆管理。</span>
+  </p>
+</section>
+
+
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">检索增强与记忆</span></span>
+  </p>
+  <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+    <span leaf=""></span><strong style="color:#059669;"><span leaf="">RNG-KBQA</span></strong><span leaf=""> / </span><strong style="color:#059669;"><span leaf="">TIARA</span></strong><span leaf=""> 等暴露了检索式丢失结构信息的局限；</span><strong style="color:#059669;"><span leaf="">MemoryBank</span></strong><span leaf=""> 则提示需要有效的记忆策略。</span>
+  </p>
+</section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">两相结合，浮现两方面机会：一是需要能自主选择工具、执行 KG 操作并在多步之间维护中间知识的代理框架；二是需要用可执行的程序化表示训练较小 LLM，使其可靠生成可执行操作序列。</span><strong style="color:#059669;"><span leaf="">KG-Agent</span></strong><span leaf=""> 正是在此背景下成为自然下一步：综合代理式工具调用与记忆管理、以代码 / 程序化指令微调 LLM，并针对 StructGPT 与检索式方法的局限设计自适应迭代决策与 KG 执行器，从而使较小模型也能高效完成复杂 KG 推理。</span></p>
+</section>
+</section>

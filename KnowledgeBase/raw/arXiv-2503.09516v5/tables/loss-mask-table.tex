@@ -1,0 +1,18 @@
+
+\begin{table}[t]
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{The performance of \Ours with and without retrieved token loss masking. The LLM trained with retrieved token loss masking achieves consistently better performance. (LLM: Qwen2.5-7b-base; RL: PPO)}\label{tab:loss-mask}
+    \begin{tabular}{lcccccccc}
+        \toprule
+        \textbf{Method} & \textbf{NQ} & \textbf{TriviaQA} & \textbf{PopQA} & \textbf{HotpotQA} & \textbf{2wiki} & \textbf{Musique} & \textbf{Bamboogle} & \textbf{Avg.} \\
+        \midrule
+        % \multicolumn{8}{l}{\textbf{LLaMA3.2-3b-Base}} \\
+        \Ours w. mask & \textbf{0.480} & \textbf{0.638} & \textbf{0.457}	& \textbf{0.433} & \textbf{0.382} & \textbf{0.196} & \textbf{0.432} & \textbf{0.431}  \\
+        \Ours w.o. mask & 0.388 & 0.567 & 0.391	& 0.325 & 0.321 & 0.108 & 0.304 & 0.343 \\
+        \bottomrule
+    \end{tabular}
+    \vspace{-0.1in}
+\end{table}

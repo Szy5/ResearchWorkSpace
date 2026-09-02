@@ -1,0 +1,103 @@
+\documentclass{article}
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{enumitem}
+\usepackage{xspace}
+\usepackage{url}
+\usepackage{hyperref}
+
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+\usepackage[accepted]{icml2026}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+
+
+\usepackage[capitalize,noabbrev]{cleveref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\usepackage[textsize=tiny]{todonotes}
+
+
+\newcommand{\stark}{STaRK\xspace}
+\newcommand{\tb}{TraceBound\xspace}
+\newcommand{\qwen}{Qwen3\xspace}
+\newcommand{\mrr}{MRR\xspace}
+\newcommand{\hit}[1]{Hit@#1}
+\newcommand{\recall}[1]{Recall@#1}
+\newcommand{\uncond}{Unconditioned Agent\xspace}
+
+\icmltitlerunning{When Thinking Before Retrieval Hurts}
+
+\begin{document}
+
+\makeatletter
+\renewcommand{\ICML@appearing}{\textit{Accepted at the Failure Modes in Agentic AI (FAGEN) Workshop at ICML 2026}, Seoul, South Korea. Copyright 2026 by the author(s).}
+\makeatother
+
+\twocolumn[
+  \icmltitle{When Thinking Before Retrieval Hurts:\\
+  TraceBound Diagnostics for Adaptive Knowledge-Graph Retrieval}
+
+  \icmlsetsymbol{equal}{*}
+
+  \begin{icmlauthorlist}
+    \icmlauthor{Partha Sarathi Purkayastha}{ethz}
+  \end{icmlauthorlist}
+
+  \icmlaffiliation{ethz}{Department of Computer Science (D-INFK), ETH Zürich, Zürich, Switzerland}
+
+  \icmlcorrespondingauthor{Partha Sarathi Purkayastha}{ppurkayastha@ethz.ch}
+
+  \icmlkeywords{retrieval agents, knowledge graphs, failure diagnostics, trace evaluation, personalization}
+
+  \vskip 0.3in
+]
+
+\printAffiliationsAndNotice{}
+
+\input{sections/00_abstract}
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_methodology}
+\input{sections/04_experimental_setup}
+\input{sections/05_results}
+\input{sections/06_discussion}
+\input{sections/08_conclusion}
+
+\section*{Impact Statement}
+This work studies reliability failures in retrieval agents and is intended to improve transparent evaluation before such agents are deployed in personalized or private-data settings. It does not introduce new user data or new automated decision pipelines. The main practical risk is overgeneralization as our experiments only show that one plausible profile- and trace-conditioned controller can degrade retrieval quality under a specific open-weight configuration, not that adaptive retrieval or personalization is intrinsically harmful. Trace reporting like these can help researchers identify brittle retrieval policies before they are embedded in user-facing systems.
+
+\bibliography{example_paper}
+\bibliographystyle{icml2026}
+
+\input{sections/Appendix}
+
+\end{document}

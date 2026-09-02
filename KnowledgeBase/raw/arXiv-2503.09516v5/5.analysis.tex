@@ -1,0 +1,44 @@
+
+% \vspace{-0.1in}
+\section{Analysis}
+% \hamed{for arxiving you don't have space limitation, so get rid of wrap figures. They are just annoying to deal with :-)}
+
+\subsection{Different RL methods: PPO vs. GRPO}\label{sec:ppo-grpo}
+
+We evaluate \Ours using both PPO and GRPO as the base RL method, conducting experiments on Qwen2.5-3B/7B models. The training dynamics comparison is presented in Figure \ref{fig:joint-study}(a) and the evaluation results are presented in Table \ref{tab:ppo-grpo}, revealing the following insights:
+\textbf{(1) GRPO converges faster than PPO across all cases.} This is because PPO relies on a critic model, which requires several warm-up steps before effective training begins.
+\textbf{(2) PPO demonstrates greater training stability.} As shown in Figure \ref{fig:joint-study}(a), GRPO leads to reward collapse after training for many steps, whereas PPO remains stable.
+\textbf{(3) The final training rewards of PPO and GRPO are comparable.} Despite differences in convergence speed and stability, both methods achieve similar final train reward and performance, indicating that both are viable for optimizing \Ours.
+% \textbf{(4) GRPO and PPO achieve comparable performance.} Across both Qwen2.5-3B and Qwen2.5-7B, PPO and GRPO perform similarly. 
+PPO exhibits greater training stability, making it a preferable choice in this setting. 
+More results are in Appendix \ref{sec:appendix:ppo-grpo}.
+
+\input{tables/ppo-grpo-table}
+
+\subsection{Base vs. Instruct LLMs}
+
+We analyze the training dynamics of \Ours across both base LLMs and instruction-tuned LLMs. Experiments are conducted on two model variants: Qwen2.5-3B, and Qwen2.5-7B.
+As shown in Figure \ref{fig:joint-study}(b), we observe that instruction-tuned models converge faster and start from a higher initial performance compared to base models. 
+However, the final training reward of both model types remains highly similar after training. 
+This finding suggests that while general post-training accelerates learning in reasoning-plus-search scenarios, RL can effectively bridge the gap over time, enabling base models to achieve comparable performance. More results can be found in Appendix \ref{sec:appendix:base-instruct}.
+
+\input{tables/joint}
+
+\input{tables/loss-mask-table}
+
+\subsection{Response Length and Valid Search Study}
+
+We conduct an experiment using \Ours with the Qwen2.5-7b-base model to analyze the dynamics of response length and number of valid search engine calls over the course of training. 
+The response length result is presented in Figure \ref{fig:joint-study}(c), revealing the following key trends:
+\textbf{(1) Early Stage (First 100 Steps)}: The response length sharply decreases, while the training reward exhibits a slight increase. During this phase, the base model learns to eliminate excessive filler words and begins adapting to the task requirements.
+\textbf{(2) Later Stage (After 100 Steps)}: Both response length and training reward increase significantly. At this point, the LLM learns to call the search engine frequently, resulting in longer responses due to retrieved passages. The training reward improves substantially, as the model becomes more effective at leveraging search results.
+The valid search result is presented in Figure \ref{fig:joint-study}(d), showing that the LLMs learn to call the search engine more times as the training proceeds.
+
+\subsection{Study of Retrieved Tokens Loss Masking}
+
+In Section \ref{sec:kl-mask}, we introduced loss masking for retrieved tokens to prevent unintended optimization behaviors. 
+Here, we conduct experiments on the Qwen2.5-7b-base model, comparing training dynamics with and without retrieved token loss masking. 
+As shown in Figure \ref{fig:apx:loss-mask}, applying retrieved token masking results in greater LLM improvements, mitigating unintended optimization effects and ensuring more stable training.
+The performance comparison is provided in Table \ref{tab:loss-mask}, demonstrating that \Ours trained with retrieved token loss masking consistently outperforms the variant without masking.
+
+More experimental results on retrieved token loss mask, base vs. instruct LLMs, comparison between PPO/GRPO, the number of retrieved passages in \Ours training, group size study in \Ours (GRPO), case studies can be found in Appendix \ref{apx:sec:retrieval-token}, \ref{sec:appendix:base-instruct}, \ref{sec:apx:topk}, \ref{apx:sec:grpo-size}, \ref{apx:sec:case1} and \ref{sec:apx:case-all}.

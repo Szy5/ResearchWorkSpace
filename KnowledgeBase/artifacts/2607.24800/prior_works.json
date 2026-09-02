@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "ARK",
+      "authors": "Polonuer et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "Provides the ARK-style retrieval architecture (two graph tools with a controller that balances global lexical search and one-hop neighborhood exploration) that the current paper uses as the exact unconditioned baseline whose controller behavior is isolated from dataset and metric changes."
+    },
+    {
+      "title": "STARK",
+      "authors": "Wu et al.",
+      "year": 2024,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "Introduced the text-rich knowledge-graph benchmark suite (PRIME, MAG, Amazon) and evaluation protocols that the paper holds fixed while testing profile/trace interventions, supplying the concrete graphs and metrics against which retrieval quality is measured."
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting",
+      "authors": "Yao et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "Established the paradigm of emitting reasoning traces interleaved with environment actions, directly inspiring the paper's design of trace-conditioned hints and the idea of exposing intermediate observations to a retrieval controller."
+    },
+    {
+      "title": "Reflexion",
+      "authors": "Shinn et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "Showed iterative self-improvement via reflective feedback but also exposed that feedback loops can fail without appropriate action policies, motivating the current investigation into when observation-level feedback can harm rather than help retrieval."
+    },
+    {
+      "title": "Think-on-Graph",
+      "authors": "Sun et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Related Problem",
+      "relationship_sentence": "Demonstrated methods for exposing graph traversal and neighborhood reasoning to language models, providing the concrete graph-tool action primitives (traverse, inspect node text, follow relations) that the paper's controller protocol exercises and diagnoses."
+    },
+    {
+      "title": "Personalize Before Retrieve (PBR)",
+      "authors": "Zhang et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Related Problem",
+      "relationship_sentence": "Argued that compact pre-retrieval user state should shape retrieval actions, directly motivating the paper's 'profile' conditioning probe and the question whether pre-retrieval signals can be injected as prompt context without a calibrated action policy."
+    },
+    {
+      "title": "AgentBench",
+      "authors": "Liu et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "Advocated instrumentation-first agent evaluation with trajectory-level measurements, inspiring the paper's paired trajectory counters and the decision to attribute failures to observable trajectory behaviors rather than only to final scores."
+    }
+  ],
+  "synthesis_narrative": "Several recent contributions collectively supply the technical building blocks and the empirical lens used by the paper. The ARK lineage supplies the concrete controller-and-tool architecture (a controller that trades off global lexical search and one-hop neighborhood exploration), and the \"STARK\" benchmark contributes the text-rich graph collections (PRIME, MAG, Amazon) and standard ranking metrics that the study deliberately holds fixed. Work on agents that interleave reasoning and action, notably \"ReAct\", motivates emitting traces and using intermediate observations as inputs to a controller, while \"Reflexion\" highlights both the potential and boundary conditions of iterative feedback—showing that observation feedback can help only when it meaningfully changes action selection. \"Think-on-Graph\" provides concrete graph-traversal primitives and traversal semantics for LM-driven exploration, and \"Personalize Before Retrieve (PBR)\" frames the idea of compact pre-retrieval state that should influence retrieval decisions. Finally, \"AgentBench\" supplies the instrumentation-first evaluation philosophy and trajectory counters that ground process-level attributions. Taken together, these works expose a natural but under-explored gap: adding pre-retrieval profiles or observation traces changes the controller's action distribution and can therefore harm ranked output unless the action policy is re-calibrated. That gap motivates the paper's lightweight profile/trace diagnostic protocol: overlay an ARK-style controller on fixed \"STARK\" graphs, emit compact pre-retrieval profiles and short trace hints, log paired trajectory counters, and use shared-ID paired deltas to localize failures (repeated calls, zero-result calls, budget misallocation) — thereby treating \"thinking before retrieval\" as a control problem over actions rather than merely a prompt-format change."
+}

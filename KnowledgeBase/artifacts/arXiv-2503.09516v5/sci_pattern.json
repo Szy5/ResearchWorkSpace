@@ -1,0 +1,12 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P04"
+  ],
+  "secondary_pattern_names": [
+    "Modular Pipeline Composition"
+  ],
+  "confidence": "high",
+  "reasoning": "论文从具体缺陷（LLM 未能有效调用搜索引擎）出发，把问题重构为在包含检索操作的环境中用强化学习直接学习调用策略，这正是把观察到的能力缺口变为新的问题设定并用不同工具求解（Gap-Driven Reframing）。同时，工作将检索器与推理过程作为交互模块/环境接口来设计与训练，体现了模块化流水线的分解与接口工程（Modular Pipeline Composition）。"
+}

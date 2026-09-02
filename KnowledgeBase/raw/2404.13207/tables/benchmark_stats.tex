@@ -1,0 +1,27 @@
+
+\begin{table}[t]
+    \centering
+    \caption{Statistics on the \benchmarkh benchmark datasets.}
+    \resizebox{0.9\textwidth}{!}{
+    \begin{tabular}{ll|rrrr}
+        \toprule
+        & & \multirow{2}{*}{\textbf{ \#queries}}  & \textbf{ \#queries w/} & \textbf{average} & \multirow{2}{*}{\textbf{train / val / test}}\\
+        & & & \textbf{multiple answers}&  \textbf{\#answers} & \\
+        \midrule
+        \multirow{3}{*}{
+        \makecell{Synthesized\\
+        (Sec~\ref{sec:construction}, \ref{sec:analysis})}} & {\small \amazont} & 9,100 & 7,082  & 17.99& {0.65 / 0.17 / 0.18}\\
+        & {\small \magt} &13,323 & 6,872 & 2.78 & {0.60 / 0.20 / 0.20}\\
+        & {\small \primekgt} & 11,204 & 4,188 & 2.56 & {0.55 / 0.20 / 0.25} \\
+        \midrule
+        \multirow{3}{*}{\makecell{Human-generated\\
+        (Sec~\ref{sec:human_generated})}} 
+        & {\small \amazont} & 81 & 64 & 19.50 & \multirow{3}{*}{For testing only}\\
+        & {\small \magt} & 84 &34 & 3.26 & \\
+        & {\small \primekgt} & 98 & 41 & 2.77 & \\
+        \bottomrule
+        \end{tabular}
+        }
+    \vspace{-5pt}
+    \label{tab:benchmark_stats}
+\end{table}

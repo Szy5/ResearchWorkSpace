@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+
+\definecolor{frozenbestred}{rgb}{0.75, 0.25, 0.25}
+\newcommand{\frozenbestdrop}[1]{\rlap{\textsubscript{\textcolor{frozenbestred}{#1}}}}
+\newcommand{\frozenbestsame}[1]{\rlap{\textsubscript{\textcolor{black}{#1}}}}
+
+\begin{tabular*}{1\textwidth}{l @{\extracolsep{\fill}} cccc ccccc c}
+\toprule
+\multirow{2}{*}{\textbf{Ablation Variant}} & \multicolumn{4}{c}{\textbf{API-Bank}} & \multicolumn{5}{c}{\textbf{BFCL}} & \multirow{2}{*}{\textbf{Overall}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-10}
+ & L1 & L2 & L3 & Avg. & JS & Py & Java & Live & Avg. & \\
+\midrule
+\textbf{Full System} & \textbf{64.6} & \textbf{54.7} & \textbf{44.0} & \textbf{58.9} & \textbf{65.5} & \textbf{96.0} & \textbf{63.5} & \textbf{78.5} & \textbf{75.9} & \textbf{66.7} \\
+\midrule
+\addlinespace[0.2em]
+
+\textbf{Frozen proposer} & 62.0\frozenbestdrop{-2.6} & 53.0\frozenbestdrop{-1.7} & 43.8\frozenbestdrop{-0.2} & 57.0\frozenbestdrop{-1.9} & 55.5\frozenbestdrop{-10.0} & 94.0\frozenbestdrop{-2.0} & 62.6\frozenbestdrop{-0.9} & 78.1\frozenbestdrop{-0.4} & 72.6\frozenbestdrop{-3.3} & 64.6\frozenbestdrop{-2.1} \\
+\addlinespace[0.2em]
+
+\textbf{Frozen feedback solver} & 59.9\frozenbestdrop{-4.7} & 45.2\frozenbestdrop{-9.5} & 39.3\frozenbestdrop{-4.7} & 53.7\frozenbestdrop{-5.2} & 65.3\frozenbestdrop{-0.3} & 95.5\frozenbestdrop{-0.5} & 62.8\frozenbestdrop{-0.8} & 78.2\frozenbestdrop{-0.3} & 75.4\frozenbestdrop{-0.5} & 63.7\frozenbestdrop{-3.0} \\
+\addlinespace[0.2em]
+
+\textbf{Frozen both} & 59.2\frozenbestdrop{-5.4} & 47.6\frozenbestdrop{-7.1} & 39.2\frozenbestdrop{-4.8} & 53.5\frozenbestdrop{-5.4} & 63.5\frozenbestdrop{-2.0} & 94.3\frozenbestdrop{-1.8} & 62.0\frozenbestdrop{-1.5} & 78.5\frozenbestsame{+0.0} & 74.6\frozenbestdrop{-1.3} & 63.5\frozenbestdrop{-3.2} \\
+\bottomrule
+\end{tabular*}
+\vspace{1mm}
+\caption{\textbf{Quantitative ablations on the co-evolutionary update loop.} All variants are initialized with the Qwen3-4B-Instruct backbone, with each disabling a specific component of the co-evolutionary update loop. Subscripts (\textcolor{frozenbestred}{\textbf{-Drop}}) indicate the absolute performance degradation compared to the full system.}
+\label{tab:frozen_component_ablations_best}
+\end{table}

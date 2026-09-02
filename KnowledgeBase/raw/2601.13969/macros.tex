@@ -1,0 +1,75 @@
+% ===========================
+% ========== Paper ==========
+% ===========================
+
+\newcommand{\retriever}{\textsc{Adaptive Retriever of Knowledge}\xspace}
+\newcommand{\retrieverShort}{\textsc{ARK}\xspace}
+\newcommand{\retrieverNoSc}{Adaptive Retriever of Knowledge\xspace}
+
+% ================================
+% ========== Formatting ==========
+% ================================
+
+\newcommand{\slimparagraph}[1]{\noindent{\textbf{#1}}}
+
+% ================================
+% ========== Commenting ==========
+% ================================
+
+\newcommand{\marinka}[1]{{\color{magenta} [Marinka: {#1}]}}
+\newcommand{\ayush}[1]{{\color{purple} [Ayush: {#1}]}}
+\newcommand{\luciano}[1]{{\color{red} [Luciano: {#1}]}}
+\newcommand{\polo}[1]{{\color{orange} [Polo: {#1}]}}
+\newcommand{\lucas}[1]{{\color{blue} [Lucas: {#1}]}}
+
+\setstcolor{orange}
+
+\definecolor{fuchsia}{RGB}{255,0,255}
+\setstcolor{fuchsia}
+\newcommand{\IAnote}[1]{\textcolor{fuchsia}{[Iñaki Note: {#1}]}}
+\newcommand{\IAtodo}[1]{\textcolor{fuchsia}{[Iñaki TODO: {#1}]}}
+\newcommand{\IAdel}[1]{\st{#1}}
+\newcommand{\IAadd}[1]{\textcolor{fuchsia}{#1}}
+
+%\newcommand{\IAdel}[1]{}
+%\newcommand{\IAnote}[1]{}
+%\newcommand{\IAtodo}[1]{}
+
+% ==========================
+% ========== Math ==========
+% ==========================
+
+\newcommand{\unbreakable}[1]{
+  \relpenalty=10000%
+  \binoppenalty=10000%
+  #1%
+}
+
+\DeclareMathOperator{\rel}{rel}
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+
+% ===============================
+% ========== Citations ==========
+% ===============================
+
+\makeatletter
+\newcommand{\tbdcite}{%
+  \@ifnextchar\bgroup{\@tbdciteWith}{\@tbdciteNoArg}%
+}
+\newcommand{\@tbdciteNoArg}{%
+  {\color{brown}[\@tbd@repeat{1}]}\xspace%
+}
+\newcommand{\@tbdciteWith}[1]{%
+  {\color{brown}[\@tbd@repeat{#1}]}\xspace%
+}
+\newcommand{\@tbd@repeat}[1]{%
+  \@tempcnta=0\relax%
+  \@whilenum\@tempcnta<#1\do{%
+    cite%
+    \advance\@tempcnta\@ne%
+    \ifnum\@tempcnta<#1 ,\space\fi%
+  }%
+}
+\makeatother

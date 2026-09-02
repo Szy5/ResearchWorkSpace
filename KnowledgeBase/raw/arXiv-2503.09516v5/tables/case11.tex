@@ -1,0 +1,31 @@
+
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 11 (failed): The LLM can be misled by irrelevant retrieved information and provide a wrong answer.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Who was the winner of the season of The Rap Game where a contestant named Lady Leshurr as one of her influences? \\
+        \hline
+        \textbf{Ground Truth}: Mani \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find the winner of the season of The Rap Game where a contestant named Lady Leshurr was one of her influences. I'll search for it.} \\
+\search{who was the winner of the season of The Rap Game where a contestant named Lady Leshurr as one of her influences} \\
+\info{Doc 1(Title: "Lady Leshurr") Act. Leshurr came out as pansexual in September 2018. Leshurr has named Ashley Walters, Lisa Maffia, Missy Elliott, and Lil Wayne as her primary influences. Lady Leshurr Melesha Katrina O'Garro (born 15 December 1989) known professionally as Lady Leshurr (), is a British grime and hip hop rapper, singer, and producer from Kingshurst, Solihull, UK. She is best known for her ""Queen's Speech"" series of freestyles, the fourth of which went viral in 2016. ""The Rap Game"" season 2 competitor Nia Kay stated that Leshurr was one of her influences due to her uniqueness and rap skill. Her subsequent freestyle, ...
+} \\
+\hdashline
+\think{I found out that Lady Leshurr was one of the influences for Nia Kay in The Rap Game season 2. Now I need to find the winner of that season.} \\
+\search{winner of The Rap Game season 2} \\
+\info{Doc 1(Title: "Chandra Davis") Chandra Davis Chandra Davis (born January 2, 1978 in Detroit, Michigan), a.k.a. London Charles and Deelishis, is an American model, and former reality show contestant. She is best known as the winner of VH1's hit reality TV show ""Flavor of Love 2"". Davis was a contestant on the second season of VH1's Flavor of Love (aged 29). She went on to win the competition when Flavor Flav chose her over Tiffany 'New York' Pollard, who returned after previously named the runner-up on the show's first season. After FOL, Davis announced she is currently not dating Flav, via a VH1 special, ...
+} \\
+\hdashline
+\think{I found out that the winner of The Rap Game season 2 is London Charles (Chandra Davis). Now I can provide the answer.} \\
+\answer{London Charles}\\
+        \hline
+    \end{tabular}
+\end{table}
+

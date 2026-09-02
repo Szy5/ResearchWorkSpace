@@ -1,0 +1,223 @@
+%\definecolor{lightblue}{RGB}{173,216,230}
+\definecolor{tabledarkgreen}{RGB}{116,198,157}
+\definecolor{tablelightgreen}{RGB}{216,243,220}
+\definecolor{tabledarkblue}{RGB}{112,186,255}
+\definecolor{tablelightblue}{RGB}{222,239,254}
+
+% Best overall
+\newcommand{\bestoverall}[1]{\textbf{#1}}
+
+% Best training free
+\newcommand{\besttf}[1]{\cellcolor{tabledarkgreen}{#1}}
+\newcommand{\secondtf}[1]{\cellcolor{tablelightgreen}{#1}}
+
+% Best training required
+\newcommand{\besttr}[1]{\cellcolor{tabledarkblue}{#1}}
+\newcommand{\secondtr}[1]{\cellcolor{tablelightblue}{#1}}
+
+\newcommand\mybox[2][]{
+  \hspace{1.5pt}\tikz[overlay]\node[fill=blue!20, inner xsep=2pt, inner ysep=0pt, outer xsep=10pt, anchor=text, rectangle, rounded corners=1mm, #1] {#2};\phantom{#2}\hspace{1.5pt}
+}
+
+\newcommand{\TabStarkResults}[1][!ht]{
+    \begin{table*}[!ht]
+        \centering
+        \resizebox{\textwidth}{!}{
+            \begin{tabular}{llcccccccccccc}
+                \toprule
+                         &                                               & \multicolumn{3}{c}{AMAZON} & \multicolumn{3}{c}{MAG} & \multicolumn{3}{c}{PRIME} & \multicolumn{3}{c}{Average} \\
+                Category & Method
+                         & Hit@1                                         & R@20                       & MRR
+                         & Hit@1                                         & R@20                       & MRR
+                         & Hit@1                                         & R@20                       & MRR
+                         & Hit@1                                         & R@20                       & MRR \\
+                \midrule
+
+                \multirow{9}{*}{\makecell[l]{\textit{Training-free}}}
+                         & \multicolumn{13}{l}{\textit{Retrieval-based}} \\
+                         & BM25                                          & 44.94                      & 53.77                   & 55.30                     & 25.85                       & 45.69             & 34.91             & 12.75             & 31.25             & 19.84             & 27.85             & 43.57             & 36.68             \\
+                         & ada-002                                       & 39.16                      & 53.29                   & 50.35                     & 29.08                       & 48.36             & 38.62             & 12.63             & 36.00             & 21.41             & 26.96             & 45.88             & 36.79             \\
+                         & GritLM-7B
+& 42.08 & 56.52 & 53.46
+& 37.90 & 46.40 & 47.25
+& 15.57 & 39.09 & 24.11
+& 31.85 & 47.34 & 41.61 \\
+                         & KAR                                           & \secondtf{54.20}           & \secondtf{57.24}        & \secondtf{61.29}          & \secondtf{50.47}            & \secondtf{60.28}  & \secondtf{57.51}  & \secondtf{30.35}  & 50.81             & \secondtf{39.22}  & \secondtf{45.01}  & \secondtf{56.11}  & \secondtf{52.67}  \\
+                         & \multicolumn{13}{l}{\textit{Agent-based}} \\
+                         & Think-on-Graph + GPT-4o                             & 20.67                      & 25.81                   & 30.90                     & 23.33                       & 48.03             & 36.38             & 16.67             & \secondtf{54.35}  & 27.02             & 20.22             & 42.73             & 31.43             \\
+                         & Think-on-Graph + LLaMA3                         & 4.21                       & 2.61                    & 5.25                      & 12.00                       & 6.77              & 12.67             & 21.92             & 33.84             & 26.61             & 12.71             & 14.41             & 14.84             \\
+                         & \retrieverShort                                  & \besttf{\bestoverall{55.82}} & \besttf{60.61}          & \besttf{\bestoverall{64.77}} & \besttf{\bestoverall{73.40}} & \besttf{\bestoverall{84.47}} & \besttf{\bestoverall{79.87}} & \besttf{48.20}    & \besttf{69.46}    & \besttf{57.68}    & \besttf{\bestoverall{59.14}} & \besttf{\bestoverall{71.51}} & \besttf{\bestoverall{67.44}} \\
+
+                \midrule
+
+                \multirow{5}{*}{\makecell[l]{\textit{Requires training}\\\textit{on target graph}}}
+                         & \multicolumn{13}{l}{\textit{Retrieval-based}} \\
+                         & mFAR                                          & \secondtr{53.0}           & \besttr{\bestoverall{66.3}}   & \besttr{64.3}             & 55.9                        & 74.1              & 64.3              & \secondtr{40.0}  & \secondtr{72.6}  & \secondtr{52.0}  & \besttr{49.63}    & \besttr{71.00}    & \besttr{60.20}    \\
+                         & MoR                                           & 52.19                      & 59.92                   & 62.24                     & \secondtr{58.19}           & \secondtr{75.01} & \secondtr{67.14} & 36.41             & 63.48             & 46.92             & 48.93             & 66.14             & \secondtr{58.77} \\
+                         & \multicolumn{13}{l}{\textit{Agent-based}} \\
+                         & GraphFlow                                     & 47.85                      & 36.15                   & 55.49                     & 39.09                       & 57.18             & 47.82             & \besttr{\bestoverall{51.39}}    & \besttr{\bestoverall{79.71}}    & \besttr{\bestoverall{61.37}}    & 46.11             & 57.68             & 54.89             \\
+                         & AvaTaR                                        & 49.90                      & \secondtr{60.60}       & 58.70                     & 44.36                       & 50.63             & 51.15             & 18.40             & 39.30             & 26.73             & 37.55             & 50.18             & 45.53             \\
+                         & \retrieverShort distilled                     & \besttr{54.99}             & 60.31                   & \secondtr{64.24}         & \besttr{61.66}              & \besttr{81.39}    & \besttr{70.09}    & 31.87             & 57.22             & 41.08             & \secondtr{49.51} & \secondtr{66.31} & 58.47             \\
+
+                \bottomrule
+            \end{tabular}
+        }
+        \caption{Retrieval performance on STaRK synthetic test sets. \mybox[fill=tabledarkgreen!100]{\strut Dark green} and \mybox[fill=tablelightgreen!100]{\strut light green} indicate best and second-best in the training-free category, respectively. \mybox[fill=tabledarkblue!100]{\strut Dark blue} and \mybox[fill=tablelightblue!100]{\strut light blue} indicate best and second-best in the requires-training category, respectively. \textbf{Bold} indicates the best result overall for each metric column.}
+        \label{tab:stark-results}
+    \end{table*}
+}
+
+\newcommand{\TabToolsetAblation}[1][!ht]{
+    \begin{table}[#1]
+        \centering
+        \adjustbox{width=\columnwidth,center}{
+            \begin{tabular}{lcccccc}
+                \toprule
+                Setup                    & \multicolumn{2}{c}{AMAZON} & \multicolumn{2}{c}{MAG} & \multicolumn{2}{c}{PRIME}                                                          \\
+                \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+                                         & Hit@1                      & R@20                    & Hit@1                     & R@20             & Hit@1            & R@20             \\
+                \midrule
+                Full                     & \textbf{58.5}              & \textbf{60.2}           & \textbf{79.2}             & \textbf{83.3}    & \textbf{49.2}    & \textbf{73.3}    \\
+                \midrule
+                w/o $\operatorname{Neighbors}$ & 54.5                       & 55.4                    & 30.5                      & 39.4             & 23.1             & 40.5             \\
+                $\operatorname{Neighbors}$ w/o $q$ & \underline{56.0}           & 57.9                    & 72.1                      & 79.8             & \underline{44.7} & \underline{68.3} \\
+                $\operatorname{Neighbors}$ w/o $F$ & 55.5                       & \underline{59.9}        & \underline{79.2}         & \underline{84.8} & 42.2             & 65.0             \\
+                \bottomrule
+            \end{tabular}
+        }
+        \caption{Impact of toolset design on retrieval performance across graphs. w/o $\operatorname{Neighbors}$ removes neighborhood exploration entirely. $\operatorname{Neighbors}$ w/o $q$  disables query-based ranking within the neighborhood, and $\operatorname{Neighbors}$ w/o $F$ disables type-based filtering.
+        Results are reported on a random 10\% subset of the test split.}
+        \label{tab:toolset-ablation}
+        \vskip -0.15in
+    \end{table}
+}
+
+\newcommand{\TabAggregationComparison}[1][!ht]{
+    \begin{table}[#1]
+        \centering
+        \adjustbox{width=\columnwidth,center}{
+            \begin{tabular}{lcccccc}
+                \toprule
+                Setup & \multicolumn{2}{c}{AMAZON} & \multicolumn{2}{c}{MAG} & \multicolumn{2}{c}{PRIME} \\
+                \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+                 & Hit@1 & R@20 & Hit@1 & R@20 & Hit@1 & R@20 \\
+                \midrule
+                Voting   & \textbf{55.82} & \textbf{60.61} & \textbf{73.40} & \textbf{84.47} & \textbf{48.20} & \textbf{69.46} \\
+                Ordering & 55.39 & 60.06 & 71.24 & 84.15 & 44.70 & 68.78 \\
+                Random   & 17.65 & 57.55 & 38.04 & 83.03 & 26.30 & 67.50 \\
+                \bottomrule
+            \end{tabular}
+        }
+        \caption{Comparison of strategies for aggregating the outputs of three parallel agents. Voting ranks nodes by frequency across trajectories and breaks ties by earliest occurrence. Ordering concatenates trajectories and keeps first appearance, while Random shuffles the union of retrieved nodes.}
+        \label{tab:aggregation-comparison}
+    \end{table}
+}
+
+\newcommand{\TabDenseRetrieverAblation}[1][!ht]{
+    \begin{table}[#1]
+        \centering
+        \adjustbox{width=\columnwidth,center}{
+            \begin{tabular}{lcccccc}
+                \toprule
+                Setup & \multicolumn{2}{c}{AMAZON} & \multicolumn{2}{c}{MAG} & \multicolumn{2}{c}{PRIME} \\
+                \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+                 & Hit@1 & R@20 & Hit@1 & R@20 & Hit@1 & R@20 \\
+                \midrule
+                BM25  & \textbf{55.82} & \textbf{60.61} & 73.40 & 84.47 & \textbf{48.20} & \textbf{69.46} \\
+                Dense & 47.13 & 58.13 & \textbf{75.88} & \textbf{85.11} & 43.23 & 68.58 \\
+                \bottomrule
+            \end{tabular}
+        }
+        \caption{BM25 vs.~dense retrieval inside \retrieverShort on the full STaRK synthetic test sets. The dense retriever uses \texttt{text-embedding-3-large}.}
+        \label{tab:dense-ablation}
+    \end{table}
+}
+
+\newcommand{\TabBudgetControlledComparison}[1][!ht]{
+    \begin{table}[#1]
+        \centering
+        \adjustbox{width=\columnwidth,center}{
+            \begin{tabular}{lcccccc}
+                \toprule
+                Setup & \multicolumn{2}{c}{AMAZON} & \multicolumn{2}{c}{MAG} & \multicolumn{2}{c}{PRIME} \\
+                \cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
+                 & Hit@1 & R@20 & Hit@1 & R@20 & Hit@1 & R@20 \\
+                \midrule
+                1 agent, $T_{\max}=30$ & 55.4 & 54.6 & 69.5 & 75.4 & 44.3 & 58.3 \\
+                3 agents, $T_{\max}=10$ & \textbf{56.0} & \textbf{60.6} & \textbf{71.7} & \textbf{82.3} & \textbf{47.3} & \textbf{67.0} \\
+                \bottomrule
+            \end{tabular}
+        }
+        \caption{Cost-controlled comparison between a single longer trajectory and three shorter parallel trajectories under the same total step budget (30 steps).}
+        \label{tab:budget-controlled}
+    \end{table}
+}
+
+\newcommand{\TabGlobalAfterFirstStep}[1][!ht]{
+    \begin{table}[#1]
+        \centering
+        \small
+        \begin{tabular}{lcc}
+            \toprule
+            Dataset & All traj. & Successful traj. \\
+            \midrule
+            AMAZON & 10.1 & 8.9 \\
+            MAG    & 25.2 & 20.5 \\
+            PRIME  & 36.9 & 35.8 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Percentage of trajectories that invoke \textsc{Global Search} after step 1. Successful trajectories are those with Hit@5.}
+        \label{tab:global-after-first-step}
+    \end{table}
+}
+
+\newcommand{\TabTrajectoryToolMixing}[1][!ht]{
+    \begin{table}[#1]
+        \centering
+        \small
+        \begin{tabular}{llcc}
+            \toprule
+            Split & Dataset & \makecell{Only global\\search} & Both tools \\
+            \midrule
+            \multirow{3}{*}{All traj.}
+                & AMAZON & 79.4 & 20.6 \\
+                & MAG    & 13.3 & 86.7 \\
+                & PRIME  & 24.4 & 75.6 \\
+            \midrule
+            \multirow{3}{*}{Successful traj.}
+                & AMAZON & 80.7 & 19.3 \\
+                & MAG    & 14.9 & 85.1 \\
+                & PRIME  & 29.2 & 70.8 \\
+            \bottomrule
+        \end{tabular}
+        \caption{Trajectory-level tool usage percentages. Since every trajectory begins with \textsc{Global Search}, runs are either global-search-only or use both tools. Successful trajectories are those with Hit@5.}
+        \label{tab:trajectory-tool-mixing}
+    \end{table}
+}
+
+% Full-width appendix table: use strip (cuted) so it stays in the text flow in twocolumn
+% instead of floating to a dedicated page like table*.
+\newcommand{\TabAppendixResults}{%
+    \begin{strip}
+        \centering
+        \resizebox{\textwidth}{!}{%
+            \begin{tabular}{lcccccccccccc}
+                \toprule
+                              & \multicolumn{4}{c}{AMAZON} & \multicolumn{4}{c}{MAG} & \multicolumn{4}{c}{PRIME}                                                                         \\
+                Method        & Hit@1                      & Hit@5                   & R@20                      & MRR   & Hit@1 & Hit@5 & R@20  & MRR   & Hit@1 & Hit@5 & R@20  & MRR   \\
+                \midrule
+                GPT-4o                               & 55.13 & 76.37 & 57.18 & 64.29 & 67.01 & 86.67 & 79.79 & 75.46 & 36.01 & 60.17 & 60.13 & 46.44 \\
+                GPT-4.1                              & 55.82 & 75.80 & 60.61 & 64.77 & 73.40 & 87.92 & 84.47 & 79.87 & 48.20 & 69.57 & 69.46 & 57.68 \\
+                GPT-5.2                              & 56.12 & 77.76 & 58.62 & 65.71 & 73.13 & 91.11 & 86.21 & 81.01 & 50.64 & 71.44 & 70.04 & 59.55 \\
+                Qwen3-4B                             & 45.69 & 67.46 & 47.17 & 55.26 & 37.64 & 56.56 & 54.54 & 46.01 & 18.02 & 37.00 & 35.43 & 26.20 \\
+                Qwen3-4B-600                          & 50.10 & 71.26 & 53.73 & 59.32 & 49.90 & 69.21 & 68.47 & 58.43 & 26.52 & 47.27 & 49.54 & 36.01 \\
+                Qwen3-4B-6000                         & 54.46 & 74.66 & 58.91 & 64.78 & 60.16 & 78.79 & 79.88 & 68.59 & 27.46 & 49.15 & 51.40 & 36.95 \\
+                Qwen3-8B                             & 47.95 & 70.03 & 53.10 & 57.95 & 35.09 & 57.02 & 53.42 & 44.96 & 18.37 & 36.41 & 36.13 & 26.28 \\
+                Qwen3-8B-600                          & 50.06 & 70.07 & 55.29 & 59.13 & 48.89 & 69.41 & 68.48 & 58.13 & 25.24 & 47.20 & 50.16 & 35.08 \\
+                Qwen3-8B-6000                         & 54.99 & 74.35 & 60.31 & 64.24 & 61.66 & 80.41 & 81.39 & 70.09 & 31.87 & 51.10 & 57.22 & 41.08 \\
+                \bottomrule
+            \end{tabular}}
+        \captionof{table}{Retrieval performance on STaRK synthetic test sets across proprietary backbones and distilled Qwen3 students. Qwen3-4B/8B-600 and Qwen3-4B/8B-6000 denote students fine-tuned on GPT\mbox{-}4.1 trajectories collected from 600 or 6000 training queries per graph, respectively.}
+        \label{tab:full-stark-results}
+    \end{strip}%
+}

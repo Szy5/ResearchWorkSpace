@@ -1,0 +1,40 @@
+\begin{figure}[htb]
+    \centering
+    \begin{minipage}{0.99\columnwidth}
+        \centering
+        \begin{tcolorbox}[title=Graph-constrained Decoding Prompt]
+            \small
+            ============================= Prompt Input ================================
+    
+            Reasoning path is a sequence of triples in the KG that connects the topic entities in the question to answer entities. Given a question, please generate some reasoning paths in the KG starting from the topic entities to answer the question.
+    
+            \vspace{10pt}
+
+            \# Question: 
+            
+            \texttt{<Question>}
+
+            \vspace{10pt}
+
+            \# Topic entities:
+
+            \texttt{<Question Entities>}
+    
+            \vspace{10pt}
+            ============================= LLM Output ================================
+    
+            \# Reasoning Path: 
+            
+            \texttt{<PATH>} \texttt{<Reasoning Path>} \texttt{</PATH>}
+
+            \vspace{10pt}
+    
+            \# Answer: 
+            
+            \texttt{<Hypothesis Answer>}
+        \end{tcolorbox}
+        \vspace{1mm}
+    \end{minipage}
+    \caption{The prompt template for graph-constrained decoding.}
+    \label{fig:path_gen_prompt}
+\end{figure}

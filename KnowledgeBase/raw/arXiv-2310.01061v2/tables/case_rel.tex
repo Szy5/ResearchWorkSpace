@@ -1,0 +1,46 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{graphicx}
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[h]
+    \centering
+    \caption{Examples of the generated relation paths.}
+    \label{tab:case_rel}
+    \resizebox{.97\columnwidth}{!}{%
+        \begin{tabular}{@{}p{2.5in}|l@{}}
+            \toprule
+            Question                                                                                                      &
+            Top-3 Relation Paths                                                                                            \\\midrule
+            what does jamaican people speak?                                                                               &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   location.country.languages\_spoken\\      $z_2:$ language.human\_language.countries\_spoken\_in\\      $z_3:$ location.country.official\_language\end{tabular}                                                                                       \\\midrule
+            where is jamarcus russell from?                                                                                &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   location.location.people\_born\_here\\      $z_2:$ people.person.place\_of\_birth\\      $z_3:$ sports.sports\_league\_draft\_pick.player $\to$   sports.sports\_league\_draft\_pick.location\end{tabular}                                                                                       \\ \midrule
+            where did edgar allan poe died?                                                                                &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   people.deceased\_person.place\_of\_death\\      $z_2:$ people.cause\_of\_death.people\\      $z_3:$ people.person.place\_of\_birth\end{tabular}                                                                                       \\ \midrule
+            what highschool did harper lee go to?                                                                          &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$ people.person.education   $\to$ education.educational\_institution.students\_graduates\\      $z_2:$ education.education.student $\to$   education.educational\_institution.students\_graduates\\      $z_3:$ people.person.education $\to$ education.education.institutio\end{tabular}                                                                                       \\ \midrule
+            what are the songs that justin bieber   wrote?                                                                 &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   music.recording.artist\\      $z_2:$ music.composition.composer\\      $z_3:$ music.composer.compositions\end{tabular}                                                                                       \\ \midrule
+            what are the religions practiced in   indonesia?                                                               &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$ people.person.nationality   $\to$ people.person.religion\\      $z_2:$ location.statistical\_region.religions $\to$   location.religion\_percentage.religion\\      $z_3:$ location.country.languages\_spoken $\to$ religion.religion.languages\end{tabular}                                                                                       \\ \midrule
+            Lou Seal is the mascot for the team that   last won the World Series when?                                    &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$ sports.mascot.team $\to$   sports.sports\_championship\_event.champion\\      $z_2:$ sports.mascot.team $\to$ sports.sports\_team.championships\\      $z_3:$ sports.sports\_championship\_event.championship\end{tabular}                                                                                       \\ \midrule
+            % What country in the Caribbean contains Saint Michael Parish? & \begin{tabular}[c]{@{}l@{}}$z_1:$  location.administrative\_division.first\_level\_division\_of\\      $z_2:$ location.location.containedby\\      $z_3:$ location.location.contains\end{tabular} \\ \midrule
+            What type of government is used in the   country with Northern District?                                      &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   location.administrative\_division.first\_level\_division\_of $\to$   government.form\_of\_government.countries\\      $z_2:$ location.administrative\_division.first\_level\_division\_of $\to$   location.country.form\_of\_government\\      $z_3:$ administrative\_division.first\_level\_division\_of $\to$   government.form\_of\_government.countries\end{tabular}                                                                                       \\ \midrule
+            The people from the country that contains   Nord-Ouest Department speak what languages today?                 &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   location.administrative\_division.first\_level\_division\_of $\to$   language.human\_language.countries\_spoken\_in\\      $z_2:$ location.administrative\_division.first\_level\_division\_of $\to$   location.country.languages\_spoken\\      $z_3:$ base.aareas.schema.administrative\_area.administrative\_parent $\to$   location.country.languages\_spoken\end{tabular}                                                                                       \\ \midrule
+            What stadium does the team with mascot   named Hank play at?                                                  &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$ sports.mascot.team $\to$   sports.sports\_facility.teams\\      $z_2:$ sports.sports\_team.team\_mascot $\to$   sports.sports\_facility.teams\\      $z_3:$ sports.mascot.team $\to$ sports.sports\_team.arena\_stadium\end{tabular}                                                                                      \\ \midrule
+            Which popular sports team in Spain, that   won the 2014 Eurocup Finals championship?                          &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   sports.sports\_team.championships $\to$   sports.sports\_team\_location.teams\\      $z_2:$ sports.sports\_team.location $\to$   sports.sports\_team\_location.teams\\      $z_2:$ sports.sports\_team.location $\to$   sports.sports\_team\_location.teams\\      $z_3:$ sports.sports\_team\_location.teams\end{tabular}                                                                                      \\ \midrule
+            What educational institution with the   mascot named Washington University Bear did Tennessee Williams go to? &
+            \begin{tabular}[c]{@{}l@{}}$z_1:$   education.educational\_institution.mascot\\      $z_2:$ people.person.nationality $\to$ location.location.containedby\\      $z_3:$ education.education.student $\to$ education.education.institution\end{tabular}\\ \midrule
+            Who is the current head coach of the NFL squad owned by the Rooney family? & \begin{tabular}[c]{@{}l@{}}$z_1:$   sports.professional\_sports\_team.owner\_s $\to$ american\_football.football\_coach.current\_team\_head\_coached\\      $z_2:$ sports.professional\_sports\_team.owner\_s $\to$ american\_football.football\_team.current\_head\_coach\\      $z_3:$ american\_football.football\_coach.current\_team\_head\_coached \end{tabular}\\\midrule
+
+            What is the home field of the sports team whose mascot is named Fredbird? & \begin{tabular}[c]{@{}l@{}}$z_1:$   sports.mascot.team $\to$ sports.sports\_facility.teams\\      $z_2:$ sports.sports\_team.team\_mascot $\to$ sports.sports\_facility.teams\\      $z_3:$ sports.mascot.team $\to$ sports.sports\_team.arena\_stadium \end{tabular}\\
+            \bottomrule
+        \end{tabular}%
+    }
+\end{table}

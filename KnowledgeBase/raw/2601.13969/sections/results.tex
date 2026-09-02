@@ -1,0 +1,75 @@
+%!TEX root = ../main.tex
+
+\section{Results}
+
+\subsection{Benchmarking}
+\FigNAgents
+\Cref{tab:stark-results} reports retrieval performance on STaRK, grouped by training regime. Across all methods assessed, \retrieverShort achieves the best average performance. 
+
+Classical retrievers remain strong baselines on AMAZON, when queries are predominantly descriptive. By incorporating local structural cues, KAR improves over lexical methods, but its shallow neighborhood expansion is limited on multi-hop queries \cite{xia_knowledge-aware_2025}.
+
+Think-on-Graph and GraphFlow highlight the benefits of multi-hop traversal, performing well on PRIME. Think-on-Graph is appealing due to its training-free setup, and GraphFlow shows that strong performance can be achieved with smaller backbones through reinforcement learning. However, both degrade on AMAZON's text-heavy, broad queries, as they lack global search primitives and can be sensitive to brittle anchoring and entity identification \cite{sun_think--graph_2024, yu_can_2025}.
+
+\retrieverShort performs consistently across regimes and is especially strong on MAG. This pattern aligns with its tool design. Global search offers a reliable anchor for text-heavy queries and supports strong top-rank accuracy on AMAZON. Typed, query-ranked one-hop expansion enables controlled multi-hop evidence gathering in relational settings, contributing to the best results on MAG and solid performance on PRIME, where it is surpassed only by the RL-trained GraphFlow.
+
+While \retrieverShort uses a large backbone, the distilled variant preserves most of these gains with a substantially smaller Qwen3-8B model via label-free trajectory imitation (Section~\ref{sec:distillation-impact}).
+
+\subsection{Text vs. Relational Adaptive Retrieval}
+\label{sec:adaptive-tool-use}
+\FigAdaptiveToolUse[h]
+
+STaRK reports, for each graph, the average share of queries that are primarily textual versus primarily relational (multi-hop) (Fig.~5 in \citet{wu_stark_2024}). We use these proportions as a reference and compare them to \retrieverShort's tool-call allocation on our evaluation split. Concretely, we treat the fraction of global search calls as a proxy for text-centric evidence use and the fraction of neighborhood exploration calls as a proxy for relation-centric evidence. \Cref{fig:adaptive-tool-use} shows a proportional match: on AMAZON, where queries are mostly textual, \retrieverShort relies almost entirely on global search (87.7\%), whereas on MAG and PRIME, where relational requirements dominate, \retrieverShort shifts toward neighborhood exploration to traverse multi-hop evidence (65.3\% and 52.3\%, respectively). Appendix~\ref{app:trajectory-tool-usage} complements this call-frequency view with trajectory-level statistics on re-anchoring after the first step and on tool mixing among successful runs. 
+
+
+\subsection{Impact of Toolset Design}
+\label{sec:toolset}
+\FigSFTImpact
+\TabToolsetAblation[h]
+
+We conduct various ablation studies to assess the impact of toolset design choices. \Cref{tab:toolset-ablation} demonstrates that neighborhood exploration is the main source of gains on relational, multi-hop queries. Removing this tool decreases performance on MAG and PRIME as the system is then limited to global lexical search without graph traversal. On AMAZON, performance drops more moderately and moves toward lexical baselines (\cref{tab:stark-results}).
+
+
+We further separate two complementary controls in neighborhood exploration. Disabling query-based ranking causes smaller but consistent drops, suggesting that lexical matching within a local neighborhood helps surface relevant neighbors and prevents drift toward high-degree distractors. Disabling type-based filtering is more detrimental, especially in heterogeneous graphs such as PRIME (\cref{tab:stark-statistics}). In such environments, type constraints are important to direct the agent towards semantically relevant edges and nodes, preventing search from drifting into unrelated parts of the graph.
+
+Note that we do not ablate global search because it is required: it maps query text to candidate nodes and provides the node identifiers needed to start neighborhood expansion. Without this initial anchor, the agent cannot reliably enter the right part of the graph, so the system fails outright.
+
+\subsection{Compute-Performance Trade-offs}
+\label{sec:cost-performance}
+
+We next study how retrieval quality scales with the inference-time budget. \Cref{fig:n-agents} shows that performance improves monotonically as compute increases, moving from single-agent settings to parallel multi-agent configurations. We also report a single-agent vs.~multi-agent comparison under the same total step budget in Appendix~\ref{app:budget-control}. 
+
+Additional compute helps most on queries that require multi-hop expansion, and yields smaller gains when global lexical search is already sufficient.  Parallelization yields performance benefits with minimal overhead. Increasing the agent count, particularly the transition from one to two agents, results in substantial gains while only modestly increasing latency. Because agents run independently, end-to-end latency is determined by the bottleneck of the slowest agent rather than the cumulative runtime of all agents.
+
+\retrieverShort provides an interpretable budget-performance landscape. Practitioners can fix a latency or compute budget and choose an operating point in \Cref{fig:n-agents} that matches their needs, trading off depth and parallelism to balance quality and cost across graph regimes. 
+
+\subsection{Aggregation Strategy Comparison}
+\label{sec:aggregation-strategy}
+
+\TabAggregationComparison[h]
+
+Aggregation quality also matters once multiple trajectories have been collected. \Cref{tab:aggregation-comparison} compares our voting rule against two simpler ways of combining the outputs of three agents. Voting consistently outperforms both ordering-based merging and random merging, with the largest gains on MAG and PRIME. This supports the view that parallel exploration helps not only by increasing sampling diversity, but also by exposing a stable consensus signal over retrieved nodes. 
+
+\subsection{Relevance Function (Lexical vs.\ Dense)}
+\label{sec:relevance-lexical-dense}
+\TabDenseRetrieverAblation[h]
+
+The relevance function $\rel$ used to rank candidate nodes for agent-issued subqueries (\Cref{method}) can be implemented with either lexical (BM25) or dense retrieval. \Cref{tab:dense-ablation} compares the two options inside \retrieverShort. BM25 is notably more precise on AMAZON and PRIME, while differences on MAG are marginal in both directions. This suggests that the advantage of dense retrieval in single-pass settings does not directly carry over to iterative retrieval: the agent can compensate for weaker lexical matching by issuing refined subqueries over successive steps and by discovering relevant nodes through neighborhood exploration rather than text similarity alone.
+
+
+
+
+\subsection{Impact of Distillation}
+\label{sec:distillation-impact}
+
+We also study how the distillation budget affects final performance. \Cref{fig:sft-impact} compares Qwen3-4B and Qwen3-8B students trained on increasing numbers of teacher trajectories across the three STaRK graphs; full results for all metrics are in \Cref{tab:full-stark-results}.
+
+Distillation is data-efficient: using 10\% of the trajectories recovers roughly half of the total improvement achieved with the full training set. This makes distillation practical when collecting trajectories is costly. In our setup, distilling the 600-query setting can be done in 30 minutes on a single H100 GPU.
+
+Student size matters most on PRIME. Because base models perform poorly in this regime, distillation is more important, and the teacher-student gap is the largest. The stronger performance of the 8B student suggests that higher-capacity models better absorb the long-horizon, high-branching exploration patterns required for complex biomedical reasoning in PRIME.
+
+\subsection{Neighborhood Exploration vs. Retrieval}
+\FigNeighborExploreDistribution[h]
+
+We next examine how neighborhood exploration relates to retrieval success on MAG and PRIME. Here, successful trajectories refers to the runs (\textit{i.e.}, tool call sequences) that retrieve the correct nodes and therefore score as correct on the retrieval metric for that query. \Cref{fig:neighbor-explore-distribution} shows two failure modes. First, many failed runs make no neighborhood calls at all, suggesting the agent does not recognize when relational evidence is needed and never moves beyond global anchoring into multi-hop expansion. Second, failed runs also show a long tail with many neighborhood calls, indicating the opposite problem: the agent keeps expanding without converging on relevant support, consistent with drift in high-branching parts of the graph. 
+
+In contrast, successful trajectories use neighborhood exploration sparingly, rarely exceeding ten calls, suggesting that strong retrieval relies on selective expansion rather than indiscriminate multi-hop traversal. These results underscore the need for retrieval methods like \retrieverShort that balance the breadth-depth tradeoff: when \retrieverShort succeeds, it adaptively switches from global anchoring to neighborhood expansion, and it stops expanding once it has found the needed support.

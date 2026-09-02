@@ -1,0 +1,30 @@
+\section{Related Work}
+\label{section:related-work}
+\paragraph{Agent scaffolding for software engineering.}
+Since the release of \swebench~\cite{swebench}, which frames real \github issues as end-to-end repository-level repair tasks, researchers have designed various scaffolds on improving LLMs' issue-solving ability. Two families of scaffolds have emerged. Agentic scaffolds~\cite{yang2024sweagent,wang2024openhands} involves an LLM driving the core decision-making process based on its tool-mediated interaction with the sandboxed environment. A canonical example is \sweagent~\cite{yang2024sweagent}, which introduces the concept of agent–computer interface, an abstraction layer between LLMs and computers, to enhance LLM agents' ability inside computer environments. By contrast, pipeline-based scaffolds~\cite{xia2024agentless,moatless} decompose the task into human-defined stages, which typically involves fault localization, patch generation, and patch selection. These workflows trade generality for stability and cost control.
+Due to the huge design space of agentic scaffolds, recently, researchers have proposed self-improving agents~\cite{zhang2025darwin,wang2025huxley} to improve their own scaffolds via iterative offline learning, along with \textsc{Live-SWE-agent}~\cite{xia2025livesweagentsoftwareengineeringagents} that self-evolves its scaffold on the fly through tool creation.
+
+
+\paragraph{Training software agents via reinforcement learning.}
+Recent work improves the core model competence for software engineering tasks through reinforcement learning (RL). SWE-RL~\cite{wei2025swerl} applies RL to ``software evolution'' data with lightweight verifiable rewards, yielding a model that improves solve rates on software engineering and reasoning tasks. DeepSWE~\cite{deepswe2025} trains a 32B open-weight agent from scratch using pure RL on containerized software environments with execution-based reward. Code World Model (CWM)~\cite{faircodegenteam2025cwmopenweightsllmresearch} is trained as a reasoning agent whose trajectories interleave reasoning and tool use, achieving state-of-the-art results among 32B models with test-time scaling.
+Increasingly, newly released open LLMs emphasize agentic intelligence and are trained extensively on software engineering data and environments, including
+DeepSeek~V3.1~\cite{deepseekv31}, DeepSeek~V3.2~\cite{deepseekai2025deepseekv32pushingfrontieropen},
+MiniMax~M1/M2~\cite{chen2025minimax},
+Qwen3-Coder~\cite{qwen3technicalreport},
+Kimi~K2~\cite{kimiteam2025kimik2openagentic},
+SWE-1.5~\cite{swe15},
+GLM-4.5~\cite{5team2025glm45agenticreasoningcoding},
+Devstral~\cite{devstral},
+and MiMo-V2-Flash~\cite{mimo2025flash}.
+
+\paragraph{Data and environments for training software agents.}
+Robust software agents need a large corpus of diverse executable software environments and task descriptions for training. Recent work has converged on two complementary lines: real data collection and synthetic data generation.
+SelfAPR~\cite{selfapr} is an early example of project-specific synthetic repair-data generation. It perturbs previous versions of the program under repair to create training samples and incorporates test execution diagnostics into the model input, enabling the repair model to capture both project-specific knowledge and fault-type information.
+SWE-Gym~\cite{swegym} is a manually curated software issue dataset with 2.4k real Python tasks from 11 projects. Each instance ships an executable environment and unit tests, enabling both agent training and verifier training for inference-time best-of-$n$ selection.
+R2E-Gym~\cite{jain2025r2e} scales beyond human-curated issues by back-translating commits into over 8k executable tasks with auto-generated tests and problem statements.
+SWE-rebench~\cite{badertdinov2025swerebenchautomatedpipelinetask} automates continuous extraction of fresh interactive tasks from GitHub (21k+ Python tasks) and maintains a rolling, decontaminated evaluation window with a public leaderboard.
+SWE-smith~\cite{yang2025swe} automatically converts real Python repositories into a training task through environment creation, bug synthesis, and issue generation, providing lightweight runnable environments and a 50k task corpus across 128 repos.
+Finally, BugPilot~\cite{sonwane2025bugpilotcomplexbuggeneration} targets difficult synthetic bugs by having agents implement features that unintentionally break tests, producing more natural failures that improve training efficiency.
+
+
+

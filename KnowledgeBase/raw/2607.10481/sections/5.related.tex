@@ -1,0 +1,37 @@
+\section{Related Work}
+\paragraph{Reinforcement learning for LLM.}
+While early foundational RL works in LLM post-training centered on \textit{Reinforcement Learning from Human Feedback} (RLHF) to align models with human preferences \citep{rlhf-stiennon2020learning, ouyang2022training}, the RL paradigm has recently shifted towards \textit{Reinforcement Learning with Verifiable Rewards} (RLVR) for verifiable tasks such as mathematics and coding \citep{tulu-RLVR}.
+Under this regime, OpenAI o1 \citep{Openai-O1} is a seminal reasoning-oriented LLM built by RL, while DeepSeek-R1 \citep{Deepseek-R1} introduces a detailed recipe using GRPO \citep{GRPO}.
+These milestones have catalyzed a surge of research dedicated to reproducing reasoning behaviors \citep{ORZ, DAPO}, investigating underlying mechanisms such as entropy dynamics \citep{yue2025does, entropy-mechanism, entropy-80}, and refining learning algorithms \citep{Dr.GRPO, QAE, GMPO}.
+In this work, we adopt DAPO \citep{DAPO} as our primary backbone.
+
+% Reinforcement learning has become a key component of LLM post-training.
+% While early applications of LLM RL focus on reinforcement learning from human feedback (RLHF) for alignment \cite{rlhf-ouyang2022training, rlhf-stiennon2020learning}, recent work primarily focus on the reasoning tasks (\eg math, code) through reinforcement with verifiable rewards (RLVR, \citep{tulu-RLVR}).
+% Under this paradigm, OpenAI o1 \citep{Openai-O1} is the first reasoning-oriented model, and Deepseek-R1 \citep{Deepseek-R1} releases a detailed training pipeline using GRPO \citep{GRPO}.
+% Building upon these seminal works, the research community builds a series of work repoducing \citep{ORZ, DAPO}, understanding \citep{yue2025does, entropy-mechanism, entropy-80}, and improving RLVR algorithms \citep{DAPO, Dr.GRPO, QAE}.
+% In this paper, we adopt DAPO as our primary RLVR algorithm baseline.
+
+\paragraph{Stability Issues in LLM RL.}
+Despite these advancements, scaling RL training faces significant stability challenges:
+\textit{(1) System-level Instability.} 
+RL frameworks typically decouple rollout (\eg vllm \citep{vllm}) and training engines (\eg Megatron \citep{megatron-lm}) to maximize throughput, introducing a \textit{training-inference mismatch} \citep{TIS, SpeedStability}.
+This architectural inconsistency, which is exacerbated in Mix-of-Expert (MoE) models by diverging router behaviors \citep{GSPO}, can destabilize optimization.
+Although extensive existing works address this problem \citep{IcePop, XiaomiR3, MiniRL}, stable optimization can still yield unstable generalization, and we focus on this fundamental challenge:
+\textit{(2) Algorithmic Over-optimization.}
+This issue arises when stable improvement in training rewards paradoxically leads to degraded generalization \citep{gao2023scaling, repo}.
+Unlike classic \textit{Reward Hacking} driven by proxy reward flaws \citep{weng2024rewardhack}, this phenomenon persists in RLVR even when reward signals are consistent with evaluation.
+While some studies attribute this to ``false positive'' reasoning \citep{why-hallucinate, ding2025fapo}, we argue that reward shaping might not be the sole cure.
+Given that imperfect outcome rewards remain highly effective \citep{ding2025fapo} and evaluation metrics mirror training objectives, the degradation implies a fundamental \textbf{algorithmic tendency toward over-optimization}.
+Thus, we advocate for algorithmic interventions to enforce stability, serving as a necessary foundation that complements reward modeling.
+
+\paragraph{Learning with off-policy guidance.}
+Using off-policy data is a common strategy in RL, typically serving two purposes: efficiency and distillation.
+For example, methods like Experience Replay \citep{repo_replay, remix, exgrpo} and unified SFT-RL frameworks \citep{luffy, upt, mentor} utilize historical or expert trajectories alongside on-policy generations for improved efficiency or better performance.
+In addition, \citet{rlep} explored a two-stage training paradigm, where an optimized RL model guides a base model to bootstrap capabilities.
+While ARMOR also utilizes off-policy samples $y_\text{anc}$ from $\pi_\text{ref}$ and employs a two-stage training paradigm, it differs fundamentally in its target:
+We utilize the reference not to bootstrap a new model, but to serve as a dynamic anchor that sustains the model's own scaling and explicitly counteracts the tendency toward over-optimization.\\
+
+\paragraph{KL Regularization and Divergence Choices.}
+KL regularization is widely used to constrain policy updates and mitigate reward over-optimization in RLHF/RLVR \citep{ouyang2022training, gao2023scaling, klcomedy}. 
+However, reverse KL is mode-seeking and can still allow the policy to collapse onto a narrow subset of high-reward patterns \citep{beyondkl, klcollapse}, motivating recent studies of alternative divergences, including forward-KL-style exploration in RAPO \citep{deng2025unlocking} and f-divergence-based GRPO variants \citep{li2025choice}. 
+Different from existing RLVR works that mainly use alternative divergences to preserve diversity or enhance exploration (pass@k), our work targets late-stage \textbf{over-optimization}, where training reward keeps increasing while validation accuracy collapses, and addresses it through Anchor Rollout and Mixed Optimization.

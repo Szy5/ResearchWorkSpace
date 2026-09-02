@@ -1,0 +1,18 @@
+\begin{algorithm}[t]
+\begin{algorithmic}
+% \STATE {\bfseries Input:} { variational distribution $p_\sigma(\vx, \vy)$,  approximation network $q_\theta(\vy| \vx)$.}
+%\FOR{each training iteration}
+ \STATE \textbf{Inputs:} LLM policy  $\pi_\theta(\vy|\vx)$, target word set $\gV_\text{target}$, attacker and defender prompts $f_\text{attack}, f_\text{defend}$.
+ \FOR{self-play epoch iterations}
+\STATE Make a copy of $\pi_\theta$ as $\pi_{\bar{\theta}}$.
+\STATE Set $\mu_{\bar{\theta}}(\vu|\vs)= \pi_{\bar{\theta}}(\vu|f_\text{attack}(\vs))$ and $\nu_{\bar{\theta}}(\vv|\vs')= \pi_{\bar{\theta}}(\vv|f_\text{defend}(\vs'))$.
+%\FOR{$t$ from $1$ to $T$}
+ \STATE For each $w\in\gV_\text{target}$, sample a episode $\vtau \sim \mu_{\bar{\theta}} \times \nu_{\bar{\theta}}$. Collect $\gT_{\bar{\theta}} = \{\vtau \sim  \mu_{\bar{\theta}} \times \nu_{\bar{\theta}}\}$
+ \STATE Split the attacker-winning set $\gT_{\bar{\theta}}^\text{attack}$ and the defender-winning set $\gT_{\bar{\theta}}^\text{defend}$.
+ \STATE Update $\pi_\theta$ with  loss $\gL_\text{SPAG}(\pi_\theta)$.
+ \ENDFOR
+\end{algorithmic}
+ \caption{Self-play of adversarial language games (SPAG)} \label{alg:SPAG}
+%\vspace{-2mm}
+ \end{algorithm}
+ 

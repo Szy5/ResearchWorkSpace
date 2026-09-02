@@ -1,0 +1,67 @@
+\begin{algorithm}[t]
+\caption{\textsc{Seed}: Self-Evolving On-Policy Distillation}
+\label{alg:seed}
+\footnotesize
+\begin{algorithmic}[1]
+\Require SFT-initialized policy $\pi_{\theta_{\mathrm{sft}}}$, task set $\mathcal{Q}$,
+fixed reference policy $\pi_{\mathrm{ref}}$, context function $H$, group size $N$,
+gate sharpness $\beta_{\mathrm{opd}}$, KL coefficient $\beta_{\mathrm{KL}}$,
+OPD coefficient $\lambda_{\mathrm{opd}}$, clip parameter $\epsilon_{\mathrm{clip}}$,
+learning rate $\eta$
+\Ensure Trained policy $\pi_\theta$
+\State $\theta \gets \theta_{\mathrm{sft}}$
+\For{each policy update}
+    \State $\theta_{\mathrm{old}} \gets \theta$
+    \State Sample a task batch $\mathcal{B} \subset \mathcal{Q}$
+    \State \textcolor{green!50!black}{\textit{// On-policy experience and synchronized skill analysis}}
+    \For{each task $q \in \mathcal{B}$}
+        \State Sample $\mathcal{G}_q=\{\tau_q^{(n)}\}_{n=1}^{N}$ with
+        $\tau_q^{(n)}\sim\pi_{\theta_{\mathrm{old}}}(\cdot\mid q)$
+        \State Compute $\mu_q$ and $\sigma_q$ from
+        $\{R(\tau_q^{(n)})\}_{n=1}^{N}$
+        \For{each trajectory $\tau_q^{(n)}\in\mathcal{G}_q$}
+            \State $A^{\mathrm{rl}}_{q,n}\gets
+            (R(\tau_q^{(n)})-\mu_q)/(\sigma_q+\epsilon)$
+            \State $s_q^{(n)}\gets
+            A_{\theta_{\mathrm{old}}}(x_{\tau_q^{(n)}})$
+            \For{each action step $t$ in $\tau_q^{(n)}$}
+                \State $\tilde h_{q,n,t}\gets
+                H(h_{q,n,t},s_q^{(n)})$
+                \State Cache $\ell^{\mathrm{old}}_{q,n,t,\ell}$ for all
+                valid sampled tokens $\ell$
+            \EndFor
+        \EndFor
+    \EndFor
+    
+    \State \textcolor{green!50!black}{\textit{// Paired contextual re-scoring and joint optimization}}
+    \For{each optimization minibatch of valid sampled tokens}
+        \State Evaluate $\ell^{\mathrm{skill}}_{q,n,t,\ell}$ and
+        $\ell^{\theta}_{q,n,t,\ell}$ using the current $\pi_\theta$
+        \State $\Delta_{q,n,t,\ell}\gets
+        \operatorname{sg}[\ell^{\mathrm{skill}}_{q,n,t,\ell}
+        -\ell^{\theta}_{q,n,t,\ell}]$
+        \State $g_{q,n,t,\ell}\gets
+        \sigma(\beta_{\mathrm{opd}}\Delta_{q,n,t,\ell})$
+        \State $\rho_{q,n,t,\ell}(\theta)\gets
+        \exp(\ell^{\theta}_{q,n,t,\ell}
+        -\ell^{\mathrm{old}}_{q,n,t,\ell})$
+        % \State Compute the clipped GRPO loss $\mathcal{L}_{\mathrm{grpo}}$
+        % from $\rho$, $A^{\mathrm{rl}}$, and $\epsilon_{\mathrm{clip}}$
+        % \State $\mathcal{L}_{\mathrm{rl}}\gets
+        % \mathcal{L}_{\mathrm{grpo}}
+        \State Compute the clipped GRPO loss $\mathcal{L}_{\mathrm{rl}}$
+        from $\rho$, $A^{\mathrm{rl}}$, and $\epsilon_{\mathrm{clip}}$
+        % \State $\mathcal{L}_{\mathrm{rl}}\gets
+        % \mathcal{L}_{\mathrm{grpo}}+\beta_{\mathrm{KL}}D_{\mathrm{KL}}\,\pi_\theta\,\|\,\pi_{\mathrm{ref}}$
+        \State $\mathcal{L}_{\mathrm{opd}}\gets
+        \mathbb{E}[m\cdot g\cdot (\operatorname{sg}[\ell^{\mathrm{skill}}]
+        -\ell^{\theta})]$
+        \State $\mathcal{L}_{\mathrm{SEED}}\gets
+        \mathcal{L}_{\mathrm{rl}}
+        +\lambda_{\mathrm{opd}}\mathcal{L}_{\mathrm{opd}}$
+        \State $\theta\gets\theta-\eta\nabla_\theta
+        \mathcal{L}_{\mathrm{SEED}}$
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}

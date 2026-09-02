@@ -1,0 +1,131 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2601.13969",
+  "created_at": "2026-07-21T02:04:44.325344+00:00",
+  "updated_at": "2026-07-21T02:30:33.234777+00:00",
+  "paper": {
+    "title": "Autonomous Knowledge Graph Exploration \\\\ with Adaptive Breadth-Depth Retrieval",
+    "authors": [
+      "Joaquin Polonuer",
+      "Lucas Vittor",
+      "Iñaki Arango",
+      "Ayush Noori",
+      "David A. Clifton",
+      "Luciano Del Corro",
+      "Marinka Zitnik"
+    ],
+    "abstract": "Retrieving evidence for language model queries from knowledge graphs (KGs) requires balancing broad search across the graph with multi-hop traversal to follow relational links. Similarity-based retrievers provide coverage but remain shallow, whereas traversal-based methods rely on selecting seed nodes to start exploration, which can fail when queries span multiple entities and relations. We introduce : , a tool-using KG retriever that gives a language model control over this breadth-depth tradeoff using a two-operation toolset: global lexical search over node descriptors and one-hop neighborhood exploration that composes into multi-hop traversal. alternates between breadth-oriented discovery and depth-oriented expansion without depending on a fragile seed selection, a pre-set hop depth, or requiring retrieval training. adapts tool use to queries, using global search for language-heavy queries and neighborhood exploration for relation-heavy queries. On STaRK, reaches 59.1\\% average Hit@1 and 67.4 average MRR, improving average Hit@1 by up to 31.4\\% and average MRR by up to 28.0\\% over retrieval-based and agent-based training-free methods. Finally, we distill 's tool-use trajectories from a large teacher into an 8B model via label-free imitation, improving Hit@1 by +7.0, +26.6, and +13.5 absolute points over the base 8B model on AMAZON, MAG, and PRIME datasets, respectively, while retaining up to 98.5\\% of the teacher's Hit@1 rate.",
+    "year": 2025,
+    "venue": "ACL",
+    "arxiv_id": "2601.13969",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-21",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "raw/2601.13969",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "0bfeb2a80740c9eaaad1b9f847599e8511891d170573bf64fbfdb12ad2df2e45",
+        "bytes": 4048
+      },
+      {
+        "path": "macros.tex",
+        "sha256": "959dd6f4f7c0ca1dcf146d22625a6dde5297d52111a5df4213ae513a91f4bc57",
+        "bytes": 2014
+      },
+      {
+        "path": "figures.tex",
+        "sha256": "14d8eec8c25681189e3b6cac97f1b8bff1a303a33dca88222d6243be292a8ceb",
+        "bytes": 4377
+      },
+      {
+        "path": "tables.tex",
+        "sha256": "485697176fbb98b73087df2e86a555622360da7544acf65b315fb92fa478b750",
+        "bytes": 15964
+      },
+      {
+        "path": "sections/abstract.tex",
+        "sha256": "58e1b42aa7353a9269df624f13aa21bc2c8760278a43e16df9c00393fcde16e5",
+        "bytes": 1609
+      },
+      {
+        "path": "sections/introduction.tex",
+        "sha256": "6bcfc96734c6b486ae966001307ff06d708fecdf5b5e5ca0b21801d9ef99484e",
+        "bytes": 5020
+      },
+      {
+        "path": "sections/related-work.tex",
+        "sha256": "46a709368bd3ae6421421c3d3474431c967850767026bc0284eb449e41190d80",
+        "bytes": 3822
+      },
+      {
+        "path": "sections/graph-agent.tex",
+        "sha256": "b42c351b64a3ba9cc4e294a64bcb37630938b2a4744ed0cba700d8e4d425ad29",
+        "bytes": 6861
+      },
+      {
+        "path": "sections/experimental-setup.tex",
+        "sha256": "08048798b4f8697ddbc351a24879d2bb9293aa891516dab573b047d022d8c91a",
+        "bytes": 5009
+      },
+      {
+        "path": "sections/results.tex",
+        "sha256": "14ed8f5d0309fb366f540b2b6cb22510c2f9d4ef6c720eeb4f3a7dac4b69e1f1",
+        "bytes": 9395
+      },
+      {
+        "path": "sections/conclusion.tex",
+        "sha256": "9988ea2edc5fd2c47f48943e0bd47403e744c761181b0a8fa6b8ccb3cb1a2ef6",
+        "bytes": 886
+      },
+      {
+        "path": "sections/limitations.tex",
+        "sha256": "f43030cca37345981ffa18ca778a0f516a8a36923ad1c880751939e101f45992",
+        "bytes": 2647
+      },
+      {
+        "path": "sections/code-availability.tex",
+        "sha256": "95b39acdd0e7c8f64231758ed90fbe81ef696049cd6dba5eb3cc8a1267a70e8b",
+        "bytes": 239
+      },
+      {
+        "path": "sections/acknowledgments.tex",
+        "sha256": "bd913d66e76694dd9f75fbac7170f2dd69b541afc8ac68621de1e9fd72bd939a",
+        "bytes": 1530
+      },
+      {
+        "path": "sections/appendix.tex",
+        "sha256": "873b9685de9d05de2a929a83fd9863c07954416fd4b8304e33a3b6b4e319838f",
+        "bytes": 4922
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 31,
+    "figures": 6,
+    "references": 69
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 9, column 1):\nunexpected Tok (line 9, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 9, column 1):\nunexpected Tok (line 9, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

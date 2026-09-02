@@ -4,6 +4,7 @@ from pathlib import Path
 
 from paper_wiki.core.config import Settings
 from paper_wiki.publishing.artifact_html import resolve_artifact_html
+from paper_wiki.publishing.cover_generator import default_wechat_title, generate_wechat_cover
 from paper_wiki.publishing.exceptions import HTMLValidationError, WeChatConfigError
 from paper_wiki.publishing.html_processor import replace_local_images
 from paper_wiki.publishing.models import WeChatDraftOptions, WeChatDraftResult
@@ -39,6 +40,38 @@ def _write_rendered_html(artifact_dir: Path, source_html: Path, content: str) ->
     return rendered_path
 
 
+def _resolve_cover_path(
+    settings: Settings,
+    options: WeChatDraftOptions,
+    *,
+    artifact_dir: Path,
+    title: str,
+) -> Path | None:
+    """Prefer an explicit upload; otherwise auto-generate a title cover."""
+    project_root = settings.project_root.resolve()
+    explicit = _resolve_optional_path(
+        options.cover_path,
+        project_root=project_root,
+        artifact_dir=artifact_dir,
+    )
+    if explicit is not None and explicit.exists() and explicit.is_file():
+        return explicit
+
+    auto_cover = artifact_dir / f"{Path(options.html_path).stem}_wechat_cover.jpg"
+    try:
+        return generate_wechat_cover(title, auto_cover)
+    except OSError:
+        # Fall back to the shared env default when Pillow/fonts cannot write.
+        fallback = _resolve_optional_path(
+            settings.wechat_cover_path,
+            project_root=project_root,
+            artifact_dir=artifact_dir,
+        )
+        if fallback is not None and fallback.exists() and fallback.is_file():
+            return fallback
+        raise
+
+
 def publish_artifact_html_to_wechat(
     settings: Settings,
     options: WeChatDraftOptions,
@@ -50,17 +83,18 @@ def publish_artifact_html_to_wechat(
     if not settings.wechat_appid or not settings.wechat_secret:
         raise WeChatConfigError("WeChat credentials are missing: WECHAT_APPID and WECHAT_SECRET")
 
+    title = default_wechat_title(options.title or _derive_title(artifact.html_path))
     thumb_media_id = options.thumb_media_id or settings.wechat_thumb_media_id
-    cover_path = _resolve_optional_path(
-        options.cover_path or settings.wechat_cover_path,
-        project_root=settings.project_root.resolve(),
-        artifact_dir=artifact.artifact_dir,
-    )
+    cover_path: Path | None = None
     if not thumb_media_id:
-        if cover_path is None:
+        cover_path = _resolve_cover_path(
+            settings,
+            options,
+            artifact_dir=artifact.artifact_dir,
+            title=title,
+        )
+        if cover_path is None or not cover_path.exists() or not cover_path.is_file():
             raise WeChatConfigError("cover image or thumb_media_id is required to create a WeChat draft")
-        if not cover_path.exists() or not cover_path.is_file():
-            raise WeChatConfigError(f"cover image does not exist: {cover_path}")
 
     wechat_client = client or WeChatClient(
         settings.wechat_appid,
@@ -84,7 +118,6 @@ def publish_artifact_html_to_wechat(
     if options.save_rendered:
         rendered_html_path = _write_rendered_html(artifact.artifact_dir, artifact.html_path, processed.content)
 
-    title = options.title or _derive_title(artifact.html_path)
     author = options.author if options.author is not None else settings.wechat_author
     payload = wechat_client.create_draft(
         title=title,

@@ -1,0 +1,809 @@
+\section{Iteration-wise Evaluation Trajectories}
+\label{app:iteration_trajectories}
+
+Figures~\ref{fig:app_iteration_qwen3_4b}--\ref{fig:app_iteration_ministral_14b} report raw held-out performance after each self-play iteration, with iteration~0 denoting the initial solver. Tool-call panels track the seven-subset overall score, API-Bank, and BFCL; logical-reasoning panels track ZebraLogic grid-level and cell-level accuracy.
+
+\begin{figure*}[htbp]
+    \centering
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/tool-call/fig_iteration_qwen3_4b.pdf}\\
+        \small \textbf{(a) Tool-call}
+    \end{minipage}\hspace{0.03\textwidth}
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/logical/fig_iteration_qwen3_4b.pdf}\\
+        \small \textbf{(b) Logical reasoning}
+    \end{minipage}
+    \caption{\textbf{Qwen3-4B-Instruct.} Held-out tool-call (left) and logical-reasoning (right) trajectories.}
+    \label{fig:app_iteration_qwen3_4b}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/tool-call/fig_iteration_qwen3_8b.pdf}\\
+        \small \textbf{(a) Tool-call}
+    \end{minipage}\hspace{0.03\textwidth}
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/logical/fig_iteration_qwen3_8b.pdf}\\
+        \small \textbf{(b) Logical reasoning}
+    \end{minipage}
+    \caption{\textbf{Qwen3-8B.} Held-out tool-call (left) and logical-reasoning (right) trajectories.}
+    \label{fig:app_iteration_qwen3_8b}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/tool-call/fig_iteration_granite_4_1_3b.pdf}\\
+        \small \textbf{(a) Tool-call}
+    \end{minipage}\hspace{0.03\textwidth}
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/logical/fig_iteration_granite_4_1_3b.pdf}\\
+        \small \textbf{(b) Logical reasoning}
+    \end{minipage}
+    \caption{\textbf{Granite-4.1-3B.} Held-out tool-call (left) and logical-reasoning (right) trajectories.}
+    \label{fig:app_iteration_granite_3b}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/tool-call/fig_iteration_ministral_3_8b.pdf}\\
+        \small \textbf{(a) Tool-call}
+    \end{minipage}\hspace{0.03\textwidth}
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/logical/fig_iteration_ministral_3_8b.pdf}\\
+        \small \textbf{(b) Logical reasoning}
+    \end{minipage}
+    \caption{\textbf{Ministral-3-8B.} Held-out tool-call (left) and logical-reasoning (right) trajectories.}
+    \label{fig:app_iteration_ministral_8b}
+\end{figure*}
+
+\begin{figure*}[htbp]
+    \centering
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/tool-call/fig_iteration_ministral_3_14b.pdf}\\
+        \small \textbf{(a) Tool-call}
+    \end{minipage}\hspace{0.03\textwidth}
+    \begin{minipage}[t]{0.37\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/app_iteration/logical/fig_iteration_ministral_3_14b.pdf}\\
+        \small \textbf{(b) Logical reasoning}
+    \end{minipage}
+    \caption{\textbf{Ministral-3-14B.} Held-out tool-call (left) and logical-reasoning (right) trajectories.}
+    \label{fig:app_iteration_ministral_14b}
+\end{figure*}
+
+
+\section{Details of Dynamic Skill Routing}
+\label{app:skill_routing}
+
+To ensure that the proposer efficiently focuses on structural priors that yield high-quality tasks, Skill-SP routes each generation attempt by dynamically sampling a skill $\vs \sim \gS$. This routing mechanism must carefully balance exploiting historically reliable skills with exploring newly induced or under-tested ones.
+
+For each skill $\vs_j \in \gS$, its tracking statistics $\sigma_j$ record the total number of historical selection attempts $a_j$. It also maintains the specific success counts across three crucial stages of validity verification (detailed in Section~\ref{sec:proposer_optimization}): the number of structurally verified candidates $n_j^{\mathrm{ver}}$, solver-consistent candidates $n_j^{\mathrm{con}}$, and frontier-difficulty tasks $n_j^{\mathrm{fd}}$. 
+
+To mitigate the high variance in early sampling estimates, we apply symmetric Beta smoothing with a prior strength $\kappa$. The smoothed success rate for each outcome $o \in \{\mathrm{ver}, \mathrm{con}, \mathrm{fd}\}$ is calculated as:
+\begin{equation}
+    \widehat{r}^{o}_j = \frac{n^{o}_j + \kappa/2}{a_j + \kappa}.
+\end{equation}
+We then compute a composite quality score $v_\text{skill}(\vs_j)$ by taking a weighted average of these smoothed rates, prioritizing the fundamental structural validity while equally rewarding consistency and frontier difficulty:
+\begin{equation}
+    v_\text{skill}(\vs_j)
+    =
+    \frac{1}{2}\widehat{r}^{\mathrm{ver}}_j
+    +
+    \frac{1}{4}\widehat{r}^{\mathrm{con}}_j
+    +
+    \frac{1}{4}\widehat{r}^{\mathrm{fd}}_j.
+    \label{eq:app_skill_quality}
+\end{equation}
+
+Finally, to prevent the routing distribution from prematurely collapsing onto a few dominant skills, we augment the sampling weight with a decaying exploration bonus. The sampling weight $w(\vs_j)$ and the resulting selection probability $P(\vs_j)$ are formulated as:
+\begin{equation}
+    w(\vs_j)
+    =
+    \mathrm{clip}\!\left(v_\text{skill}(\vs_j), w_{\min}, w_{\max}\right) \left(1+\beta\exp(-a_j/\tau)\right),
+    \qquad
+    P(\vs_j)
+    =
+    \frac{w(\vs_j)}{\sum_{\vs_{\ell}\in\gS} w(\vs_{\ell})},
+    \label{eq:app_skill_sampling}
+\end{equation}
+where the clipping bounds $[w_{\min}, w_{\max}]$ ensure numerical stability, $\beta$ controls the initial magnitude of the exploration bonus, and $\tau$ dictates its decay rate. This mechanism guarantees that under-tested skills are sampled sufficiently until their true empirical yield converges.
+
+
+
+\section{Training and Implementation Details}
+\label{app:training_details}
+
+This section reports the settings that materially affect the generated curriculum, solver optimization, and final benchmark scores. Each training run uses eight NVIDIA A800 GPUs.
+
+\paragraph{Task rewards.}
+For tool-call prediction, the solver reward combines exact tool-call correctness and output format compliance:
+\begin{equation}
+    \mathcal{R}_{\mathrm{tool}}(\vx,\vy,\vc)
+    =
+    0.9 \times \mathbf{1}\{\mathrm{ExactCall}(\vy,\vc)\}
+    +
+    0.1 \times \mathbf{1}\{\mathrm{ValidFormat}(\vy)\}.
+    \label{eq:tool_reward}
+\end{equation}
+Here, $\mathrm{ValidFormat}(\vy)$ indicates that the output contains at least one parseable tool call, and $\mathrm{ExactCall}(\vy,\vc)$ indicates that at least one parsed call exactly matches the reference function name and JSON arguments in the hidden contract $\vc$.
+For logical reasoning, the solver reward is a sparse puzzle-level signal:
+\begin{equation}
+    \mathcal{R}_{\mathrm{logic}}(\vx,\vy,\vc)
+    =
+    0.9 \times \mathbf{1}\{\mathrm{FullPuzzle}(\vy,\vc)\}
+    +
+    0.1 \times \mathbf{1}\{\mathrm{ValidStructure}(\vy,\vc)\}.
+    \label{eq:logic_reward}
+\end{equation}
+$\mathrm{ValidStructure}(\vy,\vc)$ requires the output to parse into a legal Zebra grid with the correct house and attribute schema, while $\mathrm{FullPuzzle}(\vy,\vc)$ requires all cells to match the hidden solution.
+Cell accuracy is logged as a diagnostic metric but is not used in the training reward.
+
+\paragraph{Proposer repetition penalty.}
+To encourage generation diversity and prevent batch-level mode collapse, we subtract a repetition penalty $\rho(\vx)$ from the proposer's RL reward during optimization. Within a proposer rollout batch of $B$ candidates, the penalty for a generated prompt $\vx_i$ is computed as $\rho(\vx_i)=|C_i|/B$, where $C_i$ is the greedy cluster of task texts formed using a Jaccard similarity threshold of $0.5$.
+
+For tool-call prediction, the frontier filter is applied after both structural parsing and solver probing.
+Skill-stream records additionally use package-level validators, while exploration-stream records rely on global schema validity and solver consistency before entering $\mathcal{D}^{(t)}$.
+For logical reasoning, the deterministic puzzle checker provides a stronger structural gate: generated puzzles must be parseable, valid, and uniquely solvable before they are used for solver training.
+Across both domains, the final solver never receives skill-package context at training or evaluation time; it only observes the standard prompt $\vx$.
+
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \begin{tabular}{p{0.22\linewidth} p{0.34\linewidth} p{0.34\linewidth}}
+        \toprule
+        \textbf{Setting} & \textbf{Tool-call prediction} & \textbf{Logical reasoning} \\
+        \midrule
+        Self-play loop & $T=5$ iterations & $T=5$ iterations \\
+        \addlinespace
+        Proposer update & GRPO with four rollouts per prompt and five update steps per iteration & GRPO with four rollouts per prompt and three update steps per iteration \\
+        \addlinespace
+        Solver update & Five rollouts per task group and 15 GRPO steps per iteration & Five rollouts per task group and 10 GRPO steps per iteration \\
+        \addlinespace
+        Training pool & $M=8{,}000$ accepted tasks per iteration with $\alpha=0.5$ skill-stream records and $0.5$ exploration-stream records & $M=1{,}920$ checker-verified puzzles per iteration \\
+        \addlinespace
+        Candidate filtering & Probe each candidate with $K=10$ frozen-solver responses; retain records with $v_\text{solve}(\vx,\vc;\pi_\text{solve}^{(t)})\in[0.25,0.75]$, solver consistency, and a unique majority answer & Enforce parser validity, puzzle validity, and uniqueness through the deterministic puzzle checker before solver training \\
+        \addlinespace
+        Skill routing & $\kappa=4$; $[w_{\min},w_{\max}]=[0.25,1.75]$; $\beta=1$, $\tau=8$; quality and exploration weighting enabled, age decay disabled & Same as tool-call prediction \\
+        \addlinespace
+        Optimization & AdamW with learning rate $10^{-6}$, weight decay $10^{-2}$, gradient clipping at $1.0$, and KL coefficient $10^{-2}$ & Same as tool-call prediction \\
+        \addlinespace
+        Context and generation & 8192-token prompt and response limits by default; the 14B Ministral tool-call runs use a 16384-token prompt limit & 8192-token prompt and response limits \\
+        \addlinespace
+        Skill evolution & Induce at least 20 new packages from accepted exploration records and refine packages after each iteration & Induce at least 10 new packages from verified puzzle records and refine packages after each iteration \\
+        \addlinespace
+        Benchmark evaluation & avg@8 sampling with temperature $1.0$, top-$p=1.0$, and top-$k=40$ & avg@8 sampling with temperature $1.0$, top-$p=1.0$, and top-$k=40$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{\textbf{Training and evaluation details.} We report the main settings used for both task families.}
+    \label{tab:training_details}
+\end{table}
+
+
+
+\section{Initial Skill Construction}
+\label{app:initial_skills}
+
+\paragraph{Construction.}
+We construct each task family's initial skill library $\gS^{(0)}$ once and share it across all model backbones. The reported libraries contain 15 generic tool-call packages and 8 generic ZebraLogic packages. An LLM proposes these packages from domain-level task formats and verifier interfaces using the same representation as Skill-SP, $\vs=\langle m,r,h,e,\nu,\sigma\rangle$. We retain only packages whose required fields can be parsed and whose domain-specific components pass structural and verification checks.
+
+\paragraph{Effect of online evolution.}
+The \emph{Frozen skills} ablation in Table~\ref{tab:ablations} isolates the contribution of this shared initialization by holding $\gS^{(0)}$ fixed while retaining skill-guided generation. Frozen skills improves only marginally over Unguided SP ($64.4$ vs. $64.1$ overall) and remains below the full system ($66.7$). Thus, most of the gain arises from online skill evolution rather than the initial library alone.
+
+
+
+\section{Full Pseudocode for Skill-SP}
+\label{app:osp_pseudocode}
+
+Algorithm~\ref{alg:skill_sp} expands the high-level workflow in Section~\ref{sec:methodology} into a single training loop.
+
+\begin{algorithm}[htbp]
+    \caption{\textsc{Skill Self-Play} (Skill-SP)}
+    \label{alg:skill_sp}
+    \KwIn{Initial proposer $\pi_\text{propose}^{(0)}$, solver $\pi_\text{solve}^{(0)}$, and skill library $\gS^{(0)}$; self-play iterations $T$; target pool size $M$; curriculum ratio $\alpha$; solver probe count $K$.}
+    \KwOut{Final solver $\pi_\text{solve}^{(T)}$.}
+
+    \For{$t = 0,1,\ldots,T-1$}{
+        Initialize $\mathcal{T}_{\text{skill}}^{(t)} \gets \emptyset$ and $\mathcal{T}_{\text{explore}}^{(t)} \gets \emptyset$\;
+
+        \ForEach{skill-conditioned proposal attempt}{
+            Sample $\vs \sim \gS^{(t)}$ using its routing statistics $\sigma$\;
+            Generate $(\vx,\vc) \sim \pi_\text{propose}^{(t)}(\cdot \mid \vs)$\;
+            Draw $K$ responses from $\pi_\text{solve}^{(t)}(\cdot \mid \vx)$ to evaluate $v_\text{solve}(\vx,\vc;\pi_\text{solve}^{(t)})$, $\mathbb{1}_{\{(\vx,\vc) \text{ is valid}\}}$, and $\gR_\text{propose}(\vx,\vc;\pi_\text{solve}^{(t)})$\;
+            \If{$\mathbb{1}_{\{(\vx,\vc) \text{ is valid}\}}=1$}{
+                Add $(\vx,\vc,\vs)$ to $\mathcal{T}_{\text{skill}}^{(t)}$\;
+            }
+        }
+
+        \ForEach{open-ended proposal attempt}{
+            Generate $(\vx,\vc) \sim \pi_\text{propose}^{(t)}(\cdot \mid \varnothing)$\;
+            Draw $K$ responses from $\pi_\text{solve}^{(t)}(\cdot \mid \vx)$ to evaluate $v_\text{solve}(\vx,\vc;\pi_\text{solve}^{(t)})$, $\mathbb{1}_{\{(\vx,\vc) \text{ is valid}\}}$, and $\gR_\text{propose}(\vx,\vc;\pi_\text{solve}^{(t)})$\;
+            \If{$\mathbb{1}_{\{(\vx,\vc) \text{ is valid}\}}=1$}{
+                Add $(\vx,\vc)$ to $\mathcal{T}_{\text{explore}}^{(t)}$\;
+            }
+        }
+
+        Construct $\mathcal{D}^{(t)}$ from $\mathcal{T}_{\text{skill}}^{(t)}$ and $\mathcal{T}_{\text{explore}}^{(t)}$ using Eq.~\ref{eq:mixed_pool}\;
+        Update $\pi_\text{propose}^{(t)} \rightarrow \pi_\text{propose}^{(t+1)}$ with GRPO according to Eq.~\ref{eq:proposer_rl_objective}, keeping $\pi_\text{solve}^{(t)}$ fixed\;
+        Update $\pi_\text{solve}^{(t)} \rightarrow \pi_\text{solve}^{(t+1)}$ with GRPO on $\mathcal{D}^{(t)}$ according to Eq.~\ref{eq:solver_rl_objective}\;
+        Update $\sigma$ from skill-conditioned attempts; refine skills from invalid attempts and accepted execution traces\;
+        Build $\mathcal{T}^{(t)}_{\text{induce}}$ by retaining frontier-targeted samples from $\mathcal{T}_{\text{explore}}^{(t)}$\;
+        Induce $\gS_{\text{new}}^{(t)}$ from $\mathcal{T}^{(t)}_{\text{induce}}$ and identify $\mathcal{S}_{\text{prune}}^{(t)}$\;
+        Update the active library as $\gS^{(t+1)} \gets (\gS^{(t)} \setminus \mathcal{S}_{\text{prune}}^{(t)}) \cup \gS_{\text{new}}^{(t)}$\;
+    }
+
+    \Return{$\pi_\text{solve}^{(T)}$}\;
+\end{algorithm}
+
+
+\section{Computational Overhead}
+\label{app:computational_overhead}
+
+A complete five-iteration Skill-SP run takes slightly over one day on average in our setup. Table~\ref{tab:computational_overhead} reports the average wall-clock breakdown across complete runs. Proposer policy optimization includes its on-policy rollouts, reward computation, and GRPO update, whereas solver-curriculum construction is the subsequent collection pass that generates, probes, verifies, and mixes the training pool $\mathcal{D}^{(t)}$. Explicit skill induction and refinement together account for only $6.5\%$ of end-to-end runtime, indicating that evolving the skill library introduces limited computational overhead.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \begin{tabular}{l c}
+        \toprule
+        \textbf{Pipeline component} & \textbf{Runtime share} \\
+        \midrule
+        Proposer policy optimization & $24.3\%$ \\
+        Solver-curriculum construction & $57.0\%$ \\
+        \quad Skill-stream generation and verification & $20.0\%$ \\
+        \quad Exploration-stream generation and verification & $37.0\%$ \\
+        Solver policy optimization & $10.2\%$ \\
+        \textbf{Skill-library evolution} & \textbf{$6.5\%$} \\
+        \quad Skill induction & $1.3\%$ \\
+        \quad Skill refinement & $5.2\%$ \\
+        Held-out benchmark evaluation & $1.9\%$ \\
+        Other orchestration & $0.1\%$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{\textbf{Average wall-clock breakdown.} Indented rows decompose their parent stage. Skill-library evolution occupies only a small fraction of the complete pipeline.}
+    \label{tab:computational_overhead}
+\end{table}
+
+
+\section{Analysis of Evaluation Benchmark}
+\label{app:evaluation_benchmark}
+
+Our benchmark suite contains two complementary tool-call benchmarks, API-Bank and BFCL, and one logical-reasoning benchmark, ZebraLogic.
+Together, they cover two forms of verifiable agent behavior: selecting and grounding executable actions from dialogue context, and solving deterministic constraint-satisfaction problems with a unique answer.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    % 调整了第一列和后续列的比例，均设置为左对齐折行
+    \begin{tabular}{>{\raggedright\arraybackslash}p{0.18\linewidth} >{\raggedright\arraybackslash}p{0.28\linewidth} >{\raggedright\arraybackslash}p{0.23\linewidth} >{\raggedright\arraybackslash}p{0.22\linewidth}}
+        \toprule
+        \textbf{Benchmark} & \textbf{Task Form} & \textbf{Main Capability} & \textbf{Reported Metrics} \\
+        \midrule
+        API-Bank \newline \citep{li2023api} & Dialogue-conditioned next tool call & Tool selection, argument grounding, schema adherence & Level 1--3 accuracy and average \\
+        \addlinespace
+        BFCL \newline \citep{patil2025berkeley} & Function-calling prompts across programming and live-tool categories & Cross-benchmark tool-call generalization & Category accuracy and BFCL average \\
+        \addlinespace
+        ZebraLogic \newline \citep{lin2025zebralogic} & Zebra-style grid puzzles with deterministic constraints & Constraint tracking, uniqueness reasoning, complete solution synthesis & Grid-level and cell-level accuracy \\
+        \bottomrule
+    \end{tabular}
+    \caption{\textbf{Evaluation benchmark roles.} API-Bank and BFCL evaluate tool-call prediction from different benchmark sources, while ZebraLogic evaluates a separate logical-reasoning task family with deterministic verification.}
+    \label{tab:benchmark_analysis}
+\end{table}
+
+\paragraph{API-Bank.}
+API-Bank~\citep{li2023api} is the primary benchmark for evaluating tool-call prediction in our experiments.
+Each instance is normalized into a standard record containing a system prompt with tool descriptions, a user-side dialogue history, and a hidden reference answer specifying the correct tool name and arguments.
+The solver receives only the system and user messages and must output a single tool invocation.
+Evaluation parses the predicted \texttt{<tool\_call>} block and exact-matches the normalized tool name and parameters against the reference answer.
+We report accuracy on Levels 1--3, which lets us separate easier tool-routing cases from harder dialogue states that require more careful argument propagation and context grounding.
+This benchmark therefore measures whether self-play improves the core operational skill that Skill-SP trains for: producing executable, schema-valid actions from standard prompts.
+
+\paragraph{BFCL.}
+BFCL~\citep{patil2025berkeley} complements API-Bank by evaluating tool-call generalization on a distinct benchmark source.
+In the main paper, we report the displayed BFCL categories used in the seven-subset tool-call average: \textit{bfcl\_simple\_javascript}, \textit{bfcl\_simple\_python}, \textit{bfcl\_simple\_java}, and \textit{bfcl\_live\_simple}.
+These categories stress different function-schema conventions, type systems, and argument normalization requirements.
+Unlike API-Bank, BFCL is not merely a level-wise slice of the same benchmark family; it tests whether the solver's learned tool-use behavior transfers to new function descriptions and answer formats.
+We use the benchmark-specific scorer to compare predicted calls against the provided possible answers after category-aware normalization.
+BFCL therefore serves as a transfer check: improvements should persist when the solver faces different function descriptions, category conventions, and answer-normalization rules.
+
+\paragraph{ZebraLogic.}
+ZebraLogic~\citep{lin2025zebralogic} evaluates a different verifiable agent task family: logical reasoning over grid-structured constraint puzzles.
+Each instance provides a natural-language puzzle whose solution is a complete assignment of attributes to houses.
+The evaluator checks whether the model's output can be parsed into a valid grid, whether the predicted schema matches the reference schema, and whether each cell agrees with the hidden solution.
+We report both grid-level accuracy, which requires the entire puzzle to be solved correctly, and cell-level accuracy, which measures partial progress.
+The benchmark is further stratified by search-space scale into Small, Medium, Large, and X-Large subsets.
+This stratification is useful for Skill-SP because it separates superficial format compliance from genuine constraint tracking: gains on larger or full-puzzle metrics indicate that the generated curriculum helps the solver learn harder reasoning patterns rather than only improving local answer formatting.
+ZebraLogic also exposes the limitation of unguided self-play most clearly, since generating valid, uniquely solvable puzzles requires proactive structural guidance rather than passive post-hoc filtering.
+
+
+
+
+\section{Limitations and Future Work}
+\label{app:limitations}
+
+While Skill-SP is highly effective for autonomous agent self-evolution, discovering entirely novel task patterns inherently requires the base model to possess a minimum foundational capability to bootstrap valid learning signals. For extremely complex domains, the framework might initially benefit from a small set of human demonstrations to jumpstart the evolving library. Furthermore, the current instantiation relies on fixed heuristics, such as the static skill-stream mixing ratio $\alpha$ and pre-defined difficulty bounds, which may require empirical tuning for new task families.
+
+Building on these observations, future work will explore several promising directions. Replacing fixed routing heuristics with learnable, dynamic curriculum schedulers could autonomously optimize the data orchestration process. Alongside this, we aim to investigate the fully automated co-induction of generative rules and executable validators directly from raw environment interactions. Broadening the scope of the framework, transferring evolved skill libraries across different model architectures could enable strong frontier models to bootstrap smaller, efficient agents, presenting an exciting avenue for scalable and democratized alignment.
+
+
+
+\section{Case Studies of Induced Skills}
+\label{app:skill_case_studies}
+
+All skill packages shown in this section were induced during Skill-SP runs initialized from Qwen3-4B-Instruct.
+
+\subsection{Tool-Call Prediction}
+\label{app:toolcall_skill_cases}
+
+Each package records a reusable transition from an observed dialogue state to one valid next tool call, together with generation constraints and a local validator. The following examples illustrate library-level pattern induction.
+
+Each complete listing is organized into routing metadata and curriculum state $(m,\sigma)$, proposer-visible construction fields $(r,h,e)$, and the package-local validator $\nu$. In the colored listings, blue denotes metadata and curriculum state, orange denotes procedural construction resources, green denotes hints and validation, and gray denotes a package example. Any listed solver procedure is an offline diagnostic oracle used to inspect generated samples.
+
+Table~\ref{tab:toolcall_skill_cases} presents two packages whose metadata records \texttt{source=skill\_induction}. Both were induced in iteration~2 and specialize different forms of observation grounding. \texttt{skill\_038} turns a previously identified top-rated restaurant into the \texttt{restaurant\_id} of a reservation, while \texttt{skill\_042} uses a confirmed availability observation, rather than the user's broader time window, to construct a meeting interval.
+
+\begin{table*}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.22}
+    \setlength{\tabcolsep}{3.5pt}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} >{\raggedright\arraybackslash}p{0.16\textwidth} >{\raggedright\arraybackslash}p{0.23\textwidth} >{\raggedright\arraybackslash}p{0.29\textwidth} >{\raggedright\arraybackslash}p{0.25\textwidth}}
+        \toprule
+        \textbf{Induced package} & \textbf{Observed evidence} & \textbf{Induced grounding rule} & \textbf{Local validation and action} \\
+        \midrule
+        \texttt{skill\_038}\newline
+        \emph{Discovery $\rightarrow$ reservation}\newline
+        Iteration 2\newline
+        $74/82$ filtered/routed
+        & The user asks to reserve for four at 7 PM. A prior observation identifies the top-rated Italian restaurant and its identifier, \texttt{TRT-8842}.
+        & Select \texttt{book\_table} after a rated discovery; copy \texttt{restaurant\_id} from the observation and normalize the requested date and time.
+        & Require the observed identifier, complete arguments, ISO date/time, and a positive guest count.\newline
+        \texttt{book\_table}: \texttt{TRT-8842}, \texttt{2023-09-16}, \texttt{19:00}, $4$ guests \\
+        \addlinespace[0.45em]
+        \texttt{skill\_042}\newline
+        \emph{Availability $\rightarrow$ scheduling}\newline
+        Iteration 2\newline
+        $1{,}102/1{,}993$ filtered/routed
+        & The user requests a meeting for Sarah and Alex between 10 AM and 2 PM, on ``project updates.'' A prior observation reports that only 10:30--11:30 is available.
+        & Select \texttt{ScheduleMeeting} after the availability check; use the confirmed slot rather than the requested window, and copy the participants and topic.
+        & Require ISO timestamps inside the requested window and evidence-grounded participants and topic.\newline
+        \texttt{ScheduleMeeting}: Sarah, Alex; \texttt{10:30--11:30}; project updates \\
+        \bottomrule
+    \end{tabular*}
+    \caption{\textbf{Tool-call case studies from the induced skill library.} All packages were created from self-play trajectories and saved with \texttt{source=skill\_induction}. Each package binds prior evidence to a next-action rule and checks that the resulting call remains grounded and schema-valid. The final line in each row compactly renders the verified call from its package example; $\mathrm{filtered}/\mathrm{routed}$ reports the package statistics accumulated during routing.}
+    \label{tab:toolcall_skill_cases}
+\end{table*}
+
+\subsubsection{Complete induced package: \texttt{skill\_038}}
+\label{app:complete_toolcall_skill}
+
+The complete listing of \texttt{skill\_038} is organized into four color-coded blocks so that each package component remains readable at paper scale. Together, they reproduce all package-specific fields and one complete proposer example.
+
+\newcommand{\skillcaseband}[2]{%
+    \begingroup
+    \setlength{\fboxsep}{4.5pt}%
+    \noindent\colorbox[rgb]{#1}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small\textbf{#2}}}\par
+    \endgroup
+}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.95,1.00}{\textsc{Routing Metadata and Curriculum State} ($m,\sigma$) \hfill \texttt{skill\_038}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Package} & \texttt{skill\_038} --- \texttt{book\_table\_from\_discovered\_restaurant}; added in iteration~2 with \texttt{source=skill\_induction}; \texttt{induction\_novelty=specialization}. \\
+    \textsc{Description} & When a user requests a dinner reservation with a prior restaurant discovery and specifies guests, date, and time, the system should book a table at the top-rated restaurant from the discovery list. \\
+    \textsc{Induction reason} & The dialogue state shows a clear pattern of task progression from restaurant discovery to table booking, grounded in user intent, prior observations, and explicit constraints. The tool selection is logically derived from the sequence of user requests and available observations, with parameters filled from prior findings and normalized into valid formats. \\
+    \textsc{Statistics} & $82$ attempts; $82$ consistent; $74$ boundary and verified records; $8$ too-easy records; no too-hard or inconsistent records; mean $v_\text{solve}=0.572$; last updated in iteration~4. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{1.00,0.95,0.87}{\textsc{Proposer Construction Rules} ($r$) \hfill \texttt{skill\_038}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Trigger} & The user requests a table booking after a restaurant discovery and specifies a date, time, and guest count. \\
+    \textsc{Required evidence} & A prior observation contains a top-rated restaurant with an identifier, cuisine, and price constraint; the user specifies the date, time, and number of guests. \\
+    \textsc{Distractors} & \texttt{find\_restaurant} and \texttt{check\_schedule} are distractors because the restaurant has already been identified. \\
+    \textsc{Tool rule} & Select \texttt{book\_table} only when the user explicitly requests a table after restaurant discovery and rating. \\
+    \textsc{Parameter rule} & Copy the identifier from the top-rated observation; normalize the date to \texttt{YYYY-MM-DD}, the time to \texttt{HH:MM}, and the guest count to a number. \\
+    \textsc{Answer checks} & Require \texttt{restaurant\_id}, \texttt{date}, \texttt{time}, and \texttt{guests}; require valid ISO date/time formats and an identifier from the top-rated observation. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.97,0.93}{\textsc{Proposer Hint, Validator, and Offline Oracle} ($h,\nu$) \hfill \texttt{skill\_038}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Generator hint} & Vary the city, cuisine, maximum price, date, and time while ensuring that a preceding restaurant discovery with a top rating exists. \\
+    \textsc{Validator} & Tool name must be \texttt{book\_table}; \texttt{restaurant\_id} must be a string from a prior top-rated observation; \texttt{date} must use \texttt{YYYY-MM-DD}; \texttt{time} must use \texttt{HH:MM}; \texttt{guests} must be a positive integer; and all parameters must be present. \\
+    \textsc{Offline recognition} & Look for a user request to book a table after a prior restaurant discovery. \\
+    \textsc{Offline evidence extraction} & Extract the identifier from a top-rated observation, together with the number of guests, date, and time. \\
+    \textsc{Offline decision rule} & Choose \texttt{book\_table} if a top-rated restaurant with an identifier is observed and the user requests a table booking. \\
+    \textsc{Offline parameter recovery} & Fill \texttt{restaurant\_id} from the top-rated observation; normalize date to \texttt{YYYY-MM-DD}, time to \texttt{HH:MM}, and guests to an integer. \\
+    \textsc{Offline final check} & Ensure that every parameter is present, valid, and derived from prior evidence. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.95,0.95,0.95}{\textsc{Proposer Example} ($e$) \hfill \texttt{skill\_038}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Available tools} & \texttt{get\_weather(location, units)}, \texttt{find\_restaurant(city, cuisine, max\_price)}, \texttt{book\_table(restaurant\_id, date, time, guests)}, \texttt{check\_schedule(user\_email, date)}, and \texttt{send\_message(recipient, message)}. \\
+    \textsc{Dialogue state} & \texttt{<user>} ``I want to plan a dinner for my friends this weekend in Portland. We're looking for a nice Italian place that doesn't cost more than \$30 per person.'' \texttt{<response>} ``I can help you find some Italian restaurants in Portland with a max price of \$30.'' \texttt{<obs>} ``Found 5 Italian restaurants in Portland with a max price of \$30.'' \texttt{<user>} ``Can you book a table for 4 of us on Saturday at 7 PM?'' \texttt{<response>} ``Which restaurant would you like me to book a table for?'' \texttt{<user>} ``Can you pick one of the top-rated ones from the list?'' \texttt{<obs>} ``Top-rated Italian restaurant in Portland with max price \$30: Trattoria al Sole, ID: \texttt{TRT-8842} (rating: $4.7$).'' \texttt{<user>} ``Based on our conversation above, please only make one tool call to solve my need.'' \\
+    \textsc{Verified call} & \texttt{name=book\_table; restaurant\_id=TRT-8842; date=2023-09-16; time=19:00; guests=4}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\caption{\textbf{Complete induced package \texttt{skill\_038}.} The four blocks instantiate $(m,r,h,e,\nu,\sigma)$: routing metadata, construction rules, hint and validation, and a proposer example.}
+\label{tab:complete_toolcall_skill}
+\end{table*}
+
+\subsubsection{Complete induced package: \texttt{skill\_042}}
+\label{app:complete_toolcall_skill_timeslot}
+
+\texttt{skill\_042} was induced in the same iteration as \texttt{skill\_038}, but captures a different dependency: a proposed tool call must follow the confirmed availability observation rather than simply mirror the user's requested time range. Its four-block listing uses the same organization as above.
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.95,1.00}{\textsc{Routing Metadata and Curriculum State} ($m,\sigma$) \hfill \texttt{skill\_042}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Package} & \texttt{skill\_042} --- \texttt{ScheduleMeetingWithTimeSlot}; added in iteration~2 with \texttt{source=skill\_induction}; \texttt{induction\_novelty=refinement}. \\
+    \textsc{Description} & This pattern captures scheduling a meeting between two or more participants within a specified time window, using confirmed start and end times derived from user-provided slots and availability observations. The meeting topic is extracted directly from the user's request. \\
+    \textsc{Induction reason} & The dialogue state involves a clear, structured request to schedule a meeting with specific participants, time constraints, and a topic, with the tool selection being unambiguous and grounded in explicit user input and observation. The pattern generalizes beyond this instance to any meeting scheduling request with defined participants, time window, and topic, making it reusable and nontrivial. \\
+    \textsc{Statistics} & $1{,}993$ attempts; $1{,}993$ consistent; $1{,}102$ boundary and verified records; $891$ too-easy records; no too-hard or inconsistent records; mean $v_\text{solve}=0.695$; last updated in iteration~4. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{1.00,0.95,0.87}{\textsc{Proposer Construction Rules} ($r$) \hfill \texttt{skill\_042}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Trigger} & The user requests a meeting between participants with a time range and topic, and an observation confirms an available time slot. \\
+    \textsc{Required evidence} & The user specifies participants, a time range (for example, 10 AM to 2 PM), and a topic; an observation confirms a particular available slot within that range. \\
+    \textsc{Distractors} & \texttt{SearchProduct} and \texttt{GetWeather} are irrelevant because the dialogue contains no evidence of product search, weather, or account balance. \\
+    \textsc{Tool rule} & Choose \texttt{ScheduleMeeting} when the user explicitly requests a meeting with participants and a time slot, and an observation confirms availability. \\
+    \textsc{Parameter rule} & Copy participants from user input; normalize \texttt{start\_time} and \texttt{end\_time} to ISO 8601 using the confirmed slot (for example, 10:30--11:30 becomes \texttt{2023-10-12T10:30:00} and \texttt{2023-10-12T11:30:00}); copy the topic from user input. \\
+    \textsc{Answer checks} & Require \texttt{ScheduleMeeting}, an array of participants, ISO 8601 \texttt{start\_time} and \texttt{end\_time}, and a topic; all values must be grounded in dialogue or observation and match the schema. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.97,0.93}{\textsc{Proposer Hint, Validator, and Offline Oracle} ($h,\nu$) \hfill \texttt{skill\_042}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Generator hint} & Vary participants (for example, John and Lisa), time ranges (for example, 9 AM to 5 PM), and topics (for example, Q3 review or budget planning), while ensuring that a confirmed time slot is provided in an observation. \\
+    \textsc{Validator} & Tool name must be \texttt{ScheduleMeeting}; participants must be a non-empty string array; \texttt{start\_time} and \texttt{end\_time} must be ISO 8601 timestamps; start must precede end; both timestamps must lie within the requested window; the topic must be non-empty; and no parameter may be invented. \\
+    \textsc{Offline recognition} & Look for requests involving ``schedule a meeting'' or ``plan a meeting'' with participants and time constraints. \\
+    \textsc{Offline evidence extraction} & Extract the participants, the requested start and end range, and the topic. \\
+    \textsc{Offline decision rule} & If an observation confirms a specific available slot within the requested window, select \texttt{ScheduleMeeting}. \\
+    \textsc{Offline parameter recovery} & Normalize times to ISO 8601; copy participants and topic directly; use the confirmed slot as the start and end times. \\
+    \textsc{Offline final check} & Ensure that all parameters are present, valid, derived from dialogue or observation, and free of schema violations. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.95,0.95,0.95}{\textsc{Proposer Example} ($e$) \hfill \texttt{skill\_042}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Available tools} & \texttt{GetWeather(location, units)} with \texttt{units} in \{\texttt{celsius}, \texttt{fahrenheit}\}; \texttt{SearchProduct(query, category)} with \texttt{category} in \{\texttt{electronics}, \texttt{clothing}, \texttt{books}, \texttt{home}\}; \texttt{ScheduleMeeting(participants, start\_time, end\_time, topic)}; \texttt{GetAccountBalance(account\_id)}; \texttt{SendEmail(to, subject, body)}; and \texttt{FindRoute(origin, destination, mode)} with \texttt{mode} in \{\texttt{driving}, \texttt{walking}, \texttt{cycling}\}. \\
+    \textsc{Dialogue state} & \texttt{<user>} ``I need to plan a meeting between Sarah and Alex next week. The meeting should be between 10 AM and 2 PM on Thursday, and the topic is project updates.'' \texttt{<response>} ``I can help you schedule that meeting. Could you confirm the participants and preferred time slot?'' \texttt{<user>} ``Yes, participants are Sarah and Alex. Confirm the meeting on Thursday, 10 AM to 2 PM.'' \texttt{<response>} ``I'll check if that time works. I need to schedule the meeting now.'' \texttt{<obs>} ``Available time slots for Sarah and Alex on Thursday between 10:00 and 14:00 are fully booked except for 10:30 to 11:30.'' \texttt{<user>} ``That works. Let's go with 10:30 to 11:30.'' \texttt{<response>} ``Great! I'll proceed with scheduling the meeting at 10:30 AM to 11:30 AM on Thursday for Sarah and Alex on the topic of project updates.'' Final request: ``Based on our conversation above, please only make one tool call to solve my need.'' \\
+    \textsc{Verified call} & \texttt{name=ScheduleMeeting; participants=[Sarah, Alex]; start\_time=2023-10-12T10:30:00; end\_time=2023-10-12T11:30:00; topic=project updates}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\caption{\textbf{Complete induced package \texttt{skill\_042}.} The four blocks instantiate $(m,r,h,e,\nu,\sigma)$: routing metadata, construction rules, hint and validation, and a proposer example.}
+\label{tab:complete_toolcall_skill_timeslot}
+\end{table*}
+
+These examples are more structured than a direct keyword-to-tool association. They bind the current action to evidence accumulated in earlier turns: a selected candidate becomes an identifier, and an observed slot becomes the executable interval. The corresponding package statistics show that the patterns are not merely retained as descriptions: both contributed filtered frontier records during routing. More broadly, the induced library contains analogous search-to-action and context-to-parameter patterns across restaurant, calendar, flight, and reminder workflows. This qualitative trace supports the mechanism underlying Skill-SP's evolving curriculum coverage: exploration can be consolidated into reusable, verifiable task patterns.
+
+\subsection{Logical Reasoning}
+\label{app:logical_skill_cases}
+
+Logical-reasoning packages encode reusable constraint topologies rather than tool-selection rules. Each package combines a procedural construction rule with a declarative compiler specification that guides the fixed logical runtime in assembling constraint blueprints. The runtime then admits an instance only when its schema, constraints, and unique solution pass deterministic checks. The exported logical library does not populate per-package routing statistics; accordingly, we report saved accepted structural-evidence records below rather than treating these counts as solver performance.
+
+\begin{table*}[htbp]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.22}
+    \setlength{\tabcolsep}{3.5pt}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} >{\raggedright\arraybackslash}p{0.17\textwidth} >{\raggedright\arraybackslash}p{0.28\textwidth} >{\raggedright\arraybackslash}p{0.28\textwidth} >{\raggedright\arraybackslash}p{0.19\textwidth}}
+        \toprule
+        \textbf{Induced package} & \textbf{Constraint topology} & \textbf{Compiler-enforced structure} & \textbf{Saved structural evidence} \\
+        \midrule
+        \texttt{zebra\_skill\_022}\newline
+        \emph{Fixed-anchor adjacency bridge}\newline
+        Iteration 1
+        & A fixed entity, a cross-attribute \texttt{next\_to} relation, and a \texttt{same\_house} bridge resolve a positional ambiguity.
+        & \texttt{anchored\_component} $\rightarrow$ \texttt{component\_bridge} $\rightarrow$ \texttt{same\_house\_chain}; requires at least one \texttt{fixed}, \texttt{same\_house}, and \texttt{next\_to} clue.
+        & $333$ accepted and $4$ rejected evidence records. \\
+        \addlinespace[0.45em]
+        \texttt{zebra\_skill\_031}\newline
+        \emph{Chain-anchor-bridge}\newline
+        Iteration 2
+        & A directed three-value chain is anchored at one endpoint, then connected across attributes through \texttt{same\_house} and \texttt{next\_to} bridges.
+        & \texttt{directed\_chain} $\rightarrow$ \texttt{same\_house\_chain} $\rightarrow$ \texttt{component\_bridge}; requires at least two \texttt{directly\_left\_of}, one \texttt{same\_house}, and one \texttt{next\_to} clue.
+        & $178$ accepted and $2$ rejected evidence records. \\
+        \bottomrule
+    \end{tabular*}
+    \caption{\textbf{Induced logical-reasoning skill patterns.} Both packages are saved with \texttt{source=zebra\_skill\_induction}. Counts are accepted or rejected structural-evidence records, not solver scores. Every accepted record reported here has valid schema and constraints, a unique puzzle, and a capped solution count of one.}
+    \label{tab:logical_skill_cases}
+\end{table*}
+
+\subsubsection{Complete induced package: \texttt{zebra\_skill\_022}}
+\label{app:complete_logical_skill_anchor}
+
+We first expand \texttt{zebra\_skill\_022}, an early-stage fixed-anchor adjacency bridge induced in iteration~1. A fixed entity, a cross-attribute \texttt{next\_to} relation, and a \texttt{same\_house} component jointly resolve a non-local positional dependency. The following five blocks give its complete package-specific content using the $(m,r,h,e,\nu,\sigma)$ organization.
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.95,1.00}{\textsc{Routing Metadata and Induction Record} ($m,\sigma$) \hfill \texttt{zebra\_skill\_022}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Package} & \texttt{zebra\_skill\_022} --- \texttt{Fixed-Anchor Adjacency Bridge}; added in iteration~1 with \texttt{source=zebra\_skill\_induction}. \\
+    \textsc{Description} & A \texttt{next\_to} relation links a fixed-position entity to a value in another attribute, while a \texttt{same\_house} component anchors a value pair. Together, the fixed anchor and adjacency bridge resolve a non-local positional dependency. \\
+    \textsc{Induction reason} & The inducing trace contained directed chains and cross-attribute order relations but no reusable pattern combining a fixed entity, cross-attribute adjacency, and a \texttt{same\_house} anchor. This package adds that missing adjacency-based bridge. \\
+    \textsc{Induction novelty} & The bridge resolves relative positions through both adjacency and shared-house structure, rather than isolated \texttt{left\_of} or \texttt{directly\_left\_of} constraints. \\
+    \textsc{Evidence state} & The exported \texttt{stats.json} has no populated routing counters (the $\sigma$ fields are zero). Independently saved refinement evidence contains $333$ accepted and $4$ rejected records; each accepted record satisfies schema validity, constraint validity, uniqueness, and capped solution count. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{1.00,0.95,0.87}{\textsc{Proposer Construction Resource} ($r$): Declarative Compiler \hfill \texttt{zebra\_skill\_022}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Compiler spec} & \texttt{version=1}; \texttt{fixed\_limit=1}; preferred relation types are \texttt{fixed}, \texttt{same\_house}, and \texttt{next\_to}. \\
+    \textsc{Seed program} & (1) \texttt{anchored\_component(anchors=1, component\_width=2)}; (2) \texttt{component\_bridge(component\_width=2, relation=next\_to)}; (3) \texttt{same\_house\_chain(width=2)}. \\
+    \textsc{Compiler guards} & \texttt{prune=true} and \texttt{ensure\_relation\_diversity=true}; \texttt{derived\_from=zebra\_skill\_010}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{1.00,0.95,0.87}{\textsc{Proposer Construction Rules} ($r$) \hfill \texttt{zebra\_skill\_022}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Generation trigger} & Use this pattern when a fixed-position entity is linked by \texttt{next\_to} to a value in another attribute and a \texttt{same\_house} constraint anchors a value pair. \\
+    \textsc{Construction rule} & Start from a fixed value in a specific house. Add a cross-attribute \texttt{next\_to} relation, then a \texttt{same\_house} pair in a different house so that the adjacency and shared-house components jointly resolve positions. \\
+    \textsc{Difficulty controls} & Increase difficulty by using a non-extreme fixed house, adding a \texttt{not\_house} exclusion that blocks one adjacent position, or choosing a non-adjacent \texttt{same\_house} component. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.97,0.93}{\textsc{Proposer Hint and Package Validator} ($h,\nu$) \hfill \texttt{zebra\_skill\_022}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Generator hint} & Anchor a fixed value in a specific house; connect a name to a hobby or sport through \texttt{next\_to}; and add a \texttt{same\_house} pair for two attributes. Keep the \texttt{next\_to} relation adjacent to the fixed entity, and avoid placing the \texttt{same\_house} pair in the fixed entity's house unless required. \\
+    \textsc{Type guard} & Require at least one \texttt{fixed}, one \texttt{same\_house}, and one \texttt{next\_to} relation. \\
+    \textsc{Local validator} & Verify the fixed house, adjacency, and shared-house relation; require the resulting constraint system to have a unique solution. \\
+    \textsc{Offline oracle} & Assign the fixed value to its house; enumerate adjacent houses for the \texttt{next\_to} value; apply the \texttt{same\_house} pair; eliminate fixed-anchor and adjacency conflicts; then solve the remaining CSP under all-different and adjacency constraints. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.95,0.95,0.95}{\textsc{Proposer Example} ($e$) and Accepted Offline Instance \hfill \texttt{zebra\_skill\_022}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Stored package example} & Two houses; \texttt{Name}=\{Elena, Felix\}, \texttt{Nationality}=\{German, Japanese\}, \texttt{Drink}=\{Coffee, Tea\}, \texttt{Hobby}=\{Gardening, Reading\}, and \texttt{FavoriteSport}=\{Badminton, Soccer\}. Clues: (1) Elena directly left of Felix; (2) Felix in House 2; (3) Elena left of Felix; (4) German same house as Soccer; (5) Tea left of Coffee; (6) Elena next to Badminton; (7) Gardening not in House 1. \\
+    \textsc{Example rationale} & Felix fixed in House 2 and Elena next to Badminton force Elena to House 1 and Badminton to House 2; the \texttt{same\_house} component then resolves the remaining positional bridge. \\
+    \textsc{Accepted blueprint} & Three houses; \texttt{Name}=\{Leo, Mia, Ryan\}, \texttt{Nationality}=\{French, Indian, Swedish\}, \texttt{Drink}=\{Latte, GreenTea, Cappuccino\}, \texttt{Hobby}=\{Photography, Cooking, Reading\}, and \texttt{FavoriteSport}=\{Tennis, Badminton, Volleyball\}; difficulty \texttt{medium}; theme \emph{City Apartment Residents}. \\
+    \textsc{Compiled clues} & (1) Leo in House 2; (2) Leo same house as Indian; (3) Mia same house as Swedish; (4) Indian same house as Cappuccino; (5) Swedish next to Cappuccino; (6) Ryan same house as French; (7) GreenTea same house as Volleyball; (8) Swedish next to Tennis; (9) Photography left of Reading; (10) Volleyball directly left of Indian; (11) French same house as Cooking; (12) Photography left of Cooking. \\
+    \textsc{Unique solution} & House 1: GreenTea, Volleyball, Photography, Mia, Swedish; House 2: Cappuccino, Tennis, Reading, Leo, Indian; House 3: Latte, Badminton, Cooking, Ryan, French. \\
+    \textsc{Structural checks} & \texttt{logical\_generation\_mode=blueprint}; \texttt{prompt\_valid=1}; \texttt{schema\_valid=1}; \texttt{constraints\_valid=1}; \texttt{puzzle\_unique=1}; \texttt{solution\_count\_capped=1}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\caption{\textbf{Complete induced package \texttt{zebra\_skill\_022}.} The five blocks instantiate $(m,r,h,e,\nu,\sigma)$: metadata, compiler resource, construction rules, hint and validation, and a stored example with an accepted offline instance.}
+\label{tab:complete_logical_skill_anchor}
+\end{table*}
+
+\subsubsection{Complete induced package: \texttt{zebra\_skill\_031}}
+\label{app:complete_logical_skill}
+
+We next expand \texttt{zebra\_skill\_031}, a later chain--anchor--bridge pattern induced in iteration~2. It extends the fixed-anchor construction above with a directed chain and two cross-attribute bridge types. The following five blocks expose its package fields using the structure defined in Section~\ref{sec:proposer_optimization}, together with one accepted unique puzzle instance.
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.95,1.00}{\textsc{Routing Metadata and Induction Record} ($m,\sigma$) \hfill \texttt{zebra\_skill\_031}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Package} & \texttt{zebra\_skill\_031} --- \texttt{Chain-Anchor-Bridge Pattern}; added in iteration~2 with \texttt{source=zebra\_skill\_induction}; \texttt{induction\_novelty} is a hybrid chain-solving structure. \\
+    \textsc{Description} & A directed adjacency chain is anchored by a fixed value and reinforced with cross-attribute \texttt{same\_house} and \texttt{next\_to} bridges, so deduction propagates through value-sharing and adjacency rather than position alone. \\
+    \textsc{Induction reason} & The inducing trace contains a linear \texttt{directly\_left\_of} chain (Elara--Gita--Leo), anchored by Leo in House 3 and extended through cross-attribute links. The pattern adds \texttt{same\_house} and \texttt{next\_to} bridges that the source directed-chain skill does not model. \\
+    \textsc{Evidence summary} & The exported \texttt{stats.json} has no populated routing counters (the $\sigma$ fields are zero). The saved refinement evidence contains $178$ accepted and $2$ rejected records. Every accepted record has \texttt{constraints\_valid=1}, \texttt{schema\_valid=1}, \texttt{puzzle\_unique=1}, and \texttt{solution\_count\_capped=1}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{1.00,0.95,0.87}{\textsc{Proposer Construction Resource} ($r$): Declarative Compiler \hfill \texttt{zebra\_skill\_031}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Runtime spec} & \texttt{version=1}; \texttt{fixed\_limit=1}; preferred relation types are \texttt{directly\_left\_of}, \texttt{same\_house}, and \texttt{next\_to}. \\
+    \textsc{Seed program} & (1) \texttt{directed\_chain(length=3, anchor\_end=true)}; (2) \texttt{same\_house\_chain(width=2)}; (3) \texttt{component\_bridge(component\_width=2, relation=next\_to)}. \\
+    \textsc{Compiler guards} & \texttt{prune=true} and \texttt{ensure\_relation\_diversity=true}. \\
+    \textsc{Lineage} & \texttt{derived\_from=zebra\_skill\_002}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{1.00,0.95,0.87}{\textsc{Proposer Construction Rules} ($r$) \hfill \texttt{zebra\_skill\_031}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Generation trigger} & Use this pattern when a directed adjacency chain is anchored by a fixed entity and must be resolved through cross-attribute \texttt{same\_house} or \texttt{next\_to} constraints that link values across chain members. \\
+    \textsc{Construction rule} & Begin with a directed chain of at least three \texttt{directly\_left\_of} relations anchored at one end by \texttt{fixed}. Add non-redundant, non-symmetric \texttt{same\_house} or \texttt{next\_to} bridges that link a chain member to another value or a fixed house. \\
+    \textsc{Offline oracle} & Resolve positional offsets from the anchor; then apply \texttt{same\_house} or \texttt{next\_to} to determine value assignments across the chain. Propagate shared or adjacent values, and resolve conflicts using all-different and cross-attribute consistency. \\
+    \textsc{Difficulty controls} & Extend the chain to four values, add multiple bridges, or place bridges between non-consecutive members. Avoid symmetric or isolated constraints. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.90,0.97,0.93}{\textsc{Proposer Hint and Package Validator} ($h,\nu$) \hfill \texttt{zebra\_skill\_031}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Generator hint} & Anchor a directed chain of length three or four with a fixed entity. Add a \texttt{same\_house} or \texttt{next\_to} bridge to a non-trivial attribute such as nationality or hobby, rather than only a name or drink. Avoid symmetric or isolated bridges. \\
+    \textsc{Local validator} & Require \texttt{directly\_left\_of}, \texttt{same\_house}, and \texttt{next\_to}, with minimum counts $2$, $1$, and $1$, respectively. Every constraint must hold, the bridge logic must yield a unique solution, and at least one non-redundant \texttt{same\_house} or \texttt{next\_to} connection must link to a chain member. \\
+    \textsc{Offline filtering oracle} & (1) Resolve the directed chain from the anchor. (2) Apply \texttt{same\_house} or \texttt{next\_to} to determine value positions. (3) Propagate values through shared attributes. (4) Use adjacency around known values. (5) Apply all-different elimination. (6) Validate uniqueness by full constraint satisfaction. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\end{table*}
+
+\begin{table*}[htbp]
+\centering
+\begin{minipage}{0.97\textwidth}
+\raggedright
+\small
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.16}
+\skillcaseband{0.95,0.95,0.95}{\textsc{Proposer Example} ($e$) and Accepted Offline Instance \hfill \texttt{zebra\_skill\_031}}
+\vspace{0.35em}
+\begin{tabular}{@{}>{\raggedright\arraybackslash\bfseries}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.79\linewidth}@{}}
+    \textsc{Package example} & Chain: Elara $\rightarrow$ Gita $\rightarrow$ Leo, with Leo fixed in House 3. Cross-attribute bridges connect Cooking to Mia, Mia to Reading through \texttt{same\_house}, and Brazilian to Coffee through \texttt{next\_to}. The resulting propagation resolves Mia, Reading, Brazilian, Coffee, and Tea without relying only on positional logic. \\
+    \textsc{Accepted blueprint} & Six houses; attributes \texttt{Name} = \{Clara, Dale, Eva, Finn, Gia, Leo\} and \texttt{Hobby} = \{Reading, Cooking, Gardening, Photography, Painting, Writing\}; difficulty \texttt{medium}; theme \emph{Summer Reading Club}. \\
+    \textsc{Compiled clues} & (1) Dale directly left of Gia; (2) Gia directly left of Leo; (3) Leo in House 6; (4) Eva same house as Cooking; (5) Eva next to Gardening; (6) Finn directly left of Dale; (7) Reading next to Gia; (8) Gardening left of Painting; (9) Gardening directly left of Dale; (10) Leo same house as Photography. \\
+    \textsc{Unique solution} & House 1: Clara, Writing; House 2: Eva, Cooking; House 3: Finn, Gardening; House 4: Dale, Reading; House 5: Gia, Painting; House 6: Leo, Photography. \\
+    \textsc{Structural checks} & \texttt{logical\_generation\_mode=blueprint}; \texttt{prompt\_valid=1}; \texttt{schema\_valid=1}; \texttt{constraints\_valid=1}; \texttt{puzzle\_unique=1}; \texttt{solution\_count\_capped=1}. \\
+\end{tabular}
+\vspace{0.45em}
+\end{minipage}
+\caption{\textbf{Complete induced package \texttt{zebra\_skill\_031}.} The five blocks instantiate $(m,r,h,e,\nu,\sigma)$: metadata, compiler resource, construction rules, hint and validation, and a package example with an accepted offline instance.}
+\label{tab:complete_logical_skill}
+\end{table*}
+
+The logical examples illustrate a different form of library evolution from the tool-call setting. Induction adds reusable constraint topologies and their compiler constraints, enabling subsequent generations to jointly structure directed chains, cross-attribute bridges, and uniqueness conditions.

@@ -1,0 +1,73 @@
+% % \begin{wraptable}{r}{.35\columnwidth}
+% \begin{table}[]
+%     \centering
+%     % \vspace{-3mm}
+%     \caption{Statistics of datasets.}
+%     \label{tab:dataset}
+%     % \resizebox{.35\columnwidth}{!}{%
+%     \begin{tabular}{@{}c|ccc@{}}
+%         \toprule
+%         Datasets & \#Train & \#Test & Max \#hop \\ \midrule
+%         WebQSP   & 2,826   & 1,628  & 2         \\
+%         CWQ      & 27,639  & 3,531  & 4         \\ \bottomrule
+%     \end{tabular}%
+%     % }
+%     % \vspace{-3mm}
+% % \end{wraptable} 
+% \end{table}
+
+
+% \begin{table}[]
+%     \centering
+%     \caption{Statistics of the number of answers for questions in WebQSP and CWQ.}
+%     \label{tab:ans_dist}
+%     %\resizebox{\textwidth}{!}{%
+%     \begin{tabular}{@{}ccccc@{}}
+%         \toprule
+%         Dataset & \#Ans = 1 & 2 $\geq$ \#Ans $\leq$ 4 & 5 $\geq$ \#Ans $\leq$ 9 & \#Ans $\geq$ 10 \\ \midrule
+%         WebQSP  & 51.2\%    & 27.4\%                  & 8.3\%                   & 12.1\%          \\
+%         CWQ     & 70.6\%    & 19.4\%                  & 6\%                     & 4\%             \\ \bottomrule
+%     \end{tabular}%
+
+% \end{table}
+
+% \begin{table}[]
+%     \centering
+%     \caption{Statistics of the question hops in WebQSP and CWQ.}
+%     \label{tab:hop_dist}
+%     %\resizebox{\textwidth}{!}{%
+%     \begin{tabular}{@{}cccc@{}}
+%         \toprule
+%         Dataset & 1 hop                         & 2 hop   & $\geq$ 3 hop \\ \midrule
+%         WebQSP  & 65.49                      \% & 34.51\% & 0.00\%       \\
+%         CWQ     & 40.91                      \% & 38.34\% & 20.75\%      \\ \bottomrule
+%     \end{tabular}%
+%     %}
+% \end{table}
+
+% \begin{table}[]
+%     \centering
+%     \caption{Statistics of datasets, number of answers, and question hops.}
+%     \label{tab:merged_stats}
+%     \begin{tabular}{@{}c|ccc|cccc|c@{}}
+%         \toprule
+%         Dataset & \#Train & \#Test & Max \#hop & \#Ans = 1 & 2 $\geq$ \#Ans $\leq$ 4 & 5 $\geq$ \#Ans $\leq$ 9 & \#Ans $\geq$ 10 & 1 hop & 2 hop & $\geq$ 3 hop \\ \midrule
+%         WebQSP  & 2,826   & 1,628  & 2         & 51.2\%    & 27.4\%                  & 8.3\%                   & 12.1\%          & 65.49\% & 34.51\% & 0.00\%       \\
+%         CWQ     & 27,639  & 3,531  & 4         & 70.6\%    & 19.4\%                  & 6\%                     & 4\%             & 40.91\% & 38.34\% & 20.75\%      \\ \bottomrule
+%     \end{tabular}%
+% \end{table}
+
+\begin{table}[h]
+    \centering
+    \caption{Statistics of datasets.}
+    \label{tab:merged_stats}
+    % \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{@{}c|cc|cccc@{}}
+    \toprule
+    \multirow{2}{*}{Dataset} & \multicolumn{2}{c|}{Dataset Statistics} & \multicolumn{4}{c}{Statistics of Answer Numbers}                                \\ \cmidrule(l){2-7} 
+                             & \#Train             & \#Test            & \#Ans = 1 & 2 $\geq$ \#Ans $\leq$ 4 & 5 $\geq$ \#Ans $\leq$ 9 & \#Ans $\geq$ 10 \\ \midrule
+    WebQSP                   & 2,826               & 1,628             & 51.2\%    & 27.4\%                  & 8.3\%                   & 12.1\%          \\
+    CWQ                      & 27,639              & 3,531             & 70.6\%    & 19.4\%                  & 6\%                     & 4\%             \\ \bottomrule
+    \end{tabular}%
+    % }
+\end{table}

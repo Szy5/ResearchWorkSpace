@@ -1,0 +1,50 @@
+\section{Data Construction} %%%%%%%%%%%%%%%%%%%%%
+
+In large-scale training, redundant information increases storage and computation costs and affects the performance of RL training. 
+To ensure the quality of the training data for RL, we screen high-quality Q\&A data from several open-source datasets for training and use DeepSeek-R1 to obtain long COT data for SFT. The following are data construction steps.
+
+\subsection{RL Data Construction}
+ We use part of the data extracted from NqOpen \cite{kwiatkowski2019natural,lee2019latent}, WebQuestions \citep{berant2013semantic}, and ComplexQuestions \citep{bao2016constraint} as factual question data sources.
+
+\paragraph{Pre-processing and Simple Filtering.}
+First of all, we filter out data that has multiple possible answers. 
+This is because data with non-unique answers can easily lead to unstable training. 
+At the same time, we filtered out the data with no obvious questioning tone in the questions, as such data can easily lead to the model not knowing the meaning of the question and thus blindly exploring it during the training process, thus affecting the training performance. 
+We believe that there is no need for RL training for simple questions, so we use the Qwen2.5-7B-Instruct \citep{qwen2.5} to filter the simple data in the data source, and the filtering method is to filter out the questions that are answered correctly for the first time by the Qwen2.5-7B-Instruct.
+
+\paragraph{Multiple De-duplication and Entropy Filtering.}
+We decided to de-duplicate the data of NqOpen due to its large amount and not strictly filtered and cleaned. 
+We use Semhash \citep{minishlab2025semhash} to perform exact de-duplication and semantic de-duplication on the data of NqOpen after filtering in step 1 to ensure data diversity. 
+Exact de-duplication means excluding duplicate data in the dataset with exactly the same problem.
+We use potion-base-8M \citep{minishlab2024model2vec} as the sentence embedding model for semantic de-duplication.
+Based on the generated semantic vectors, we use the approximate nearest neighbor search algorithm to quickly search for similar vectors, mark the data with cosine similarity greater than a threshold as similar data and form a cluster, only one sample is selected from a cluster, and the rest of the data are marked as duplicate data and filtered. 
+According to the entropy value calculated for each problem, the top 80\% proportion of data is selected as the filtered data, thus ensuring data diversity. 
+Finally, the data from NqOpen after de-duplication and the filtered WebQuestions and ComplexQuestions data obtained in step 1 are combined to form the two-stage filtered data.
+
+\paragraph{Refinement and Entity Extraction.}
+In this step, we use the GPT-4O and predefined rules to check each question of the data obtained in step 2, to exclude questions that are not formal, do not have enough information to support reasoning about the answer, and are not formal in language. 
+Carefully designed prompts enable the GPT-4O to accept or reject each data item, and for accepted items, to normalize, correct, and extract entities. 
+Appendix shows the prompts used by the GPT-4O model for data filtering.
+
+\paragraph{Difficulty Filtering.}
+To avoid excessive difficulty in the training data, we choose to further filter the data obtained from the previous step using DeepSeek-R1, specifically selecting questions that DeepSeek-R1 answers correctly on its first attempt. 
+This step also helped us get the long COT data needed for the SFT baseline.
+
+\paragraph{Wikipedia-grounded Data Filtering.}
+The goal of this step is to filter out data that cannot be matched to the corresponding knowledge from the Wikipedia knowledge source.
+We use Wikipedia\footnote{20231101.en, \url{https://dumps.wikimedia.org/}.} (6.4 million entries) as our knowledge source. 
+Based on each data item's entities, we retrieve corresponding Wikipedia entries and add their textual content as knowledge for the item into our knowledge base. An entity must exactly match a Wikipedia entry or be fully contained within a Wikipedia entry title for the match to be successful. 
+To avoid redundancy, each entity keyword links to no more than three Wikipedia entries. 
+Data items containing entities that do not match any Wikipedia entry are filtered out in this paper. 
+Additionally, to ensure the stability of SFT training, we choose to retain only the 3,177 data items where DeepSeek-R1's output length is between 300 and 700 tokens as training data. 
+So, We complete the filtering and construction of the training data.
+
+\subsection{ColdStart Data Construction}
+We obtain another part of the remaining data from NqOpen and perform the same filtering steps as we did to construct the RL training data.
+We use DeepSeek-R1 to distill the long COT data and filter out the questions that DeepSeek-R1 answered correctly the first time. 
+And merge the data that failed to match the knowledge in the RL training data construct as data source. 
+Only 1798 data items with DeepSeek-R1 output length between 300 and 700 are kept as cold-start training data.
+
+
+
+

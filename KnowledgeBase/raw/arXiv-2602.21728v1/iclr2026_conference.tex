@@ -1,0 +1,282 @@
+
+% \documentclass{article} % For LaTeX2e
+% \usepackage{iclr2026_conference,times}
+
+% % Optional math commands from https://github.com/goodfeli/dlbook_notation.
+% \input{math_commands.tex}
+% \usepackage{subcaption} % 管理子图和子表
+% \usepackage{adjustbox} % 更灵活地调整大小
+% \usepackage{url}
+% \usepackage{booktabs}
+% \usepackage{pdfpages} 
+% \usepackage{hyperref}
+% \usepackage{url}
+% \usepackage{graphicx} % <-- 添加 graphicx
+% \usepackage{booktabs} 
+% \usepackage{multirow}
+% \usepackage{wrapfig}
+% \usepackage{pgfplots} % <-- 添加 pgfplots
+% \usepackage{caption}
+% \usepackage[utf8]{inputenc}
+% \usepackage{float}
+% \usepackage{marvosym}
+% %\usepackage{etoolbox}
+
+% % --- 左对齐补丁 ---
+% %\makeatletter
+% % 将标题、作者、机构全部改为左对齐
+% %\patchcmd{\@maketitle}{\centering}{\raggedright}{}{}
+% %\patchcmd{\@maketitle}{\centering}{\raggedright}{}{}
+% %\patchcmd{\@maketitle}{\centering}{\raggedright}{}{}
+% %\makeatother
+% % \title{Exploring on Graphs: Spontaneous and Deliberative Reasoning on Knowledge Graphs via Adaptive Path-Rewarded Modeling}
+% \title{Explore-on-Graph: Incentivizing Autonomous Exploration of Large Language Models on Knowledge Graphs with Path-refined Reward Modeling}
+% % Authors must not appear in the submitted version. They should be hidden
+% % as long as the \iclrfinalcopy macro remains commented out below.
+% % Non-anonymous submissions will be rejected without review.
+
+
+
+
+% % \author[1,2]{Shiqi Yan}
+% % \author[1]{Yubo Chen}
+% % \author[2]{Ruiqi Zhou}
+% % \author[2]{Zhengxi Yao}
+% % \author[4]{Shuai Chen}
+% % \author[4]{Tianyi Zhang}
+% % \author[4]{Shijie Zhang}
+% % \author[1,2]{WeiQiang Zhang}
+% % \author[1,2]{Yongfeng Huang}
+% % \author[1,3]{Haixin Duan}
+% % \author[1]{Yunqi Zhang}
+
+% % \affil[1]{Zhongguancun Laboratory, China}
+% % \affil[2]{Department of Electronic Engineering, Tsinghua University, China}
+% % \affil[3]{Institute for Network Sciences and Cyberspace, Tsinghua University, China}
+% % \affil[4]{Ant International, Ant Group, China}
+
+% % \author{
+% % Shiqi Yan$^{1,2}$,
+% % Yubo Chen$^{1}$,
+% % Ruiqi Zhou$^{2}$,
+% % Zhengxi Yao$^{2}$,
+% % Shuai Chen$^{4}$,
+% % Tianyi Zhang$^{4}$,\\
+% % Shijie Zhang$^{4}$,
+% % WeiQiang Zhang$^{1,2}$,
+% % Yongfeng Huang$^{1,2}$,
+% % Haixin Duan$^{1,3}$,
+% % Yunqi Zhang$^{1}$\thanks{Corresponding author.} \\
+% % \\
+% % $^{1}$Zhongguancun Laboratory, Beijing, China \\
+% % $^{2}$Department of Electronic Engineering, Tsinghua University, Beijing, China \\
+% % $^{3}$Institute for Network Sciences and Cyberspace, Tsinghua University, Beijing, China \\
+% % $^{4}$Ant International, Ant Group, Hangzhou, Zhejiang, China \\
+% % } 
+% \author{
+
+%   Shiqi Yan$^{1,2}$, Yubo Chen$^{1}$, Ruiqi Zhou$^{2}$, Zhengxi Yao$^{2}$, 
+%   Shuai Chen$^{4}$, Tianyi Zhang$^{4}$,\\
+%   \textbf{Shijie Zhang$^{4}$, WeiQiang Zhang$^{1,2}$, Yongfeng Huang$^{1,2}$, Haixin Duan$^{1,3}$, Yunqi Zhang$^{1}$}\thanks{\Letter\ Corresponding author: \texttt{your.email@address.com}} 
+%   \\ 
+%   % --- 单位列表 ---
+%   $^1$Zhongguancun Laboratory, China \\
+%   $^2$Department of Electronic Engineering, Tsinghua University, China \\
+%   $^3$Institute for Network Sciences and Cyberspace, Tsinghua University, China \\
+%   $^4$Ant International, Ant Group, China
+% }
+
+
+% %\author{Antiquus S.~Hippocampus, Natalia Cerebro \& Amelie P. Amygdale \thanks{ Use footnote for providing further information
+% %about author (webpage, alternative address)---\emph{not} for acknowledging
+% %funding agencies.  Funding acknowledgements go at the end of the paper.} \\
+% %Department of Computer Science\\
+% %Cranberry-Lemon University\\
+% %Pittsburgh, PA 15213, USA \\
+% %\texttt{\{hippo,brain,jen\}@cs.cranberry-lemon.edu} \\
+% %\And
+% %Ji Q. Ren \& Yevgeny LeNet \\
+% %Zhongguancun Laboratory \\
+% %Tsinghua University \\
+% %Ant Group \\
+% %\texttt{\{robot,net\}@wits.ac.za} \\
+% %\AND
+% %Coauthor \\
+% %Affiliation \\
+% %Address \\
+% %\texttt{email}
+% %}
+
+% % The \author macro works with any number of authors. There are two commands
+% % used to separate the names and addresses of multiple authors: \And and \AND.
+% %
+% % Using \And between authors leaves it to \LaTeX{} to determine where to break
+% % the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% % puts 3 of 4 authors names on the first line, and the last on the second
+% % line, try using \AND instead of \And before the third author name.
+
+% \newcommand{\fix}{\marginpar{FIX}}
+% \newcommand{\new}{\marginpar{NEW}}
+% % \setlength{\textfloatsep}{0.9cm}
+
+% \iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+% \begin{document}
+
+
+% \maketitle
+
+% % \begin{abstract}
+% % Reasoning over knowledge graphs is a fundamental challenge in artificial intelligence, requiring both accurate inference and interpretability. Recent advances leverage reinforcement learning to optimize reasoning paths, yet most approaches focus on end-state rewards, neglecting the importance of intermediate reasoning steps. In this work, we propose a deliberative and constructive reasoning framework that explicitly rewards the process of path exploration on knowledge graphs. By integrating process-based rewards into policy optimization, our method encourages agents to discover interpretable and effective reasoning trajectories. Experiments on benchmark datasets demonstrate improved performance in both answer accuracy and path quality, highlighting the significance of path-aware policy design for knowledge graph reasoning.
+
+% % \end{abstract}
+
+% \input{contents/abstract}
+
+% \input{contents/introduction}
+% \input{iclr2026/contents/relatedwork}
+% % \input{iclr2026/contents/preliminary}
+
+% \input{contents/methodology}
+
+% \input{iclr2026/contents/experimetents}
+
+% \bibliography{iclr2026_conference}
+% \bibliographystyle{iclr2026_conference}
+
+% \appendix
+% \input{iclr2026/contents/appendix}
+
+
+% \end{document}
+
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+\usepackage{subcaption}
+\usepackage{adjustbox}
+\usepackage{booktabs}
+\usepackage{pdfpages}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{pgfplots}
+\usepackage{caption}
+\usepackage{marvosym}
+\usepackage{float}
+% \usepackage{url}
+\usepackage{hyperref}
+\hypersetup{
+    pageanchor=false
+}
+
+% \usepackage{authblk}
+% \usepackage{url}
+% \usepackage{hyperref}
+% \usepackage[hyperfootnotes=false]{hyperref}
+
+% \title{Exploring on Graphs: Spontaneous and Deliberative Reasoning on Knowledge Graphs via Adaptive Path-Rewarded Modeling}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+% \renewcommand\Authand{, }     % 最后两个作者之间的分隔符
+% \renewcommand\Authands{, }    % 三个以上作者时的最后一个分隔符
+
+\title{Explore-on-Graph: Incentivizing Autonomous Exploration of Large Language Models on Knowledge Graphs with Path-refined Reward Modeling}
+% --- 第一行作者 ---
+% \author[1,2]{Shiqi Yan}
+% \author[1]{Yubo Chen}
+% \author[2]{Ruiqi Zhou}
+% \author[2]{Zhengxi Yao}
+% \author[4]{Shuai Chen}
+
+% % --- 第二行作者 ---
+% \author[4]{Tianyi Zhang}
+% \author[4]{Shijie Zhang}
+% \author[1,2]{WeiQiang Zhang}
+% \author[1,2]{Yongfeng Huang}
+
+% % --- 第三行作者 ---
+% \author[1,3]{Haixin Duan}
+% \author[1]{Yunqi Zhang}
+
+% % --- 单位定义 ---
+% \affil[1]{Zhongguancun Laboratory, Beijing, China}
+% \affil[2]{Department of Electronic Engineering, Tsinghua University, Beijing, China}
+% \affil[3]{Institute for Network Sciences and Cyberspace, Tsinghua University, Beijing, China}
+% \affil[4]{Ant International, Ant Group, Hangzhou, Zhejiang, China}
+% \author{
+% Shiqi Yan$^{1,2}$ \And Yubo Chen$^{1}$ \And Ruiqi Zhou$^{2}$ \And Zhengxi Yao$^{2}$ \And Shuai Chen$^{4}$ \AND
+% Tianyi Zhang$^{4}$ \And Shijie Zhang$^{4}$ \And WeiQiang Zhang$^{1,2}$ \And Yongfeng Huang$^{1,2}$ \AND Haixin Duan$^{1,3}$ \And Yunqi Zhang$^{1}$
+% \\
+%   % --- 单位列表 ---
+%   $^1$Zhongguancun Laboratory, Beijing, China \\
+%   $^2$Department of Electronic Engineering, Tsinghua University, Beijing, China \\
+%   $^3$Institute for Network Sciences and Cyberspace, Tsinghua University, Beijing, China \\
+%   $^4$Ant International, Ant Group, Hangzhou, Zhejiang, China
+% }
+% \author{
+% \begin{tabular}{l} % "l" 表示左对齐
+%     \\
+%     \textbf{Shiqi Yan$^{1,2}$, Yubo Chen$^{1}$, Ruiqi Zhou$^{2}$, Zhengxi Yao$^{2}$, Shuai Chen$^{4}$, Tianyi Zhang$^{4}$,} \\
+%     \textbf{Shijie Zhang$^{4}$, WeiQiang Zhang$^{1,2}$, Yongfeng Huang$^{1,2}$, Haixin Duan$^{1,3}$, Yunqi Zhang$^{1}$\thanks{Corresponding author. Email: \texttt{zhangyq@mail.zgclab.edu.cn}}} \\[1em]
+%     \textnormal{$^1$Zhongguancun Laboratory, Beijing, China} \\
+%     \textnormal{ $^2$Department of Electronic Engineering, Tsinghua University, Beijing, China} \\
+%     \textnormal{ $^3$Institute for Network Sciences and Cyberspace, Tsinghua University, Beijing, China} \\
+%     \textnormal{ $^4$Ant International, Ant Group, Hangzhou, Zhejiang, China}
+%   \end{tabular}
+% }
+\author{
+\begin{tabular}{l} % "l" 表示左对齐
+    \\
+    \textbf{Shiqi Yan$^{1,2}$, Yubo Chen$^{1}$, Ruiqi Zhou$^{2}$, Zhengxi Yao$^{2}$, Shuai Chen$^{4}$, Tianyi Zhang$^{4}$,} \\
+    \textbf{Shijie Zhang$^{4}$, WeiQiang Zhang$^{1,2}$, Yongfeng Huang$^{1,2}$, Haixin Duan$^{1,3}$, Yunqi Zhang$^{1}$\thanks{Corresponding author. Email: \texttt{zhangyq@mail.zgclab.edu.cn}}} \\
+    \textnormal{$^1$Zhongguancun Laboratory, Beijing, China} \\
+    \textnormal{$^2$Department of Electronic Engineering, Tsinghua University, Beijing, China} \\
+    \textnormal{$^3$Institute for Network Sciences and Cyberspace, Tsinghua University, Beijing, China} \\
+    \textnormal{$^4$Ant International, Ant Group, Hangzhou, Zhejiang, China}
+  \end{tabular}
+}
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+% \setlength{\textfloatsep}{0.9cm}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+% \begin{abstract}
+% Reasoning over knowledge graphs is a fundamental challenge in artificial intelligence, requiring both accurate inference and interpretability. Recent advances leverage reinforcement learning to optimize reasoning paths, yet most approaches focus on end-state rewards, neglecting the importance of intermediate reasoning steps. In this work, we propose a deliberative and constructive reasoning framework that explicitly rewards the process of path exploration on knowledge graphs. By integrating process-based rewards into policy optimization, our method encourages agents to discover interpretable and effective reasoning trajectories. Experiments on benchmark datasets demonstrate improved performance in both answer accuracy and path quality, highlighting the significance of path-aware policy design for knowledge graph reasoning.
+
+% \end{abstract}
+
+\input{contents/abstract}
+
+\input{contents/introduction}
+\input{contents/relatedwork}
+% \input{iclr2026/contents/preliminary}
+
+\input{contents/methodology}
+
+\input{contents/experimetents}
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\input{contents/appendix}
+
+
+\end{document}

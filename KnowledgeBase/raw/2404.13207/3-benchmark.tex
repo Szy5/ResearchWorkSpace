@@ -1,0 +1,33 @@
+\vspace{-5pt}
+\section{Benchmarking 
+Retrieval Tasks over Textual and Relational Knowledge}
+\vspace{-5pt}
+% We develop three large-scale retrieval datasets on three semi-structured knowledge bases (SKBs) In Section~\ref{sec:def}, we introduce SKB and the problem setting.
+% In Section~\ref{sec:skb}, we introduce the schema and scale of the SKBs, which integrate entities with rich relational and textual information. 
+% In Section~\ref{sec:star}, we introduce the retrieval datasets and the key characteristics of the queries. Then, we highlight our novel dataset construction pipeline in Section~\ref{sec:construction}, which simulates user queries involving textual and relational knowledge and automatically generates the ground truth answers in the retrieval datasets.
+% Finally, we conduct data distribution analysis and human evaluation on the queries in Section~\ref{sec:analysis}.
+% % These knowledge bases integrate entities with detailed relational and textual information. 
+% % Then the retrieval datasets are constructed in a way that assesses the model's proficiency in extracting information from varied data structures and synthesizing it to generate correct answers.
+
+% \jure{You can cut this summary paragraph with forward references. It is a waste fo space}
+% \jure{Instead you can have a section where you formally define the problem: We consider the following setting: SOMETHING LIKE THIS (PLEASE POLISH): We are given SKB, which is composed of a Knowledge Graph $G$ with a set of nodes and relations. We also assume that with each node $i$ there is a set of associated free text documents $D_i$. For example, in e-commerce, Knowledge Graph is a product knowledge graph capturing properties of products (brand, color) and the text documents correspond to reviews and product descriptions. Now given a Query $Q$, our goal is to find a set of answers that match the query. Answers are a subset of items in the knowledge graph. For example, in e-commerce answers are actual products.}
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=0.98\textwidth]{figs/semistructure_v2}
+    \vspace{-5pt}
+    \caption{Demonstration of Semi-structured Knowledge Bases, 
+    %\michi{You can also mention what you want readers to take away from this, e.g. "observe that semi-structured KB consists of text and relational info, which makes the task hard", etc.}
+    where each knowledge base combines both textual and relational information in a complex way, making the retrieval tasks challenging.
+    }
+    \vspace{-15pt}
+    \label{fig:semistructure}
+\end{figure}
+
+\input{3-0-benchmark_def}
+\input{3-1-benchmark_skbs}
+\input{3-3-benchmark_qa_datasets}
+\input{3-2-benchmark_construction}
+\input{3-4-benchmark_analysis}
+\input{3-5-human-generated}

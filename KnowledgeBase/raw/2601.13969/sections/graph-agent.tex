@@ -1,0 +1,69 @@
+%!TEX root = ../main.tex
+\section{\retrieverNoSc}
+\label{method}
+
+We study retrieval over a knowledge graph \unbreakable{$G=\langle V,E,\phi_V,\phi_E,d_V\rangle$}, where $V$ and $E$ denote entities and edges, $\phi_V$ and $\phi_E$ assign a type to each node and relation, and $d_V(v)$ denotes the text attributes associated with node $v$, such as titles, descriptions, or other metadata. Given a natural-language query $Q$, retrieval is formulated as an interactive process in which an agent $\mathcal{A}=\langle \mathrm{LLM},\mathcal{T}\rangle$ queries the graph through a tool interface $\mathcal{T}$ \cite{yao_react_2023,schick_toolformer_2023} and produces a trajectory $\tau = \bigl((s_1,A_1,o_1),\dots,(s_T,A_T,o_T)\bigr)$. At step $t$, $s_t$ contains $Q$ and the interaction history, $A_t$ is a sequence of tool invocations, and $o_t$ is the observation returned after executing $A_t$.
+
+Throughout the trajectory, the agent maintains an ordered list of retrieved nodes $\mathcal{R}$. At each step, it can \textsc{select} nodes returned by tools and append them to $\mathcal{R}$, or terminate by issuing a dedicated \textsc{finish} action. Execution ends either when the agent calls \textsc{finish} or when the maximum trajectory length $T_{\max}$ is reached. The final retrieval output is the ranked list $\mathcal{R}=(v_1,v_2,\dots)$, where earlier selections receive higher rank.
+
+To rank candidate nodes returned by tools, we use a relevance function $\rel(q,d_V(v))\in\mathbb{R}_{\ge 0}$ that scores node $v$ for a textual subquery $q$ provided by the agent as a tool parameter. We implement $\rel$ with BM25 \cite{robertson_probabilistic_2009} over an inverted index of node textual attributes \cite{manning_introduction_2008}, yielding fast and stable scoring for the many short, evolving subqueries issued during exploration.
+
+\subsection{Tools}
+We implement the interaction described above through a small set of retrieval tools. Each tool returns a candidate set of nodes, which the agent may append to $\mathcal{R}$ or use to guide subsequent steps. \\
+
+\slimparagraph{Global search} retrieves the $k$ highest-scoring nodes in the graph under $\rel$ for an agent-issued subquery $q$, as shown in \Cref{fig:main-figure}a:
+\begin{equation*}
+    \operatorname{Search}_G(q,k)
+    \;:=\;
+    \operatorname*{Top\text{-}k}_{v \in V}\; \rel(q, d_V(v))
+\end{equation*}
+This tool provides broad entry points into the graph and is primarily used (i) to locate entities related to the user query $Q$, which will then be used for further exploration, and (ii) to handle cases where direct text matching suffices without requiring multi-hop reasoning. \\
+
+\slimparagraph{Neighborhood exploration} returns adjacent nodes of a node $v$ filtered by optional node and edge type constraints $F := (F_V, F_E)$ selected by the agent as tool parameters, and optionally ranked using an agent-generated subquery $q$ (\Cref{fig:main-figure}b).
+
+The filtered one-hop neighborhood $N_F$ of a node $v$ is defined as:
+\begin{equation*}
+    N_F(v)
+    :=
+    \left\{
+    u \in N(v)
+    \;\left|\;
+    \begin{aligned}
+    & \phi_V(u) \in F_V, \\
+    & \phi_E(\{u, v\}) \in F_E
+    \end{aligned}
+    \right.
+    \right\}
+\end{equation*}
+
+where $N(v)$ denotes the open neighborhood of $v$ and $\{u, v\}$ denotes the edge connecting $v$ and $u$, regardless of direction. Edge directionality and relation types are exposed in the tool output. To control the size of the retrieved neighborhood, we introduce a fixed retrieval budget $k \in \mathbb{N}$:
+%
+\begin{equation*}
+    \operatorname{Neighbors}(v, q, F)
+    := \operatorname*{Top\text{-}k}_{u \in N_F(v)} \; \rel(q, d_V(u))
+\end{equation*}
+%
+Each call to $\operatorname{Neighbors}$ retrieves a single-hop neighborhood. The agent performs multi-hop retrieval by calling this operator multiple times in sequence, optionally interleaved with global re-anchoring (\Cref{fig:main-figure}c). The number of hops is not fixed in advance; the agent decides when to stop expanding based on what it has retrieved so far.
+
+\subsection{Parallel Exploration}
+\label{sec:parallel_exploration}
+We increase robustness by running $n$ independent instances of the same agent in parallel and aggregating their retrieved lists, akin to self-consistency and voting-based ensembling in LLM reasoning \cite{wang_self-consistency_2023,kaesberg_voting_2025}. Each agent produces an ordered list of retrieved nodes $\mathcal{R}^{(i)}=(v^{(i)}_1,v^{(i)}_2,\dots)$ from an independent trajectory. We then combine these lists using a simple rank-fusion rule inspired by classical rank aggregation and data fusion methods \cite{fagin_efficient_2003,cormack_reciprocal_2009}.
+
+Concretely, we concatenate the per-agent lists in agent order to form:
+\begin{equation*}
+    L \;:=\; \mathcal{R}^{(1)} \,\Vert\, \mathcal{R}^{(2)} \,\Vert\, \cdots \,\Vert\, \mathcal{R}^{(n)},
+\end{equation*}
+and let $\mathcal{V}_L$ be the set of unique nodes in $L$. The final ranking $\mathcal{R}$ orders nodes by decreasing frequency in $L$ (vote count), breaking ties by the earliest position at which a node appears in any trajectory, favoring nodes discovered earlier during exploration.
+
+\subsection{Agent Distillation}
+\label{subsec:distill}
+While \retrieverShort operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency \cite{hinton_distilling_2015}. We adopt a standard teacher--student paradigm in which a student model imitates the tool-usage trajectories of a stronger teacher LLM via supervised fine-tuning \cite{schick_toolformer_2023}.
+
+\slimparagraph{Trajectory generation.}
+For each training query $Q$ on a given graph $G$, we run the teacher agent to collect trajectories $\tau$ as defined in \Cref{method}. Each trajectory contains the full interaction record: the agent's tool calls and parameters interleaved with the resulting tool observations.
+
+\slimparagraph{Training objective.}
+The student is trained with next-token prediction on the collected trajectories \cite{ouyang_training_2022}. We compute loss only on assistant-authored tokens; user messages and tool outputs are masked \cite{huerta-enochian_instruction_2024,shi_instruction_2024}. This trains the student to reproduce the teacher's decisions, which tools to invoke and how to parameterize them, while tool execution remains external to the model. 
+
+\slimparagraph{Label-free supervision.}
+Importantly, distillation does not require ground-truth evidence nodes for queries. Supervision is derived solely from teacher trajectories, making the approach applicable in realistic settings where relevance labels are unavailable: one can run a strong teacher to generate trajectories on a target graph and then fine-tune a smaller model directly from these interactions \cite{schick_toolformer_2023,kang_distilling_2025}.

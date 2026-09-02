@@ -13,11 +13,16 @@ _PACKAGE_ROOT_ENV_FILE = str(_PACKAGE_ROOT / ".env")
 
 
 def _has_project_markers(candidate: Path) -> bool:
-    return (candidate / "raw").exists() and (candidate / "docs").exists()
+    """识别仓库根：docs/ + (KnowledgeBase/ | src/paper_wiki | 旧版根目录 raw/)。"""
+    has_docs = (candidate / "docs").is_dir()
+    has_src = (candidate / "src" / "paper_wiki").is_dir()
+    has_kb = (candidate / "KnowledgeBase").is_dir()
+    has_legacy_raw = (candidate / "raw").is_dir()
+    return has_docs and (has_src or has_kb or has_legacy_raw)
 
 
 def find_project_root(start: Path | None = None) -> Path:
-    """从当前目录向上寻找项目根目录；根目录至少应包含 raw/ 和 docs/。
+    """从当前目录向上寻找项目根目录。
 
     若从 cwd 向上找不到（例如后端进程启动时的 cwd 与仓库不在同一棵目录树，
     如 systemd/pm2 等场景），回退到包安装位置推出的仓库根目录，避免静默用错路径。
@@ -42,6 +47,7 @@ class Settings(BaseSettings):
     )
 
     project_root: Path = Field(default_factory=find_project_root)
+    knowledge_base_dir: Path | None = None
     raw_dir: Path | None = None
     artifacts_dir: Path | None = None
     prompts_dir: Path | None = None
@@ -100,13 +106,17 @@ class Settings(BaseSettings):
     request_timeout_seconds: float = 120.0
     max_parse_chars: int = 32000
 
+    def resolved_knowledge_base_dir(self) -> Path:
+        """返回知识库根目录；默认 `KnowledgeBase/`，集中存放 raw / artifacts / graph。"""
+        return (self.knowledge_base_dir or self.project_root / "KnowledgeBase").resolve()
+
     def resolved_raw_dir(self) -> Path:
-        """返回 raw 目录的绝对路径，未显式配置时使用项目根目录下的 raw/。"""
-        return (self.raw_dir or self.project_root / "raw").resolve()
+        """返回 raw 目录的绝对路径，未显式配置时使用 KnowledgeBase/raw/。"""
+        return (self.raw_dir or self.resolved_knowledge_base_dir() / "raw").resolve()
 
     def resolved_artifacts_dir(self) -> Path:
         """返回 artifacts 目录的绝对路径，Layer1 assets 和语义产物会写入这里。"""
-        return (self.artifacts_dir or self.project_root / "artifacts").resolve()
+        return (self.artifacts_dir or self.resolved_knowledge_base_dir() / "artifacts").resolve()
 
     def resolved_prompts_dir(self) -> Path:
         """返回 prompts 目录的绝对路径，生成器从这里读取 prompt 模板。"""
@@ -114,11 +124,11 @@ class Settings(BaseSettings):
 
     def resolved_graph_state_dir(self) -> Path:
         """返回 Layer2 图谱快照目录。"""
-        return (self.graph_state_dir or self.project_root / "graph_state").resolve()
+        return (self.graph_state_dir or self.resolved_knowledge_base_dir() / "graph_state").resolve()
 
     def resolved_graph_updates_dir(self) -> Path:
         """返回 Layer2 图谱增量事件目录。"""
-        return (self.graph_updates_dir or self.project_root / "graph_updates").resolve()
+        return (self.graph_updates_dir or self.resolved_knowledge_base_dir() / "graph_updates").resolve()
 
 
 @lru_cache

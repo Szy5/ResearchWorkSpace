@@ -1,0 +1,279 @@
+\newpage
+\appendix
+
+\textbf{\Large Appendix / supplemental material}
+
+
+\section{Analysis} \label{app:analysis}
+
+\input{tables/appendix/analysis_retrieval}
+
+In this section, we analyze the reasoning and retrieval abilities of GNN and LLMs, respectively.
+
+\begin{definition}[Ground-truth Subgraph] \label{def:1}
+Given a question $q$, we define its ground-truth reasoning subgraph $\gG_q^\ast$ as the union of the ground-truth reasoning paths that lead to the correct answers $\{a\}$. Reasoning paths are defined as the KG paths that reach the answer nodes, starting from the question entities $\{e\}$, e.g., \texttt{<Jamaica $\rightarrow$ language\_spoken $\rightarrow$ English>} for question ``\texttt{Which language do Jamaican people speak?}''. In essence, $\gG_q^\ast$ contains only the necessary entities and relations that are needed to answer $q$. 
+\end{definition}
+
+\begin{definition}[Effective Reasoning]\label{def:1a}
+We define that a model $M$ \emph{reasons effectively}  if its output is $\{a\} = M(\gG_q^\ast, q)$, i.e., the model returns the correct answers given the ground-truth subgraph $\gG_q^\ast$.
+\end{definition}
+
+As KGQA methods do not use the ground-truth subgraph $\gG_q^\ast$ for reasoning, but the retrieved subgraph $\gG_q$, we identify two cases in which the reasoning model \emph{cannot} reason effectively, i.e., $\{a\} \neq M(\gG_q, q)$.
+
+\underline{Case 1}: $\gG_q \subset \gG_q^\ast $, i.e., the retrieved subgraph $\gG_q$ does not contain all the necessary information for answering $q$. An application of this case is when we use LLMs for retrieval. As LLMs are not designed to handle complex graph information, the retrieved subgraph $\gG_q$ may contain incomplete KG information. Existing LLM-based methods rely on employing an increased number of LLM calls (beam search decoding) to fetch diverse reasoning paths that approximate $\gG_q^\ast$. Table~\ref{tab:analysis_retrieval_app} provides experimental evidence  that shows how LLM-based retrieval trades computational efficiency for effectiveness. \emph{In particular, when we switch from beam-search decoding to greedy decoding for faster LLM retrieval, the KGQA performance drops by  8.3--9.9\% points at answer hit}.
+
+
+\underline{Case 2}: $\gG_q^\ast  \subset \gG_q$ and model $M$ cannot “filter-out” irrelevant facts during reasoning. An application of this case is when we use GNNs for reasoning. GNNs cannot understand the textual semantics of KGs and natural questions the same way as LLMs do, and they reason ineffectively if they cannot tell the irrelevant KG information. We develop the following Theorem that supports this case for GNNs.
+
+\begin{theorem}[Simplified]
+\label{thm:1}
+Under mild assumptions and due to the sum operator of GNNs in \Eqref{eq:gnn-th}, a GNN can reason effectively  by selecting question-relevant facts and filtering-out question-irrelevant facts through $\omega(q, r)$. 
+\end{theorem}
+We provide the full theorem and its proof in Appendix~\ref{app:thm}. Theorem~\ref{thm:1} suggests that GNNs need to perform semantic matching via function
+$\omega(q, r)$
+apart from leveraging the graph information encoded in the KG. Our analysis suggests that  GNNs lack reasoning abilities for KGQA if they cannot perform effective semantic matching between the KG and the question. 
+ 
+
+\section{Full Theorem \& Proof} \label{app:thm}
+
+To analyze under which conditions GNN perform well for KGQA, we  use the ground-truth subgraph $\mathcal{G}_q^\ast$ for a question $q$, as defined in Definition~\ref{def:1}. We  compare the output representations of a GNN over the ground-truth $\mathcal{G}_q^\ast$ and another $\mathcal{G}_q$ to measure how close the two outputs are. 
+
+
+We always assume $\gG_q^\ast \subseteq \gG_q$ for a question $q$. 1-hop facts that contain $v$ are denoted as $\gN_v^\ast$.
+
+
+\begin{definition} \label{def:2}
+Let $M$ be a GNN model for answering question $q$ over a KG $\mathcal{G}_q$, where the output is computed by $M(q,\gG_q)$. $M$ consists of $L$ reasoning steps (GNN layers).  We assume $M$ is an effective reasoner, according to Definition~\ref{def:1a}. Furthermore, we define the reasoning process $\gR_{M, q, \gG_q}$  as the sequence of the derived node representations at each step $l$, i.e.,  
+\begin{equation}
+    \gR_{M, q, \gG_q} = \Big\{ \{\vh_v^{(1)}: v \in \gG_q\}, \dots, \{\vh_v^{(L)}: v \in \gG_q\} \Big\}.
+    \label{eq:resonproc}
+\end{equation}
+We also define the optimal reasoning process for answering question $q$ with GNN $M$ as $\gR_{M, q, \gG_q^\ast}$.
+We assume that zero node representations do not contribute in \Eqref{eq:resonproc}. 
+\end{definition}
+
+
+
+\begin{lemma} \label{lemma}
+If two subgraphs $\gG_1$ and $\gG_2$ have the same nodes, and a GNN  outputs the same node representations for all nodes $v \in \gG_1$ and $v \in \gG_2$ at each step $l$, then the reasoning processes $\gR_{M, q, \gG_1}$ and $\gR_{M,  q, \gG_2}$ are identical. 
+\end{lemma}
+\noindent
+This is true as $\vh_v^{(l)}$ with $l = 1, \dots, L$ for both $\gG_1$ and $\gG_2$ and by using Definition~\ref{def:2} to show $\gR_{M, q, \gG_1} = \gR_{M,  q, \gG_2}$. Note that Lemma~\ref{lemma} does not make any assumptions about the actual edges of $\gG_1$ and $\gG_2$.
+
+
+To analyze the importance of semantic matching for GNNs, we consider the following GNN update
+\begin{equation}
+    \vh_v^{(l)}= \psi \Big(\vh_v^{(l-1)}, \sum_{v' \in \mathcal{N}_v } \omega(q, r) \cdot \vm_{vv'}^{(l)} \Big).
+    \label{eq:gnn-th-a}
+\end{equation}
+where $\omega(\cdot, \cdot): \sR^d \times \sR^d \xrightarrow[]{} \{0,1\}$ is a binary function that decides if fact $(v,r,v')$ is relevant to question $q$ or not. Neighbor messages $\vm_{vv'}^{(l)}$ are aggregated by a sum-operator, which is typically employed in GNNs. Function $\psi(\cdot)$ combines representations among consecutive GNN layers. We assume $\vh_v^{(0)} \in \sR^d$ and that $\psi \Big(h_v^{(0)}, 0^d \Big) = 0^d$
+
+
+
+\begin{theorem}\label{thma-1}
+If $\omega(q, r)=0 , \forall (v,r,v') \notin \gG_q^\ast$ and  $\omega(q, r) = 1 , \forall (v,r,v') \in \gG_q^\ast$, then  $\gR_{M, q, \gG_q}$ is an optimal reasoning process of GNN $M$ for answering $q$. 
+\end{theorem}
+
+\begin{proof}
+ We show that 
+\begin{equation}
+    \sum_{v' \in \mathcal{N}_v } \omega(q, r) \cdot \vm_{vv'}^{(l)}  = \sum_{v' \in \gN^\ast_v }  \vm_{vv'}^{(l)},
+\end{equation}
+which gives that $\gR_{M, q, \gG_q} = \gR_{M, q, \gG_q^\ast}$ via Lemma~\ref{lemma}.
+This is true if 
+\begin{equation}
+    \omega(q, r) =
+    \begin{cases}
+      1 & \text{if $(v, r, v') \in \gN^\ast_v$,}\\
+      0 & \text{if $(v, r, v') \notin \gN^\ast_v$,}
+    \end{cases}       
+\end{equation}
+which means that GNNs need to filter-out question irrelevant facts. 
+We consider two cases.
+
+
+\textbf{Case 1}. Let $u$ denote a node that is present in $\gG_q$, but not in $\gG^\ast_q$. Then, all facts that contain $u$ are not present in $\gG^\ast_q$. Condition $\omega(q, r)=0 , \forall (v,r,v') \notin \gG_q^\ast$ of Theorem~\ref{thma-1} gives that 
+\begin{align}
+    \omega(q,r) &= 0, \forall (u,r,v'), \text{ and } \nonumber \\
+    \omega(q,r) &= 0, \forall (v,r,u).
+\end{align}
+as node $u \notin \gG_q^\ast$. 
+This gives
+\begin{equation}
+    \sum_{v' \in \mathcal{N}(u) } \omega(q, r) \cdot \; \vm_{uv'}^{(l)} = 0,
+\end{equation}
+as no edges will contribute to the GNN update. With $\psi \Big(h_v^{(0)}, 0^d \Big) = 0^d$, we have 
+\begin{equation}
+    h_u^{(l)} = 0^d, \forall u \notin \gG^\ast_q \text{ with } l=\{1, \dots, L\},
+\end{equation}
+which means that nodes $u \notin \gG^\ast_q $ do not contribute to the reasoning process $\gR_{M, q, \gG_q}$; see Definition~\ref{def:2}.
+
+\textbf{Case 2}. Let $p$ denote a relation between two nodes $v$ and $v'$ that is present in $\gG_q$,  but not in $\gG^\ast_q$. We decompose the GNN update to 
+\begin{equation}
+    \sum_{v' \in \mathcal{N}_r(v) } \omega(q, r) \cdot \; \vm_{vv'}^{(l)} + \sum_{v' \in \mathcal{N}_p(v) } \omega(q, p) \cdot \; \vm_{vv'}^{(l)},
+\end{equation}
+where the first term includes facts $\mathcal{N}_r$ that are present in $\gG_q^\ast$ and the second term includes facts $\mathcal{N}_p$ that are present in $\gG_q$ only. Using the condition $\omega(q, r)=0 , \forall (v,r,v') \notin \gG_q^\ast$ of Theorem~\ref{thma-1}, we have 
+\begin{equation}
+    \sum_{v' \in \mathcal{N}_p(v) } \omega(q, p) \cdot \; \vm_{vv'}^{(l)} =0.
+\end{equation}
+Using condition $\omega(q, r) = 1 , \forall (v,r,v') \in \gG_q^\ast$, we have 
+\begin{equation}
+ \sum_{v' \in \mathcal{N}_r(v) } \omega(q, r) \cdot \; \vm_{vv'}^{(l)} = \sum_{v' \in \mathcal{N}_r(v) } \vm_{vv'}^{(l)}.
+\end{equation}
+Combining the two above expression gives 
+\begin{equation}
+    \sum_{v' \in \mathcal{N}_v } \omega(q, r) \cdot \vm_{vv'}^{(l)}  = \sum_{v' \in \mathcal{N}_r(v) } \vm_{vv'}^{(l)} = \sum_{v' \in \gN^\ast_v }  \vm_{vv'}^{(l)}.
+\end{equation}
+It is straightforward to obtain $\gR_{M, q, \gG_q} = \gR_{M, q, \gG_q^\ast}$ via Lemma~\ref{lemma} in this case.
+
+\textbf{Putting it altogether}. Combining Case 1 and Case 2,nodes $u \notin \gG_q^\ast$ do not contribute to  $\gR_{M, q, \gG_q}$, while for other nodes we have $\gR_{M, q, \gG_q} = \gR_{M, q, \gG_q^\ast}$. Thus, overall we have $\gR_{M, q, \gG_q} = \gR_{M, q, \gG_q^\ast}$.
+\end{proof}
+
+\section{Experimental Setup} \label{app:exp}
+
+
+\textbf{KGQA Datasets}.
+We experiment with two widely used KGQA benchmarks: WebQuestionsSP (WebQSP)~\cite{yih2015semantic}, 
+Complex WebQuestions 1.1 (CWQ)~\cite{talmor2018web}.
+We also experiment with MetaQA-3~\cite{zhang2018variational} dataset.
+We provide the  dataset statistics Table~\ref{tab:data}.
+\textbf{WebQSP} contains 4,737 natural language questions that are answerable using a subset Freebase KG~\citep{bollacker2008freebase}. This  KG contains 164.6 million facts and 24.9 million entities. The questions require up to 2-hop reasoning within this KG. Specifically, the model needs to aggregate over two KG facts for 30\% of the questions, to reason over constraints for 7\% of the questions, and to use a single KG fact for the rest of the questions.
+\noindent
+\textbf{CWQ} is generated from WebQSP by extending the question entities or
+adding constraints to answers, in order to construct  more complex multi-hop questions (34,689 in total). There are
+four types of questions: composition (45\%), conjunction (45\%), comparative (5\%), and superlative
+(5\%). The questions require up to 4-hops of reasoning over the KG, which is the same KG as in WebQSP. \textbf{MetaQA-3} consists of more than 100k 3-hop questions in the domain of movies. The questions were constructed using the KG provided by the WikiMovies~\cite{miller2016key} dataset, with about 43k entities and 135k triples. For MetaQA-3, we use 1,000 (1\%) of the training questions.
+
+
+\input{tables/appendix/data}
+
+
+\textbf{Implementation}. 
+For subgraph retrieval, we use the linked entities to the KG provided by~\cite{yih2015semantic} for WebQSP, by~\cite{talmor2018web} for CWQ. We obtain dense subgraphs by ~\cite{he2021improving}. It runs the PageRank Nibble~\cite{andersen2006local} (PRN) method starting from the linked entities to select the top-$m$ ($m=2,000$) entities to be included in the subgraph.
+
+We employ ReaRev\footnote{https://github.com/cmavro/ReaRev\_KGQA}~\citep{mavromatis2022rearev} for GNN reasoning (\Secref{sec:gnn}) and RoG\footnote{https://github.com/RManLuo/reasoning-on-graphs}~\citep{luo2024rog} for RAG-based prompt tuning (\Secref{sec:llm}), following their official implementation codes. 
+In addition, we empower ReaRev with \lmsr (\Secref{sec:gnn}), which is obtained by following the implementation of SR\footnote{https://github.com/RUCKBReasoning/SubgraphRetrievalKBQA}~\citep{zhang2022subgraph}. For both training and inference of these methods, we use their suggested hyperparameters, without performing further hyperparameter search. Model selection is performed based on the validation data. Experiments with GNNs were performed on a  Nvidia Geforce
+RTX-3090 GPU over 128GB RAM
+machine. Experiments with LLMs were performed on 4 A100 GPUs connected via NVLink and 512 GB of memory. The experiments are implemented with PyTorch. 
+
+For LLM prompting during retrieval (\Secref{sec:ret_aug}), we use the following prompt:
+\begin{center}
+\fbox{\parbox{5.5in}{\raggedright
+\texttt{Please generate a valid relation path that can be helpful for answering the following question: \\ \{Question\}}}}
+\end{center}
+
+For LLM prompting during reasoning (\Secref{sec:llm}), we use the following prompt:
+\begin{center}
+\fbox{\parbox{5.5in}{\raggedright
+\texttt{Based on the reasoning paths, please answer the given question. Please keep the answer as simple as possible and return all the possible answers as a list.\textbackslash n \\
+Reasoning Paths: \{Reasoning Paths\} \textbackslash n \\
+Question: \{Question\}}}}
+\end{center}
+
+During GNN inference, each node in the subgraph is assigned a probability of being the correct answer, which is normalized via $\softmax$. To retrieve answer candidates, we sort the nodes based on the their probability scores, and select the top nodes whose cumulative probability score is below a threshold. We set the threshold to 0.95. To retrieve the shortest paths between the question entities and answer candidates for RAG, we use the NetworkX library\footnote{https://networkx.org/}. 
+
+
+\textbf{Competing Approaches}. 
+
+We evaluate the following categories of methods: 1. Embedding, 2. GNN, 3. LLM, 4. KG+LMM, and 5. GNN+LLM.
+\begin{enumerate}
+    \item KV-Mem~\cite{miller2016key} is a key-value memory network  for KGQA. EmbedKGQA~\cite{saxena2020improving} utilizes KG pre-trained embeddings~\cite{trouillon2016complex} to improve multi-hop reasoning. TransferNet~\cite{shi2021transfernet} improves multi-hop reasoning over the relation set. Rigel~\cite{sen2021expanding} improves reasoning with questions of multiple entities.
+    \item GraftNet~\cite{sun-etal-2018-open} uses a convolution-based GNN~\cite{kipf2016semi}. PullNet~\cite{sun2019pullnet} is built on top of GraftNet, but learns which nodes to retrieve via selecting shortest paths to the answers. NSM~\cite{he2021improving} is the adaptation of GNNs  for KGQA. NSM+h~\cite{he2021improving} improves NSM for multi-hop reasoning. SQALER~\cite{atzeni2021sqaler} learns which relations (facts) to retrieve during KGQA for GNN reasoning. Similarly, SR+NSM~\citep{zhang2022subgraph} proposes a relation-path retrieval. UniKGQA~\citep{jiang2023unikgqa} unifies the graph retrieval and reasoning process with a single LM. ReaRev~\citep{mavromatis2022rearev} explores diverse reasoning paths in a multi-stage manner.
+    \item We experiment with instruction-tuned LLMs. Flan-T5~\citep{chung2024scaling} is based on T5, while Aplaca~\citep{alpaca2023} and LLaMA2-Chat~\citep{touvron2023llama} are based on LLaMA. ChatGPT\footnote{https://openai.com/blog/chatgpt} is a powerful closed-source LLM that excels in many complex tasks. ChatGPT+CoT uses the chain-of-thought~\citep{wei2022chain} prompt to improve the ChatGPT. We access ChatGPT \texttt{`gpt-3.5-turbo'} through its API (as of May 2024).
+    \item KD-CoT~\citep{wang2023knowledge} enhances CoT prompting for LLMs with relevant knowledge from KGs. StructGPT~\citep{jiang2023structgpt} retrieves KG facts for RAG. KB-BINDER~\citep{li2023binder} enhances LLM reasoning by generating logical forms of the questions. ToG~\citep{sun2024tog} uses a powerful LLM to select  relevant facts hop-by-hop. RoG~\citep{luo2024rog} uses the LLM to generate relation paths for better planning.
+    \item G-Retriever~\citep{he2024gretriever} augments LLMs with GNN-based prompt tuning.
+\end{enumerate}
+
+
+\section{Additional Experimental Results} \label{app:exp-res}
+
+
+\subsection{Question Analysis} \label{app:question}
+
+\input{tables/appendix/hop}
+
+Following the case studies presented in \Figref{fig:faith} and \Figref{fig:faith-ra}, we provide numerical results on how \grag improves multi-hop question answering and how retrieval augmentation (RA) enhances simple hop questions. Table~\ref{tab:hop} summarizes these results. \grag improves performance on multi-hop questions ($\geq$2 hops) by 6.5--11.8\% F1 points over RoG. Furthermore, RA improves performance on single-hop questions by 0.8--2.6\% F1 points over \grag. 
+
+\input{tables/appendix/answer_num}
+
+Table~\ref{tab:answer_num} presents results with respect to the number of correct answers. As shown, RA enhances \grag in almost all cases as it can fetch correct answers that might have been missed by the GNN. 
+
+
+\subsection{GNN Effect}\label{app:gnn-model}
+
+\input{tables/appendix/gnn_model}
+
+\input{tables/appendix/metaqa}
+\grag employs ReaRev~\citep{mavromatis2022rearev} as its GNN retriever, which is a powerful GNN for deep KG reasoning. In this section, we ablate on the impact of the GNN used for retrieval, i.e., how strong and weak GNNs affect KGQA performance. We experiment with GraftNet~\citep{sun-etal-2018-open} and NSM~\citep{he2021improving} GNNs, which are less powerful than ReaRev at KGQA.
+The results are presented in Table~\ref{tab:gnn_model}. As shown, strong GNNs (ReaRev) are required in order to improve RAG at KGQA. Retrieval with weak GNNs (NSM and GraftNet) underperfoms retrieval with ReaRev by 9.2--9.8\%  and retrieval with RoG by 5.3--5.9\% points at H@1.
+
+\subsection{MetaQA-3}
+
+
+Table~\ref{tab:metaqa} presents results on the MetaQA-3 dataset, which requires 3-hop reasoning. RoG is a LLM-based retrieval which cannot handle the multi-hop KG information effectively and as a result, RoG underperforms (even when using additional pretraining data from WebQSP \& CWQ datasets). On the other hand, \grag relies on GNNs that are able to retrieve useful graph information for multi-hop questions and achieves an almost perfect performance of 98.6\% at Hit@1. 
+
+
+
+
+\subsection{Retrieval Augmentation}
+
+\input{tables/appendix/all_retrieval}
+
+Table~\ref{tab:all_retrieval} has the extended results of Table~\ref{tab:retrieval}, showing performance  results on all three metrics (Hit / H@1 / F1) with respect to the retrieval method used. Overall, \grag improves the vanilla LLM by 149--182\%, when employing the same number of LLM calls for retrieval.
+
+\subsection{Prompt Ablation}
+
+When using RAG, LLM performance depends on the prompts used. To ablate on the prompt impact, we experiment with the following prompts:
+\begin{itemize}
+ \item \textbf{Prompt A}: 
+    \begin{center}
+    \fbox{\parbox{4.in}{\raggedright
+    \texttt{Based on the \underline{reasoning paths}, please answer the given question. Please keep the answer as simple as possible and return all the possible answers as a list.\textbackslash n \\
+    \underline{Reasoning Paths}: \{Reasoning Paths\} \textbackslash n \\
+    Question: \{Question\}}}}
+    \end{center}
+ \item \textbf{Prompt B}: 
+    \begin{center}
+    \fbox{\parbox{4.in}{\raggedright
+    \texttt{Based on the \underline{provided knowledge}, please answer the given question. Please keep the answer as simple as possible and return all the possible answers as a list.\textbackslash n \\
+    \underline{Knowledge}: \{Reasoning Paths\} \textbackslash n \\
+    Question: \{Question\}}}}
+    \end{center}
+
+\item \textbf{Prompt C}: 
+    \begin{center}
+    \fbox{\parbox{4.in}{\raggedright
+    \texttt{\underline{Your tasks is to use the following facts} \underline{and answer the question}. 
+    \underline{Make sure that you use the information} \underline{from the facts provided.} Please keep the answer as simple as possible and return all the possible answers as a list.\textbackslash n \\
+    \underline{The facts are the following}: \{Reasoning Paths\} \textbackslash n \\
+    Question: \{Question\}}}}
+    \end{center}
+\end{itemize}
+
+\input{tables/appendix/prompts}
+
+We provide the results based on different input prompts in Table~\ref{tab:prompts}. As the results indicate, \grag outperforms RoG in all cases, being robust at the prompt selection.
+
+
+
+\subsection{Effect of Training Data}
+
+\input{tables/appendix/training}
+
+Table~\ref{tab:training} compares performance of different methods based on the training data used for training the retriever and the KGQA model. For example, \grag trains a GNN model for retrieval and uses a LLM for KGQA, which can be fine-tuned or not. As the results show, \grag outperforms the  competing methods (RoG and UniKGQA) by either fine-tuning the KGQA model or not, while it uses the same or less data for training its retriever. 
+
+
+\subsection{Graph Effect} \label{app:subgraph}
+GNNs operate on dense subgraphs, which might include noisy information. A question that arises is whether removing irrelevant information from the subgraph would improve GNN retrieval. We experiment with SR~\citep{zhang2022subgraph}, which learns to prune question-irrelevant facts from the KG. As shown in Table~\ref{tab:subgraph}, although SR can improve the GNN reasoning results -- see row (a) vs. (b) at CWQ --, the retrieval effectiveness deteriorates; rows (c) and (d). After examination, we found that the sparse subgraph may contain disconnected KG parts. In this case, \grag's extraction of the shortest paths fails, and \grag returns empty KG information. 
+
+\input{tables/appendix/graph_retrieval}
+
+\section{Limitations} \label{app:limit}
+
+\grag assumes that the KG subgraph, on which the GNN reasons, contains answer nodes. However, as the subgraph is decided by tools such as entity linking and neighborhood extraction, errors in these tools, e.g., unlinked entities, can result to subgraphs that do not include any answers. For example, Table~\ref{tab:data} shows that CWQ subgraphs contain an answer in 79.3\% of the questions. In such cases, \grag cannot retrieve the correct answers to help the LLM answer the questions faithfully. In addition, if the KG has disconnected parts, the shortest path extraction algorithm of \grag may return empty reasoning paths (see Appendix~\ref{app:subgraph}).
+
+
+\section{Broader Impacts} \label{app:impacts}
+\grag is a method that grounds the LLM generations for QA using ground-truth facts from the KG. As a result, \grag can have positive societal impacts by using KG information to alleviate LLM hallucinations in tasks such as QA. 
+
+

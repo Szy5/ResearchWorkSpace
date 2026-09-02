@@ -1,0 +1,49 @@
+% Required packages:
+% \usepackage{booktabs}
+% \usepackage[table]{xcolor}
+
+\begin{table}[ht!]
+\centering
+\caption{\textbf{Results on vision-based agentic benchmarks}. We report
+success rates (\%) on Sokoban [6$\times$6] and EZPoints using
+Qwen2.5-VL-3B-Instruct as the backbone model.}
+\label{tab:vlm_success_rates}
+\vspace{0.05in}
+
+\small
+\setlength{\tabcolsep}{18pt}
+\renewcommand{\arraystretch}{1.12}
+
+\begin{tabular}{cccc}
+\toprule
+\textbf{Method}
+& \textbf{Sokoban [6$\times$6] $\uparrow$}
+& \textbf{EZPoints $\uparrow$}
+& \textbf{Average $\uparrow$} \\
+\midrule
+
+ReAct
+& 11.7
+& 3.1
+& 7.4 \\
+
+GRPO
+& 67.1
+& 86.9
+& 77.0 \\
+
+\rowcolor{gray!12}
+SEED
+& \textbf{82.0}
+& \textbf{100.0}
+& \textbf{91.0} \\
+
+\rowcolor{blue!6}
+$\Delta$
+& +14.9
+& +13.1
+& +14.0 \\
+
+\bottomrule
+\end{tabular}
+\end{table}

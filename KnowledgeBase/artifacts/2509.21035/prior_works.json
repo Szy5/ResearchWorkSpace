@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP",
+      "authors": "Patrick Lewis et al.",
+      "year": 2020,
+      "arxiv_id": "2005.11401",
+      "role": "Foundation",
+      "relationship_sentence": "提出将生成式模型与外部检索结果拼接作为上下文的范式，明确将“检索到的文本质量与令牌开销”作为系统成本维度，为本文把 prompt token 使用作为显式预算并以此设计代价衡量奠定了工程与问题定义基础。"
+    },
+    {
+      "title": "PullNet / GraftNet family (question-conditioned subgraph builders)",
+      "authors": "Sun et al.",
+      "year": 2019,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "提出按问题构建局部子图（固定 hop/degree 策略）以供下游 reader 使用，但其固定扩张深度/度数会导致过检索与噪声，直接暴露了需要学习化、预算感知的子图构造控制这一缺口。"
+    },
+    {
+      "title": "MINERVA (learning to navigate knowledge graphs)",
+      "authors": "Hanjun Das et al.",
+      "year": 2018,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "把 KGQA 建模为在图上学习路径跟随的 RL 代理，启发了本文中 Path Navigator 的路径探索与基于动作的回溯/继续决策机制。"
+    },
+    {
+      "title": "Surprising Effectiveness of PPO in Cooperative Multi-Agent RL (MAPPO)",
+      "authors": "Ruihan Yu et al.",
+      "year": 2022,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "展示了在 CTDE（centralized training, decentralized execution）下基于 PPO 的多智能体策略优化是稳健基线，本文以此为起点并在此基础上引入 Lagrangian 对偶变量與多头 critic 以处理多维预算约束。"
+    },
+    {
+      "title": "Reward Constrained Policy Optimization (RCPO)",
+      "authors": "Shie Mannor / O. Tessler et al.",
+      "year": 2018,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "用单一代价惩罚器处理约束的做法会将多种异质成本混合，本文正是针对 RCPO 在独立控制边数/步数/令牌三类资源上的局限，提出多头成本估计与逐类对偶变量的改进。"
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Kezhi Yao et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "提出将推理（chain-of-thought）与工具调用/检索交织的 agentic 策略，啓发了把图编辑、遍历、证据裁剪等操作作为可组合行动体的“agentic neuro‑symbolic”设计，但其未将每次交互步数与令牌成本作为可控预算来训练。"
+    },
+    {
+      "title": "GraphRAG (graph-guided retrieval-augmented generation)",
+      "authors": "edge et al.",
+      "year": 2024,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "作为将知识图结构融入 RAG 流水线的强基线，直接反映了基于图的静态/二阶检索管线在精度/延迟/子图膨胀上的权衡，是本文在实证评估与对比中需要超越的主要竞争对象。"
+    }
+  ],
+  "synthesis_narrative": "检索增强生成（RAG）体系把生成器条件化在检索到的文本之上，明确把“被拼接的证据令牌量”作为系统成本衡量，因而成为将 prompt token 使用纳入预算化决策的工程基础。针对 KGQA 的问题条件子图构造（如 PullNet/GraftNet 系列）提出按问题拉取局部邻域供下游 reader 使用，但普遍依赖固定的 hop/degree 策略，容易导致过度检索与噪声；与此同时，像 MINERVA 的工作把 KGQA 建模为在图上学习路径跟随的 RL 代理，展示了用动作序列在图上发现推理路径的可行性。多智能体 PPO（MAPPO）在 CTDE 框架下为多代理协同提供了稳健的训练范式，而约束强化学习方法（如 RCPO）则揭示了用单一惩罚器处理多种异质成本时的局限。最近的 agentic LLM 研究（ReAct 等）证明了将推理與外部工具/檢索交互混合的策略能提升能力，但通常不对每次交互步数或令牌成本进行显式训练和约束；GraphRAG 等图引导的 RAG 管线则作为现实中的强基线，暴露了静态构建下的精度—延迟—子图增长困境。把这些线索放在一起，自然产生了一个机会窗口：将子图编辑、路径遍历和证据裁剪视为可学习的离散行动，并在 CTDE 多智能体框架下用多头价值估计与 Lagrangian 对偶变量对齐多维预算，从而实现一次训练就能按查询严格满足步数/边数/令牌预算并在推理时自适应权衡精度与资源消耗。当前工作正是在这一合成缺口上提出三 Agent 的神经符号控制器与 LC‑MAPPO 来完成该自然的下一步。"
+}

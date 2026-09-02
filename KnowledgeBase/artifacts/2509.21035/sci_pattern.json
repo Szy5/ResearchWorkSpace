@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P04",
+    "P09"
+  ],
+  "secondary_pattern_names": [
+    "Modular Pipeline Composition",
+    "Inference-Time Control & Guided Sampling"
+  ],
+  "confidence": "high",
+  "reasoning": "论文把静态 k‑hop 扩展这一实用缺陷重写为一个带资源预算（边/步数/令牌）的顺序决策问题，并用受约束的多智能体 RL 学习预算感知的上下文构建器（属于 Gap‑Driven Reframing）；实现上由三个协同代理分别负责子图构建、路径导航和证据裁剪，体现模块化流水线（P04）；且单一检查点支持按查询的推理时预算/价格调整而无需重训，属于推理期控制（P09）。"
+}

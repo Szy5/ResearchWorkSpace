@@ -46,21 +46,22 @@ export default function CandidateCard({
 
   return (
     <div
-      className={`candidate-card grid items-stretch gap-3 ${thumbnail ? 'grid-cols-[minmax(0,1fr)_80px] sm:grid-cols-[minmax(0,1fr)_96px]' : 'grid-cols-1'} ${selected ? 'candidate-card-selected' : ''} ${status === 'failed' ? 'candidate-card-failed' : ''}`}
+      className={`candidate-card grid gap-4 ${thumbnail ? 'grid-cols-[minmax(0,1fr)_auto]' : 'grid-cols-1'} ${selected ? 'candidate-card-selected' : ''} ${status === 'failed' ? 'candidate-card-failed' : ''}`}
     >
       <div className="min-w-0 flex-1">
         <div className="flex items-start gap-3">
           {onToggleSelect ? (
             <input
               type="checkbox"
-              className="mt-1 h-4 w-4 flex-none accent-moss"
+              className="check mt-1.5"
               checked={Boolean(selected)}
               disabled={busy || status === 'succeeded'}
               onChange={onToggleSelect}
+              aria-label={selected ? '取消选择' : '加入暂存区'}
             />
           ) : null}
           <div className="min-w-0 flex-1">
-            <h3 className="line-clamp-2 font-serif text-[15px] font-semibold">{candidate.title}</h3>
+            <h3 className="line-clamp-2 font-serif text-[17px] font-medium leading-snug tracking-tight">{candidate.title}</h3>
             <p className="mt-1 truncate text-xs text-body">{candidate.authors.join(', ') || candidate.arxiv_id}</p>
           </div>
           <CandidateStatusBadge status={status} error={statusError} />
@@ -75,19 +76,21 @@ export default function CandidateCard({
           {candidate.arxiv_id ? <span className="badge">{candidate.arxiv_id}</span> : null}
         </div>
         {reason ? (
-          <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-copper">
-            <Sparkles size={12} />
+          <div className="mt-3 inline-flex items-start gap-1.5 rounded-lg border border-moss/15 bg-moss-soft px-2.5 py-1.5 text-xs leading-5 text-moss-deep">
+            <Sparkles size={12} className="mt-0.5 flex-none" />
             {normalizeQuotes(reason)}
           </div>
         ) : null}
         {footer ? <div className="mt-3">{footer}</div> : null}
       </div>
       {thumbnail ? (
-        <img
-          src={thumbnail}
-          alt=""
-          className="h-full min-h-28 w-full rounded-lg border border-line object-cover object-top"
-        />
+        <div className="w-[72px] shrink-0 self-start sm:w-[88px]">
+          <img
+            src={thumbnail}
+            alt=""
+            className="aspect-[3/4] w-full rounded-xl border border-line object-cover object-center"
+          />
+        </div>
       ) : null}
     </div>
   )
@@ -97,7 +100,7 @@ export function CandidateStatusBadge({ status, error }: { status: CandidateStatu
   if (status === 'idle') return null
   if (status === 'pending' || status === 'running') {
     return (
-      <span className="inline-flex flex-none items-center gap-1 text-xs text-body">
+      <span className="inline-flex flex-none items-center gap-1 rounded-md bg-fog px-2 py-1 text-xs text-body">
         <Loader2 size={14} className="animate-spin" />
         {status === 'pending' ? 'Queued' : 'Running'}
       </span>
@@ -105,14 +108,14 @@ export function CandidateStatusBadge({ status, error }: { status: CandidateStatu
   }
   if (status === 'succeeded') {
     return (
-      <span className="inline-flex flex-none items-center gap-1 text-xs text-moss">
+      <span className="inline-flex flex-none items-center gap-1 rounded-md bg-moss-soft px-2 py-1 text-xs text-moss">
         <Check size={14} />
         Done
       </span>
     )
   }
   return (
-    <span className="inline-flex flex-none items-center gap-1 text-xs text-error" title={error ?? 'Failed'}>
+    <span className="inline-flex flex-none items-center gap-1 rounded-md bg-error-soft px-2 py-1 text-xs text-error" title={error ?? 'Failed'}>
       <AlertCircle size={14} />
       Failed
     </span>

@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P09",
+  "primary_pattern_name": "Inference-Time Control & Guided Sampling",
+  "secondary_patterns": [
+    "P04",
+    "P01"
+  ],
+  "secondary_pattern_names": [
+    "Modular Pipeline Composition",
+    "Gap-Driven Reframing"
+  ],
+  "confidence": "high",
+  "reasoning": "该论文提出了一个训练-免费、在推理阶段通过调用工具来动态平衡广度与深度检索的框架（代码库/系统名为\"ARK\"），核心思想是用推理时的控制/采样机制而非权重更新来改变检索行为，直接对应模式\"P09\"。其次，论文通过一组可组合的两类工具（\"global lexical search\"与\"neighborhood exploration\"）构建检索流水线，体现了模块化管道设计，匹配\"P04\"。论文起点是识别现有相似度检索与遍历法在覆盖性与多跳能力上的缺口，并将问题重构为交互式工具使用以同时兼顾两者，符合\"P01\"；实验在\"STaRK\"上验证并将策略无标签蒸馏到\"Qwen3-8B\"，进一步支持上述归类。"
+}

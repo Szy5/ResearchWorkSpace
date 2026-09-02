@@ -1,0 +1,34 @@
+
+\begin{table}[]
+    \centering
+    \caption{Performance on WebQSP with different training data.}
+    \label{tab:webqsp_only}
+    %\resizebox{\columnwidth}{!}{%
+    \RE{
+        \begin{tabular}{@{}cccc@{}}
+            \toprule
+            Method     & Training Data & Hits@1 & F1   \\ \midrule
+            UniKGQA    & WebQSP        & 77.2   & 72,2 \\
+            \ourmethod & WebQSP        & 81.5   & 61.8 \\
+            \ourmethod & WebQSP+CWQ    & 85.7   & 70.8 \\ \bottomrule
+        \end{tabular}%
+        %}
+    }
+\end{table}
+
+\begin{table}[]
+    \centering
+    \caption{Performance on CWQ with different training data.}
+    \label{tab:cwq_only}
+    %\resizebox{\columnwidth}{!}{%
+    \RE{
+        \begin{tabular}{@{}cccc@{}}
+            \toprule
+            Method     & Training Data & Hits@1 & F1   \\ \midrule
+            UniKGQA    & CWQ           & 51.2   & 49.1 \\
+            \ourmethod & CWQ           & 59.1   & 52.9 \\
+            \ourmethod & WebQSP+CWQ    & 62.6   & 56.2 \\ \bottomrule
+        \end{tabular}%
+        %}
+    }
+\end{table}

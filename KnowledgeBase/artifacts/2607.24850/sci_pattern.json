@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P05",
+  "primary_pattern_name": "Data & Evaluation Engineering",
+  "secondary_patterns": [
+    "P15",
+    "P04"
+  ],
+  "secondary_pattern_names": [
+    "Data-Centric Optimization & Active Sampling",
+    "Modular Pipeline Composition"
+  ],
+  "confidence": "high",
+  "reasoning": "论文 \"SearchArt\" 以可扩展的合成任务生成与验证管线为核心，通过对合成的搜索轨迹进行质量验证并将其作为监督信号用于对 \"Qwen3.5-27B\" 的监督微调与强化学习，属于典型的数据/评估工程驱动方法（P05）。同时论文强调有针对性的合成数据选择与筛除策略以改善训练信号（P15），并通过验证→微调→RL 的多阶段后训练流水线体现模块化管道设计（P04）。"
+}

@@ -1,0 +1,51 @@
+\begin{wraptable}{R}{0.4\textwidth} %
+	\centering
+    \vspace{-0.1in}
+	\caption{Retrieval effect on performance (\% Hit) using various LLMs. }
+	\label{tab:llms}%
+	\resizebox{\linewidth}{!}{
+	\begin{threeparttable}
+		\begin{tabular}{lll}
+			\toprule
+			
+			  \textbf{Method} & \textbf{WebQSP} & \textbf{CWQ}\\
+            \midrule
+            ChatGPT & 51.8 & 39.9 \\
+            \; + ToG & 76.2 & 58.9 \\
+            \; + RoG & 81.5 & 52.7 \\
+            \; + \grag (+RA)& 85.3 (\textbf{87.9}) & 64.1 (\textbf{65.4}) \\
+            \midrule
+            Alpaca-7B & 51.8 & 27.4 \\
+            \; + RoG & 73.6 & 44.0 \\
+            \; + \grag (+RA)& 76.2 (\textbf{76.5}) & \textbf{54.5} (50.8)\\
+            \midrule
+            LLaMA2-Chat-7B & 64.4 & 34.6 \\
+            \; + RoG & 84.8 & 56.4 \\
+            \; + \grag (+RA)& 85.2 (\textbf{88.5}) & 62.7 (\textbf{62.9}) \\
+            LLaMA2-Chat-70B & 57.4 & 39.1 \\
+            \; + ToG & 68.9 & 57.6\\
+            \midrule
+            Flan-T5-xl & 31.0 & 14.7 \\
+            \; + RoG & 67.9 & 37.8  \\
+            \; + \grag (+RA)& \textbf{74.5} (72.3) & \textbf{51.0} (41.5)\\
+			\bottomrule
+		\end{tabular}%
+		\end{threeparttable}
+
+    }
+    \vspace{-0.2in}
+
+\end{wraptable}%
+
+
+
+
+
+			
+
+
+
+
+
+
+

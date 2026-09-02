@@ -1,0 +1,37 @@
+\begin{table*}[t]
+\centering
+\small
+\caption{Comprehensive results on mathematical reasoning benchmarks. We compare each base model against a \method{} (\raisebox{-0.2ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger) baseline (where the Solver is trained on questions from an untrained Challenger) and our method, \method{}. The peak performance  is highlighted in \textbf{bold}.}
+% \vspace{-0.1in}
+\label{tab:final_main_results}
+\scalebox{0.9}{
+\begin{tabular}{@{}l>{\columncolor{gray!15}}cccccccc@{}}
+\toprule
+\textbf{Model Name} & \textbf{Avg.} & \textbf{AMC} & \textbf{Minerva} & \textbf{MATH} & \textbf{GSM8K} & \textbf{Olympiad} & \textbf{AIME25} & \textbf{AIME24}\\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Qwen3-4B-Base}} \\
+\quad Base Model (w/o training)     & 42.57 & 45.70 & 38.24 & 68.20 & 87.79 & 41.04 & 10.30 & 6.7\\
+\quad Absolute Zero & 46.42 & 52.45 & 41.96 & 76.20 & 89.34 & 42.56 & 10.20 & 12.20 \\
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger)  & 45.01 & 45.00 & 45.22 & 72.80 & 87.87 & 41.19 & \textbf{10.20} & 12.80\\
+\textbf{\quad \method{} (our method)} & \textbf{49.93} & \textbf{57.27} & \textbf{52.94} & \textbf{79.60} & \textbf{92.12} & \textbf{44.59} & 9.60 & \textbf{13.40}\\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Qwen3-8B-Base}} \\
+\quad Base Model (w/o training)  & 48.64 & 51.95 & 50.00 & 78.00 & 89.08 & 44.74 & 12.10 & 14.60 \\
+\quad Absolute Zero & 52.68 & 57.89 & 57.90 & 76.60 & 92.00 & 47.80 & 18.20 & 18.40 \\
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger)  & 52.10     & 60.70     & 57.72     & 81.60     & 92.56     & 46.44     & 11.60     & 14.10      \\
+\textbf{\quad \method{} (our method)} & \textbf{53.72} & \textbf{61.67} & \textbf{60.66} & \textbf{82.00} & \textbf{94.09} & \textbf{48.89} & \textbf{13.30} & \textbf{15.40} \\
+\midrule\midrule
+\multicolumn{8}{@{}l}{\textit{OctoThinker-3B}} \\
+\quad Base Model (w/o training) & 26.64 & 17.19 & 24.26 & \textbf{55.00} & 73.69 & 16.15 & 0.21 & 0.00 \\
+\quad Absolute Zero & 27.23 & 22.50 & 22.70 & 53.20 & 75.80 & 13.20 & 0.50 & 2.70 \\
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger)  & 27.51     & 20.19     & 24.63     & 54.60     & \textbf{74.98}     & 15.70     & 0.10     & \textbf{2.40}     \\
+\textbf{\quad \method{} (our method)} & \textbf{29.32} & \textbf{27.03} & \textbf{27.57} & 54.20 & \textbf{74.98} & \textbf{18.22} & \textbf{3.23} & 0.00 \\
+\midrule
+\multicolumn{8}{@{}l}{\textit{OctoThinker-8B}} \\
+\quad Base Model (w/o training)  & 36.41 & 32.11 & 41.91 & 65.20 & 86.96 & 26.52 & \textbf{1.56} & 0.62 \\
+\quad Absolute Zero & 36.60 & 32.50 & 44.90 & 62.80 & 87.00 & 25.60 & 3.30 & 0.10 \\
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger)  & 36.98 & 29.30 & 42.28 & 66.20 & \textbf{88.10} & \textbf{27.56} & 1.04 & \textbf{4.38} \\
+\textbf{\quad \method{} (our method)} & \textbf{38.52} & \textbf{34.03} & \textbf{48.22} & \textbf{68.80} & 87.19 & \textbf{27.56} & 0.42 & 3.44 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

@@ -1,0 +1,40 @@
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 10 (successful): \Ours learns to stop searching when it finds out the external knowledge source is not sufficient to answer the question.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: The world's greatest Super-Heroes anthology showcased one of four superheroes known for speaking the phrase "SHAZAM", what was their name? \\
+        \hline
+        \textbf{Ground Truth}: Captain Marvel \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find the name of one of the four superheroes known for speaking the phrase "SHAZAM". I'll search for it.} \\
+\search{The world's greatest Super-Heroes anthology showcased one of four superheroes known for speaking the phrase "SHAZAM"} \\
+\info{Doc 1(Title: "Shazam! (TV series)") Shazam! (TV series) Shazam! is a half-hour live-action television program that was produced by Filmation (the studio's first such program), based on the superhero Captain Marvel, also known as Shazam, of Fawcett Comics' comic book series Whiz Comics (now owned by DC Comics). The program starred Michael Gray as Billy Batson, a teenage boy who can transform into the superhero Captain Marvel, originally played by Jackson Bostwick and later by John Davey, by speaking the magic word ""Shazam!"" With his guardian ""Mentor"" (Les Tremayne), Billy travels the country in a 1973 Dodge Open Road motorhome, looking for injustices to resolve. ...
+} \\
+\hdashline
+\think{I found out that the world's greatest Super-Heroes anthology showcased one of four superheroes known for speaking the phrase "SHAZAM". Now I need to find their names.} \\
+\search{four superheroes known for speaking the phrase "SHAZAM"} \\
+\info{Doc 1(Title: "Captain Marvel (DC Comics)") Captain Marvel (DC Comics) Captain Marvel, also known as Shazam (), is a fictional comic book superhero appearing in publications by the American publisher DC Comics. Artist C. C. Beck and writer Bill Parker created the character in 1939. Captain Marvel first appeared in ""Whiz Comics"" \#2 (cover-dated Feb. 1940), published by Fawcett Comics. He is the alter ego of Billy Batson, a boy who, by speaking the magic word ""SHAZAM"" (acronym of six ""immortal elders"": Solomon, Hercules, Atlas, Zeus, Achilles and Mercury), can transform himself into a costumed adult with the powers of superhuman strength, speed, flight and other ...
+} \\
+\hdashline
+\think{I found out that one of the four superheroes known for speaking the phrase "SHAZAM" is Captain Marvel (also known as Shazam). Now I need to find the other three superheroes.} \\
+\search{other three superheroes known for speaking the phrase "SHAZAM"} \\
+\info{Doc 2(Title: "Fawcett Comics") Fawcett Comics Fawcett Comics, a division of Fawcett Publications, was one of several successful comic book publishers during the Golden Age of Comic Books in the 1940s. Its most popular character was Captain Marvel, the alter ego of radio reporter Billy Batson, who transformed into the hero whenever he said the magic word ""Shazam!"". Other characters published by Fawcett include Captain Video, Hopalong Cassidy, Ibis the Invincible, Bulletman and Bulletgirl, Spy Smasher, Captain Midnight, Phantom Eagle, Mister Scarlet and Pinky, Minute-Man, Commando Yank and Golden Arrow. Aside from the better known superhero books, Fawcett also published a short-lived line of ...
+} \\
+\hdashline
+\think{I found out that one of the four superheroes known for speaking the phrase "SHAZAM" is Captain Marvel (also known as Shazam). Now I need to find the other three superheroes. I'll search for them.} \\
+\search{other three superheroes known for speaking the phrase "SHAZAM"} \\
+\info{Doc 3(Title: "Captain Marvel (DC Comics)") crossover event series. He is the super-powered alter-ego of Alexander Luthor of Earth-3. In the story, the Crime Syndicate (evil Earth-3 analogues of the Justice League) have brought Alexander Luthor, their prisoner, with them to the Prime Earth where the Justice League and other heroes reside. Prime Earth's Lex Luthor and his team sneak in to the Justice League Watchtower where the Syndicate has Alexander hostage, and remove the duct tape over his mouth, allowing Alexander to speak the magic word ""Mazahs!"" and transform into his muscular, highly powerful alter-ego. While Prime Earth's Shazam is known for sharing his powers ...
+} \\
+\hdashline
+\think{I found out that one of the four superheroes known for speaking the phrase "SHAZAM" is Captain Marvel (also known as Shazam). The other three superheroes are not mentioned in the search result. I'll provide the answer based on the information I have.} \\
+\answer{Captain Marvel}\\
+        \hline
+    \end{tabular}
+\end{table}
+

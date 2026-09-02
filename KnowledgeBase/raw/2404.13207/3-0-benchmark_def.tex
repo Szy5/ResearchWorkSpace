@@ -1,0 +1,11 @@
+\subsection{\revision{Problem Definition}}
+\label{sec:def}
+\vspace{-3pt}
+We are given a Semi-Structured Knowledge Base (SKB), which consists of a knowledge graph \( G \) and a collection of free text documents  $D$. 
+% The knowledge graph \( G = (V, E) \) is composed of a set of nodes \( V \) and a set of edges \( E \), where each edge represents a relational link between nodes. Each node \( i \in V \) has an associated set of free text documents \( D_i \). 
+Formally, let \( G = (V, E) \) be the knowledge graph, where \( V \) is the set of nodes and \( E \subseteq V \times V \) is the set of edges representing relationships between nodes. \( D = \bigcup_{i \in V} D_i \) be the collection of free-form text documents associated with the nodes, where \( D_i \) is the set of documents associated with node \( i \). For example, the product knowledge graph in e-commerce can capture relationships between products and brands/colors/categories, and the corresponding text documents include product descriptions, reviews, \etc
+
+We define the tasks on our benchmark datasets as follows: 
+Given the knowledge graph \( G = (V, E) \), a collection of free text documents \( D \), and a query \( Q \), the output is a set of nodes \( A \subseteq V \) such that for each node \( i \in A \), it satisfies the relational requirements imposed by the structure of \( G \) as specified in \( Q \), and the associated documents \( D_i \) satisfy the textual requirements specified in \( Q \). 
+
+% v2: This work addresses semi-structured knowledge base retrieval, integrating relational and textual data extraction from databases \( \mathcal{D} = \{R, T\} \), with \( R \) and \( T \) representing relational and textual data, respectively. The objective is to construct a model \( f \) that, given a query \( Q = \{Q_r, Q_t\} \), maps it to an answer \( A \). The answer \( A \) are nodes in \( \mathcal{D} \) satisfying both relational \( Q_r \) and textual \( Q_t \) query parts. The task is defined as finding \( f: \{Q_r, Q_t\} \times \mathcal{D} \rightarrow A \), effectively merging \( R \) and \( T \) to generate \( A \). The input of the model is semi-structure knowledge base and a query, and the output should be a set of predicted answers.

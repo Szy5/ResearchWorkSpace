@@ -1,0 +1,76 @@
+\section{Method}
+\label{sec:method}
+
+Our self-improving multimodal judge framework consists of three key stages: synthetic preference pair generation (Section~\ref{sec:2.1}), constructing judge training data with filtering (Section~\ref{sec:2.2}), and iterative training (Section~\ref{sec:2.3}). The key idea in this process is to generate diverse data that best help the model learn how to judge. 
+
+\subsection{Synthetic Data Generation}
+\label{sec:2.1}
+The core challenge in training multimodal judges is obtaining high-quality preference pairs that capture the nuanced ways VLM outputs can fail. Human annotation is expensive and doesn't scale to new domains, while relying on stronger models for data generation creates dependency on external better models. We instead ask: \emph{can a model generate its own training signal by creating and recognizing flawed outputs?} While self-improvement methods have been explored in text domains, extending these approaches to multimodal settings introduces new challenges: the model must identify failures that are fundamentally visual--such as incorrectly counting objects, misinterpreting spatial relationships, or hallucinating image content.
+
+Our approach is entirely self-contained--the same model generates and perturbs its own responses. This ensures the model learns directly from its internal knowledge rather than distilling from an external teacher. Critically, we design our synthetic data generation to create meaningful contrasts rather than superficial differences. We then know the preference direction by construction, eliminating the need to obtain ground truth labels.
+
+
+We broadly categorize evaluation tasks into two types based on the open-endedness of the answers. Datasets requiring captions or longer responses have \textit{open-ended} answers that lack objectively verifiable solutions, while datasets with multiple choice, numerical answers, or short phrases have \textit{closed-ended} answers with deterministic correct responses. Formally, let $\mathcal{D} = \{(I_i, Q_i)\}_{i=1}^n$ denote a collection of image-question pairs, where $I_i$ represents the $i$-th image and $Q_i$ the corresponding question. We denote the open-ended subset as $\mathcal{D}_{nv}$ and the closed-ended subset as $\mathcal{D}_v$. 
+
+\subsubsection{Detail Alteration for Open-Ended Task}
+
+Data in this category are typically captions or long answers to reasoning questions. Our approach generates pairs of responses where one contains subtle inaccuracies, creating a natural preference ranking even when the absolute correctness cannot be verified.
+
+For each image-question pair, we produce two sets of responses using our base VLM. We designate one generation as the original response and use the other to create altered versions by prompting the model to introduce specific inaccuracies, such as swapping numbers or object attributes, while preserving the original style, structure, and length. By introducing these targeted errors, we create challenging cases where the altered responses remain contextually plausible and internally coherent—mentioning objects or details that could reasonably appear in such scenes but are not actually present in the specific image. This tests a known weakness in VLMs: the tendency to conflate what is visually plausible with what is visually present~\citep{liu2024mitigatinghallucinationlargemultimodal,povid}. he judge must ground evaluations in fine-grained visual details rather than textual plausibility or language priors. A list of prompts used to alter the generations can be found in Appendix~\ref{app:alter_prompts}.
+
+For caption tasks specifically, we aim for diverse synthetic responses to increase variety in styles and lengths. This way we try to avoid that the base model always generate captions in its own default style. We randomly vary prompts with different length specifications (short or long) and style examples. The list of prompts we used to generate in two styles for captions can be found in Appendix~\ref{app:generation_prompt_caption}. 
+
+The underlying assumption is that while we cannot verify absolute accuracy, systematically introducing errors creates a reliable preference ranking where the original is preferred over the degraded version. Formally, for each datapoint $(I, Q) \in \mathcal{D}_{nv}$, we generate two sets of responses using our base VLM $M_{\text{base}}$. From the two generation sets, we designate one as the original response $T = M_{\text{base}}(I, Q)$ and use the other to create altered versions. We then prompt $M_{\text{base}}$ to introduce inaccuracies into these generations, producing degraded responses $T'$. This generates preference pairs $(I, Q, T, T')$ where $T$ is preferred over $T'$.
+
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\columnwidth}{p{2.5cm}|X}
+\hline
+\textbf{Image} & [City skyline] \\
+\hline
+\textbf{Original Answer (T)} & The image shows a bustling downtown area with modern skyscrapers reaching heights of approximately 40--50 stories. The glass facades reflect the afternoon sunlight. \\
+\hline
+\textbf{Altered Answer (T$'$)} & The image shows a quiet suburban area with colonial buildings reaching heights of approximately 10--15 stories. The brick facades absorb the evening moonlight. \\
+\hline
+\end{tabularx}
+\caption{Example of detail alteration for synthetic data generation}
+\end{table}
+
+
+\subsubsection{Majority Voting for Closed-Ended Tasks}
+In closed-ended answers, simply altering details in responses is insufficient—errors in logical reasoning cannot be effectively simulated by changing descriptive information. Moreover, for short answers without reasoning traces, directly changing the answer (e.g., as a simple example, from ``The answer is A'' to ``The answer is D'') does not provide meaningful learning signal, as the resulting pairs can be trivially easy when the wrong answer is obviously incorrect. Therefore, we leverage the closed-ended nature of these answers by using majority voting to identify likely correct responses, which we then pair with randomly sampled alternatives as likely incorrect responses.
+
+For closed-ended answers $(I, Q) \in \mathcal{D}_v$, we generate $N$ responses from the base model. We select $T^*$ as the response chosen by the majority of the $N$ generations, and randomly sample a different answer $T^- \neq T^*$ as the less preferred response, creating preference pairs $(I, Q, T^*, T^-)$. To ensure the quality of the majority answer, we only include examples where at least 5 responses are identical, filtering out cases with greater diversity.
+
+\subsubsection{Correct Answer Filtering}
+As an alternative approach to majority voting, we also explore using ground truth labels from the original datasets to construct preference pairs. Note that these labels represent the correct answer to the question rather than human preferences over response quality. This provides an interesting point of comparison: while majority voting derives supervision from the model's own consistency, gold label filtering relies on external ground truth that may not always align with what the model can reliably distinguish.
+
+For each $(I, Q)$ with gold label $G$, we generate $N$ responses and construct preference pairs $(I, Q, T^+, T^-)$ where $T^+$ matches the gold standard $G$ and $T^-$ does not.
+
+\subsection{Training Data Generation}
+\label{sec:2.2}
+We sample the model's own reasoning traces where judgments align with our synthetic preference assumptions, inspired by self-training literature~\cite{wang2024selftaughtevaluators, hu2024visual}. For each preference pair $(I, Q, T^+, T^-)$, we query the current judge $M_{\text{judge}}^{(k)}$ at iteration $k$ to generate $N$ judgments:
+\[
+\{J_1, J_2, \ldots, J_N\} \;=\; \{\,M_{\text{judge}}^{(k)}(I, Q, T^+, T^-)\,\}_{j=1}^N
+\]
+
+Each judgment $J_j$ contains a reasoning trace $R_j$ and a binary decision $D_j \in \{0, 1\}$ indicating whether $T^+$ is preferred. We construct our training set $\mathcal{T}^{(k+1)}$ by selecting only samples where the model correctly identifies the preference:
+\[
+\mathcal{T}^{(k+1)} \;=\; \{(I, Q, T^+, T^-, R_j, 1) \;:\; D_j = 1\}
+\]
+
+To mitigate positional bias--the tendency for models to favor the first response position--we conduct this process with both orderings: $(T^+, T^-)$ (where the preferred response appears first) and $(T^-, T^+)$ (swapped order), retaining only pairs where the model makes the correct judgment in both configurations.  Correct judgments in both orderings indicate that the model's reasoning signal is stronger than its positional bias, reducing cases where the model arrives at the right answer for the wrong reasons. 
+
+Intuitively, we only ``listen'' to the model's reasoning when it gets the answer right, bootstrapping from its own reasoning without amplifying mistakes. This focuses learning on reasoning patterns that consistently lead to correct judgments. 
+
+\subsection{Training}
+\label{sec:2.3}
+We use supervised fine-tuning to train the judge using the curated dataset $\mathcal{T}^{(k+1)}$. The training objective maximizes the likelihood of generating correct reasoning traces and judgments:
+\begin{align*}
+\mathcal{L} 
+  &= - \sum_{(I, Q, T^+, T^-, R, D) \in \mathcal{T}^{(k+1)}} 
+       \log P(R, D \mid  I, Q, T^+, T^-)
+\end{align*}
+The input format combines the image, question, and candidate responses, while the output includes both the reasoning trace and final judgment.

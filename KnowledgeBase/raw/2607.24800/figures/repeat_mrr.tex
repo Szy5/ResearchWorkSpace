@@ -1,0 +1,59 @@
+\begin{tikzpicture}
+\begin{axis}[
+    width=6.7in,
+    height=3.15in,
+    ybar,
+    bar width=0.82cm,
+    every axis plot/.append style={bar shift=0pt},
+    ymin=-0.432,
+    ymax=0.002,
+    ylabel={Mean paired MRR delta},
+    xtick={1,2,3,4,5,6},
+    xticklabels={
+        {PRIME\\no repeat},
+        {PRIME\\repeat},
+        {MAG\\no repeat},
+        {MAG\\repeat},
+        {Amazon\\no repeat},
+        {Amazon\\repeat}
+    },
+    xticklabel style={align=center,font=\large},
+    xmin=0.4,
+    xmax=6.6,
+    ytick={0,-0.1,-0.2,-0.3,-0.4},
+    tick label style={font=\large},
+    label style={font=\Large},
+    title style={font=\LARGE},
+    axis x line*=bottom,
+    axis y line*=left,
+    axis line style={black,semithick},
+    tick style={black},
+    extra y ticks={0},
+    extra y tick labels={},
+    extra y tick style={
+        grid=major,
+        major grid style={black,semithick},
+        tick style={draw=none}
+    },
+    nodes near coords={
+        \pgfmathprintnumber[fixed,precision=3,zerofill]{\pgfplotspointmeta}
+    },
+    point meta=rawy,
+    every node near coord/.append style={
+        font=\normalsize,
+        black,
+        anchor=north,
+        yshift=-2pt
+    },
+    clip=false,
+]
+
+\addplot+[] coordinates {(1,-0.002)};
+\addplot+[] coordinates {(2,-0.123)};
+\addplot+[] coordinates {(3,-0.229)};
+\addplot+[] coordinates {(4,-0.383)};
+\addplot+[] coordinates {(5,-0.036)};
+\addplot+[] coordinates {(6,-0.054)};
+
+\end{axis}
+\end{tikzpicture}

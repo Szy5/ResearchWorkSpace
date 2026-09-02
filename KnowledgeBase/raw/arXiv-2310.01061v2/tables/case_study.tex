@@ -1,0 +1,49 @@
+\begin{table}[]
+    \centering
+    \caption{Example of \textit{lack of knowledge} for ChatGPT-CoT and interpretable predictions of \ourmethod.}
+    \vspace{-3mm}
+    \label{tab:case1}
+    \resizebox{.7\columnwidth}{!}{%
+    \begin{tabular}{@{}c|p{5in}@{}}
+        \toprule
+        Question             & What type of government is used in the country with Northern District?                                                                                                                                                                                                                                                                                               \\ \midrule
+        Answer               & Parliamentary system                                                                                                                                                                                                                                                                                                                                                 \\ \midrule
+        ChatGPT + CoT        & To determine what type of government is used in a country with a Northern District, \textcolor{red}{we need more specific information}. The term "Northern District" does not specify the name of any particular country or provide enough context to identify its government type. \textcolor{red}{Could you please provide additional details or clarify the specific country you are referring to?} \\ \midrule
+        Reasoning Paths      & Northern District $\to$ location.administrative\_division.first\_level\_division\_of $\to$ Israel $\to$ government.form\_of\_government.countries $\to$ \textbf{Parliamentary system}                                                                                                                                                                                         \\
+        \midrule
+        \ourmethod & \begin{tabular}[c]{@{}p{5in}@{}}The type of government used in the country with the Northern District is a \textbf{Parliamentary system}.\\\\  Explanations:\\ \\ 1. Northern District $\to$ location.administrative\_division.first\_level\_division\_of $\to$ Israel: \\ The Northern District is a part of Israel.\\ 2. Israel $\to$ government.form\_of\_government.countries $\to$ Parliamentary system: Israel has a Parliamentary system of government.\\ \\ So, by following the reasoning paths provided, we can conclude that the country with the Northern District, which is Israel, uses a Parliamentary system of government.\end{tabular}                                                                                                                                                                                                                                                                                                                                            \\ \bottomrule
+    \end{tabular}}
+    \vspace{-3mm}
+\end{table}
+
+
+\begin{table}[]
+    \centering
+    \caption{Example of the \textit{hallucination} of ChatGPT-CoT and faithful reasoning of \ourmethod.}
+    \vspace{-3mm}
+    \label{tab:case2}
+    \resizebox{.7\columnwidth}{!}{%
+    \begin{tabular}{@{}c|p{5in}@{}}
+        \toprule
+        Question             & Where is the home stadium of the team who won the 1946 World Series championship?
+        \\ \midrule
+        Answer               & Busch Stadium                                                                                                                                                                                                                                                                                                                                                 \\ \midrule
+        ChatGPT + CoT        & \begin{tabular}[c]{@{}p{5in}@{}}Step 1: Identify the team that won the 1946 World Series championship.
+            The team that won the 1946 World Series championship was the St. Louis Cardinals. \\\\
+            
+            Step 2: Determine the home stadium of the St. Louis Cardinals during that time. The St. Louis Cardinals' home stadium during the 1946 season was  \textcolor{red}{Sportsman's Park}. \\\\
+            
+            Therefore, the possible answer to the question "Where is the home stadium of the team who won the 1946 World Series championship?" is:
+            -  \textcolor{red}{Sportsman's Park}.\end{tabular}
+             \\ \midrule
+        Reasoning Paths      & \begin{tabular}[c]{@{}p{5in}@{}} 1946 World Series $\to$ sports.sports\_team.championships $\to$ St. Louis Cardinals $\to$ sports.sports\_team.arena\_stadium $\to$ \textbf{Busch Stadium}\\
+            1946 World Series $\to$ sports.sports\_team.championships $\to$ St. Louis Cardinals $\to$ sports.sports\_team.arena\_stadium $\to$ \textcolor{red}{Roger Dean Stadium}\end{tabular}\\
+        \midrule
+        \ourmethod & \begin{tabular}[c]{@{}p{5in}@{}}Based on the reasoning paths provided, the home stadium of the team who won the 1946 World Series championship is \textbf{Busch Stadium}. This conclusion is based on the following path:\\\\
+
+            \textbf{1. 1946 World Series $\to$ sports.sports\_team.championships $\to$ St. Louis Cardinals $\to$ sports.sports\_team.arena\_stadium $\to$ Busch Stadium} \\\\
+            
+            The reasoning path leads us to the St. Louis Cardinals as the team that won the 1946 World Series, and Busch Stadium is the stadium associated with the St. Louis Cardinals. Therefore, \textbf{Busch Stadium} is the home stadium of the team that won the 1946 World Series championship.\end{tabular}                                                                                                                                                                                                                                                                                                                                            \\ \bottomrule
+    \end{tabular}}
+    \vspace{-5mm}
+\end{table}

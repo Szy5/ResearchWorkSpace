@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P04",
+  "primary_pattern_name": "Modular Pipeline Composition",
+  "secondary_patterns": [
+    "P05",
+    "P09"
+  ],
+  "secondary_pattern_names": [
+    "Data & Evaluation Engineering",
+    "Inference-Time Control & Guided Sampling"
+  ],
+  "confidence": "high",
+  "reasoning": "论文把复杂KG推理拆成可互换的模块（LLM、多功能工具箱、KG执行器、知识记忆）并通过迭代机制组合它们，典型的模块化流水线思路；同时合成了代码化的指令调优数据（数据/评估工程 P05），并在推理时以工具选择/记忆更新来实时控制行为（推理时控制 P09）。"
+}

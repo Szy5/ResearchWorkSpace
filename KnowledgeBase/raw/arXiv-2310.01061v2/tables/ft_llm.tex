@@ -1,0 +1,17 @@
+\begin{table}[]
+    \centering
+    \caption{Performance comparison with different finetuned LLMs (Hits@1).}
+    \label{tab:ft_llm}
+    \RE{
+    %\resizebox{\columnwidth}{!}{%
+    \begin{tabular}{@{}ccc@{}}
+    \toprule
+    Method                      & WebQSP         & CWQ            \\ \midrule
+    Alpaca-7B (Zero Shot)      & 51.78          & 27.44          \\
+    LLaMA2-Chat-7B (Zero Shot) & 64.37          & 34.60          \\
+    Alpaca-7B (Finetuned)       & 74.57          & 55.98          \\
+    LLaMA2-Chat-7B (Finetuned)  & 73.89          & 53.49          \\\midrule
+    \ourmethod                  & \textbf{85.75} & \textbf{62.65} \\ \bottomrule
+    \end{tabular}%
+    }
+\end{table}

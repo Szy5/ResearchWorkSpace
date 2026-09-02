@@ -1,0 +1,22 @@
+\captionsetup{width=\columnwidth}
+\begin{table}[tb]
+	\centering
+ \vspace{-0.1in}
+	\caption{Performance analysis (F1) on multi-hop (hops$\geq 2$) and multi-entity (entities$\geq 2$) questions.}
+	\label{tab:multi}%
+	\resizebox{0.5\columnwidth}{!}{
+		\begin{tabular}{@{}l|cc|cc@{}}
+			\toprule
+            \multirow{2}{*}{Method} & \multicolumn{2}{c|}{\textbf{WebQSP}} & \multicolumn{2}{c}{\textbf{CWQ}} \\  
+			 & multi-hop & multi-entity & multi-hop & multi-entity\\
+            \midrule
+            LLM (No RAG) & 48.4 & 61.5 & 33.7 & 32.3 \\
+            RoG & 63.3 & 65.1  & 59.3 & 58.3 \\
+			\midrule
+            \grag &  69.8 & 82.3 & 68.2 & 64.8 \\
+            \gragx+RA &  71.1 & 88.8 & 69.3 & 65.6 \\
+            
+			\bottomrule
+		\end{tabular}%
+		}
+\end{table}%

@@ -1,0 +1,24 @@
+\begin{table}[h]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{l|c|c|c|c|c|c|c|c}
+        \toprule
+        \multirow{2}{*}{\bfseries Llama-Nemotron-8B} & \multicolumn{8}{c}{Benchmark} \\
+        \cmidrule(lr){2-9}
+        & MATH-500 & Minerva-Math & GSM8K & OlympiadBench & AMC23 & AIME24 & TheoremQA & Average \\
+        \midrule
+        Structured SFT & \cellcolor{gray!20}93.2 & \cellcolor{gray!20}53.3 & \cellcolor{gray!20}91.3 & \cellcolor{gray!20}61.9 & \cellcolor{gray!20}97.5 & \cellcolor{gray!20}63.3 & \cellcolor{gray!20}54.9 & \cellcolor{gray!20}73.6 \\
+        Structured SFT + Pruning & 89.6 & 50.7 & 86.0 & 55.9 & 87.5 & 46.7 & 53.8 & 67.2 \\
+        \midrule
+
+        \midrule
+        Diff (\%) & \textcolor{red}{-3.86\%} & \textcolor{red}{-4.87\%} & \textcolor{red}{-5.80\%} & \textcolor{red}{-9.69\%} & \textcolor{red}{-10.25\%} & \textcolor{red}{-26.22\%} & \textcolor{red}{-2.00\%} & \textcolor{red}{-8.76\%} \\
+        \bottomrule
+    \end{tabular}
+    }
+\caption{\textbf{Structured SFT with pruning trades accuracy for efficiency.}  
+Benchmark performance of Llama-Nemotron-8B trained with Structured SFT, evaluated with and without pruning. Pruning discards \texttt{<try>} tokens once their \texttt{<outcome>} is produced, reducing context length and KV-cache size. While accuracy drops by an average of $8.76\%$ , the results show that the model remains competitive across benchmarks, validating pruning as a viable proof-of-concept for memory-efficient reasoning.}
+\label{tab:sft_pruning_benchmarks}
+\end{table}
+
+

@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P15",
+    "P04"
+  ],
+  "secondary_pattern_names": [
+    "Data-Centric Optimization & Active Sampling",
+    "Modular Pipeline Composition"
+  ],
+  "confidence": "high",
+  "reasoning": "论文以‘标注/可验证奖励稀缺’为出发点，把问题重构为模型自我生成并验证训练任务的自博弈（proposer ↔ solver），将原先需要人工构造的监督数据转化为内部生成的可验证约束——典型的Gap‑Driven Reframing。同时方法把数据合成与筛选（RAG 验证、噪声注入、防止‘hacking’、自适应难度）作为主要杠杆，属Data‑Centric Optimization；并以 proposer 与 solver 的分工与接口实现可替换的模块化训练流水线，体现Modular Pipeline Composition。"
+}

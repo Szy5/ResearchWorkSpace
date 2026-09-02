@@ -1,0 +1,399 @@
+\documentclass{article}
+\usepackage{iclr2026_conference,times}
+
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs} 
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{wrapfig}
+\usepackage{listings}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{fancyvrb}
+\usepackage{fvextra} % extends fancyvrb
+
+
+
+
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable} % for nicer boxes + page breaks
+\definecolor{trybg}{RGB}{242,248,255}
+
+\definecolor{coolbg}{RGB}{248,250,255}    % very light indigo
+\definecolor{coolborder}{RGB}{99,102,241} % indigo-500
+\definecolor{cooltitle}{RGB}{55,65,81} 
+
+
+\newtcolorbox{cooltext}[1][]{
+  enhanced,
+  breakable,
+  colback=coolbg,
+  colframe=coolborder,
+  coltitle=cooltitle,
+  boxrule=0pt,
+  borderline west={3pt}{0pt}{coolborder}, % left accent bar
+  arc=2mm,                                 % rounded corners
+  left=8pt,right=8pt,top=8pt,bottom=8pt,
+  before skip=10pt, after skip=10pt,
+  fonttitle=\bfseries,
+  title=#1
+}
+
+
+
+\definecolor{outbg}{RGB}{244,255,244}  
+\definecolor{cue}{RGB}{180,0,0}
+\newtcbox{\trybox}{on line, colback=trybg, colframe=trybg, boxsep=1pt, left=2pt, right=2pt, top=1pt, bottom=1pt}
+\newtcbox{\outbox}{on line, colback=outbg, colframe=outbg, boxsep=1pt, left=2pt, right=2pt, top=1pt, bottom=1pt}
+\newcommand{\dc}[1]{\textcolor{cue}{\textbf{#1}}}
+
+\title{Structured Thoughts For Improved Reasoning And Context Pruning}
+
+% Authors must not appear in the submitted version. They should be hidden
+\author{
+  \begin{tabular}[t]{l}
+    Zain Sarwar \\
+    University of Chicago \\
+    \texttt{\mdseries zsarwar@uchicago.edu}
+  \end{tabular}
+  \hskip 3em
+  \begin{tabular}[t]{c}
+    \begin{tabular}[t]{cc}
+      Supriyo Chakraborty & Berkcan Kapusuzoglu \\
+      Chia-Hsuan Lee & Anirban Das \\
+      Stephen Rawls & Kartik Balasubramaniam \\
+      \multicolumn{2}{c}{Sambit Sahu}
+    \end{tabular} \\[0.5em]
+    \mdseries Capital One
+  \end{tabular}
+}
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newcommand{\zain}[1]{{\color{blue}[ZS: #1]}}
+\newcommand{\BK}[1]{{\color{cyan}[BK: #1]}}
+\newcommand\dascomment[1]{\textcolor{orange}{das: \textit{#1}}}
+\newcommand\kbcomment[1]{\textcolor{red}{kartik: \textit{#1}}}
+\newcommand\michael[1]{\textcolor{green}{michael: \textit{#1}}}
+
+\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+\begin{abstract}
+Large language models (LLMs) excel at generating long chains of thought, but long reasoning traces are often verbose and memory-inefficient. In this work, we introduce \textbf{Structured Thoughts}, a framework that organizes reasoning into alternating \texttt{<try>} and \texttt{<outcome>} blocks: \texttt{<try>} captures exploratory scratch work, while \texttt{<outcome>} contains the distilled conclusion of that step. We construct a dataset of structured thoughts by segmenting reasoning traces into \texttt{<try>} blocks and prompting an LLM to summarize each step into its corresponding \texttt{<outcome>}. Fine-tuning pretrained foundation models on this reformatted data produces models that adopt the structured reasoning style, leading to performance gains of up to 8.08\% on reasoning benchmarks compared to standard SFT. The explicit structure also enables context pruning: after each \texttt{<try>/<outcome>} pair, the \texttt{<try>} can be pruned, allowing the model to retain conclusions without keeping the full scratch work in the context. A proof-of-concept pruning implementation achieves an average of 85\% memory / context savings with an 8.67\% performance drop across mathematical tasks.
+\end{abstract}
+
+\section{Introduction}
+Standard LLMs often fail on tasks that require multi-step logical or mathematical reasoning. Reasoning models extend LLM capabilities on such complex tasks by explicitly generating intermediate steps before arriving at a final answer. This distinction between generic LLMs and reasoning-oriented LLMs has proven to be critical for performing well on challenging domains such as competition-level mathematics, logical reasoning and programming~\citep{OpenAI-o3,comanici2025gemini, guo2025deepseek,bercovich2025llama}
+
+Transforming a pretrained model into a reasoning model requires post-training with reasoning traces. The most common first step is \textbf{supervised fine-tuning (SFT)}, where the model is trained to imitate curated chains-of-thought (CoT) that spell out intermediate steps~\citep{wei2022chain}. SFT is critical because it provides the model with an initial format and skill set for reasoning.
+Once the model has learned to reliably generate reasoning trajectories, \textbf{reinforcement learning (RL)} methods are applied to further refine them. RL teaches the model to prefer reasoning trajectories that lead to the correct answers. Recent large-scale efforts illustrate the power of this recipe. OpenAI’s \texttt{o3} and \texttt{o3-mini} models, and DeepSeek’s \texttt{R1}~\citep{openai0304,guo2025deepseek} and other models combine SFT and RL on large scale reasoning datasets, yielding state-of-the-art performance on mathematical and coding benchmarks. This indicates that reasoning-oriented post-training can substantially extend the capabilities of pretrained LLMs.
+
+% In this regard, an on-policy RL algorithm which has become a popular choice for training is PPO~\citep{schulman2017proximal} and its derivatives like GRPO~\citep{shao2024deepseekmath}. Both PPO and GRPO maximize rewards such as final-answer correctness or verifier scores. The key difference is how they estimate the advantage. PPO relies on a value function to compute advantages, whereas GRPO computes a group-relative advantage directly from the sampled cohort of trajectories, avoiding the need for a learned value model.
+ 
+A major focus of current reasoning research is on improving the \emph{RL stage} of post-training. These include introducing process supervision to reward intermediate steps~\citep{lightman2023let,uesato2022solving, shao2024deepseekmath} as well as refining the optimization objective/algorithm itself, as in recent analyses of R1-zero-style training~\citep{liu2503understanding}. In contrast, our work does not modify the optimization procedure or reward design. We impose a syntax in which each problem-solving step is organized into two blocks: a \texttt{<try>} block containing exploratory scratch work (mathematical derivations, verification, intermediate proofs) and an \texttt{<outcome>} block which contains the conclusion of the step. This alternation enforces a clean interface between working and result, analogous to human reasoning where we deliberate before summarizing a finding. Empirically, we find that finetuning models on such type of structured traces improves benchmark performance across multiple foundation models.
+Imposing this reasoning structure further helps with the growth in sequence length, KV-cache memory, and attention cost that comes from long traces. In our structured SFT scheme, each \texttt{<outcome>} summarizes its preceding \texttt{<try>}, so the \texttt{<try>} tokens can be pruned once the conclusion is generated.  We do this by masking the \texttt{<try>} blocks during training which teaches the model to rely only on outcomes for future reasoning steps. As a result, during inference, we can prune the completed \texttt{<try>} spans but retain their \texttt{<outcome>} blocks.
+
+In summary, this paper makes two contributions:
+\begin{enumerate}[leftmargin=*]
+    \item We demonstrate that SFT on structured thoughts yields improvements on standard reasoning benchmarks compared to standard SFT which only contains minimal structure in the form of \texttt{<think>} \texttt{<answer>} tags.
+    \item We evaluate \textbf{structure-aware pruning}: training-time masking and inference-time pruning that discards scratch work, reducing context length and memory requirements with modest performance degradation.
+\end{enumerate}
+
+\section{Related Work}
+\paragraph{Reasoning with explicit intermediate steps.}
+The recent surge in LLM reasoning performance is closely tied to techniques that elicit and exploit intermediate steps. \emph{Chain-of-Thought} (CoT) prompting shows that models benefit from explicit, step-by-step traces~\citep{wei2022chain}, including the zero-shot variant that adds a simple instruction like ``Let's think step by step''~\citep{kojima2022large}. Decoding strategies such as \emph{self-consistency} ensemble diverse reasoning paths and select a majority answer, further improving accuracy~\citep{wang2022self}. Search-based approaches (\emph{Tree-of-Thoughts}) widen exploration over latent ``thoughts'' and enable backtracking and lookahead~\citep{yao2023tree}. These lines of work demonstrate that supervising or decoding with intermediate steps increases reliability across math and logic based tasks. 
+
+More recently, researchers have explored directly \emph{rewarding} intermediate steps. Process supervision methods assign rewards not just to final answers but also to individual reasoning steps. Examples include reward models trained to score intermediate solutions~\citep{lightman2023let,uesato2022solving},and approaches that adaptively allocate test-time compute by rewarding useful intermediate reasoning~\citep{snell2024scaling}.~\cite{qu2025optimizing} introduce the idea of rewarding each intermediate step if it increases the likelihood of producing the correct answer and find this improves reasoning efficiency and performance. These approaches highlight that making the intermediate structure of reasoning explicit and rewarding it can improve reasoning performance.
+
+\paragraph{Long-context and memory-efficient inference.}
+A large body of literature seek to reduce attention/memory cost for long sequences by modifying attention patterns. Local/sliding-window or block-sparse attention scale linearly and combine local windows with a few global tokens or random links to preserve connectivity~\citep{beltagy2020longformer,zaheer2020big}. Other families include hashing-based attention (Reformer) and low-rank/key-projection (Linformer).~\citep{kitaev2020reformer,wang2020linformer}. Unlike these mechanisms, our approach is \emph{data-aware}: we insert structure into the reasoning trace itself and then compress along these semantically meaningful boundaries by pruning \texttt{<try>} blocks while preserving their \texttt{<outcome>} summaries.
+
+
+% More recently, streaming and cache-management techniques study when to keep, evict, or quantize key–value (KV) states: StreamingLLM shows that retaining a small ``attention sink'' subset of early tokens stabilizes sliding-window decoding~\citep{xiao2023efficient}. Dynamic context pruning erases unhelpful tokens from the KV cache during inference~\citep{anagnostidis2023dynamic}. Zero-shot extreme-length generalization modifies masks/schedules to extend context without finetuning~\citep{han2023lm}
+
+
+%\zain{Merge with prev paragraph?}
+% \paragraph{Data-aware compression vs.\ structural pruning.}
+% Most context-efficiency methods operate at the level of attention patterns or KV caches and do not know which tokens are ``scratch'' versus ``conclusion.'' As a result, they may either over-retain unhelpful text (e.g., verbose digressions) or prematurely evict crucial steps. Our method enforces a simple grammar that disentangles exploratory computation from distilled conclusions, enabling (i) \emph{training-time masking} that prevents future tokens from accessing obsolete scratch tokens after an \texttt{<outcome>}, and (ii) \emph{inference-time stateful pruning} that drops completed \texttt{<try>} spans while keeping the hidden-state conditioning through their \texttt{<outcome>} blocks. This aligns compression with the \emph{semantics} of the problem-solving process instead of heuristics over token positions or attention scores (cf.\ window/random/global or sink-based policies)~\citep{beltagy2020longformer,zaheer2020big,xiao2023efficient,anagnostidis2023dynamic}.
+
+\paragraph{PENCIL: learned reduction via call--return syntax.}
+\citet{yang2025pencil} introduce a reduction rule that triggers when the generated sequence matches
+\(C~[\texttt{CALL}]~T~[\texttt{SEP}]~A~[\texttt{RETURN}] \Rightarrow C~A\): the intermediate thoughts \(T\) and the control tokens are deleted, and the answer \(A\) is merged back into the context \(C\).
+This enables ``long thoughts with short memory'' by repeatedly pruning solved subproblems, and is shown to work strongly on symbolic puzzles (e.g., nearly perfect Einstein’s puzzle) with a small ($\sim$25M) transformer and a 2{,}048-token context.
+
+Our work is most closely related to PENCIL but differs in important ways.
+(1) \emph{Structure improves reasoning:} we show that introducing a reasoning syntax into the model \emph{by itself} improves benchmark accuracy after supervised fine-tuning, whereas PENCIL primarily targets memory efficiency without demonstrating accuracy gains from formatting.
+(2) \emph{Large-scale setting:} PENCIL evaluates on carefully curated puzzle-style tasks with a small model, while we study foundation-scale models (7B--8B) on large post-training corpora having in the order of millions of examples and on standard reasoning benchmarks.  
+3) \emph{Methodology for scalable structure and pruning:} To enable structured reasoning at scale, we (a) develop an unsupervised methodology to generate structured reasoning traces from standard reasoning datasets, (b) train models on this structured corpus that produce structured traces, and (c) introduce a second stage of \emph{masked SFT} with custom attention masks that block access to \texttt{<try>} tokens once their \texttt{<outcome>} has been generated. These contributions are essential for scaling structural pruning beyond toy puzzles to practical LLM training.  
+
+% \paragraph{``No-thinking'' and parallel scaling vs.\ genuine reasoning.}
+% A growing body of work argues that explicit thinking tokens are not always necessary. \citet{ma2025reasoning} show that bypassing the thinking phase with a simple ``NoThinking'' prompt can outperform standard CoT in low-token regimes, especially when paired with parallel best-of-$N$ sampling and verifiers. While these results are compelling for latency-limited settings, they largely optimize an \emph{answer-search protocol} (parallel proposals + selection) rather than the \emph{trace quality} of reasoning itself; further, they risk conflating knowledge gained during post-training with the contribution of explicit reasoning steps. Our method instead \emph{disentangles} exploratory tokens and conclusion tokens, and includes baselines that control for extra post-training exposure by comparing to SFT on the original traces.
+
+% \paragraph{Heuristic efficiency controls: early stopping, budget forcing, and adaptive length.}
+% Many techniques reduce reasoning cost by truncating or capping thoughts. Early-stopping approaches trigger termination once answers converge or a confidence proxy stabilizes~\citep{liu2025answer,yang2025dynamic}. Budget-aware decoding constrains the number of thinking tokens via fixed or estimated budgets, sometimes with post-training to internalize budget control\zain{Add cite}. Variants of self-consistency also explore early stopping to cut multiple-sample costs once an answer majority emerges~\citep{li2024escape}. Other adaptive strategies throttle reasoning length by RL or decoding modifications~\citep{jin2025well,lou2025adacot}. These methods are complementary to ours but differ in objective: they optimize \emph{when to stop} or \emph{how much to generate}, whereas we optimize what to keep and what to prune away from the context. Our approach 
+
+
+
+% \paragraph{Heuristic efficiency controls: early stopping, budget forcing, and adaptive length.}
+% Many techniques reduce reasoning cost by truncating or capping thoughts. Early-stopping approaches terminate once answers converge or a confidence proxy stabilizes~\citep{liu2025answer,yang2025dynamic}. Budget-aware decoding constrains the number of thinking tokens via fixed or estimated budgets, sometimes with post-training to internalize budget control. Variants of self-consistency also explore early stopping to cut multiple-sample costs once an answer majority emerges~\citep{li2024escape}. Other adaptive strategies throttle reasoning length by RL or decoding modifications~\citep{jin2025well,lou2025adacot}. These methods are complementary to ours but differ in objective: they optimize \emph{when to stop} or \emph{how much to generate}, or in some cases whether to generate reasoning tokens at all. By contrast, we optimize what to keep and what to prune from the context.
+
+
+% Some recent work also questions whether explicit reasoning tokens are always needed\zain{Add details about that paper - explain why there is a knowledge bias after SFT}. \citet{ma2025reasoning} show that bypassing the thinking phase withcing a max budget or extending the trace when the model tries to stop by appending 'Wait' tokens to the stream and continuing generation from there.
+
+
+% \zain{Already integrated in previous paras}
+% \paragraph{Positioning and summary.}
+% Relative to long-context transformers and KV-cache methods~\citep{beltagy2020longformer,zaheer2020big,kitaev2020reformer,wang2020linformer,choromanski2020rethinking,dai2019transformer,rae2019compressive,xiao2023efficient,anagnostidis2023dynamic,han2023lm,chen2024nacl,wu2024layer,fu2024lazyllm}, we contribute a \emph{data-aware} compression interface for reasoning. Relative to learned-reduction frameworks like PENCIL~\citep{yang2025pencil}, we show that a minimal, human-interpretable syntax is sufficient to (i) improve benchmark scores
+
+\section{Method}
+Our goal is to improve the accuracy and efficiency of reasoning models by introducing structure into reasoning traces and exploiting that structure for pruning. This section describes the motivation, dataset construction, model training, and pruning mechanism. We outline three stages: (i) supervised fine-tuning (SFT) on structured data, (ii) SFT with pruning-aware masking, and (iii) inference-time pruning.
+
+\subsection{Motivation: Explicit Structure for Better Reasoning}
+For most reasoning models, the bulk of the reasoning process appears inside a single \texttt{<think>} \dots \texttt{</think>} block followed by a final answer. Within this \texttt{<think>} block, models typically decompose the task into multiple sub-problems and solve them step by step. These steps often include the model utilizing various reasoning techniques such as self-reflection and verification. While useful, these techniques also result in long reasoning traces. The model produces intermediate algebra, case checks, proofs and partial conclusions for each step. We refer to these granular mathematical and logical details as the \emph{scratch work} required to solve a sub-problem. 
+
+However, when scratch work, tentative conclusions, and final answers are left intermixed, it may obscure which tokens drive the solution, making it harder to allocate attention to the most decisive information. In addition, if scratch work and conclusions remain mixed, later steps might attend more indiscriminately to redundant or superseded details, which could increase the likelihood of errors. Consistent with this view, \citet{liu2023lost} find that models tend to under-utilize information in the middle of long contexts (“lost in the middle”), and \citet{wu2025more} show that chain-of-thought length exhibits an inverted–U relationship with accuracy showing that longer traces can eventually hurt performance as redundant/irrelevant content accumulates. Additionally, retaining the entire trace in the context increases latency and memory usage, since every token must be stored in the KV cache even if only a small fraction is ultimately relevant. 
+
+Introducing an explicit structure that separates exploratory scratch work (\texttt{<try>}) from distilled conclusions (\texttt{<outcome>}) may help the model better discriminate between the reasoning process and final takeaways, reducing interference from redundant details and clarifying which information should guide subsequent steps. We make this format explicit with two tags and train the model to adopt the following reasoning format for each reasoning step:
+\begin{center}
+\texttt{<try>} exploratory reasoning \texttt{</try>} \quad \texttt{<outcome>} distilled conclusion \texttt{</outcome>}
+\end{center}
+
+Under supervised fine-tuning, the model learns to reason within \texttt{<try>} blocks and to commit the step’s main finding in \texttt{<outcome>}, yielding traces where exploratory computation and distilled conclusions are clearly separated. We believe this separation makes it easy for the model to follow the logical flow of its reasoning process and help the model learn \emph{where to attend}. Instead of processing a flat sequence where critical insights and low-level exploration are intertwined, the model is encouraged to learn that \texttt{<outcome>} blocks concentrate the key information from each reasoning step.
+\input{figs/raw_structured.tex}
+
+
+\subsection{Stage 1: Structured Supervised Fine-Tuning (SFT)}
+\paragraph{Dataset construction.}\label{subsec:dataset_construction}  
+
+We begin with existing post-training reasoning datasets such as Llama-Nemotron Math v1.1~\cite{bercovich2025llama}, which contain a question and an answer with reasoning traces for mathematical problems. We preprocess these traces in two steps:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Segmentation:}
+Our goal is to obtain a rough but useful notion of the \emph{beginning} and \emph{end} of each independent reasoning step. Therefore, we adopt a heuristic from prior work (\citet{qu2025optimizing}) to approximate step boundaries. We scan each reasoning trace for decision cues (e.g., “Wait,” “Hmm,” “Let me try again”) and simply split the trace rules at these points. Finally, we wrap each split between \texttt{<try>} \texttt{<try>} tags. Our segmentation approach is deliberately simple and we leave more advanced segmentation techniques, such as those using using supervised models~\citep{somasundaran2020two}, to future work.  
+
+% \item \textbf{Segmentation:} 
+% In practice, these boundaries are often signaled by decision cues (e.g., “Wait,” “Hmm,” “Let me try again,”) in reasoning traces that mark the start of a new reasoning step \BK{it might be helpful to briefly explain/discuss that this assumption is valid and it rarely reasoning units.
+\item \textbf{Summarization:} We require a brief conclusion for each \texttt{<try>} block. Ideally, we could simply instruct the reasoning model to produce a conclusion for each reasoning step. However, we find that publicly available reasoning models are poor at instruction following.~\citet{li2025thinking} find that CoT based reasoning relates negatively with instruction following capabilities of a model as they find that CoT prevents attention to instruction-following tokens. Similarly,~\citet{fu2025scaling} observe a similar relationship between reasoning ability and instruction following on mathematical tasks and show that instruction following capability worsens with an increase in the length of a reasoning trace. 
+
+Therefore, our solution is to obtain these summaries from an  external, instruction-tuned model (Llama-70B-Instruct). For each \texttt{<try>} block, we provide (i) the original question, (ii) a short prefix of the evolving answer as local context, and (iii) the current \texttt{<try>} span, together with an explicit instruction that the goal is to extract the \emph{main logical conclusion} of this sub-problem in one or two sentences (or a compact equation), without introducing new facts or re-deriving steps. The model’s output is wrapped in an \texttt{<outcome>} tag. The actual prompt used is provided in Appendix~\ref{app:summ_prompt}.
+\end{enumerate}
+The result is a dataset where each problem consists of alternating \texttt{<try>} and \texttt{<outcome>} blocks, followed by the final solution.
+We fine-tune pretrained reasoning and instruction-tuned models on this structured dataset using standard cross-entropy loss. The objective encourages models to produce reasoning in the structured format. An illustration of a structured thought is provided in Figure~\ref{fig:raw-to-structured}.
+
+
+\subsection{Stage 2: SFT with Pruning-Aware Masking}
+\label{subsec:masking_pruning}
+Although introducing structured thought improves benchmark performance, the generated traces remain long as every token is still part of the context. Crucially, however, the \texttt{<try>}/\texttt{<outcome>} format now provides a method for exploring the \emph{efficiency} side of reasoning. With outcomes serving as distilled summaries of each step, we want to evaluate whether models can continue reasoning effectively without retaining the full exploratory text. To investigate this, we design a training procedure that explicitly teaches models to operate under such constraints. Among possible approaches, we use a masking strategy to simulate pruning as it enforces the exact behavior we want (hide past \texttt{<try>} blocks once the paired \texttt{<outcome>} block has been generated). Moreover, it does not require any new losses and fits within our standard SFT pipeline. 
+
+% We use attention masks to prevent the model from accessing past \texttt{<try>} tokens once their corresponding \texttt{<outcome>} is produced. 
+
+
+
+
+
+
+% \paragraph{Masking strategy.}  
+% Given a sequence of tokens segmented into alternating \texttt{<try>} and \texttt{<outcome>} blocks, we modify the causal attention mask such that:
+% \begin{itemize}
+%     \item Tokens within a \texttt{<try>} block can attend to all past tokens, including earlier \texttt{<outcome>} blocks.     
+%     \item Tokens in the corresponding \texttt{<outcome>} block can attend to all tokens inside the preceding \texttt{<try>} block (to allow summarization).  
+%     \item Tokens \emph{after} the\texttt{<outcome>} block are prevented from attending to the tokens inside that \texttt{<try>} block, but retain access to the \texttt{<outcome>} block    . \dascomment{this sentence is confusing to the reader, what do you mean by after $<outcome>$, the tokens after that outcome token? or the next try block?}
+% \end{itemize}
+
+
+\paragraph{Masking strategy.}  
+Our structured reasoning traces are compoed of alternating \texttt{<try>} and \texttt{<outcome>} blocks. Within each paired (\texttt{<try>}, \texttt{<outcome>}) segment, we have standard causal attention. However, after \texttt{<outcome>}\(_i\) is produced, we masked its paired \texttt{<try>}\(_i\) for all subsequent positions (including later  \texttt{<try>} and \texttt{<outcome>} blocks), while keeping \texttt{<outcome>}\(_i\) and all previous \texttt{<outcome>} blocks visible. 
+
+
+
+% This masking simulates pruning at the context level. Once an \texttt{<outcome>} is produced, its preceding \texttt{<try>} tokens are no longer directly accessible to subsequent decoding. However, the \texttt{<outcome>} tokens are computed \emph{with} access to their \texttt{<try>} block, so their hidden states can carry distilled information from the masked scratch work. Downstream tokens may still attend to \texttt{<outcome>} tokens, allowing the model to learn to compress and retain what matters in the \texttt{<outcome>} representations while discarding the raw \texttt{<try>} details. Our masking strategy is illustrated in Figure~\ref{fig:mask}.
+
+
+
+This masking simulates pruning at the context level and has two implications for computation and information flow. First, future tokens operate with a smaller effective receptive field as there is no contribution from masked \texttt{<try>} blocks. Second, information from a masked \texttt{<try>} block is not completely lost as its \texttt{<outcome>} block was computed while attending to that \texttt{<try>}, so its (key, value)  content is already baked into the \texttt{<outcome>}'s representation. Since future tokens can always attend to \texttt{<outcome>} blocks, the distilled state remains available even though the original \texttt{<try>} tokens can no longer be attended to. 
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figs/pruning.pdf}
+\caption{\textbf{Pruning procedure.} During generation the model alternates between \texttt{<try>} (blue) and \texttt{<outcome>} (green) blocks. Once an \texttt{<outcome>} is generated, its preceding \texttt{<try>} block is removed from the context. This way, only the summarized outcomes are carried forward, while earlier scratch work is discarded step by step.}
+  \label{fig:pruning_timeline}
+\end{figure}
+
+
+
+\paragraph{Attention mask implementation.}
+Standard FlashAttention assumes a fixed causal mask and therefore cannot support our requirement that past \texttt{<try>} tokens become inaccessible once their corresponding \texttt{<outcome>} has been generated. To capture this behavior, we implement a rule-based masking layer using Flex Attention~\citep{dong2024flex}. 
+
+For each completed reasoning step, we store a triple
+\((c_s, c_e, o_e)\), denoting the start and end positions of the \texttt{<try>} span and the end of its corresponding \texttt{<outcome>} span. During attention, when a query token at position $q$ attends to a key token at position $k$, we apply the following rule:
+\[
+\text{if } q \ge o_e \text{ and } c_s \le k < c_e \;\;\;\Rightarrow\;\;\; \text{mask}(q,k).
+\]
+Once the outcome of a step is present, all future tokens are prevented from attending back to the scratch tokens that produced it. 
+
+% This implementation avoids materializing a full $L \times L$ attention mask which is prohibitively expensive in our case where we are training with sequences of upto 25K tokens.
+
+
+
+
+\paragraph{Training procedure.}
+After the initial SFT on structured traces, we run a second round of SFT \emph{on top of the structured SFT model} with pruning-aware masking enabled. The only change is the attention rule explained above.
+
+\subsection{Stage 3: Inference-Time Pruning}
+The final step is to implement pruning during autoregressive decoding. 
+
+\paragraph{Pruning procedure.}
+At inference time, we implement a generate--prune--continue loop aligned to \texttt{<try>}/\texttt{<outcome>} boundaries:
+\begin{enumerate}[leftmargin=*]
+    \item Decode until a complete \texttt{<try>} followed by its \texttt{<outcome>} is generated.
+    \item Prune the \texttt{<try>} span from the context.
+    \item Continue decoding conditioned on the retained tokens (the prompt, tokens before the first \texttt{<try>},  and prior \texttt{<outcome>}s.
+\end{enumerate}
+This loop runs until an answer is produced or we reach a max-length limit.
+
+\begin{wrapfigure}[25]{L}{0.35\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figs/pruning_mask.pdf}
+\caption{\textbf{Pruning-aware training mask.} 
+The plot illustrates how attention is restricted during training. Tokens within a \texttt{<try>} block (blue) are only available until their corresponding \texttt{<outcome>} block (green) is produced. Once an \texttt{<outcome>} is generated, all subsequent queries are prevented (crossed out region) from attending back to the scratch tokens in the associated \texttt{<try>}. Future tokens can still access \texttt{<outcome>} representations, preserving distilled information. This setup teaches the model to reason with outcomes while discarding raw scratch work.}
+\end{wrapfigure}
+\label{fig:mask}
+
+
+% \textit{Position encoding.} To maintain continuity, we adjust Rotary Positional Embeddings (RoPE) so that \texttt{<outcome>} tokens and subsequent generations preserve their original positions. \zain{Justify this.}
+
+\textit{Position encoding.} During inference we do not renumber positions after pruning. Tokens retain their original RoPE indices, so pruned spans become empty gaps in the positional timeline. 
+
+\textit{Runtime support.} Efficient inference engines such as \texttt{vLLM}~\citep{kwon2023efficient} do not expose the fine-grained control needed for selective eviction and restarts at \texttt{<try>}/\texttt{<outcome>} boundaries. We therefore implement pruning using a custom decoding loop in HuggingFace~\citep{wolf2019huggingface}, which allows direct manipulation of cache states.
+% but is already significantly slower than \texttt{vLLM} even without custom operations. Adding pruning on top of this makes generation markedly slower, with repeated pauses and restarts at every block. As such, our current inference setup is a proof-of-concept rather than a deployable system.
+
+\section{Evaluation}
+\label{sec:evaluation}
+We evaluate Structured Reasoning across two reasoning models on multiple mathematical benchmark tasks. Our experiments and analysis addresses three questions: (i) Does structured SFT improve reasoning ability compared to unstructured SFT? (ii) Is it possible to prune the context without catastrophic performance degradation? (iii) What is the overhead introduced by our structured SFT technique and gains in memory/compute from subsequent pruning.
+
+
+\subsection{Datasets}
+We build on the \texttt{llama-nemotron-math-v1.1} corpus~\citep{bercovich2025llama}, a large-scale collection of math reasoning traces. The full dataset contains roughly $2$M examples covering a wide range of problem types. For our experiments, we select the first $1$M examples from this dataset. We use this dataset in two ways:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Baseline SFT:} supervised fine-tuning on the raw \texttt{math v1.1} dataset, where each example consists of a question and a free-form reasoning trace.  
+
+
+\item \textbf{Structured SFT:} supervised fine-tuning on our reprocessed version of \texttt{math v1.1}, where each trace is reformatted into alternating \texttt{<try>} and \texttt{<outcome>} blocks. The \texttt{<try>} spans are obtained by segmenting raw reasoning traces at decision tokens (e.g., “Wait,” “Hmm”), while the corresponding \texttt{<outcome>} blocks are generated by prompting a larger instruction-tuned model (Llama-70B-Instruct) to summarize each \texttt{<try>} into a concise logical conclusion. This produces scratch–summary units without changing the underlying problems or answers.
+\end{enumerate}
+Structured SFT does not introduce new problems or answers. It reuses the exact same $1$M examples as the Baseline SFT, differing only in wrapping the reasoning steps with \texttt{<try>} tags and the addition of \texttt{<outcome>} blocks 
+\subsection{Models}
+We experiment with two pretrained reasoning models:  
+\begin{enumerate}[leftmargin=*]
+    % \item \textbf{Llama-Nemotron-8B}~\citep{bercovich2025llama}, a model designed for mathematical reasoning, already post-trained on the \texttt{llama-nemotron-post-training-math-v1.1} dataset. Because the evaluation data is drawn from this corpus, SFT on the same data does not inject new factual knowledge, isolating the effect of structured supervision. \zain{not true. v1.1 and v1 difference.}
+    \item \textbf{Llama-Nemotron-8B}~\citep{bercovich2025llama}, part of the Llama-Nemotron family of reasoning models. These models incorporate post-training stages specialized for mathematical reasoning. Nemotron models are trained with a mixture of reasoning-oriented datasets and optimized with supervised CoT traces and reinforcement learning. 
+    \item \textbf{Qwen2.5-7B-Instruct (s1)}~\citep{hui2024qwen2} is part of the Qwen2.5 family of models. The 7B-Instruct variant is aligned via instruction tuning and further adapted, using SFT, on the \texttt{s1K-1.1} dataset~\citep{muennighoff2025s1}, which contains reasoning-style traces. We use the checkpoint released by ~\cite{muennighoff2025s1} for our experiments.
+\end{enumerate}
+
+\subsection{Training Details}
+\label{subsec:training_details}
+We conduct all experiments on a distributed setup of 8 nodes, each equipped with 8 NVIDIA A100 40GB GPUs connected via EFA. Our training pipeline uses veRL~\cite{sheng2025hybridflow} and LlamaFactory~\cite{zheng2024llamafactory}. For the main experiments, we fine-tune each model for $2$ epochs with a learning rate of $1 \times 10^{-4}$. We set the maximum context length to $25{,}000$ tokens, enabling the models to handle long reasoning traces without truncation. To further improve training efficiency, we apply sequence packing so that multiple shorter samples are concatenated into a single sequence, maximizing GPU utilization.  
+
+\subsection{Structured SFT Improves Reasoning Performance}
+We first compare Baseline SFT (training on raw \texttt{math-v1.1} traces) against Structured SFT (training on our reformatted traces with \texttt{<try>}/\texttt{<outcome>} blocks). Evaluation is conducted on seven math reasoning benchmarks: \textbf{Math500}, \textbf{MinervaMath}, \textbf{AMC23}, \textbf{AIME24}, \textbf{TheoremQA}, \textbf{OlympiadBench}, and \textbf{GSM8K}~\citep{hendrycks2021measuring, lewkowycz2022solving,AMC, AIME24,chen2023theoremqa, he2024olympiadbench, cobbe2021training}. Across tasks, Structured SFT consistently outperforms the raw baseline. On \textbf{Llama-Nemotron-8B}, Structured SFT yields a relative average gain of \textbf{+3.66\%} over the baseline SFT experiments. On \textbf{Qwen2.5-7B-Instruct}, Structured SFT improves performance by an average of \textbf{+8.08\%}. This demonstrates that structured reasoning provides measurable gains in accuracy. Table~\ref{tab:sft_benchmarks} reports the full benchmark-level breakdown.
+\input{tables/sft_benchmark_scores}
+
+\subsection{Pruning Experiments}
+Next, we evaluate pruning at inference time using the Llama-Nemotron-8B model. Here, the generation loop removes \texttt{<try>} tokens as soon as their corresponding \texttt{<outcome>} is produced, retaining only the compressed reasoning summaries in context. This reduces the effective sequence length and KV cache footprint, with the tradeoff that the model no longer has access to its raw scratch work.
+
+Table~\ref{tab:sft_pruning_benchmarks} reports performance across math reasoning benchmarks. Pruning leads to an average relative degradation of $8.76\%$. Importantly, the model remains competitive overall, with performance levels that demonstrate pruning is feasible as a proof-of-concept.  The observed performance drop can be explained by several factors. First, the segmentation technique used to identify independent reasoning steps is heuristic and can misalign with the actual boundary of the step. While this has little impact during structured SFT as the full scratch work remains visible, pruning makes the model fully dependent on the outcome blocks. If a segmentation boundary cut occurs in the middle of a step and then the preceding \texttt{<try>} block is removed, the model is left with an incomplete summary and cannot properly continue the reasoning chain. Second, the informativeness of outcome blocks is constrained by the summarization model (Llama-70B in our case). If the summarization model misses or misinterprets the logical conclusion of a \texttt{<try>} block, then the true conclusion of that step is effectively lost, and after pruning the model has no way to recover it. 
+
+Additionally, while our results highlight that structured traces allow the model to sustain reasoning even without retaining the full scratch space, our current pruning methodology is not efficient enough for deployment. Our HuggingFace-based inference loop is significantly slower than optimized engines such as \texttt{vLLM}, and pruning adds further overhead. 
+
+\subsection{Overhead and Efficiency Analysis}
+Introducing structured thoughts increases sequence length because each reasoning step now includes an additional \texttt{<outcome>} block. On our structured SFT dataset, each record contains on average $7.34$ \texttt{<try>} blocks. The typical\texttt{<try>} block spans $688.5$ tokens, while the paired \texttt{<outcome>} summary averages $103.2$ tokens. This yields a ratio of outcome-to-try tokens of $0.15$. This yields a compression ratio of almost 85\% overall. If we also prune the previous \texttt{<try>} blocks while keeping the \texttt{<outcome>} before final answer, we shrink both the memory footprint (KV-cache size) and attention FLOPs during inference.
+
+\input{tables/sft_pruning_benchmark_scores}
+\subsection{Why does Structured SFT help?}
+A natural concern is that our \texttt{<outcome>} additions might (i) inject new knowledge, or (ii) help merely by lengthening the trace and thus increasing the model’s effective compute/memory. We offer some reasoning behind why simply adding more compute does not always scale performance and also design an ablation to isolate both factors.
+
+\paragraph{Does a longer context by itself help reasoning?}
+Prior work shows that simply providing (or training for) longer contexts does not automatically improve reasoning, and can even degrade effective usage of evidence. For example, \citet{liu2023lost} report that LMs over-attend to the beginning/end of long prompts and under-utilize information in the middle. 
+
+\citet{wu2025more} provide evidence that longer chains-of-thought are not always better. They show that accuracy follows an inverted–U curve as the number of reasoning steps grows. Performance improves at first, then degrades as chains become too long. They further show two scaling properties: (i) \emph{larger models} reach peak accuracy with \emph{shorter} chains, and (ii) harder tasks benefit from longer CoT chains. Taken together, this work cautions that raw token count is an unreliable proxy for better performance on reasoning tasks.
+
+\paragraph{Ablation: no information in \texttt{<outcome>} (compute matched variant).}
+To test whether our gains come from extra tokens (i.e., more internal compute) rather than structured reasoning traces, we create a Compute-Matched variant. Starting from the Structured SFT data, we replace every token inside each \texttt{<outcome>} block with a single MASK symbol repeated to match the original length (thus preserving sequence length and training FLOPs), while keeping the \texttt{<try>} content unchanged. No semantic summary remains; only the token budget does. We fine-tune \textbf{Llama-Nemotron-8B} on this masked corpus for the same number of steps and hyperparameters as Structured SFT.
+
+\input{tables/dummy_vs_structured_benchmark_scores}
+
+\paragraph{Findings.}
+Table~\ref{tab:sft_masked_vs_structured} summarizes the results for our compute-matched ablation. Relative to the Raw SFT baseline, \emph{Structured SFT} yields an average gain of \textbf{3.66\%}, whereas the \emph{Compute-Matched} variant (same sequence length but contains mask tokens inside the \texttt{<outcome>} blocks) improves by \textbf{1.69\%}. Since the compute-matched setting preserves token budget and training FLOPs, these results suggest that increased sequence length alone does not fully explain the improvements and that the distilled conclusions in \texttt{<outcome>} blocks may be providing additional, structure-specific benefits.
+
+\section{Limitations \& Future Work}
+Our study has several limitations. First, inference-time pruning results are available only for a single model, \textbf{Llama-Nemotron-8B}. Limited compute resources prevented us from running systematic pruning experiments on other models. Second, even for the models where we tested pruning, our current runtime approach is not practical. Since vLLM does not support dynamic KV-cache eviction, we fall back to HuggingFace Transformers with which introduces a large overhead, making pruning quite slow.
+
+Additionally, while structured SFT improves performance, pruning currently incurs a non-trivial accuracy drop. On Llama-Nemotron-8B, pruning leads to an average 8.76\% relative degradation compared to the unpruned structured model. To mitigate this degradation under pruning, an additional RL phase could be introduced. Here, the model would learn to compress its own scratch work into minimal but sufficient outcomes, with pruning performed during RL training itself. This could reduce reliance on heuristic segmentation and allow the model to internalize pruning decisions.  
+
+\section{Conclusion}
+We introduced Structured Reasoning, a method to organize reasoning traces into alternating \texttt{<try>} (scratch work) and \texttt{<outcome>} (distilled conclusion) blocks. By fine-tuning models on reformatted datasets, we showed that structured supervision improves reasoning accuracy across multiple math benchmarks (relative improvement of 3.66\% for Llama-Nemotron-8B and 8.08\% for Qwen2.5-7B-Instruct (s1)). Building on this structure, we further explored \emph{pruning}, where scratch work for reasoning steps is masked after their outcomes are produced. Our experiments demonstrate that pruning is feasible and significantly reduces context length. Pruning yields 85\% savings in context and memory compared to the structured reasoning variant although this comes at the cost of an average performance degradation of 8.76\% on benchmark scores. 
+
+
+\section{Ethics}
+This work focuses on methods for improving the reasoning efficiency and structure of large language models through supervised fine-tuning and pruning. We do not introduce new datasets and the models and datasets used in this paper are already publicly publicly available. As such, this work does not raise novel ethical or societal risks beyond those already associated with large language models.
+
+\section{Reproducibility}
+We have made significant efforts to ensure the reproducibility of our results. 
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Dataset construction:} Section~\ref{subsec:dataset_construction} details the preprocessing pipeline, including segmentation, summarization, and formatting of the structured traces.  
+    \item \textbf{Training setup:} Section~\ref{subsec:training_details} describes our hardware environment, frameworks, hyperparameters, and context length settings. We use publicly available training frameworks highlighted in Section~\ref{subsec:training_details}  
+    \item \textbf{Masking and pruning:} Section~\ref{subsec:masking_pruning} provides technical details of our masking implementation and inference-time pruning procedure.  
+    \item \textbf{Evaluation:} Section~\ref{sec:evaluation} outlines SFT datasets, benchmark datasets and experimental details.  
+    \item \textbf{Code Release:} Upon acceptance, we plan on open-sourcing our entire codebase.
+\end{itemize}
+
+
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\section{Use of LLMs}
+We used LLMs for plotting code, latex formatting, finding relevant work and writing edits.
+
+
+
+\section{Summarization Prompt}
+
+We use the following instruction prompt to generate summaries for each \texttt{try} block.
+\label{app:summ_prompt}
+\\
+
+
+\section*{Original Text String}
+
+
+\begin{cooltext}[Key Idea]
+You are an expert in analyzing and distilling complex reasoning processes.
+You will receive **ONE** segment of a larger, multi-step reasoning trace. This segment is enclosed within $<try> </try>$ tags.
+
+Your task is to process **ONLY THIS SINGLE** $<try>$ block and identify and provide its **most important conclusion or core logical outcome**. This outcome **MUST include any relevant mathematical equations, numerical results, or specific values** if they represent the main finding of the block. \\
+
+**CRITICAL RULES FOR YOUR OUTPUT:**\\
+1.  Your summary **MUST** directly state the outcome of *this specific block*. It should be concise, but may span multiple sentences if a mathematical formulation or detailed numerical result is the core outcome. \\
+2.  Your summary **MUST NOT** contain introductory phrases like "The main finding is...", "This block concludes...", "The result of this call is...", etc. Go straight to the point. \\
+3.  Your summary **MUST** be enclosed within $<outcome> </outcome>$ tags. \\
+4.  Your entire output should be **ONLY** this single $<outcome> </outcome>$ block, with absolutely no other text, comments, or conversational filler. \\
+5.  **If the main outcome is a mathematical expression or numerical result, represent it clearly within the summary, using LaTeX formatting (e.g., $E=mc^2$) for equations.**\\
+\end{cooltext}
+
+\end{document}
+                                        

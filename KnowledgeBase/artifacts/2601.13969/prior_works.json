@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "STaRK: Benchmarking LLM Retrieval on Textual and Relational Knowledge Bases",
+      "authors": "Shirley Wu, Shiyu Zhao, Michihiro Yasunaga, Kexin Huang, Kaidi Cao, Qian Huang, Vassilis N. Ioannidis, Karthik Subbian, James Zou, Jure Leskovec",
+      "year": 2024,
+      "arxiv_id": "2404.13207v1",
+      "role": "Foundation",
+      "relationship_sentence": "The \"STaRK\" benchmark defines the heterogeneous, text-rich KG retrieval tasks and datasets and the entity-level evaluation protocol that this paper uses to validate its adaptive breadth-depth retrieval design."
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao",
+      "year": 2023,
+      "arxiv_id": "2210.03629",
+      "role": "Inspiration",
+      "relationship_sentence": "The \"ReAct\" framework introduced the pattern of interleaving LLM reasoning with external tool calls, directly inspiring the paper's prompt-driven two-tool interface that lets a model alternate between global search and neighborhood exploration."
+    },
+    {
+      "title": "Tree-of-Traversals: A Zero-Shot Reasoning Algorithm for Augmenting Black-box Language Models with Knowledge GraphsTree-of-Traversals: A Zero-Shot Reasoning Algorithm for Augmenting Black-box Language Models with Knowledge Graphs",
+      "authors": "Elan Markowitz, Anil Ramakrishna, Jwala Dhamala, Ninareh Mehrabi, Charith Peris, Rahul Gupta, Kai-Wei Chang, Aram Galstyan",
+      "year": 2024,
+      "arxiv_id": "2407.21358v1",
+      "role": "Gap Identification",
+      "relationship_sentence": "The \"Tree-of-Traversals\" traversal-based approach exposes the fragility of seed-dependent multi-hop exploration—an anchoring failure mode that the current work addresses by keeping global search available throughout traversal."
+    },
+    {
+      "title": "Think-on-Graph: Prompted Traversal for Knowledge Graph Reasoning",
+      "authors": "Jiashuo Sun, Chengjin Xu, Lumingyuan Tang, Saizhuo Wang, Chen Lin, Yeyun Gong, Lionel M. Ni, Heung-Yeung Shum, Jian Guo",
+      "year": 2023,
+      "arxiv_id": "2307.07697",
+      "role": "Gap Identification",
+      "relationship_sentence": "The \"Think-on-Graph\" family of methods demonstrates reliance on pre-selected seeds and fixed hop strategies for multi-step graph reasoning, motivating the paper's adaptive, seed-agnostic breadth-depth switching."
+    },
+    {
+      "title": "HybGRAG: Hybrid Retrieval-Augmented Generation on Textual and Relational Knowledge Bases",
+      "authors": "Meng-Chieh Lee, Qi Zhu, Costas Mavromatis, Zhen Han, Soji Adeshina, Vassilis N. Ioannidis, Huzefa Rangwala, Christos Faloutsos",
+      "year": 2024,
+      "arxiv_id": "2412.16311",
+      "role": "Baseline",
+      "relationship_sentence": "The \"HybGRAG\" hybrid retrieval design—mixing global semantic retrieval with local relational signals but operating as a largely static scoring pipeline—serves as a core comparative baseline whose coverage-vs-depth tradeoffs the paper aims to improve."
+    },
+    {
+      "title": "Distilling LLM Agent into Small Models with Retrieval and Code Tools",
+      "authors": "Minki Kang, Jongwon Jeong, Seanie Lee, Jaewoong Cho, Sung Ju Hwang",
+      "year": 2025,
+      "arxiv_id": "2505.17612",
+      "role": "Inspiration",
+      "relationship_sentence": "Kang et al.'s label-free trajectory distillation supplies the practical method for compressing a teacher agent's tool-use trajectories into a compact model—an approach the paper adopts to produce its 8B distilled retriever."
+    }
+  ],
+  "synthesis_narrative": "The literature grounding this work contains complementary technical threads. The \"STaRK\" benchmark establishes the concrete problem setting—heterogeneous, text-rich KGs and an entity-level Hit@1/MRR evaluation—that motivates methods which must balance global coverage and multi-hop relational reasoning. From the LLM agent side, \"ReAct\" formalized interleaving model reasoning with external tool actions, giving a template for exposing a small, prompt-specified toolset to control retrieval behavior. On the graph-traversal front, methods such as \"Tree-of-Traversals\" and \"Think-on-Graph\" concretely demonstrate multi-hop exploration policies but also reveal critical failure modes: dependence on seed selection and fixed hop strategies that cause anchoring and missed evidence. Complementing traversal work, hybrid retrievers like \"HybGRAG\" show how combining semantic retrieval and local graph signals improves coverage yet typically remain static scoring pipelines that cannot dynamically switch search modes. Finally, practical compression techniques from \"Distilling Interactive Policies via Label-free Trajectory Imitation\" provide an operational recipe for taking costly teacher interactions and producing a compact, label-free student model. Together these threads expose a clear opportunity: combine persistent global discovery with composable one-hop expansion under a promptable tool interface and then compress the resulting adaptive policy. The current paper naturally follows by implementing a minimal two-tool LLM agent that alternates breadth and depth without seed dependence, evaluates on \"STaRK\", and uses label-free trajectory distillation to yield an efficient distilled retriever."
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2607.14777",
+  "created_at": "2026-07-21T05:40:30.700246+00:00",
+  "updated_at": "2026-07-21T06:33:45.849381+00:00",
+  "paper": {
+    "title": "SEED: Self-Evolving On-Policy Distillation for Agentic Reinforcement Learning",
+    "authors": [
+      "Jinyang Wu",
+      "Shuo Yang",
+      "Zhengxi Lu",
+      "Fan Zhang",
+      "Yuhao Shen",
+      "Lang Feng",
+      "Haoran Luo",
+      "Zheng Lian",
+      "Shuai Zhang",
+      "Zhengqi Wen",
+      "Jianhua Tao"
+    ],
+    "abstract": "Large language models are increasingly trained as interactive agents for long-horizon tasks involving multi-turn interaction, tool use, and environment feedback. Outcome-based reinforcement learning (RL) provides a practical optimization paradigm, but its sparse trajectory-level rewards offer limited guidance on intermediate decisions, leaving a supervision gap between episode-level outcomes and token-level policy learning. We propose Seed (SElf-Evolving On-Policy Distillation), a self-evolving framework that converts completed on-policy trajectories into training-time hindsight skills and distills their behavioral effect back into the policy model. Seed first fine-tunes the policy to analyze completed trajectories and generate natural-language skills that capture reusable workflows, decisive observations, or failure-avoidance rules. During RL, the current policy both collects trajectories and serves as the analyzer that extracts hindsight skills from them. Policy updates therefore improve subsequent decision making and skill analysis together, allowing hindsight supervision to evolve with the policy. Seed then re-scores the sampled actions under ordinary and skill-augmented contexts, converting the skill-induced probability shift into a dense token-level on-policy distillation signal. This signal is jointly optimized with outcome-based RL, keeping the auxiliary supervision aligned with the current trajectory distribution. Extensive experiments on text-based and vision-based agentic tasks show that Seed consistently improves performance and sample efficiency, exhibiting robust generalization to unseen scenarios. Our code is available at https://github.com/jinyangwu/SEEDjinyangwu/ Seed.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "2607.14777",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-21",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "raw/2607.14777",
+    "entry_file": "iclr2025_conference.tex",
+    "source_files": [
+      {
+        "path": "iclr2025_conference.tex",
+        "sha256": "174ca6c943069b27be05a579123f8865a689ba12932093a28b980dee8ab87b5c",
+        "bytes": 5150
+      },
+      {
+        "path": "math_commands.tex",
+        "sha256": "90473c4d0542070db244cea73ef962d6cddc5b2a746757e6a40ddf5fdfb90ba9",
+        "bytes": 12284
+      },
+      {
+        "path": "0_Abstract.tex",
+        "sha256": "50c403f16946d19d433894e57ff0550202e37a98fb26d6ea3a3261dc04b871e6",
+        "bytes": 1854
+      },
+      {
+        "path": "1_Introduction.tex",
+        "sha256": "effdc6862d3298a6c71eda3df67ae33105ed26d302035b294a4ae2d2b4b2ec01",
+        "bytes": 7726
+      },
+      {
+        "path": "2_Related-works.tex",
+        "sha256": "beddbe471147dc96472abcb8b047a4d3e4d3bbf9eac015a9c6acdc921892a594",
+        "bytes": 2932
+      },
+      {
+        "path": "3_Method.tex",
+        "sha256": "e346412763e901b537e342de9fffe4538f551b7bd5bd761cdd28b90472e437e1",
+        "bytes": 15551
+      },
+      {
+        "path": "4_Experiment.tex",
+        "sha256": "f81efa6c11e35946c8f75fc066b99d221f4616819efc12405bfc97927f142f22",
+        "bytes": 12711
+      },
+      {
+        "path": "tables/experiment.tex",
+        "sha256": "1749d469a78279d592d99944a24a624163dedfc5b4adac05e1416eac05d34811",
+        "bytes": 12070
+      },
+      {
+        "path": "tables/ablation_on_seed.tex",
+        "sha256": "06ab89e6c61a0713c2eab239753721bb626ae9427cd57eb68673d83f4e97dc31",
+        "bytes": 1149
+      },
+      {
+        "path": "5_Conclusion.tex",
+        "sha256": "073c438c1b0ff1cac00cf45f4ede1bd655f545fd5592f1a80806b1feceac5ffe",
+        "bytes": 934
+      },
+      {
+        "path": "6_appendix.tex",
+        "sha256": "ef56fa243fd63463694e58e0ac703f965f71cddf2e140a2410ff3cef141bc6dd",
+        "bytes": 26080
+      },
+      {
+        "path": "theoretical_analysis.tex",
+        "sha256": "ba3f9070a8ee95f9052e9ae91ee6f2deedc4aff42c0394cca3647a47ad5277af",
+        "bytes": 18922
+      },
+      {
+        "path": "tables/appendix_datasets.tex",
+        "sha256": "b0285a30544c87ccc85d9411c8b493026bcb6d9113506501aa3036a2aeac607c",
+        "bytes": 1343
+      },
+      {
+        "path": "algorithm.tex",
+        "sha256": "e5088b07322e8f7ece3d625e5973eb7bbc5b6571429f502f1ca7002887f5989e",
+        "bytes": 3285
+      },
+      {
+        "path": "tables/skills.tex",
+        "sha256": "3d281607ab15674f03cf5191b2bc628f3fbe9b884665b24d5cd4e3b79b40fad2",
+        "bytes": 6345
+      },
+      {
+        "path": "tables/appendix_param.tex",
+        "sha256": "0959e622175e6afc8748aaedb0937d5f2977dbab867b24020a208a15b40d6599",
+        "bytes": 922
+      },
+      {
+        "path": "tables/sample_efficiency.tex",
+        "sha256": "2dad01f689bee942a7d02aa9db974d87a29893659e9798661bcf868c70e7987c",
+        "bytes": 1786
+      },
+      {
+        "path": "tables/generalization.tex",
+        "sha256": "280f4535bddecbe3a9fb8c18884b6c6e055392db998064b9de984a0b9014c87c",
+        "bytes": 1066
+      },
+      {
+        "path": "tables/appendix_vlm.tex",
+        "sha256": "6ca71ad068f3e4f47dda47689280244b27f088a819ddb6db09b0148acd2da9fc",
+        "bytes": 797
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 31,
+    "figures": 17,
+    "references": 74
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 38, column 1):\nunexpected Tok (line 38, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 38, column 1):\nunexpected Tok (line 38, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

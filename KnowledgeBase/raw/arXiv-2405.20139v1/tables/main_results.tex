@@ -1,0 +1,55 @@
+\begin{table*}[tb]
+	\centering
+	\caption{Performance comparison of different methods on the two KGQA benchmarks. We denote the \textbf{best} and \underline{second-best} method.}
+	\label{tab:main_results}%
+	\resizebox{0.75\columnwidth}{!}{
+	\begin{threeparttable}
+		\begin{tabular}{@{}c|lcccccc@{}}
+			\toprule
+			 \multirow{2}{*}{\textbf{Type}} & \multirow{2}{*}{\textbf{Method}} & \multicolumn{3}{c}{\textbf{WebQSP}} & \multicolumn{3}{c}{\textbf{CWQ}} \\  \cmidrule(l){3-5} \cmidrule(l){6-8} 
+		      & & Hit & H@1 & F1 & Hit & H@1 & F1 \\
+            \midrule
+            \multirow{4}{*}{Embedding} & KV-Mem~\cite{miller2016key} &	-- & 46.7 &  38.6 & -- & 21.1 & -- \\
+            & EmbedKGQA~\cite{saxena2020improving} & -- & 66.6 & -- &  -- & -- & -- \\
+			& TransferNet~\cite{shi2021transfernet} & -- & 71.4 & -- & -- & 48.6 & --  \\
+			& Rigel~\cite{sen2021expanding} & -- & 73.3 & -- & -- & 48.7 & -- \\ \midrule
+            \multirow{8}{*}{GNN} & GraftNet~\cite{sun-etal-2018-open} & -- & 66.7 & 62.4  & -- & 36.8 & 32.7   \\
+            & PullNet~\cite{sun2019pullnet} & -- & 68.1 & -- &  -- & 45.9 & --\\
+            & NSM~\cite{he2021improving}	&	-- & 68.7 & 62.8 & -- & 47.6 & 42.4 \\
+            & SR+NSM(+E2E)~\citep{zhang2022subgraph} & -- & 69.5 & 64.1 & -- & 50.2 & 47.1 \\
+            & NSM+h~\cite{he2021improving} & -- & 74.3 & 67.4 & -- & 48.8 & 44.0 \\
+            & SQALER~\cite{atzeni2021sqaler} & -- & 76.1 & -- & -- & --  & -- \\
+            & UniKGQA~\citep{jiang2023unikgqa} & -- &  77.2 &  72.2 & -- & 51.2 & 49.1 \\
+            & ReaRev~\citep{mavromatis2022rearev} & -- & 76.4 & 70.9 & -- &  52.9 & 47.8   \\ 
+            & ReaRev + \lmsr  & -- & 77.5 & \underline{72.8} & -- &  53.3 & 49.7   \\ 
+            \midrule
+            \multirow{5}{*}{LLM}             & Flan-T5-xl \citep{chung2024scaling}     & 31.0   & --       & --             & 14.7          & --    & --         \\
+                                          & Alpaca-7B \citep{alpaca2023}         & 51.8          & --    & --          & 27.4          & -- & --             \\
+                                          & LLaMA2-Chat-7B \citep{touvron2023llama} & 64.4   &      -- & --   & 34.6  &   -- & --          \\
+                                          & ChatGPT                                 & 66.8          &-- & --& 39.9          &-- & --\\
+                                          & ChatGPT+CoT                             & 75.6          & -- & -- & 48.9          & -- & -- \\ \midrule
+            \multirow{7}{*}{KG+LLM}    
+            & KD-CoT~\citep{wang2023knowledge} & 68.6 & -- & 52.5 & 55.7 & -- & -- \\
+            & StructGPT~\citep{jiang2023structgpt} & 72.6 & -- & -- & -- & -- & -- \\
+            & KB-BINDER~\citep{li2023binder} & 74.4 & -- & -- & -- & -- & -- \\
+            & ToG+LLaMA2-70B~\citep{sun2024tog} & 68.9 & -- & -- & 57.6 & -- & -- \\
+            & ToG+ChatGPT~\citep{sun2024tog}& 76.2 & -- & -- & 58.9 & -- & -- \\
+            & ToG+GPT-4~\citep{sun2024tog} & 82.6 & -- & -- & \textbf{69.5} & -- & -- \\
+            & RoG~\citep{luo2024rog} & \underline{85.7} & 80.0 &  70.8 & 62.6 & 57.8 & 56.2 \\ 
+            \midrule
+            \multirow{4}{*}{GNN+LLM} & G-Retriever~\citep{he2024gretriever}& --  & 70.1 & -- & -- & -- & -- \\
+            & \grag (\textbf{Ours}) & \underline{85.7} & \underline{80.6} & 71.3 & 66.8 & \underline{61.7} & \underline{59.4}\\
+            & \gragx+RA (\textbf{Ours}) & \textbf{90.7} & \textbf{82.8} & \textbf{73.5 }& \underline{68.7} & \textbf{62.8} & \textbf{60.4}\\
+            
+            
+			\bottomrule
+		\end{tabular}%
+		\begin{tablenotes}
+        \item Hit is used for LLM evaluation.
+		\item We use the default \grag (+RA) implementation. \gragx, RoG, KD-CoT, and G-Retriever use 7B fine-tuned LLaMA2 models. KD-CoT employs ChatGPT as well.
+        \end{tablenotes}
+		\end{threeparttable}
+}
+
+
+\end{table*}%

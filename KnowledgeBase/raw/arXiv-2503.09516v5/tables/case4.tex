@@ -1,0 +1,30 @@
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 4 (successful): \Ours can write the right query to search for auxiliary information not provided in the previous search engine calls.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Where are Teide National Park and Garajonay National Park located? \\
+        \hline
+        \textbf{Ground Truth}: Canary Islands, Spain \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find out where Teide National Park and Garajonay National Park are located. I'll search for it.} \\
+\search{Teide National Park and Garajonay National Park location} \\
+\info{Doc 1(Title: "Garajonay National Park") decided to take their own lives. Garajonay National Park Garajonay National Park (, ) is located in the center and north of the island of La Gomera, one of the Canary Islands (Spain). It was declared a national park in 1981 and a World Heritage Site by UNESCO in 1986. It occupies 40 km (15 sq mi) and it extends into each of the six municipalities on the island. Nearly 450,000 tourists visit the park every year. There is accommodation for tourists just outside the park's boundary. The park is named after the rock formation of Garajonay, the highest point ...
+} \\
+\hdashline
+\think{I found out that Garajonay National Park is located in the center and north of the island of La Gomera, one of the Canary Islands (Spain). Now I need to find the location of Teide National Park.} \\
+\search{Teide National Park location} \\
+\info{Doc 1(Title: "Teide National Park") Teide National Park Teide National Park (, ) is a national park located in Tenerife (Canary Islands, Spain). The national park is centered on Mount Teide, the highest mountain of Spain (3,718 meters high) in addition, the highest volcano in the Atlantic Ocean islands and the third highest volcano in the world from its base in the ocean floor (7.500 meters high). Its national park status was passed on 22 January 1954, making it the third oldest national park in Spain. Pico Viejo, also included within the national park limits, is the second highest volcano in the Canary Islands with ...
+} \\
+\hdashline
+\think{I found out that Teide National Park is located in Tenerife (Canary Islands, Spain). Now I have the locations of both Teide National Park and Garajonay National Park.} \\
+\answer{Canary Islands, Spain}\\
+\hline
+\end{tabular}
+\end{table}
+

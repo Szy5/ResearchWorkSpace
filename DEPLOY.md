@@ -16,7 +16,7 @@ nginx (80/443)
                  uvicorn（systemd 常驻，仅监听 127.0.0.1，不直接暴露公网）
                           │
                           ▼
-        本地文件：raw/ artifacts/ graph_state/ graph_updates/ .env
+        本地文件：KnowledgeBase/{raw,artifacts,graph_state,graph_updates}/ .env
         （可选）Neo4j 图谱实例
 ```
 
@@ -210,17 +210,17 @@ nginx 配置没变的话不用碰；`systemctl restart` 期间接口会有几秒
 
 ## 数据与备份
 
-以下目录是有状态数据，不在 git 里（见 `.gitignore`），服务器上要自己备份：
+以下目录是有状态数据（见 `.gitignore`），服务器上要自己备份：
 
-- `raw/`：论文 LaTeX 源码
-- `artifacts/`：解析和生成的产物、审查状态
-- `graph_state/` / `graph_updates/`：Layer 2 图谱快照和增量事件
+- `KnowledgeBase/raw/`：论文 LaTeX 源码
+- `KnowledgeBase/artifacts/`：解析和生成的产物、审查状态、`.jobs` / `.recommendations` / `.publishing`
+- `KnowledgeBase/graph_state/` / `KnowledgeBase/graph_updates/`：Layer 2 图谱快照和增量事件
 - `.env`：密钥配置
 
 个人用推荐定期 `tar` 打包后同步到别的地方（网盘、对象存储、另一台机器），例如加一条 cron：
 
 ```bash
-0 3 * * * tar -czf /home/$USER/backups/paper-wiki-$(date +\%F).tar.gz -C /opt/paper-wiki raw artifacts graph_state graph_updates .env
+0 3 * * * tar -czf /home/$USER/backups/paper-wiki-$(date +\%F).tar.gz -C /opt/paper-wiki KnowledgeBase .env
 ```
 
 
@@ -338,4 +338,17 @@ ssh -L 8080:127.0.0.1:8080 youruser@your-server
 systemctl --user restart paper-wiki-web
 # 或者兜底方案下，循环脚本会在进程退出 5 秒后自动拉起新版本，杀掉旧进程即可：
 pkill -f "paper-wiki web"
+```
+
+**一键重启（推荐）**：仓库提供了 `deploy/no-root/redeploy-web.sh`，会杀掉旧的 `paper-wiki web` / `run-web.sh`，重建前端，再以前台包形式在 `0.0.0.0:8080` 拉起，日志追加写入项目根目录的 `paper-wiki-web.log`：
+
+```bash
+cd ~/projects/Paper-wiki   # 换成你的实际路径
+./deploy/no-root/redeploy-web.sh
+
+# 只要重启、不重建前端：
+SKIP_FRONTEND=1 SKIP_INSTALL=1 ./deploy/no-root/redeploy-web.sh
+
+# 查看日志
+tail -f paper-wiki-web.log
 ```

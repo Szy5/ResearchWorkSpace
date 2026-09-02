@@ -1,0 +1,51 @@
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash\footnotesize}p{#1}}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.05}
+
+
+  
+\begin{longtable}{|L{0.46\textwidth}|L{0.46\textwidth}|}
+\caption{Hierarchical relation retrieval formatting used in KG\text{-}R1 to organize Freebase relations.}
+
+\label{tab:hierarchical_relation_format}\\
+\hline
+\textbf{Flat Format} & \textbf{Hierarchical Format} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Flat Format} & \textbf{Hierarchical Format} \\
+\hline
+\endhead
+\small\sffamily
+\textless kg-query\textgreater\par
+get\_tail\_relations("m.09c7w0")\par
+\textless /kg-query\textgreater\par
+\vspace{4pt} %
+\textless information\textgreater\ Tail relations for "m.09c7w0":\par
+\vspace{4pt}%
+location.country.first\_level\_divisions, location.location.containedby,
+location.location.contains, people.person.nationality,
+people.person.place\_of\_birth, government.government.government\_for\par
+\textless /information\textgreater\par
+\vspace{10pt}
+\textbf{Result:} \textit{156 tokens}
+&
+\small\sffamily
+\textless kg-query\textgreater\par
+get\_tail\_relations("m.09c7w0")\par
+\textless /kg-query\textgreater\par
+\vspace{4pt}
+\textless information\textgreater\ Tail relations for "m.09c7w0":\par
+\vspace{4pt}%
+location\par
+\hspace*{2em}country: first\_level\_divisions\par
+\hspace*{2em}location: containedby, contains\par
+people\par
+\hspace*{2em}person: nationality, place\_of\_birth\par
+government\par
+\hspace*{2em}government: government\_for\par
+\textless /information\textgreater\par
+\vspace{10pt}
+\textbf{Result:} \textit{79 tokens (49.4\% savings)}\\
+\hline
+\end{longtable}

@@ -1,0 +1,33 @@
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 7 (failed): \Ours failed to write the right queries to decompose a complex problem at the beginning. The model answer the question without obtaining enough evidence.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: This expansion of the 2008 magazine article "Is Google Making Us Stoopid?" was a finalist for what award? \\
+        \hline
+        \textbf{Ground Truth}: Pulitzer Prize \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find out which expansion of the 2008 magazine article "Is Google Making Us Stoopid?" was a finalist for what award. I'll search for it.} \\
+\search{This expansion of the 2008 magazine article "Is Google Making Us Stoopid?" was a finalist for what award} \\
+\info{Doc 1(Title: "Is Google Making Us Stupid?") Is Google Making Us Stupid? Is Google Making Us Stupid? What the Internet Is Doing to Our Brains (alternatively Is Google Making Us Stoopid?) is a magazine article by technology writer Nicholas G. Carr, and is highly critical of the Internet's effect on cognition. It was published in the July/August 2008 edition of ""The Atlantic"" magazine as a six-page cover story. Carr's main argument is that the Internet might have detrimental effects on cognition that diminish the capacity for concentration and contemplation. Despite the title, the article is not specifically targeted at Google, but more at the cognitive impact of ...
+} \\
+\hdashline
+\think{I found out that the expansion of the 2008 magazine article "Is Google Making Us Stoopid?" was a finalist for an award. I need to find out which award it was finalist for.} \\
+\search{which award was the expansion of the 2008 magazine article "Is Google Making Us Stoopid?" finalist for} \\
+\info{Doc 2(Title: "Is Google Making Us Stupid?") inconclusive and stated that ""it will take time before it's clear whether we should mourn the old ways, celebrate the new, or learn to stop worrying and love the Net"". Is Google Making Us Stupid? Is Google Making Us Stupid? What the Internet Is Doing to Our Brains (alternatively Is Google Making Us Stoopid?) is a magazine article by technology writer Nicholas G. Carr, and is highly critical of the Internet's effect on cognition. It was published in the July/August 2008 edition of ""The Atlantic"" magazine as a six-page cover story. Carr's main argument is that the Internet might have ...
+} \\
+\hdashline
+\think{I found out that the expansion of the 2008 magazine article "Is Google Making Us Stoopid?" was a finalist for an award. I need to find out which award it was finalist for.} \\
+\search{which award was the expansion of the 2008 magazine article "Is Google Making Us Stoopid?" finalist for} \\
+\info{Doc 1(Title: "Is Google Making Us Stupid?") Is Google Making Us Stupid? Is Google Making Us Stupid? What the Internet Is Doing to Our Brains (alternatively Is Google Making Us Stoopid?) is a magazine article by technology writer Nicholas G. Carr, and is highly critical of the Internet's effect on cognition. It was published in the July/August 2008 edition of ""The Atlantic"" magazine as a six-page cover story. Carr's main argument is that the Internet might have detrimental effects on cognition that diminish the capacity for concentration and contemplation. Despite the title, the article is not specifically targeted at Google, but more at the cognitive impact of ...
+} \\
+\answer{National Magazine Award}\\
+        \hline
+    \end{tabular}
+\end{table}
+

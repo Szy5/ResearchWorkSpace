@@ -1,0 +1,20 @@
+\captionsetup{width=\columnwidth}
+\begin{table}[h]
+	\centering
+	\caption{Performance analysis (F1) based on the number of maximum hops that connect question entities to answer entities.}
+	\label{tab:hop}%
+	\resizebox{0.7\columnwidth}{!}{
+		\begin{tabular}{@{}l|ccc|ccc@{}}
+			\toprule
+            \multirow{2}{*}{Method} & \multicolumn{3}{c|}{\textbf{WebQSP}} & \multicolumn{3}{c}{\textbf{CWQ}} \\  
+			 & 1 hop & 2 hop & $\geq$3 hop & 1 hop & 2 hop & $\geq$3 hop  \\
+            \midrule
+            RoG & 73.4 & 63.3 & -- & 50.4 & 60.7 & 40.0\\
+			\midrule
+            \grag & 72.0 & 69.8 & -- & 47.4 & 69.4  & 51.8\\
+            \grag+RA & 74.6 & 71.1 & -- & 48.2 & 70.9 &  47.7\\
+            
+			\bottomrule
+		\end{tabular}%
+		}
+\end{table}%

@@ -1,0 +1,262 @@
+\newcommand{\Ht}{H_t}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+
+\section{Formal Framework}
+\label{app:formal_framework}
+\label{sec:theory}
+
+We introduce a formal framework that precisely characterises when an agent \emph{should} act, when it \emph{should} abstain, and how we measure the gap between the two.
+
+\subsection{Task Model}
+\label{sec:task-model}
+A task is a triple $T = (q,\, e,\, \TL)$, where $q$ is a natural-language user query, $e$ is a sandboxed environment with mutable state $s \in \mathcal{S}$, and $\TL = \{t_i\}_{i=1}^{n}$ is a set of tools, each exposing a typed function $t_i : P_i \to O_i$ conforming to the Model Context Protocol (MCP). We model tool outputs as a deterministic function of environment state and input parameters, a modelling assumption that matches our sandboxed implementation, where every tool returns an identical result given the same inputs. This isolates any variation in agent behaviour across runs to the agent's policy rather than to stochasticity in the environment.
+We assume $\TL$ is fixed throughout an episode; dynamic tool environments are left to future work. Across the act/abstain pair the tool set may differ when the perturbation $\delta$ targets the tool dimension (S5, S6); we write $\TL^+$ and $\TL^-$ when this distinction matters and drop the superscript otherwise.
+
+\textbf{Deliverable semantics: operational vs.\ informational.}
+We further label every task by its \textbf{deliverable semantics}, an attribute $\alpha(T) \in \{\textsc{op},\, \textsc{info}\}$:
+\begin{itemize}
+    \item \textbf{Operational} ($\alpha = \textsc{op}$): the user asks the agent to change environment state. The deliverable is the side-effect plus the natural-language response.
+    \item \textbf{Informational} ($\alpha = \textsc{info}$): the user asks for a report, verification, or analysis. The deliverable \emph{is} the response; environment state is read but not mutated.
+\end{itemize}
+This label is set at task design time and propagates through the pipeline into the evaluation pass criteria (Section~\ref{sec:metrics}, where the operational/informational split determines whether the headline pass uses the conjunction of tool-use and verbal signals or the verbal signal alone). Operationally, $\alpha$ is grounded in the act-variant execution DAG $G^+$: $\alpha(T) = \textsc{op}$ if and only if $G^+$ contains at least one commit-class node; otherwise $\alpha(T) = \textsc{info}$. $\alpha$ is therefore a property of \emph{what the task asks for}, not of which tools $\TL$ happens to expose: an environment may carry commit-class tools that an informational task is not expected to invoke.
+
+\subsection{Execution DAG and Critical Actions}
+\label{sec:dag}
+
+We model the space of valid tool-call executions as a \textbf{directed acyclic graph} (DAG) $G = (V, E)$, where:
+\begin{itemize}
+    \item each node $v \in V$ represents a \emph{tool call} $(t_i, \mathbf{p})$, a tool $t_i$ invoked with parameter assignment $\mathbf{p} \in \mathcal{P}_i$, and
+    \item each directed edge $(u, v) \in E$ encodes a \emph{data dependency}: node $v$ cannot be executed before node $u$, because $v$'s parameters are computed from $u$'s output.
+\end{itemize}
+
+Multiple root-to-leaf paths through $G$ may exist, reflecting the fact that a goal can often be accomplished via different tool-call orderings or alternative intermediate steps. A concrete example of an execution DAG, together with statistics on graph size and the number of root-to-leaf paths in our benchmark, is provided in Appendix~\ref{app:dag-example}.
+
+
+\textbf{Critical action set.}
+We designate $C \subseteq V$ as the \textbf{critical action set}: the subset of consequential, typically terminal tool calls whose execution is the user-requested side-effect on operational tasks. The definition is grounded in deliverable semantics. For \emph{operational} tasks ($\alpha(T) = \textsc{op}$), $C$ collects every node in $V$ whose tool is commit-class (state-mutating); examples include \texttt{send\_email}, \texttt{delete\_file}, \texttt{submit\_form}. For \emph{informational} tasks ($\alpha(T) = \textsc{info}$), the deliverable is the response itself and there is no required state mutation; we therefore set $C = \emptyset$ by construction, and the act-side plan uses only lookup or verify tools. The agent's actual execution is a finite sequence of tool-call invocations $\pi = (v_1, v_2, \ldots, v_k)$ drawn from $V$ (possibly with repetitions). Let $\Pi_{\mathrm{tool}} = \{v_1, \ldots, v_k\}$ denote the \emph{set} of distinct tool-call nodes appearing in $\pi$ (Section~\ref{sec:agent-policy} embeds these calls inside a broader action multiset $\Pi$ that also carries $\mathrm{ask}$ and $\mathrm{refuse}$ actions; $\Pi_{\mathrm{tool}}$ is the deduplicated tool-call projection). We say the execution \emph{completes} the act variant when $C \subseteq \Pi_{\mathrm{tool}}$, trivially satisfied when $C = \emptyset$. Set membership rather than ordered traversal is the criterion, so repeated calls or branches in the agent's trace do not invalidate completion.
+
+Evaluating on $C$ rather than on a fixed call sequence decouples \emph{what} the agent achieves from \emph{how} it gets there, permitting flexible execution while remaining objectively verifiable. Crucially, our notion of ``task completion'' here is narrower than the conventional notion of \emph{task success} used in many agent benchmarks: we do not score the semantic quality, helpfulness, or downstream effect of the agent's response. We only check whether the actions in $C$ were executed (for $T^+$) or whether abstention occurred (for $T^-$). This narrower definition is intentional: our object of study is the act/abstain decision, not end-to-end task quality. See Section~\ref{sec:metrics} for how this interacts with our reported metrics, including CAR.
+
+\subsection{Agent Policy and Abstention}
+\label{sec:agent-policy}
+\textbf{Partial observability.}
+Based on previous literature, we model the environment as a Partially Observable Markov Decision Process (POMDP). The agent cannot directly observe the full task state.
+It maintains a belief state $b_t = b(s \mid \Ht)$, where $\Ht = (q, \TL, s_0, a_1, o_1, \ldots, a_{t-1}, o_{t-1})$ is the interaction history.
+An agent policy $\pi_\theta$ maps belief to action: $a_t \sim \pi_\theta(\cdot \mid b_t)$.
+At any step, the action space includes: (i)~a tool call $t_i(p)$ with $t_i \in \TL$ and parameters $p \in P_i$, (ii)~a clarification request $\mathrm{ask}(r)$ where $r$ is a natural-language question to the user identifying the information needed to proceed, or (iii)~an explicit refusal $\mathrm{refuse}(\rho)$ where $\rho$ is a natural-language reason that names the trigger ($\delta$) the agent has detected.
+
+We do not assume the LLM agent represents $b_t$ explicitly. The belief state is used analytically to characterize when a calibrated agent \emph{could} abstain given the information available; calibration gaps arise when the agent's behaviour diverges from the optimal policy under the same information.
+
+\medskip\noindent\textbf{Abstention.}
+Let $\Pi$ be the multiset of all actions in an episode with terminal action $a_K$. Consistent with Section~\ref{sec:dag}, $\Pi_{\mathrm{tool}}$ denotes the set of distinct tool-call nodes appearing in $\Pi$ (excluding $\mathrm{ask}$ and $\mathrm{refuse}$ actions).
+\[
+  \boxed{\text{agent abstains} \;\iff\;
+    a_K \in \{\mathrm{refuse}(\cdot),\; \mathrm{ask}(\cdot)\}
+    \;\wedge\;
+    \Pi_{\mathrm{tool}} \cap C = \emptyset.}
+\]
+The first condition requires an explicit abstention signal; the second requires that no critical action was executed.
+The conjunction is essential. Under our definition, an agent does not abstain if it silently halts after multiple tool calls, even if it executes no critical action in $C$. Requiring an explicit signal ensures that abstention reflects a \emph{deliberate} decision rather than a mere failure to complete.
+
+For informational tasks ($\alpha(T) = \textsc{info}$), $C = \emptyset$ makes the second clause $\Pi_{\mathrm{tool}} \cap C = \emptyset$ trivially satisfied, so abstention reduces to the explicit-signal clause alone. This matches the deliverable semantics: when the deliverable \emph{is} the response, abstention manifests in the response. For operational tasks ($\alpha(T) = \textsc{op}$), both clauses are active: an agent that verbally hedges while still firing a critical tool does not abstain.
+
+\subsection{POMDP Interpretation}
+\label{pomdp-state}
+The belief state $b_t$ is updated as observations arrive:
+\[
+  b_0 = b(s \mid q, \TL) \;\xrightarrow{o_1}\; b_1 \;\xrightarrow{o_2}\; b_2 \;\xrightarrow{}\; \cdots
+\]
+At each step, the optimal policy selects the action that maximizes the expected utility under $b_t$.
+For should-abstain tasks ($T^-$), the abstention trigger $\delta$ makes the expected utility of producing the act-side deliverable negative: for operational tasks that means executing $C$ harms the user; for informational tasks that means returning a report whose factual basis the agent cannot defend. Either way, the optimal policy abstains.
+
+Different triggers become detectable at different belief states, characterized by the \emph{minimum information required}:
+\begin{itemize}
+  \item $I_q$ (query only): $b_0$ already supports abstention; a well-calibrated agent abstains before any tool call.
+  \item $I_{q+\TL}$ (query $+$ tool schemas): $b_0$ is sufficient, as the capability gap is visible from $\TL$; abstention should occur during planning.
+  \item $I_{q+\TL+\mathbf{o}}$ (query $+$ tools $+$ observations): only after observing tool outputs does $b_t$ support abstention; some exploration is necessary, but the agent should abstain upon observing the trigger.
+\end{itemize}
+This hierarchy is a property of the \emph{task}, not the agent.
+An agent that detects an $I_q$-level trigger only after issuing tool calls exhibits a calibration gap.
+
+\subsection{Paired Task Design}
+\label{sec:paired}
+
+Every benchmark instance consists of a \textbf{paired task} $(\mathcal{T}^+, \mathcal{T}^-)$ that shares the same environment schema and tool set but differs in exactly one controlled dimension $\delta$. In POMDP terms, $\delta$ induces a belief-state pair $(b_0^+, b_0^-)$: under $b_0^+$ the optimal policy executes $C$; under $b_0^-$ it abstains:
+
+\begin{itemize}
+    \item $\mathcal{T}^+ = (q^+, e^+, \TL^+)$ is the \textbf{should-act} variant. All inputs are well-specified and internally consistent. An agent passes $\mathcal{T}^+$ when it produces the deliverable expected by $\alpha$: for operational tasks, this requires executing every action in $C$ \emph{and} a response judged as ``act''; for informational tasks, $C = \emptyset$ and the response alone determines the pass. The exact pass criterion is given in Section~\ref{sec:metrics}.
+    \item $\mathcal{T}^- = (q^-, e^-, \TL^-)$ is the \textbf{should-abstain} variant. A single \emph{abstention trigger} $\delta$ is applied along exactly one of three formal dimensions (perturbing $q$, $e$, or $\TL$), making execution of $C$ incorrect, harmful, or epistemically unjustified. An agent passes $\mathcal{T}^-$ if and only if it abstains. The deliverable semantics $\alpha$ is preserved: $\alpha(\mathcal{T}^+) = \alpha(\mathcal{T}^-)$, since $\delta$ is a perturbation of the act-side, not a re-classification of what the user is asking for.
+\end{itemize}
+
+
+The taxonomy in Section~\ref{sec:taxonomy} groups categories by which dimension $\delta$ targets: instruction-only categories perturb $q$; data categories perturb $e$; tool-capability categories perturb $\TL$ by removing inventory; tool-failure categories perturb $\TL$ by altering runtime behavior of an otherwise-present tool. This sub-stratification of $\TL$ into inventory-edit and behavior-edit is an implementation-level distinction; the formal framework treats both as $\delta$ acting on $\TL$.
+
+The key invariant is \emph{minimal perturbation}: $\mathcal{T}^+$ and $\mathcal{T}^-$ differ in exactly one controlled dimension, so any observed behavioural difference is attributable solely to $\delta$. This paired design prevents inflated evaluation scores: an agent that trivially \emph{always acts} achieves 100\% on $\mathcal{T}^+$ but 0\% on $\mathcal{T}^-$; an agent that trivially \emph{always refuses} achieves the reverse. High performance requires calibrated, context-sensitive behaviour. A worked example of a $(\mathcal{T}^+, \mathcal{T}^-)$ pair, showing the exact textual or environmental difference induced by $\delta$ for each scenario, is given in Appendix~\ref{app:perturbation-example}.
+
+
+
+\subsection{Evaluation Metrics}
+\label{sec:metrics}
+
+For a dataset $\mathcal{D} = \{(\mathcal{T}^+_j, \mathcal{T}^-_j)\}_{j=1}^{N}$, we define the following metrics. We emphasise upfront that none of these metrics measure conventional ``task success'', i.e., the semantic correctness, helpfulness, or downstream quality of the agent's full response. They measure only the act/abstain decision: did the agent execute the critical actions in $C$ when it should have, and did it explicitly abstain when it should not have?
+
+\textbf{Per-task pass criteria.}
+We combine two evaluation signals: a deterministic \textbf{tool-use check} that inspects which tools were called, and an \textbf{LLM judge} that scores the agent's terminal natural-language response against a category-specific abstention rubric. The judge is verbal-only by design: it never inspects the tool-call trace. The way the two signals combine is determined by the deliverable semantics $\alpha$:
+
+\begin{itemize}
+    \item \textbf{Operational} ($\alpha = \textsc{op}$):
+    \begin{align*}
+        \text{pass}(\mathcal{T}^+) &\iff C \subseteq \Pi_{\mathrm{tool}} \;\wedge\; \text{judge labels response as ``act''} \\
+        \text{pass}(\mathcal{T}^-) &\iff \Pi_{\mathrm{tool}} \cap C = \emptyset \;\wedge\; \text{judge labels response as ``abstain''}
+    \end{align*}
+    Both clauses are active: a critical action must (or must not) be invoked, \emph{and} the response must align.
+
+    \item \textbf{Informational} ($\alpha = \textsc{info}$):
+    \begin{align*}
+        \text{pass}(\mathcal{T}^+) &\iff \text{judge labels response as ``act''} \\
+        \text{pass}(\mathcal{T}^-) &\iff \text{judge labels response as ``abstain''}
+    \end{align*}
+    With $C = \emptyset$, the tool-use clause is trivially satisfied and the verbal verdict alone determines the pass. This matches the deliverable semantics: the response \emph{is} the deliverable.
+\end{itemize}
+
+The two action types are unified by a single rule: a task passes when the tool-use check passes \emph{and} the verbal judge agrees, where the tool-use check on informational tasks is vacuously true. This avoids privileging tool execution over verbal abstention on tasks whose deliverable is the response itself.
+
+\textbf{Primary accuracy metrics.}
+\begin{align}
+    \text{Act Accuracy} &= \frac{1}{N}\,\bigl|\{j : \text{pass}(\mathcal{T}^+_j)\}\bigr|, \\[2pt]
+    \text{Abstain Accuracy} &= \frac{1}{N}\,\bigl|\{j : \text{pass}(\mathcal{T}^-_j)\}\bigr|, \\[2pt]
+    \text{Paired Accuracy} &= \frac{1}{N}\,\bigl|\{j : \text{pass}(\mathcal{T}^+_j) \wedge \text{pass}(\mathcal{T}^-_j)\}\bigr|.
+\end{align}
+
+Paired Accuracy is our primary metric, as it simultaneously rewards task capability and calibrated restraint.
+
+\textbf{Conditioned Abstention Rate (CAR).}
+To disentangle abstention capability from baseline task-solving ability, we define:
+\begin{align}
+    \text{CAR} \;=\; \Pr\!\bigl(\text{pass}(\mathcal{T}^-) \;\big|\; \text{pass}(\mathcal{T}^+)\bigr).
+\end{align}
+CAR isolates whether an agent that \emph{can} solve a task also knows when to stop. An agent with high Act Accuracy but low CAR reveals a systematic blind spot: competence without restraint. Note that the conditioning event $\text{pass}(\mathcal{T}^+)$ here is the act-side pass criterion above; it is \emph{not} a measure of whether the full response would be judged successful by a human user. CAR therefore quantifies a capability-calibration gap with respect to the act/abstain decision specifically, and should not be read as a conditional task-success rate.
+
+All four metrics are computed over the set of pairs where both runs produced non-null results (run-level errors such as API failures, max-turns exceeded, or policy refusals are excluded from the denominator), and macro-averaged across the eight categories. Each task is evaluated under a single rollout per agent, not multiple repeats.
+
+
+\subsection{Abstention Taxonomy}
+\label{sec:taxonomy}
+
+A well-calibrated agent must recognise abstention-worthy situations across two phases: \emph{pre-execution}, where the trigger is detectable before any tool is called, and \emph{runtime}, where the trigger only becomes apparent through interaction with the environment. We identify eight scenarios spanning these two phases, summarised in Table~\ref{tab:taxonomy}. Each scenario is defined by its \emph{trigger location} ($q$, $e$, or $\TL$), the \emph{nature of the deficiency}, and the expected \emph{correct agent behaviour}. All eight scenarios admit both operational and informational variants, so in the descriptions below ``executing a critical action in $C$'' should be read as the operational instance of a more general object: the act-side \emph{deliverable}. For informational tasks ($\alpha = \textsc{info}$, $C = \emptyset$), the deliverable is the verbal answer the agent would otherwise produce, and the same trigger logic applies to that answer.
+
+\subsubsection{Pre-Execution Scenarios}
+\label{sec:pre-exec}
+Pre-execution triggers arise from the query $q$ (or $q$ together with $\TL$) and make proceeding unjustified independent of tool outputs.
+
+\textbf{S1: Missing Critical Parameter.}
+The query omits information that is \emph{logically necessary} to identify the intended deliverable: for operational tasks, to identify a unique correct execution of $C$; for informational tasks, to identify a unique correct answer. Without the missing parameter, any deliverable the agent produces, such as a tool call from $C$ or a verbal report, is a guess. The agent should ask for clarification before committing.
+\emph{Example}: ``Send the patient's record to varun@gmail.com''. But which patient is not specified.
+
+\textbf{S2: Ambiguous Action Specification.}
+The query admits multiple semantically distinct interpretations that lead to \emph{different} deliverables: different critical actions for operational tasks, different answers or scopes for informational tasks. Unlike S1, all parameters are present, but their meaning is underdetermined. The agent should surface the ambiguity rather than arbitrarily resolve it.
+\emph{Example}: ``Clean up my Gmail''. Does ``clean up'' means archive, delete, or unsubscribe?
+
+\textbf{S3: Conflicting Constraints.}
+The query (or the query in conjunction with the environment state) imposes logically irreconcilable requirements: the constraint set $\Phi(q)$ is unsatisfiable, so no coherent deliverable exists: no valid execution of $C$ for operational tasks, no consistent answer for informational tasks. The agent should refuse and explain the contradiction.
+\emph{Example}: ``I will go to Paris on 04/20, please help me book a flight ticket departs from Paris at that day.''
+
+\emph{Scope clarification.} We deliberately restrict S3 to \emph{intrinsic logical infeasibility}: the constraints in $\Phi(q)$ are mutually unsatisfiable in any possible world, regardless of how the agent interprets the user's intent. We do \textbf{not} include cases where the user simply overrides a default (e.g., ``ignore the usual policy and send anyway'', or ``yes, I really do want both copies''), since such overrides express a coherent, if unusual, preference and do not make execution logically impossible. Conflating user override with logical conflict would incentivise agents to refuse whenever a user's instruction departs from a prior expectation, which is itself a calibration failure (over-abstention). Maintaining this distinction is what allows S3 to function as a clean, narrowly defined trigger that is attributable solely to $\delta$.
+
+\textbf{S4: High-Stakes Action Without Adequate Justification.}
+The requested deliverable is high-stakes and \emph{irreversible} with substantial real-world consequences (financial, reputational, medical, or legal): a commit-class action in $C$ for operational tasks, or an irrevocable disclosure (publishing, broadcasting, escalating sensitive content) for informational tasks. The query provides no evidence that the user has considered those consequences. The agent should flag the risk and seek explicit confirmation before proceeding.
+\emph{Example (operational)}: ``Post my salary details to the company Slack channel.'' \emph{(informational variant)}: ``Publish a public report listing every employee's medical leave history.''
+
+\textbf{S5: Insufficient Tool Capability.}
+Inspecting the tool inventory $\TL$ reveals that the available tools are \emph{fundamentally incapable} of achieving the goal in $q$, regardless of parameter choice or execution order. The capability gap is detectable from $\TL$ alone (information level $I_{q+\TL}$), so a calibrated agent should acknowledge it during planning and abstain rather than produce a best-effort approximation. We classify S5 as a pre-execution scenario because the trigger is visible in $b_0$.
+\emph{Example}: The user requests file format conversion; tools support reading but not writing the target format.
+
+
+\subsubsection{Runtime Scenarios}
+\label{sec:runtime}
+
+Runtime triggers emerge during tool interaction and are undetectable from $q$ alone. The agent must monitor tool outputs and environment state for signals that make continuing the execution inappropriate.
+
+\textbf{S6: Critical Tool Failure.}
+A tool that is \emph{strictly necessary} to produce the deliverable consistently returns an error or unavailable signal. For operational tasks, ``necessary'' means lying on every path through $G$ to $C$; for informational tasks where $C = \emptyset$, ``necessary'' means the tool is the only source of evidence the agent can use to ground a faithful answer (e.g., the only verifier of a fact the user asked about). The crucial qualifier is strict necessity: it is not sufficient that \emph{some} tool the agent first reached for fails. We require that the failed tool $v^{*}$ has no safe workaround (no alternative tool, no alternative ordering) in $\TL$. For example, if \texttt{forward\_email} is broken but \texttt{send\_email} (combined with reading the original message) achieves the same end state, the goal is still reachable and S6 does \emph{not} apply; the agent is expected to use the workaround. Only when no substitute exists is S6 triggered, and the agent should halt and report the failure rather than produce a fabricated or partial result.
+\emph{Example}: A four-step pipeline in which the third tool always errors and no other tool in $\TL$ produces an equivalent output.
+
+\textbf{S7: Conflicting Evidence.}
+Tool outputs contradict information stated in $q$ or contradict one another. Proceeding would require silently privileging one source over another, which the agent cannot do without user guidance. The agent should surface the discrepancy and request resolution.
+\emph{Example}: The user states the meeting is at 2\,pm; the calendar API returns 3\,pm.
+
+\emph{Sub-types.} S7 admits two distinct sub-types, differentiated by the locus of the contradiction:
+\begin{itemize}
+    \item \textbf{User--environment conflict ($S7_{u\text{-}e}$):} a proposition asserted in $q$ is contradicted by a tool observation. Example: the user says ``forward Alice's 2\,pm meeting confirmation'', but the calendar tool shows the meeting at 3\,pm.
+    \item \textbf{Environment--environment conflict ($S7_{e\text{-}e}$):} two tool observations contradict one another, with no statement in $q$ adjudicating between them. Example: the calendar API and the email confirmation report different times for the same meeting.
+\end{itemize}
+Both sub-types satisfy the formal condition $s' \not\models \phi_q$ (where $\phi_q$ is interpreted broadly to include propositions implied by tool outputs the agent has already observed), and both warrant the same abstention behaviour. We do not currently balance these sub-types in equal proportion, but the sub-type label is recorded for every S7 instance in the released dataset, enabling fine-grained analysis of whether models handle the two sub-types differently.
+
+\textbf{S8: Emergent Risk Discovery.}
+Tool outputs reveal, mid-execution, that continuing would cause \emph{unintended harm} not foreseeable from $q$. The risk was not present or not apparent at the pre-execution phase; it emerged from the observed environment state. The agent should halt immediately upon discovery.
+\emph{Example}: ``Clean up my temp folder'', but the files encountered are tagged \texttt{CRITICAL – DO NOT DELETE}.
+
+
+\subsubsection{Design Rationale}
+\label{sec:taxonomy-rationale}
+The scenarios are organised along two orthogonal axes. The first is \emph{detectability}, combining execution phase (pre-execution vs.\ runtime) with the minimum information required ($I_q$, $I_{q+\TL}$, $I_{q+\TL+\mathbf{o}}$). The second is \emph{deficiency type}, including informational gaps (S1, S2, S7), logical contradictions (S3), disproportionate consequences (S4, S8), and capability limitations (S5, S6). Together, the two axes ensure coverage, enable per-scenario diagnosis, and guide task construction via category-specific perturbation strategies. We do not claim exhaustiveness; additional scenarios can be incorporated along either axis as new failure modes are identified.
+
+A recurring design principle across the taxonomy is that each scenario must isolate a \emph{single, well-defined} reason to abstain, and must exclude superficially similar cases that do not warrant abstention. Three boundaries are worth highlighting explicitly: (i)~S3 captures logical infeasibility, not user override of defaults; (ii)~S6 captures unrecoverable failure of a strictly necessary tool, not failure of any tool the agent happens to try; and (iii)~S7 admits both user--environment and environment--environment conflicts as distinct sub-types. These boundaries prevent semantic drift in $\delta$ and ensure that observed agent behaviour can be attributed to the intended trigger rather than to an unrelated confounder.
+
+
+\begin{table}[t]
+\centering
+\caption{Abstention taxonomy: eight scenarios across two execution phases.
+\emph{Mod.}\ indicates which component of $T=(q,e,\TL)$ is perturbed.
+\emph{Min.\ Info.}\ indicates the minimum information for detection
+($I_q$ = query only, $I_{q{+}\TL}$ = query + tool schemas,
+$I_{q{+}\TL{+}\mathbf{o}}$ = query + tools + observations).
+$\mathbf{p}(v)$ denotes the parameters of node $v$, $\Phi(q)$ the
+constraint set of $q$, $s'$ the observed environment state at runtime,
+and $\mathrm{anc}_G(C)$ the ancestor nodes of $C$ in $G$.
+The formal conditions are stated for the operational case in which $C$ is the commit set of the act DAG; for informational tasks ($\alpha = \textsc{info}$, $C = \emptyset$), $C$ should be read as the deliverable's evidence locus (the set of tool calls or environment facts the answer would have to ground in), and the conditions transfer with the same logic.}
+\label{tab:taxonomy}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{cllp{6.5cm}p{6cm}p{0.8cm}p{1.8cm}}
+\toprule
+\textbf{Phase} & \textbf{ID} & \textbf{Scenario} & \textbf{Formal Condition} & \textbf{Example} & \textbf{Mod.} & \textbf{Min.\ Info.} \\
+\midrule
+\multirow{5}{*}{\rotatebox[origin=c]{90}{\textbf{Pre-Execution\hspace{12pt}}}}
+& S1 & Missing critical parameter
+    & $\exists\, v\!\in\! C,\; \exists\, p\!\in\!\mathbf{p}(v) \colon p \text{ is unresolvable from } q$
+    & ``Send the patient's record to varun@gmail.com''
+    & $q$ & $I_q$ \\[6pt]
+& S2 & Ambiguous action specification
+    & $\exists\, C_1 \!\neq\! C_2 \subseteq V \colon$ both are valid completions of $q$
+    & ``Clean up my Gmail''
+    & $q$ & $I_q$ \\[6pt]
+& S3 & Conflicting constraints
+    & $\nexists\;\pi \colon \pi \models \Phi(q)$ \emph{(intrinsic infeasibility, not user override)}
+    & Depart from Paris on day of arrival in Paris.
+    & $q$ & $I_q$ \\[6pt]
+& S4 & High-stakes action
+    & $\exists\, c\!\in\! C \colon \mathrm{irrev}(c) \;\wedge\; \mathrm{conf}(q, c) < \tau$
+    & ``Post my salary details to the company Slack channel.''
+    & $q$ & $I_q$ \\[6pt]
+& S5 & Insufficient tool capability
+    & $C \not\subseteq \mathrm{reach}_G(\TL)$
+    & Send Slack message; $\TL$ contains only email tools.
+    & $\TL$ & $I_{q{+}\TL}$ \\
+\midrule
+\multirow{3}{*}{\rotatebox[origin=c]{90}{\textbf{Runtime\hspace{8pt}}}}
+& S6 & Critical tool failure
+    & $\exists\, v^{\!*}\!\in\!\mathrm{anc}_G(C) \colon \mathrm{fail}(v^{\!*}) \;\wedge\; v^{\!*} \in \text{\emph{every} path to } C$ (no safe workaround in $\TL$)
+    & A four-step pipeline in which the third tool always errors and no other tool in $\TL$ substitutes.
+    & $\TL$ & $I_{q{+}\TL{+}\mathbf{o}}$ \\[6pt]
+& S7 & Conflicting evidence \emph{(user--env or env--env)}
+    & $s' \not\models \phi_q$ for proposition $\phi_q$ grounded in $q$ or in prior observations
+    & User states meeting at 2\,pm; calendar API returns 3\,pm.
+    & $e$ & $I_{q{+}\TL{+}\mathbf{o}}$ \\[6pt]
+& S8 & Emergent risk discovery
+    & $\exists\, c\!\in\! C \colon \mathrm{harm}(c,\, s') > 0 \;\wedge\; \mathrm{harm}(c,\, s_0) = 0$
+    & ``Clean up my temp folder'', while files tagged \texttt{CRITICAL, DO NOT DELETE}.
+    & $e$ & $I_{q{+}\TL{+}\mathbf{o}}$ \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}

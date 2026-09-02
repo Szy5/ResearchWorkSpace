@@ -1,0 +1,180 @@
+\section{The ARMOR Framework}
+
+Building on our analysis, we introduce ARMOR (Anchor Rollout and Mixed Optimization for RL). 
+This framework replaces the passive KL penalty with an active stabilization mechanism comprising two components, each explicitly targeting a failure mode identified in Section~\ref{sec:kl}.
+
+\subsection{Anchor Rollout: Active Mode Retention}
+To address the mode-seeking nature of reverse KL, where the model tends to collapse by forgetting diverse solutions present in the reference, we propose \textbf{Anchor Rollout}.
+Instead of relying on loss penalties to implicitly retain modes, we \emph{actively} inject reference samples into the training batch.
+Specifically, for each query $x$, we construct a hybrid response group $G$ during rollout:
+\begin{equation}
+\begin{gathered}
+y_i \sim \pi_{\theta_{\text{old}}} (\cdot|x), \quad 1 \le i \le |G|-1,\\
+y_\text{anc} \sim \pi_{\text{ref}}(\cdot | x), \quad \text{s.t. } R(x, y_\text{anc}) = 1.
+\end{gathered}
+\end{equation}
+Here, the auxiliary response $y_\text{anc}$ serves as an ``anchor sample'' drawn from the reference policy $\pi_{\text{ref}}$ and is guaranteed to be correct\footnote{This positive-only anchor is critical, as including negative samples drove the model \textit{away} from the reference policy, which will lead to increased instability \citep{Deepseek-V3.2}.} ($R=1$) through rejection sampling (Algo.~\ref{alg:armor}, Line~\ref{line:reject}).
+By including this anchor in every response group, we provide an explicit signal preventing the policy $\pi_\theta$ from drifting away from known correct solutions. 
+As shown in Fig.~\ref{fig:teaser_perf}, \textbf{this simple intervention effectively stabilizes training} where standard KL fails.
+
+From an implementation perspective, our continual training setting initializes $\pi_\mathrm{ref}$ from the best checkpoint of $\pi_\theta$, ensuring identical model architectures.
+This design streamlines deployment:
+As outlined in Algo.~\ref{alg:armor} (Line~\ref{line:rollout}), we can synchronize the reference parameters $\theta_\text{ref}$ to the inference engine alongside standard updates.
+This enables hybrid sampling without the computational overhead of switching between distinct generation engines.
+
+{
+\renewcommand{\algorithmicthen}{}
+\begin{algorithm}[t]
+\begin{algorithmic}[1]
+\STATE \textbf{Input:} Initial parameters $\theta^0, \theta_\text{ref} \leftarrow \theta^0$, Dataset $\mathcal{D}$, hyperparameters $B, \mu, \alpha, \tau$.
+
+\FOR{step $t = 1, \dots, T$}
+    \STATE \textcolor{gray}{// Phase 1: Anchor Rollout}
+    \STATE Initialize batch $\mathcal{B} \leftarrow \emptyset$
+    \WHILE{$|\mathcal{B}| < B$}
+        \STATE Sample query batch $\mathcal X \sim \mathcal{D}$
+
+        \STATE \textcolor{gray}{// Shared engine by switching parameter}
+        \STATE Load $\theta^{t-1}$, sample on-policy groups $\mathcal{Y}_{\text{on}}$
+        \STATE Load $\theta_\text{ref}$, sample off-policy groups $\mathcal{Y}_{\text{off}}$\label{line:rollout}
+        
+        \STATE Compute rewards $\mathcal R_{\text{on}}$ and $\mathcal R_{\text{off}}$
+
+        \STATE \textcolor{gray}{// Rejection sampling}\label{line:reject}
+        \FOR{$x \in \mathcal X$}
+        \IF{$\text{Var}(\mathcal R_{\text{on}|x}) > 0, \max(\mathcal R_{\text{off}|x})=1$}
+            \STATE Let $y_{\text{anc}} = \arg\max_{y\in \mathcal{Y}_{\text{off}|x}} R(x, y)$
+            \STATE $G \leftarrow \mathcal{Y}_{\text{on}|x} \cup \{y_{\text{anc}}\}$
+            \STATE $\mathcal{B} \leftarrow \mathcal{B} \cup \{(x,G)\}$ 
+        \ENDIF
+        \ENDFOR
+    \ENDWHILE
+    
+    \STATE \textcolor{gray}{// Phase 2: Mixed Optimization}
+    \FOR{iteration = $1,\dots,\mu$}
+    \STATE Update $\theta^t$ by maximizing $\mathcal{J}(\theta)$, using the mixed IS ratio $r_{i,t}^\text{mix}$ (Eq.~\ref{eqn:mixed_is})
+    \ENDFOR
+    
+    \STATE \textcolor{gray}{// (Optional) Reference Reset}\label{line:ref}
+    \IF{$t \mod \tau = 0$}
+        \STATE $\theta_\text{ref} \leftarrow \theta^t$
+    \ENDIF
+    % \STATE $\theta_\text{ref} \leftarrow \theta^t$ \textbf{if} $t \mod \tau = 0$ \quad\textcolor{gray}{// Reference Reset} 
+\ENDFOR
+\end{algorithmic}
+\caption{ARMOR Training Framework}\label{alg:armor}
+\end{algorithm}
+}
+
+\subsection{Mixed Optimization: Performance Ceiling}
+While Anchor Rollout guarantees stability, our objective extends beyond collapse prevention to maximizing the model's asymptotic performance.
+To achieve this, we first revisit the theoretical implications of our rollout strategy, observing that by injecting anchor samples, Anchor Rollout implicitly constructs \textbf{mixture policies} regularized by the reference:
+\begin{equation}
+\begin{gathered}
+\pi^{\text{mix}}_\theta = \alpha\pi_\theta + (1-\alpha)\pi_{\text{ref}},\\
+\pi^{\text{mix}}_{\theta_\text{old}} = \alpha\pi_{\theta_\text{old}} + (1-\alpha)\pi_{\text{ref}}
+\end{gathered}
+\end{equation}
+where $\alpha \in (0, 1)$ is the mixing coefficient.
+Since the data is generated from this mixture, the \textbf{principled optimization objective} should align with this structure.
+Therefore, rather than optimizing $\pi_\theta$ in isolation, we reformulate the objective to optimize the mixture policy itself.
+
+We implement this by substituting the standard probability terms in the policy gradient (e.g., DAPO) with their mixed variants, yielding the mixed Importance Sampling (IS) ratio:
+\begin{equation}\label{eqn:mixed_is}
+r_{i,t}^\text{mix}(\theta) = \frac{\alpha\pi_\theta(\cdot) + (1-\alpha)\pi_{\text{ref}}(\cdot)}{\alpha\pi_{\theta_{\text{old}}}(\cdot) + (1-\alpha)\pi_{\text{ref}}(\cdot)}.
+\end{equation}
+% \begin{equation}\label{eqn:mixed_is}
+% r_{i,t}^\text{mix}(\theta) = \frac{\alpha\pi_\theta(y_{i,t}|x,y_{i,<t}) + (1-\alpha)\pi_{\text{ref}}(y_{i,t}|x,y_{i,<t})}{\alpha\pi_{\theta_{\text{old}}}(y_{i,t}|x,y_{i,<t}) + (1-\alpha)\pi_{\text{ref}}(y_{i,t}|x,y_{i,<t})}.
+% \end{equation}
+This formulation explicitly accounts for the reference policy's contribution to the data distribution.
+Crucially, since $\pi_\text{ref}$ is fixed within each step, any performance gain achieved on the mixture target $\pi^{\text{mix}}_\theta$ strictly translates to improvements in the target policy $\pi_\theta$:
+\begin{align*}
+&\quad\mathbb E_{y\sim\pi_{\theta}^\text{mix}(\cdot|x), y'\sim\pi_{\theta_\text{old}}^\text{mix}(\cdot|x)}
+[R(x,y) - R(x,y')] > 0 \\
+&\Rightarrow \mathbb E_{y\sim\pi_{\theta}(\cdot|x), y'\sim\pi_{\theta_\text{old}(\cdot|x)}}
+[R(x,y) - R(x,y')] > 0.
+\end{align*}
+
+Furthermore, we follow the iterative updating paradigm \citep{Deepseek-R1} by periodically resetting $\pi_\text{ref}$ to the current policy state (Algo.~\ref{alg:armor}, Line~\ref{line:ref}), avoiding saturation due to a fixed anchor.
+
+% Empirically, combining Anchor Rollout with Mixed Optimization, which optimizes the mixture objective that takes both models into account, yields a significantly higher performance ceiling (Fig.~\ref{fig:teaser_perf}). 
+% We term this synergistic framework \textbf{ARMOR}.
+
+We designate this holistic approach---integrating the stabilization of Anchor Rollout with Mixed Optimization that calibrates the IS ratio---as \textbf{ARMOR}. 
+As demonstrated in Fig.~\ref{fig:teaser_perf}, this combination yields a \textbf{significantly higher performance ceiling}.
+
+\subsection{Explanation: Adaptive Trust Region}\label{sec:theory}
+To further elucidate how Mixed Optimization enables superior asymptotic performance, we analyze its impact on policy update dynamics through the lens of the trust-region.
+
+PPO variants (\eg GRPO, DAPO) clip the positive/negative sample's IS ratio into fixed intervals $[0, 1+\epsilon]$ or $[1-\epsilon,\infty)$ to enforce a trust region $\pi_\theta \approx \pi_{\theta_\text{old}}$. 
+However, substituting our mixed ratio yields a flexible boundary.
+Considering the clipping boundaries $r_{i,t}^\text{mix}(\theta) = 1 \pm \epsilon$, we have:
+$$
+\frac{\alpha\cdot\pi_\theta + (1-\alpha)\cdot\pi_{\text{ref}}}{\alpha\cdot\pi_{\theta_{\text{old}}} + (1-\alpha)\cdot\pi_{\text{ref}}} = 1 \pm \epsilon.
+$$
+Solving for the current policy $\pi_\theta$, we derive the \textbf{effective trust region boundary} \citep{TRPO,PPO}:
+\begin{equation}\label{eqn:clip_expand}
+\pi_\theta = \underbrace{(1 \pm \epsilon)
+\cdot\pi_{\theta_{\text{old}}}}_{\text{Standard Boundary}} \pm \underbrace{\epsilon (1-\alpha)/{\alpha}\cdot\pi_{\text{ref}}}_{\text{Expansion Term }(\ge 0)}.
+\end{equation}
+This derivation reveals a critical mechanism: In contrast to the standard clip boundary $\pi_\theta =(1 \pm \epsilon)\cdot\pi_{\theta_{\text{old}}}$, ARMOR \textbf{dynamically expands the clipping range} proportional to the reference probability $\pi_{\text{ref}}$.
+This derivation reveals that ARMOR dynamically modulates the update magnitude based on the reference prior, enabling a dual mechanism for performance breakthroughs:
+
+\textit{1) Reinforcing verified correctness:} For positive updates ($1+\epsilon$), the higher upper bound allows larger steps towards correct actions supported by the reference. 
+This is crucial for effectively learning from \emph{off-policy} correct samples, ensuring they are not unfairly clipped due to distribution shift.
+
+\textit{2) Rectifying reference biases:} For negative updates ($1-\epsilon$), the lowered boundary permits stronger penalization of incorrect actions, even if they are highly probable in $\pi_{\text{ref}}$. 
+This mechanism is key to \emph{surpassing} the reference capability, as it allows the model to decisively correct the reference's inherent biases rather than blindly imitating them.
+
+\input{tables/main}
+
+\begin{paperbox}
+ARMOR resolves the stability-exploration dilemma by decoupling the constraints: 
+\textbf{Anchor Rollout} prevents \textbf{instability} by actively retaining correct reference solutions, while \textbf{Mixed Optimization} avoids \textbf{stagnation} by constructing an adaptive trust region. 
+Empirically, ARMOR secures continuous reasoning improvements without the fragility of standard KL regularization.
+\end{paperbox}
+
+% While Anchor Rollout ensures stability, addressing the stagnation caused by uniform KL penalties requires enabling safe exploration.
+% We achieve this by reformulating the optimization objective, observing that our anchor rollout process actually constructs \textbf{mixture policies} regularized by the reference policy:
+% \begin{equation}
+% \begin{gathered}
+% \pi^{\text{mix}}_\theta = \alpha\pi_\theta + (1-\alpha)\pi_{\text{ref}},\\
+% \pi^{\text{mix}}_{\theta_\text{old}} = \alpha\pi_{\theta_\text{old}} + (1-\alpha)\pi_{\text{ref}}
+% \end{gathered}
+% \end{equation}
+% where $\alpha \in (0, 1)$ is the mixing coefficient.
+% During optimization, we integrate this mixture into the loss by simply replacing $\pi_\theta$ and $\pi_{\theta_\text{old}}$ with their mixed variants.
+% Consequently, the Importance Sampling (IS) term in the policy gradient framework (e.g., DAPO) becomes:
+% % We integrate this mixture into the policy gradient framework (e.g., DAPO) by simply replacing the standard Importance Sampling (IS) ratio with a mixed formulation:
+% \begin{equation}\label{eqn:mixed_is}
+% r_{i,t}^\text{mix}(\theta) = \frac{\alpha\pi_\theta(y_{i,t}|x,y_{i,<t}) + (1-\alpha)\pi_{\text{ref}}(y_{i,t}|x,y_{i,<t})}{\alpha\pi_{\theta_{\text{old}}}(y_{i,t}|x,y_{i,<t}) + (1-\alpha)\pi_{\text{ref}}(y_{i,t}|x,y_{i,<t})}.
+% \end{equation}
+% Intuitively, optimizing this mixed objective can explicitly account for the anchor distribution. 
+% Since $\pi_\text{ref}$ remains fixed during the update step, any performance gain in the mixture target $\pi^{\text{mix}}_\theta$ strictly translates to improvements in the ultimate target policy $\pi_\theta$:
+% \begin{align*}
+% &\quad\mathbb E_{y\sim\pi_{\theta}^\text{mix}(\cdot|x), y'\sim\pi_{\theta_\text{old}}^\text{mix}(\cdot|x)}
+% [R(x,y) - R(x,y')] > 0 \\
+% &\iff \mathbb E_{y\sim\pi_{\theta}(\cdot|x), y'\sim\pi_{\theta_\text{old}(\cdot|x)}}
+% [R(x,y) - R(x,y')] > 0.
+% \end{align*}
+% Furthermore, we follow the iterative updating paradigm \citep{Deepseek-R1} by periodically resetting $\pi_\text{ref}$ to the current policy state (Algo.~\ref{alg:armor}, Line~\ref{line:ref}) to prevent saturation due to a fixed anchor.
+% As shown in Fig.~\ref{fig:teaser_perf}, the combination of anchor rollout and mixed optimization, \ie ARMOR, \textbf{further pushes the model's performance ceiling beyond simple stabilization}, effectively utilizing signals from both the exploration policy and the anchor.
+
+% This derivation reveals that ARMOR modulates the update magnitude based on the reference prior $\pi_{\text{ref}}$, enabling a dual mechanism to break performance bottlenecks:
+% \textit{(1) Reinforcing Consensus:} For positive updates (upper bound), the expanded limit allows larger steps on correct actions supported by the reference. This amplifies the consensus on correct reasoning, accelerating convergence on verified solutions.
+% \textit{(2) Surpassing the Reference:} Crucially, for negative updates (lower bound), the boundary is lowered further. This enables the model to apply stronger penalties to incorrect actions even if they are favored by the reference, allowing $\pi_\theta$ to correct the reference's inherent errors rather than blindly imitating them.
+% Unlike a uniformly wider clip, this structure-aware expansion ensures the model builds upon the reference's strengths while actively unlearning its weaknesses.
+
+% This derivation reveals that ARMOR modulates the update magnitude bi-directionally based on the reference prior $\pi_{\text{ref}}$, leading to two critical effects:
+% \begin{itemize}
+%     \item \textbf{Amplified Learning for Correctness (Upper Bound):} When the update is positive ($1+\epsilon$), the expansion term increases the upper limit. This allows the policy to take larger update steps towards verified correct solutions that are supported by the reference, effectively accelerating convergence.
+%     \item \textbf{Aggressive Correction of Reference Errors (Lower Bound):} Conversely, when the update is negative ($1-\epsilon$), the boundary is lowered further. This enables the model to apply a stronger penalty to incorrect actions—even if they are highly probable in $\pi_{\text{ref}}$—thereby effectively bypassing the inherent mistakes or biases of the reference policy.
+% \end{itemize}
+% While a uniformly wider clip range could risk collapse, this adaptive mechanism ensures that large updates are structure-aware: it reinforces consensus on correct reasoning while aggressively penalizing the reference's ``blind spots''.
+
+
+% this expansion is spatially selective:
+% It relaxes the constraint specifically in regions where $\pi_{\text{ref}}$ is high, \ie regions grounded by the reference policy.
+% This allows ARMOR to \textbf{safely incorporate larger updates} towards correct solutions while maintaining conservative elsewhere, effectively bypassing the stagnation often observed with rigid KL penalties (Sec.~\ref{sec:kl}).
+
+% This allows the expanded boundary in ARMOR to \textbf{safely incorporate larger update ranges,} which empirically drives the model toward a higher performance ceiling, avoiding the stagnation observed with standard KL penalties (Sec.~\ref{sec:kl}).

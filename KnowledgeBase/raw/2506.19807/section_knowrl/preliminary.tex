@@ -1,0 +1,36 @@
+\section{Preliminary}
+
+In this paper, we chose to first use supervised fine-tuning for cold-start training of slow thinking models and then use the Grouped Relative Policy Optimization \citep[GRPO;][]{shao2024deepseekmath}) algorithm for reinforcement learning training. We will introduce SFT and reinforcement learning algorithms for language model fine-tuning.
+
+SFT is a method for improving the ability of a model to follow instructions and adapt to specific downstream tasks by having the model parameters fit a high-quality dataset.
+SFT aims to minimize the negative log-likelihood loss to maximize the conditional probability \( P_{\theta}(y|x) \) of generating the target sequence \( y \) given the input \( x \). For the entire dataset \( D \), the loss function \( L_{SFT} \) of SFT can be expressed as:
+\begin{equation}
+L_{SFT}(\theta) = -\sum_{(x,y) \in D} \log P_{\theta}(y|x).
+\end{equation}
+As \( L_{SFT} \) decreases continuously, the probability of the model generating the expected output given the input gradually increases. Using SFT as a cold-start training before reinforcement learning training can speed up the convergence of the reward curve during reinforcement learning training.
+
+GRPO is a highly efficient reinforcement learning method that replaces traditional value network-based advantage estimation with a unique group relative reward mechanism. GRPO removes the value network found in traditional Proximal Policy Optimization \citep[PPO;][]{schulman2017proximal}, retaining only the policy network. This, to a certain extent, reduces computational and memory requirements.
+
+The group relative reward mechanism in GRPO refers to sampling multiple candidate outputs (or actions) from the current prompt (or state) to form a "response group" (or action group). Then, by normalizing the rewards of the outputs within the group, a relative advantage value is obtained, thereby replacing traditional absolute advantage estimation. The GRPO objective function is constructed from two main components per timestep $t$.
+First, the PPO-style clipped surrogate objective is defined as:
+\begin{equation} \label{eq:grpo_clip}
+L^{\text{CLIP}}_t(\theta) = \min(r_t(\theta)A_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)A_t).
+\end{equation}
+Second, the gradient regularization term introduced by GRPO is:
+\begin{equation} \label{eq:grpo_reg}
+L^{\text{REG}}_t(\theta) = \lambda \|\nabla_\theta r_t(\theta)\|^2.
+\end{equation}
+The overall GRPO objective function, $L^{\text{GRPO}}(\theta)$, is then the expectation over timesteps $t$ of the difference between these two components:
+\begin{equation} \label{eq:grpo_objective_final}
+L^{\text{GRPO}}(\theta) = \mathbb{E}_t [L^{\text{CLIP}}_t(\theta) - L^{\text{REG}}_t(\theta)].
+\end{equation}
+
+The GRPO objective function, $L^{\text{GRPO}}(\theta)$ as defined in Equation~\eqref{eq:grpo_objective_final}, aims to improve the policy by optimizing the policy parameters $\theta$. It is an expectation over timesteps $t$.
+The first component for each timestep, $L^{\text{CLIP}}_t(\theta)$ given by Equation~\eqref{eq:grpo_clip}, is the classic clipped surrogate objective from PPO. Within this term, $r_t(\theta)$ is the policy probability ratio, specifically $\frac{\pi_\theta(a_t|s_t)}{\pi_{\text{old}}(a_t|s_t)}$, which compares the probability of taking action $a_t$ in state $s_t$ under the current policy $\pi_\theta$ (determined by parameters $\theta$) versus the old policy $\pi_{\text{old}}$ (used to collect the data). $A_t$ represents the advantage function, which in GRPO specifically refers to the relative advantage value calculated via the group relative reward mechanism, quantifying how good the current action is. The $\text{clip}$ function constrains $r_t(\theta)$ to the range $[1-\epsilon, 1+\epsilon]$, where $\epsilon$ is a small hyperparameter used to limit the magnitude of policy updates, preventing excessively large updates that could destabilize training.
+The second component for each timestep, $L^{\text{REG}}_t(\theta)$ from Equation~\eqref{eq:grpo_reg}, is the gradient regularization term introduced by GRPO. Here, $\nabla_\theta r_t(\theta)$ denotes the gradient of the policy probability ratio $r_t(\theta)$ with respect to the policy parameters $\theta$, and $\lambda$ is a regularization coefficient. This term, $L^{\text{REG}}_t(\theta)$, penalizes the L2 norm (squared) of the gradient of the policy probability ratio, further constraining the magnitude of policy updates. This helps prevent overly rapid policy changes and ensuing instability, which is particularly important for GRPO as it operates without the assistance of a value network. The final objective $L^{\text{GRPO}}(\theta)$ then combines these by taking the expectation of $L^{\text{CLIP}}_t(\theta) - L^{\text{REG}}_t(\theta)$.
+
+
+
+
+
+

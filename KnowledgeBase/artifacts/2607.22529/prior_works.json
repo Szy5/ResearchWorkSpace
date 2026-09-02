@@ -1,0 +1,37 @@
+{
+  "prior_works": [
+    {
+      "title": "Self-Instruct: Aligning Language Models with Self-Generated Instructions",
+      "authors": "Yizhong Wang, Yeganeh Kordi, Swaroop Mishra, Alisa Liu, Noah A. Smith, Daniel Khashabi, Hannaneh Hajishirzi",
+      "year": 2022,
+      "arxiv_id": "https://arxiv.org/abs/2212.10560",
+      "role": "Gap Identification",
+      "relationship_sentence": "该工作展示了通过模型自我生成任务并用被动过滤（格式校验或少量投票）筛选数据的可行性，但也暴露出“被动后验过滤无法主动引导生成器”的缺陷，正是 Skill-SP 试图通过主动的技能接口来弥补的核心问题。"
+    },
+    {
+      "title": "API-Bank: A Comprehensive Benchmark for Tool-Augmented LLMs",
+      "authors": "Minghao Li, Yingxiu Zhao, Bowen Yu, Feifan Song, Hangyu Li, Haiyang Yu, Zhoujun Li, Fei Huang, Yongbin Li",
+      "year": 2023,
+      "arxiv_id": "2304.08244",
+      "role": "Foundation",
+      "relationship_sentence": "作为对可验证工具调用任务的规格化基准，\"API-Bank\" 提供了基于 schema 的验证与格式化检查，Skill-SP 在工具调用子任务中直接沿用了这种可执行的验证接口作为技能执行与评分的基础。"
+    },
+    {
+      "title": "Absolute Zero: Reinforced Self-play Reasoning with Zero Data",
+      "authors": "Andrew Zhao, Yiran Wu, Yang Yue, Tong Wu, Quentin Xu, Yang Yue, Matthieu Lin, Shenzhi Wang, Qingyun Wu, Zilong Zheng, Gao Huang",
+      "year": 2026,
+      "arxiv_id": "2505.03335",
+      "role": "Baseline",
+      "relationship_sentence": "该类基于环境或执行器的自我对弈系统以精确外部验证为核心，但也演示了“可验证性→任务分布窄化”的权衡，Skill-SP 针对这一基线提出以技能路由维持验证性的同时扩展任务多样性的替代方案。"
+    },
+    {
+      "title": "SPIRAL: Self-Play on Zero-Sum Games Incentivizes Reasoning via Multi-Agent Multi-Turn Reinforcement Learning",
+      "authors": "Bo Liu, Leon Guertler, Simon Yu, Zichen Liu, Penghui Qi, Daniel Balcells, Mickel Liu, Cheston Tan, Weiyan Shi, Min Lin, Wee Sun Lee, Natasha Jaques",
+      "year": 2025,
+      "arxiv_id": "2506.24119",
+      "role": "Inspiration",
+      "relationship_sentence": "SPIRAL 通过在受控仿真环境中进行多代理自玩来维持严格验证与深度执行的质量，这一“仿真+自玩”的成功直接启发了 Skill-SP 将验证性的深度执行以模块化技能形式封装并在训练环中反复利用。"
+    }
+  ],
+  "synthesis_narrative": "几篇关键前作在技术细节上为后续方法奠定了明确基础：\"Self-Instruct\" 揭示了自我生成 + 被动过滤管道在规模化自演化时易陷入质量退化的弱点；Shumailov 等对“synthetic data collapse”的分析进一步说明了仅靠后验筛查无法从根本上防止训练回路被误导；与此相对，像 \"Absolute Zero\" 与 \"SPIRAL\" 的研究则展示了把验证锚定在可执行环境或模拟器中能够得到高保真反馈，但代价是任务分布被环境边界束缚；在工具调用方向，\"API-Bank\" 提供了基于 schema 的可执行验证范式，证明了可执行接口在评分与训练中的价值；而 \"Introducing Agent\" 系统化了“skill”这一可检索、可执行的程序化单元，给出将知识封装成模块以供路由和复用的明确设计。综观这些工作，可以清晰看到一个未被充分解决的机会：如何在保持严格可验证执行（以防训练噪声累积）的同时，不因外部环境或模板束缚而丧失任务多样性。基于上述洞见，Skill-SP 自然提出把“技能”提升为训练时的主动接口：用技能为提议器预先注入结构化约束以提高生成质量，同时把技能自身作为可执行的验证器与记忆单元在提议器、解算器和控制器之间共同进化，从而在验证可靠性与开放式探索之间架起一座可持续的桥梁。"
+}

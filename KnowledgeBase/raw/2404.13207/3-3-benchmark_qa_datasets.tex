@@ -1,0 +1,40 @@
+
+\subsection{Retrieval Tasks on Semi-structured Knowledge Bases}
+\label{sec:star}
+Our retrieval benchmark (Table~\ref{tab:benchmark_stats}) consists of three novel retrieval-based question-answering datasets, each comprising synthesized train/val/test sets with $9$k to $14$k queries in total and a high-quality human-generate query set.
+% Specifically, the task is to retrieve items  over the SKBs given any input queries. 
+The queries synthesize relational and textual knowledge, mirroring real-world queries in terms of natural-sounding property and flexible formats.
+
+% Our retrieval benchmark, detailed in Table~\ref{tab:benchmark_stats}, comprises between $9$k to $14$k queries per dataset. Below, we outline the task on each dataset:
+
+% Each query may have single answer or multiple answers, formulated as a subset of entities \revision{in the knowledge graph,}
+% \jure{This is wrong. Entities are in the knowlede graph, Knowledge Base contains documents as well but those are not answers}
+% which requires the model to accurately identify the ground truth entities out of potentially millions in response to each query.
+% In Table~\ref{tab:benchmark_examples}, we demonstrate example queries from these benchmarks. 
+\xhdr{\amazont} 
+% This dataset comprises 9,100 synthesized customer-focused queries \hw{along with 81 human-generated queries for additional evaluation}. 
+The task aims at product recommendation, with a notable 68\% of the synthesized queries yielding more than one ground truth answer. The dataset prioritizes customer-oriented criteria, highlighting textual elements such as product quality, functionality, and style. Moreover, it incorporate single-hop relational aspects (Appendix~\ref{app:amazon}) into the queries, including brand, category, and product connections (\eg complementary or substitute items). The queries are framed in conversation-like formats, enriching the context and enhancing the dataset's relevance to real-world scenarios.
+
+
+% true positive: 86.6\%
+% true negative: 96.7\%
+\xhdr{\magt} 
+% This dataset comprises 13,323 synthesized \hw{and 84 human-generated queries targeting at academic paper search.} 
+Beyond the single-hop relational requirements in \amazont, \magh emphasizes the fusion between the textual requirements with multi-hop queries for precise academic paper search. For example, ``Are there any papers from King's College London'' highlights the metapath (\texttt{institution $\rightarrow$ author $\rightarrow$ paper}) on the relational structure. 
+We designed three single-hop and four multi-hop relational query templates (Appendix~\ref{app:mag}). The textual aspects focus on the paper's topic, methodology, and contribution \etc
+% true positive: 98.9\%
+
+\xhdr{\primekgt} 
+% This dataset, comprising 11,204 synthesized queries and \hw{109 human-generated queries across all ten entity types,} incorporates single-hop and multi-hop relational information similar to \magt. 
+% For synthesized queries, we developed 28 multi-hop query templates, detailed in Appendix~\ref{app:prime}, to cover various relation types and ensure their practical relevance. 
+% For instance, the query ``What is the drug that targets the genes or proteins expressed in <anatomy>?'' serves applications in precision medicine and pharmacogenomics, 
+% aiding researchers and healthcare professionals in identifying drugs that act on genes or proteins associated with specific anatomical areas and enabling more targeted treatments. 
+The task is to answer complex biomedicine inquiries. 
+For synthesized queries, we developed 28 multi-hop query templates (Appendix~\ref{app:prime}) to cover various relation types and ensure their practical relevance. 
+For example, the template ``What is the drug that targets genes or proteins in <anatomy>?'' aids precision medicine by identifying treatments targeted to specific anatomical areas.
+For \texttt{drug, disease, gene/protein}, and \texttt{pathway} entities, the queries are a hybrid of relational and textual requirements. 
+For entities such as \texttt{effect/phenotype}, the queries rely solely on relational data due to limited textual information. 
+We exhibit three distinct user roles – medical scientist, doctor, and patient – for generating queries about drug and disease, which diversify the language to comprehensively evaluate the retrieval systems.
+
+
+\input{tables/benchmark_stats}

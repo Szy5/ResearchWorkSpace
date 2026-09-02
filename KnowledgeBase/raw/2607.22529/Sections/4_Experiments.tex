@@ -1,0 +1,138 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Experimental Setup}
+\label{sec:experimental_setup}
+
+\paragraph{Task Families.} 
+We instantiate the framework on two domains. The first is \emph{tool-call prediction}, evaluating the solver's schema adherence and tool selection. We benchmark on API-Bank Levels 1--3~\citep{li2023api} and four BFCL categories~\citep{patil2025berkeley}: \textit{bfcl\_simple\_javascript}, \textit{bfcl\_simple\_python}, \textit{bfcl\_simple\_java}, and \textit{bfcl\_live\_simple}. The second is \emph{logical reasoning}, evaluating the solver's ability to satisfy complex constraints and deduce unique solutions. We benchmark on ZebraLogic~\citep{lin2025zebralogic}, which formalizes tasks as Zebra-style grid puzzles spanning four complexity scales determined by their search space size.
+
+\paragraph{Backbones.}
+We evaluate five backbones spanning 3B to 14B parameters: Qwen3-4B-Instruct, Qwen3-8B~\citep{yang2025qwen3}, Ministral-3-8B-Instruct, Ministral-3-14B-Instruct~\citep{liu2026ministral}, and Granite-4.1-3B~\citep{granite2026}. For each backbone, the identical checkpoint initializes both the proposer and the solver. Unless otherwise stated, skill refinement and induction rely solely on the backbone itself, without any external stronger teacher.
+
+\paragraph{Baselines \& Evaluation Strategy.}
+To isolate the end-to-end impact of our framework, the main results (Section~\ref{sec:main_results}) evaluate the final solvers trained via Skill-SP against both the initial \emph{Base} checkpoints and an \emph{Unguided SP} baseline, which performs standard self-play relying solely on passive post-hoc filtering without proactive skill guidance. Crucially, because unguided generation structurally collapses on complex tasks like synthesizing valid logical puzzles, Unguided SP fails to bootstrap a viable training loop in the reasoning domain and is therefore evaluated exclusively on tool calling. Further mechanistic diagnostics and comparisons against other controlled variants are detailed in the ablation study (Section~\ref{sec:ablations}).
+
+\paragraph{Training Protocol \& Implementation Details.}
+All experiments run for five iterations, optimizing policies via GRPO (4 proposer and 5 solver rollouts). The per-iteration training pool contains $M=8{,}000$ tasks ($\alpha=0.5$) via $K=10$ probes for tool calling, and $M=1{,}920$ tasks via a deterministic checker for reasoning. The proposer and solver undergo 5 and 15 update steps respectively for tool calling (3 and 10 for reasoning). Solver rewards target exact correctness and format compliance; the proposer receives a $-1$ penalty for structural parsing failures. Final benchmark results are reported as avg@8. The full hyperparameters, initial library $\gS^{(0)}$, and formal algorithm are detailed in Appendices~\ref{app:training_details}, \ref{app:initial_skills}, and \ref{app:osp_pseudocode}, respectively.
+
+
+
+\input{tables/tool_call_main}
+
+
+
+\subsection{Main Results}
+\label{sec:main_results}
+
+
+\paragraph{Tool-call prediction.}
+Table~\ref{tab:tool_call_main} reports the end-to-end performance on tool calling. Skill-SP universally improves all five backbones across diverse tool-calling scenarios. For competent base models like Qwen and Granite, the framework yields steady average enhancements of 2.8 to 6.5 absolute points. Crucially, Unguided SP not only yields consistently smaller overall gains, but also behaves inconsistently, occasionally causing capability degradation on specific subtasks. In contrast, Skill-SP maintains strictly positive and superior gains across the board. More strikingly, Skill-SP rescues initially misaligned models from severe zero-shot schema adherence failures. On Ministral-3-8B, for example, it drives a massive 42.9-point absolute gain where Unguided SP remains completely stagnant. This stagnation occurs because the base model completely fails to synthesize valid tasks independently, starving the unguided loop of meaningful learning signals. These results confirm that proactive skill orchestration translates reliably into generalized tool-use capabilities.
+
+
+
+\paragraph{Logical reasoning.}
+Table~\ref{tab:logical_main} confirms that Skill-SP successfully transfers to rigorous constraint-satisfaction reasoning, universally improving overall accuracy across all five backbones. While competent models like Qwen3-4B-Instruct show steady enhancements across all task scales, the framework drives striking turnarounds for logically misaligned models such as Ministral-3-14B, delivering remarkable grid-level gains of up to 12.0 points overall and exceeding 35 points on smaller puzzles. Naturally, progress on the extreme Large and X-Large scales remains limited for initially weak models, as pure self-play requires a minimal capability threshold to bootstrap valid learning signals. This confirms that guaranteeing the structural accuracy and broad diversity of synthesized puzzles robustly translates into advanced logical deduction.
+
+\input{tables/logical_main}
+
+
+
+\subsection{Ablations}
+\label{sec:ablations}
+
+To isolate the contribution of each design choice, we evaluate controlled variants on Qwen3-4B-Instruct shown in Figure~\ref{fig:toolcall_data_efficiency} and Tables~\ref{tab:ablations} and \ref{tab:frozen_component_ablations_best}. The results systematically validate four core design dimensions:
+
+
+
+\begin{wrapfigure}{r}{0.67\columnwidth}
+    \vspace{-1.5em}
+    \centering
+    \begin{minipage}[t]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/fig_toolcall_data_efficiency.pdf}\\[-0.5em]
+        {(a) Learning trajectory.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/fig_skill_only_api_bank.pdf}\\[-0.5em]
+        {(b) Skill-only ablation.}
+    \end{minipage}
+    \vspace{-0.6em}
+    \caption{\textbf{Tool-call ablations.} Skill-SP improves more steadily than Unguided SP, while skill-only data underperforms the mixed pool.}
+    \label{fig:toolcall_data_efficiency}
+    \vspace{-1.5em}
+\end{wrapfigure}
+
+
+\textbf{Naive self-play.} The \emph{Unguided SP} variant removes skill orchestration entirely. As depicted in Figure~\ref{fig:toolcall_data_efficiency}a, this approach plateaus early during training and yields a severe overall performance drop of 2.6 absolute points. This confirms that standard self-play without structural guidance is insufficient for complex tasks.
+
+
+
+\textbf{Over-specialization.} Generating tasks exclusively from the skill library via the \emph{Skill-only pool} degrades generalized evaluation performance on API-Bank (Figure~\ref{fig:toolcall_data_efficiency}b). This validates our dual-stream architecture: mixing open-ended exploration is crucial to preserve task diversity and prevent mode collapse.
+
+\textbf{Static skill orchestration.} Both \emph{Uniform routing} and \emph{Frozen skills} strictly underperform the full system, causing overall accuracy drops of 1.9 and 2.3 points respectively (Table~\ref{tab:ablations}). This proves that the performance gains stem from dynamic curriculum allocation and continuous library evolution rather than merely from injecting static structural constraints.
+
+
+\input{tables/ablation}
+
+
+
+\textbf{Co-evolutionary updates.} Table~\ref{tab:frozen_component_ablations_best} evaluates the necessity of continuous policy optimization. The \emph{Frozen proposer} variant fixes the generator at initialization, causing a 2.1-point overall drop. This shows that the proposer must learn to leverage the evolving skill library via RL. More critically, the \emph{Frozen feedback solver} variant fixes the solver used for probing and proposer rewards. This severs the dynamic frontier-tracking mechanism, supplying the proposer with outdated difficulty signals and leading to a severe 3.0-point degradation. Finally, \emph{Frozen both} disables the co-evolutionary loop, yielding the largest performance drop (-3.2 points). This confirms that proactive curriculum generation requires both policies to co-evolve: the proposer must adapt to synthesize harder tasks, while the feedback solver must advance to provide accurate boundary evaluations.
+
+
+\input{tables/ablation_frozen_components}
+
+
+
+\subsection{Data-Loop Diagnostics}
+\label{sec:data_loop_diagnostics}
+
+
+Final accuracy alone obscures the underlying mechanism of self-improvement. To verify that Skill-SP constructs a controlled curriculum rather than merely acting as a passive data filter, we audit the accepted records and the skill-library lifecycle illustrated in Figure~\ref{fig:data_loop_frontier_quality}.
+
+
+\begin{figure*}[htbp]
+    \centering
+    \begin{minipage}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/fig_frontier_quality_a_frontier.pdf}\\[-0.4em]
+        {\small (a) Frontier proximity.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/fig_question_distribution.pdf}\\[-0.4em]
+        {\small (b) Task diversity.}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.31\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/fig_frontier_quality_c_skill_lifecycle.pdf}\\[-0.4em]
+        {\small (c) Skill lifecycle.}
+    \end{minipage}
+    \caption{\textbf{Data-loop diagnostics for Qwen3-4B-Instruct tool-call self-play.}
+    Skill-stream records stay closer to the empirical frontier than both the exploration stream and Unguided SP, while the overall Skill-SP pool yields broader task coverage in the question-embedding space, and the skill library is continually induced, updated, and retired across self-play iterations.}
+    \label{fig:data_loop_frontier_quality}
+\end{figure*}
+
+
+\textbf{Curriculum Quality.} Figure~\ref{fig:data_loop_frontier_quality}a tracks the empirical solver success rate $v_\text{solve}$. The skill-routed stream consistently generates tasks closer to the solver's learning frontier with a mean $v_\text{solve}$ of approximately 0.57. This distinctly outperforms the Unguided SP and exploration streams, which drift to 0.70 and 0.75 respectively. In Figure~\ref{fig:data_loop_frontier_quality}b, we encode the generated questions using all-MiniLM-L6-v2~\citep{reimers-2019-sentence-bert} and project their embeddings via PCA. The visualization reveals that Unguided SP tasks cluster into narrow semantic regions, whereas the Skill-SP mixed pool demonstrates broader coverage in the embedding space. This demonstrates that skill orchestration simultaneously pushes task difficulty and fosters structural diversity.
+
+
+\textbf{Library Evolution.} This frontier-targeted and diverse curriculum is driven by a highly dynamic interface. Across five iterations, Figure~\ref{fig:data_loop_frontier_quality}c shows that Skill-SP continuously induces roughly 20 new packages per round, updates existing ones based on execution traces, and retires obsolete skills. These diagnostics show that the skill library functions as an adaptive curriculum engine that expands agent capabilities.
+
+
+\begin{wrapfigure}{r}{0.33\columnwidth}
+    \vspace{-1.0em}
+    \centering
+    \includegraphics[width=\linewidth]{figures/fig_skill_router_utilization.pdf}
+    \vspace{-1.6em}
+    \caption{\textbf{Skill utilization.} Active and effective skills grow steadily, driving broad curriculum expansion.}
+    \label{fig:skill_utilization}
+    \vspace{-1.0em}
+\end{wrapfigure}
+
+
+\textbf{Skill Utilization.} A growing library must actively diversify training to be useful. As shown in Figure~\ref{fig:skill_utilization}, the number of \emph{active} skills (yielding $\ge 1$ accepted record) expands to 86 across five iterations. To rigorously discount rare long-tail usage, we track \emph{effective} skills via exponentiated Shannon entropy, $N_{\mathrm{eff}} = \exp(-\sum_j p_j \log p_j)$ (where $p_j$ is the accepted frequency fraction), which steadily grows to 46. This continuous growth confirms that Skill-SP successfully converts an expanding library into a broad and balanced curriculum, ensuring the generator does not idle on a few dominant patterns.

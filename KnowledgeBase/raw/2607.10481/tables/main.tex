@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\caption{Comparison of RL baselines (DAPO, QAE) against their ARMOR continual-training counterparts across Qwen2.5-Math-7B and Qwen3-8B-Base.
+ARMOR consistently improves mathematical reasoning (\texttt{avg@32}) on AIME and AMC benchmarks while maintaining comparable general capabilities (\texttt{avg@8} on GPQA and MMLU-Pro), effectively mitigating the over-optimization observed in baselines.}
+\label{tab:main}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{@{}ccc|llll|ll@{}}
+\toprule
+\multirow{2}{*}{\textbf{Model}} & \multirow{2}{*}{\textbf{Method}} & \multirow{2}{*}{\textbf{Step}} & \multicolumn{4}{c|}{\textbf{Math Reasoning Tasks}} & \multicolumn{2}{c}{\textbf{General Tasks}} \\ \cmidrule(l){4-9} 
+ &  &  & \multicolumn{1}{c}{\textbf{AIME24}} & \multicolumn{1}{c}{\textbf{AIME25}} & \multicolumn{1}{c}{\textbf{AMC}} & \multicolumn{1}{c|}{\textbf{Average}} & \multicolumn{1}{c}{\textbf{GPQA}} & \multicolumn{1}{c}{\textbf{MMLU-Pro}} \\ \midrule
+\multirow{4}{*}{\begin{tabular}[c]{@{}c@{}}Qwen2.5-\\ Math-7B\end{tabular}} & DAPO & 140 & 37.13 & 15.21 & 69.39 & 40.58 & 38.26 & 43.93 \\
+ & \textbf{+ARMOR} & +200 & 43.04\up{5.91} & 18.13\up{2.92} & 76.13\up{6.74} & 45.77\up{5.19} & 42.49\up{4.23} & 46.03\up{2.1} \\ \cmidrule(l){2-9} 
+ & QAE & 230 & 39.79 & 15.96 & 73.53 & 43.09 & 40.78 & 43.30 \\
+ & \textbf{+ARMOR} & +240 & 41.58\up{1.79} & 16.15\up{0.19} & 76.62\up{3.09} & 44.78\up{1.69} & 39.02\down{1.76} & 42.15\down{1.15} \\ \midrule
+\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Qwen3-8B-\\ Base\end{tabular}} & DAPO & 70 & 36.98 & 28.13 & 71.72 & 45.61 & 49.87 & 65.55 \\
+ & \textbf{+ARMOR} & +220 & 48.13\up{11.15} & 34.48\up{6.35} & 80.35\up{8.63} & 54.32\up{8.71} & 56.25\up{6.38} & 68.90\up{3.35} \\ \bottomrule
+\end{tabular}
+}
+\end{table*}

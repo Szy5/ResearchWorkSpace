@@ -1,0 +1,86 @@
+# SearchArt: Training Long-Horizon Search Agent with Scalable Synthetic and Verified Tasks -3mm
+
+> **核心主张**：通过规模化的合成任务生成、联合验证的轨迹筛选以及「先监督再 RL」的多阶段训练，能在有限参数（Qwen3.5-27B）下训练出对长航程信息检索/研究任务更稳健、效率更高且更可靠的搜索代理 —— 关键在于把中间检索/推理行为也作为优化对象，而不仅仅是最终答案正确性。
+
+## 1. 问题背景
+
+### 1.1 现有方法的局限
+- 现有长航程搜索/研究代理训练受限于高质量标注数据稀缺与人工注释成本高，导致训练信号不足。  
+- 许多基于合成数据的管线只关注最终答案正确性，忽视了中间检索决策与证据转移的质量，因而无法教会模型如何制定长期检索策略或如何在多步检索中有效整合证据。  
+- 现有自动化过滤/验证较弱，容易保留浅表、重复或弱支撑（weakly grounded）的轨迹，导致模型学到次优或“提前答题”的行为（在证据不足时给出答案）和幻觉（hallucination）。  
+- 大多数合成语料在难度分布上偏简单，长期、多分支、多来源融合的研究性任务样本不足，难以训练出需要持续信息整合与自适应预算分配的策略。
+
+### 1.2 本文瞄准的缺口
+- 填补“规模化合成 + 质量可控”的数据生产到训练闭环：既要大规模合成多步搜索/研究任务并产出轨迹，又要有可靠的自动化验证来筛掉低质量轨迹，使得中间行为（例如查询构造、证据分支选择、何时生成答案）能被有效监督并进一步通过强化学习优化。
+
+## 2. 贡献
+**类型**：方法改进型
+
+核心贡献（列出 3 条）：
+- 提出 **SearchArt** 框架：解决了合成数据虽大但噪声高、轨迹质量不稳的问题。做法是从网页文档与自动生成的证据图合成长航程问答与检索轨迹，并通过联合验证（QA 一致性、轨迹可靠性、证据相关性）对样本进行过滤，从而获得高质量训练数据。
+- 将轨迹级别的监督显式纳入训练流程：不仅进行监督微调（SFT），还在经过验证的轨迹上进行基于回报的策略优化（RL），从而直接改进中间决策（如查询生成、证据分支扩展、预算分配、答题时机）。
+- 在资源受限条件下（基于 **Qwen3.5-27B**），证明该方法在多项深度搜索/研究基准上能显著提升：例如 BrowseComp-ZH 74.39、BrowseComp 70.06、BrowseComp-Plus 63.49、WideSearch 64.0、DeepResearch-Bench 52.55，且与同规模代理相比有显著任务完成率提升。
+
+## 3. 方法
+
+### 3.1 核心思路
+直觉上，训练长航程搜索代理的关键并不是单纯堆砌更多最终答案标签，而是：
+- 在合成大量复杂任务时，同时保证这些任务的“轨迹”（每一步的查询/检索/证据选择）是有意义且可验证的；
+- 将这种轨迹级的高质量监督作为学习目标的一部分，使模型学会如何在多步过程中分配检索预算、何时继续检索、何时停止并合成答案；
+- 在监督之后再用 RL 微调，使策略对长期回报（任务完成 + 证据充分性）敏感，从而避免“提前答题”与浅层重复检索。
+
+这种做法对的原因：长期搜索问题的成功依赖于中间动作的好坏——如果模型只看最终答案，无法学到什么时候拓展证据分支、如何避免冗余检索或如何把不同来源的信息融合到最终结论中。验证机制保证训练数据中的中间动作是可学习的良好示范，RL 则进一步提高在未见情形下的决策鲁棒性。
+
+### 3.2 方法细节
+- 数据合成：
+  - 从网络文档构建候选段落与证据节点，并自动生成**证据图**（evidence graph），在图上合成多跳问题与对应的检索轨迹（包含查询、检索结果、证据选择、摘要或答案断言等步骤）。
+- 验证流水线（核心筛选机制）：
+  - 对每个合成示例计算三个维度的分数：QA 一致性 $S_{\text{QA}}$、轨迹可靠性 $S_{\text{traj}}$、证据相关性 $S_{\text{ev}}$。定义加权综合得分：
+    $$
+    S = \alpha S_{\text{QA}} + \beta S_{\text{traj}} + \gamma S_{\text{ev}}
+    $$
+    并通过阈值 $S \ge \tau$ 筛选训练样本（$\alpha,\beta,\gamma,\tau$ 为超参数，可基于验证集调优）。
+  - 具体判别器可包括：基于模型的自我一致性检验、交叉验证（用独立检索器重检索并比对证据）与证据链完整性检验（证据是否形成连贯多跳路径）。
+- 多阶段训练：
+  1. 监督微调（SFT）：使用经验证的轨迹做行为克隆，最小化序列交叉熵损失
+     $$
+     \mathcal{L}_{\text{SFT}}(\theta) = -\sum_{t}\log p_\theta(a_t\mid s_t)
+     $$
+     其中 $s_t$ 表示状态（历史上下文 + 当前文档候选），$a_t$ 是动作（查询文本/选择证据/生成答案）。
+  2. 基于回报的策略优化（RL）：以轨迹回报 $R(\tau)$（结合答案正确性与证据充分性）为目标，优化期望回报
+     $$
+     J(\theta)=\mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]
+     $$
+     并采用策略梯度或 PPO 等方法提升长期决策性能。
+- 训练目标同时包含最终答案奖励与中间行为质量奖励（例如对高质量证据分支选择提供中间回报），从而鼓励既高效又可靠的搜索策略。
+- 实现与模型：基于 **Qwen3.5-27B** 做为基线架构进行 SFT + RL；合成语料规模化以覆盖多样的检索策略与任务难度分布。
+
+## 4. 实验与结果
+- 评测设置：
+  - 基础模型：Qwen3.5-27B 系列为起点，比较对象包括同规模或闭源前沿代理（文中声明与若干闭源系统相匹配或超越）。
+  - 任务集合：多项深度搜索 / 研究型与多跳推理基准，包括 "BrowseComp-ZH"、"BrowseComp"、"BrowseComp-Plus"、"WideSearch"、"DeepResearch-Bench" 等，评价指标以任务完成率/答案准确率为主。
+- 主要结论（将 claim 对应到实验）：
+  - Claim：验证驱动的合成 + 轨迹监督能显著提升长航程任务性能。实验证明：在上述基准上，SearchArt 得分分别为 BrowseComp-ZH 74.39、BrowseComp 70.06、BrowseComp-Plus 63.49、WideSearch 64.0、DeepResearch-Bench 52.55，且在与同规模代理对比中展现“显著”任务完成率提升（文中表述）。
+  - Claim：显式优化中间行为能减少“提前答题”和幻觉。实验证明经 SFT+RL 微调的代理在长期检索轨迹中更倾向于继续拓展证据分支、并在答案给出时附带更可靠的证据链（作者报告更高的证据覆盖率和更低的答题前停顿率）。
+  - Claim：验证过滤能提升训练样本质量，进而提升策略稳定性。消融实验（文中暗示）表明，去掉联合验证或使用弱过滤将产生更多冗余/浅层轨迹，训练出的模型在复杂任务上性能下降且波动更大。
+- 额外观察：
+  - 在仅 27B 参数的设置下，SearchArt 在深度研究任务上可以与更大或闭源模型的性能相媲美，说明“数据质量 + 轨迹级监督 + RL”在资源受限场景下的强效性。
+
+## 5. 局限与边界
+- 依赖合成与验证器质量：SearchArt 的效果高度依赖于合成证据图与联合验证器的设计，若验证器漏判或放行不良轨迹，模型仍会学到错误策略或幻觉倾向。  
+- 域外泛化未充分证明：作者的评测集中在公开的深搜/研究基准与网页文档构造的合成样本，尚不充分证明对高度专业化领域（如临床医疗、法律）的直接迁移性。  
+- 计算与工程成本：尽管节约了人工注释，构建大规模证据图、运行复杂验证与进行 RL 微调仍需显著计算资源与工程工作。  
+- 未完全解决最终答案可信度问题：SearchArt 强化了中间行为 supervision 并提升了证据覆盖率，但并不能保证在所有情形下完全消除模型幻觉或错误引用——尤其在底层知识源本身不完整或有误时。  
+- 作者并未给出对所有超参数（如 $\alpha,\beta,\gamma,\tau$）的通用设定，实际部署仍需针对任务分布进行调优。
+
+---
+
+## 科学发现范式
+
+- 主要范式：P05 Data & Evaluation Engineering
+- 次要范式：P15 Data-Centric Optimization & Active Sampling, P04 Modular Pipeline Composition
+- 分类理由：论文 "SearchArt" 以可扩展的合成任务生成与验证管线为核心，通过对合成的搜索轨迹进行质量验证并将其作为监督信号用于对 "Qwen3.5-27B" 的监督微调与强化学习，属于典型的数据/评估工程驱动方法（P05）。同时论文强调有针对性的合成数据选择与筛除策略以改善训练信号（P15），并通过验证→微调→RL 的多阶段后训练流水线体现模块化管道设计（P04）。
+
+## 先前工作分析
+
+Work on browser-enabled QA agents such as "WebGPT" developed the training recipe of combining supervised learning with reinforcement learning to produce grounded, cited answers from multi-step web interactions, establishing the baseline agentic training loop that requires expensive human-labelled trajectories. Research like "ReAct" made explicit the value of interleaving reasoning traces with external actions, giving a practical representation for intermediate decision points, while "Chain-of-Thought" demonstrated that supervising intermediate reasoning steps materially improves multi-step inference—together these papers supply the conceptual and representational tools for treating trajectories as first-class training signals. Dataset and problem formulations exemplified by "HotpotQA" formalize multi-hop QA with supporting facts and evaluation of evidence aggregation, providing the multi-hop, explainable QA framework SearchArt targets. Methodologically, "Toolformer" showed that large language models can synthesize and self-validate tool-use data at scale, suggesting a path to replace costly human annotation with model-driven synthetic corpora, and "Tree of Thoughts" defined branch-and-evaluate search dynamics that motivate explicit modeling of branch selection and verification. Combining these strands reveals a gap: prior systems either depend on expensive human verification or emphasize final-answer correctness while neglecting trajectory quality and branch-level verification. SearchArt naturally follows by integrating synthetic trajectory generation (Toolformer-style) with trajectory-level verification, training agents in the WebGPT RL loop, and explicitly supervising intermediate reasoning and branch-selection (ReAct/CoT/Tree-of-Thoughts) to produce scalable, high-quality long-horizon search policies.

@@ -96,7 +96,7 @@ export default function PriorWorksView({ value, mode, reviewed, onModeChange, on
             <article className="prior-card" key={index}>
               <div className="flex items-start justify-between gap-3">
                 <input
-                  className="w-full rounded-lg border border-line bg-canvas px-2 py-1 text-sm outline-none focus:border-moss"
+                  className="field-input"
                   placeholder="Title"
                   value={entry.title}
                   onChange={(event) => updateEntry(index, { title: event.target.value })}
@@ -107,13 +107,13 @@ export default function PriorWorksView({ value, mode, reviewed, onModeChange, on
               </div>
               <div className="mt-2 grid grid-cols-3 gap-2">
                 <input
-                  className="col-span-2 rounded-lg border border-line bg-canvas px-2 py-1 text-xs outline-none focus:border-moss"
+                  className="field-input col-span-2 h-9 text-xs"
                   placeholder="Authors"
                   value={entry.authorsText}
                   onChange={(event) => updateEntry(index, { authorsText: event.target.value })}
                 />
                 <input
-                  className="rounded-lg border border-line bg-canvas px-2 py-1 text-xs outline-none focus:border-moss"
+                  className="field-input h-9 text-xs"
                   placeholder="Year"
                   type="number"
                   value={entry.year}
@@ -121,7 +121,7 @@ export default function PriorWorksView({ value, mode, reviewed, onModeChange, on
                 />
               </div>
               <input
-                className="mt-2 w-full rounded-lg border border-line bg-canvas px-2 py-1 text-xs outline-none focus:border-moss"
+                className="field-input mt-2 h-9 text-xs"
                 placeholder="arXiv ID"
                 value={entry.arxivId}
                 onChange={(event) => updateEntry(index, { arxivId: event.target.value })}

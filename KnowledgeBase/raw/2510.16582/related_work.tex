@@ -1,0 +1,26 @@
+\xhdr{KG-based RAG}
+Knowledge graphs (KGs) are widely used as knowledge sources in retrieval-augmented generation (RAG) \cite{han2024retrieval,guo2025empowering，yuthought} systems to enhance large language models (LLMs) with both relational and textual information for answering complex queries \cite{edge2024local,dong2024advanced,cui2024prompt,xia2024knowledge}. 
+A core challenge in KG-based RAG lies in retrieving relevant knowledge from KGs in response to a given query. 
+Recent methods addressing this problem can be broadly categorized into two approaches. 
+Retrieval-based methods \cite{yasunaga2021qa,mavromatis2024gnn,he2024g,qiu2025graph,zou2025weak} leverage pretrained language models to encode the textual content in KGs into embeddings and use small models, such as MLP and GNN, to retrieve relevant information. 
+In contrast, agent-based methods \cite{sunthink,zhang2024knowgpt,ma2024think,luoreasoning,liu2025hoprag} employ LLMs as agents that iteratively traverse the KG to locate supporting evidence. 
+While both paradigms have shown promise in knowledge graph question answering (KGQA) \cite{liretrieval}, 
+their effectiveness in retrieving diverse and high-quality candidates for complex queries remains limited.
+Furthermore, complex queries often require retrieval from text-rich KGs, necessitating the joint consideration of both relational structure and text content. 
+Although recent studies \cite{ma2024think,lei2025mixture} have begun to explore this setting and tackle complex queries, enhancing the diversity and accuracy of KG-based RAG is still underexplored.
+
+\xhdr{Process Reward Models}
+Process Reward Models (PRMs) \cite{lightman2023let,lambert2024rewardbench} have shown great promise in guiding LLMs with process supervision and have been adopted in many domains such as complex reasoning \cite{cui2025process}, alignment \cite{ouyang2022training}, and planning \cite{choudhury2025process}.
+The key to PRMs is to construct a preference dataset with process supervision \cite{peng2025rewarding}.
+Previous works obtain the process supervision from human feedback and LLM evaluation.
+However, fine-grained process-level supervision is expensive for KG-based RAG due to the potentially vast search space of KGs and the difficulty of accessing the intermediate state during retrieval.
+Although early explorations are made to use PRM to guide the retrieval process of RAG on unstructured knowledge bases \cite{li2025search,shi2025searchrag,huang2025rag,xiong2025rag}, they still need a preference dataset with process-level supervision.
+How to guide the retrieval process of KG-based RAG on structured KGs without process supervision data is still challenging.
+
+\xhdr{GFlowNet}
+GFlowNet \cite{bengio2023gflownet} aims to sample diverse and high-quality candidates from an unnormalized density and has received increasing attention in sampling from discrete and vast spaces \cite{ghari2023generative,lu2024cell,deleu2023joint,deleu2022bayesian,m2024gflownet}.
+The goal of GFlowNet is to learn a policy that can lead to the terminal states with the likelihood in proportion to their rewards \cite{zhang2022generative}.
+Some objects are proposed to optimize GFlowNet by regularizing the state flows and their transitions \cite{tongimproving,malkin2022trajectory,madan2023learning}.
+Recently, GFlowNet has also been introduced to improve the generative performance of LLMs and diffusion models by promoting diversity in the decoding process \cite{venkatramanamortizing,huamortizing,yu2024flow,kang2025gflowvlm,lingamenhancing} .
+Differently, our work focuses on aligning the retrieval results of KG-based RAG with the knowledge required for real-world queries by estimating the state flow in multi-step retrieval.
+Moreover, we introduce a local exploration strategy to avoid visiting less-valued states, thus efficiently optimizing the detailed balance.

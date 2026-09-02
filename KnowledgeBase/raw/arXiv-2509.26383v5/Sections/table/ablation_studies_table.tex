@@ -1,0 +1,56 @@
+
+
+\begin{wraptable}{r}{0.7\textwidth}
+\vspace{-1em}
+\caption{Ablation studies of \framework{} components.}
+\label{tab:ablation_study_colored}
+\renewcommand{\res}[2]{#1\textsubscript{$\pm$#2}}
+\vspace{-1em}
+\begin{center}
+\renewcommand{\arraystretch}{1.05}
+\small
+\resizebox{0.7\textwidth}{!}{%
+\begin{tabularx}{0.78\textwidth}{l@{\hspace{0.2em}}c@{\hspace{0.3em}}c@{\hspace{0.3em}}c@{\hspace{0.3em}}c@{\hspace{0.3em}}c}
+\toprule
+\thead{\normalsize Datasets $\rightarrow$} & \multicolumn{2}{c}{\dataset{WebQSP}} &  \multicolumn{2}{c}{\dataset{CWQ}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+\thead{\normalsize Methods$\downarrow$} & Hits@1 & Ret.\ Rate & Hits@1 & Ret.\ Rate
+\\
+\midrule
+\oursrow
+\textbf{\framework{}}
+& \res{82.75}{0.04} & \res{77.51}{0.22}
+& \res{65.31}{0.14} & \res{52.14}{0.22}
+\\
+\midrule
+\footnotesize{w/o Turn Rewards}
+& \res{69.29}{0.17} \tiny{(-13.46\%)} & \res{59.55}{0.28}
+& \res{52.03}{0.28} \tiny{(-13.28\%)} & \res{48.62}{0.17}
+\\
+\footnotesize{w/o Turn-level Advantage}
+& \res{79.43}{0.27} \tiny{(-3.32\%)} & \res{69.38}{0.25}
+& \res{64.05}{0.24} \tiny{(-1.26\%)} & \res{51.34}{0.24}
+\\
+\footnotesize{w/o Retrieval Reward}
+& \res{78.72}{0.28} \tiny{(-4.03\%)} & \res{65.35}{0.34}
+& \res{62.63}{0.05} \tiny{(-2.68\%)} & \res{45.01}{0.13}
+\\
+\midrule
+\footnotesize{w PPO}
+& \res{59.62}{0.51} \tiny{(-23.13\%)} & \res{49.44}{0.53}
+& \res{35.66}{0.15} \tiny{(-29.65\%)} & \res{30.50}{0.24}
+\\
+\footnotesize{w/o Hierarchical Rel. Retr.}
+& \res{76.88}{0.27} \tiny{(-5.87\%)} & \res{61.74}{0.54}
+& \res{61.26}{0.19} \tiny{(-4.05\%)} & \res{43.54}{0.10}
+\\
+\footnotesize{w Qwen-2.5-7B-it}
+& \res{82.44}{0.23} \tiny{(-0.31\%)} & \res{73.37}{0.35}
+& \res{65.85}{0.19} \tiny{(+0.54\%)} & \res{51.63}{0.14}
+\\
+\bottomrule
+\end{tabularx}
+}
+\vspace{-2em}
+\end{center}
+\end{wraptable}

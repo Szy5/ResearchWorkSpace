@@ -1,0 +1,62 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2607.27652",
+  "created_at": "2026-08-04T10:51:57.642994+00:00",
+  "updated_at": "2026-08-04T11:16:42.617243+00:00",
+  "paper": {
+    "title": "Harness-G: A Graph-Structured Harness for Search Agents",
+    "authors": [
+      "Yanning Hou",
+      "Haoyuan Chen",
+      "Sihang Zhou"
+    ],
+    "abstract": "Reinforcement learning (RL) search agents commonly model retrieval as free-form natural-language query generation and optimize multi-turn interactions using final-answer rewards. Current studies mainly improve training with denser or more structured credit signals, but rarely examine whether retrieval is properly formulated at the policy--environment interface. We observe pronounced retrieval aliasing during Search-R1 training: rollouts for the same question continue to generate distinct query strings, yet their accumulated evidence sets increasingly overlap. We call this phenomenon retrieval-equivalence collapse; in this regime, trajectories approach utility equivalence with respect to retrieval decisions, leaving within-group returns with little effective retrieval contrast. To address this problem, we propose Harness-G, a graph-structured retrieval framework that redesigns this interface. It reformulates free-form query generation as finite action selection: the policy selects an evidence sentence or entity, or chooses to answer, while the environment constructs the menu, tracks retrieval state, and validates and executes each choice. This interface reduces linguistic aliasing and makes same-state alternatives directly comparable. Building on this interface, we introduce Structured Non-myopic Credit (SNC), which uses a frozen answer scorer to compare the selected action with its alternatives and assigns downstream gains to the earlier actions that enabled them. Across six QA benchmarks, Harness-G achieves the highest average F1 at both evaluated model scales, outperforming the strongest baseline, Graph-R1, by 10.74 points at 1.5B and 3.98 points at 3B.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-08-04",
+    "blog_html_path": "summary_排版_摸鱼绿(moyu-green).html",
+    "blog_html_generated_at": "2026-08-04T11:16:42.617172+00:00"
+  },
+  "source": {
+    "raw_dir": "raw/2607.27652",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "4aecd8efdba2272ec76308327471c55ddc60d6c4e4063e03d6772bbecfcd86e0",
+        "bytes": 126507
+      },
+      {
+        "path": "table_markers.tex",
+        "sha256": "a164cf3e1012bb55f97eef8b794ad4567c6e6e19f90af34254b82214e1f71894",
+        "bytes": 1225
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 38,
+    "figures": 22,
+    "references": 59
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 31, column 1):\nunexpected Tok (line 31, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 31, column 1):\nunexpected Tok (line 31, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

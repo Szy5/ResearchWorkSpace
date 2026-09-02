@@ -1,0 +1,84 @@
+\documentclass[]{fairmeta}
+% Option "twocolumn" available, but please prioritize single-column
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{placeins}
+\usepackage{cuted}      % preamble
+\usepackage{caption}
+\usepackage{array}
+\usepackage{wrapfig}
+\usepackage{amssymb}
+\usepackage{makecell}
+\usepackage[utf8]{inputenc}
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{enumitem}
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+\newcommand{\xhdr}[1]{\vspace{1ex}\noindent\textbf{#1.}}
+\title{Self-Improving VLM Judges Without Human Annotations}
+
+\author[1,2,*]{Inna Wanyin Lin}
+\author[1]{Yushi Hu}
+\author[1,2]{Stella Li}
+\author[2]{Scott Geng}
+\author[2]{Pang Wei Koh}
+\author[1,2]{Luke Zettlemoyer}
+\author[2]{Tim Althoff}
+\author[1]{Marjan Ghazvininejad}
+
+\affiliation[1]{FAIR at Meta}
+\affiliation[2]{University of Washington}
+
+\contribution[*]{Work done at Meta}
+% \contribution[\dagger]{Joint last author}
+
+\abstract{\input{00_abstract}}
+\correspondence{Inna Lin \email{ilin@cs.washington.edu}, Marjan Ghazvininejad 
+\email{ghazvini@meta.com}} 
+\date{October 2, 2025}
+
+
+
+
+
+% You can add additional metadata fields as follows 
+% \metadata[Code]{\url{https://github.com/facebookresearch/repo}}
+% \metadata[Blogpost]{\url{https://ai.meta.com/blog/?page=1}}
+
+\begin{document}
+
+\maketitle
+
+
+\input{01_intro}
+\input{02_background}
+\input{03_method}
+\input{04_experiment_results}
+\input{05_discussion}
+\input{06_conclusion}
+
+
+\clearpage
+\newpage
+\bibliographystyle{assets/plainnat}
+\bibliography{paper}
+
+\clearpage
+\newpage
+\beginappendix
+\input{10_appendix}
+% \section{First appendix}
+
+\end{document}

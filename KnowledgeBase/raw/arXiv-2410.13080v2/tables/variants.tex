@@ -1,0 +1,34 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+% \usepackage{graphicx}
+% \begin{wraptable}{r}{0.65\columnwidth}
+\begin{table}
+    \centering
+    % \vspace{-0.5cm}
+    \caption{Comparison of different LLMs used in \ourmethod.}
+    \label{tab:different_llms}
+    % \vspace{-0.3cm}
+    \resizebox{.9\columnwidth}{!}{%
+        \begin{tabular}{@{}c|c|l|c|c@{}}
+            \toprule
+            Components                          & Learning Types                 & \multicolumn{1}{c|}{Variants} & Hit            & F1             \\ \midrule
+            \multirow{9}{*}{\shortstack{KG-specialized\\LLM}} & \multirow{2}{*}{Zero-shot}  & Llama-3.1-8B                  & 28.25          & 10.32           \\
+                                                &                             & Llama-3.1-70B                 & 38.53          & 12.53          \\ \cmidrule(l){2-5}
+                                                & \multirow{2}{*}{Few-shot}   & Llama-3.1-8B                  & 33.24          & 11.19          \\
+                                                &                             & Llama-3.1-70B                 & 41.13 & 13.14 \\ \cmidrule(l){2-5}
+                                                & \multirow{5}{*}{Fine-tuned} & Qwen2-0.5B                    & 87.48 & 60.03          \\
+                                                &                             & Qwen2-1.5B                    & 89.21          & 62.97          \\
+                                                &                             & Qwen2-7B                      & 92.31          & 72.74          \\
+                                                &                             & Llama-2-7B                    & 92.55          & \textbf{73.23} \\
+                                                &                             & Llama-3.1-8B                  & \textbf{92.74} & 73.14 \\ \midrule
+            \multirow{5}{*}{General LLM}        & \multirow{5}{*}{Zero-shot}  & Qwen-2-7B                     & 86.32          & 67.59          \\
+                                                &                             & Llama-3.1-8B                  & 90.24          & 71.19          \\
+                                                &                             & Llama-3.1-70B                 & 89.85          & 71.47          \\
+                                                &                             & ChatGPT                       & \textbf{92.55}          & 73.23          \\
+                                                &                             & GPT-4o-mini                   & 92.23 & \textbf{74.05} \\ \bottomrule
+        \end{tabular}%
+    }
+    % \vspace{-.3cm}
+\end{table}
+% \end{wraptable}

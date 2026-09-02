@@ -1,0 +1,42 @@
+
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 5 (failed): \Ours fails to answer the question with insufficient or misleading retrieved information.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Who directed the film which starred Steve Cochran and the actor who played Sheriff Roy Coffee in "Bonanza"? \\
+        \hline
+        \textbf{Ground Truth}: Louis King \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find out who directed the film that starred Steve Cochran and the actor who played Sheriff Roy Coffee in "Bonanza". I'll search for it.} \\
+\search{who directed the film which starred Steve Cochran and the actor who played Sheriff Roy Coffee in "Bonanza"} \\
+\info{Doc 2(Title: "Ray Teal") Ray Teal Ray Teal (January 12, 1902April 2, 1976) was an American actor who appeared in more than 250 films and some 90 television programs in his 37-year career. His longest-running role was as Sheriff Roy Coffee on NBC's western series ""Bonanza"" (1960–1972). He also played a sheriff in the film ""Ace in the Hole"" (1951). Teal was born in Grand Rapids, Michigan. A saxophone player, he worked his way through the University of California, Los Angeles as a bandleader before becoming an actor. After more than 15 years performing in films and in early television, Teal secured a recurring ...
+} \\
+\hdashline
+\think{I found out that the actor who played Sheriff Roy Coffee in "Bonanza" is Ray Teal. Now I need to find the film that starred Steve Cochran and Ray Teal.} \\
+\search{film that starred Steve Cochran and Ray Teal} \\
+\info{Doc 1(Title: "Steve Cochran") in the gangster classic ""White Heat"" (1949). He appeared opposite Mayo. Warner Bros would eventually take over Cochran's and Mayo's contracts from Goldwyn. Cochran supported Joan Crawford in ""The Damned Don't Cry"" (1950), then was given his first lead role in ""Highway 301"" (1950), playing a gangster. He was a villain to Gary Cooper's hero in ""Dallas"" (1950), and played a Ku Klux Klan member in ""Storm Warning"" (1951), with Ginger Rogers and Doris Day. Cochran was a villain in ""Canyon Pass"" (1951), a Western, then was given the lead in ""Inside the Walls of Folsom Prison"" (1951), which inspired ...
+} \\
+\hdashline
+\think{I found out that Steve Cochran starred in several films. Now I need to find the film that also starred Ray Teal.} \\
+\search{film that starred Steve Cochran and Ray Teal} \\
+\info{Doc 1(Title: "Steve Cochran") in the gangster classic ""White Heat"" (1949). He appeared opposite Mayo. Warner Bros would eventually take over Cochran's and Mayo's contracts from Goldwyn. Cochran supported Joan Crawford in ""The Damned Don't Cry"" (1950), then was given his first lead role in ""Highway 301"" (1950), playing a gangster. He was a villain to Gary Cooper's hero in ""Dallas"" (1950), and played a Ku Klux Klan member in ""Storm Warning"" (1951), with Ginger Rogers and Doris Day. Cochran was a villain in ""Canyon Pass"" (1951), a Western, then was given the lead in ""Inside the Walls of Folsom Prison"" (1951), which inspired ...
+} \\
+\hdashline
+\think{I found out that Steve Cochran starred in several films. Now I need to find the film that also starred Ray Teal. I'll search for the film that starred both Steve Cochran and Ray Teal.} \\
+\search{film directed by Sam Peckinpah that starred Steve Cochran and Ray Teal} \\
+\info{Doc 1(Title: "Sam Peckinpah") Replete with explosions, car chases and intense shootouts, the film became Peckinpah's biggest financial success to date earning more than \$25 million at the box office. Though strictly a commercial product, Peckinpah's creative touches abound throughout, most notably during the intricately edited opening sequence when McQueen's character is suffering from the pressures of prison life. The film remains popular and was remade in 1994. starring Alec Baldwin and Kim Basinger. The year 1973 marked the beginning of the most difficult period of Peckinpah's life and career. While still filming ""The Getaway"" in El Paso, Texas, Peckinpah sneaked across the border ...
+} \\
+\hdashline
+\think{I found out that Sam Peckinpah directed the film "The Wild Bunch" that starred Steve Cochran and Ray Teal.} \\
+\answer{Sam Peckinpah}\\
+        \hline
+    \end{tabular}
+\end{table}
+
+

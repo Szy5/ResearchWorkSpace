@@ -1,0 +1,94 @@
+
+\documentclass{article}
+
+
+\newif\ifshowauthors  \showauthorstrue
+\newif\ifhidefooter   \hidefootertrue
+
+\PassOptionsToPackage{numbers,sort&compress}{natbib}
+
+\ifshowauthors
+  \usepackage[eandd, final]{neurips_2026}
+\else
+  \usepackage[eandd]{neurips_2026}
+\fi
+
+\ifhidefooter
+  \makeatletter
+  \renewcommand{\@noticestring}{Preprint.}
+  \makeatother
+\fi
+
+ 
+
+
+
+
+\usepackage[utf8]{inputenc} %
+\usepackage[T1]{fontenc}    %
+\usepackage{hyperref}       %
+\usepackage{url}            %
+\usepackage{booktabs}       %
+\usepackage{amsfonts}       %
+\usepackage{nicefrac}       %
+\usepackage{microtype}      %
+
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage{caption}
+\usepackage[table]{xcolor}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+
+
+
+\title{\benchmark{}: Do LLM Agents Know \\ When Not to Act?}
+
+\newcommand{\pcite}{\textcolor{red}{[CITE]}}
+
+
+
+\author{%
+  Xun Liu\thanks{Project lead. $^*$Equal contribution, listed alphabetically. Correspondence to xunliu@illinois.edu, varunc@illinois.edu.}\,\,\,,
+  Yi Evie Zhang$^{\dagger}$,
+  Vira Kasprova$^*$,
+  Parisa Rabbani$^*$,
+  Pardis Sadat Zahraei$^*$ \\
+  \bf Tianyu Zhang$^*$,
+  Ali Ebrahimpour-Boroojeny,
+  Varun Chandrasekaran \\[4pt]
+  University of Illinois Urbana-Champaign
+}
+
+\input{macro}
+
+
+\begin{document}
+
+
+\setcounter{footnote}{1}
+\maketitle
+\setcounter{footnote}{0}
+
+
+\input{files/abstract}
+\input{files/1_introduction}
+\input{files/3_framework}
+\input{files/4_experiment}
+\input{files/2_related_work}
+\input{files/5_conclusion}
+
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\newpage
+\input{files/appendix/appendix_main}
+
+
+\end{document}

@@ -1,0 +1,24 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{graphicx}\
+
+% \begin{wraptable}{r}{0.6\columnwidth}
+\begin{table}
+    \centering
+    \vspace{-0.4cm}
+    \caption{Zero-shot transferability to other KGQA datasets.}
+    \label{tab:transferability}
+    % \vspace{-0.3cm}
+    \resizebox{0.8\columnwidth}{!}{%
+    \begin{tabular}{@{}cccc@{}}
+    \toprule
+    Model       & \RE{FreebaseQA} & CSQA & MedQA \\ \midrule
+    ChatGPT     & \RE{85} & 79   & 64    \\
+    \ourmethod (ChatGPT) & \RE{\textbf{92}} & \textbf{85}   & \textbf{66}    \\ \midrule
+    GPT-4o-mini     & \RE{89} & 91   & 75    \\
+    \ourmethod (GPT-4o-mini) & \RE{\textbf{94}} & \textbf{94}   & \textbf{79}    \\ \bottomrule
+    \end{tabular}%
+    }
+    \vspace{-0.3cm}
+% \end{wraptable}
+\end{table}

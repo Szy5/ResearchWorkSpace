@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "StructGPT: A General Framework for Large Language Model to Reason over Structured Data",
+      "authors": "Jinhao Jiang, Kun Zhou, Zican Dong, Keming Ye, Wayne Xin Zhao, Ji-Rong Wen",
+      "year": 2023,
+      "arxiv_id": "2305.09645",
+      "role": "Baseline",
+      "relationship_sentence": "作为将 LLM 与 KG 交互（synergy-augmented）的代表性系统，StructGPT 提出用分步交互与 KG 的结构化查询来完成多跳推理，KG-Agent 针对其预定义多轮计划的刚性局限进行改进并作为主要对比对象。"
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao",
+      "year": 2023,
+      "arxiv_id": "2210.03629",
+      "role": "Inspiration",
+      "relationship_sentence": "ReAct 将 chain-of-thought 推理与显式 action（工具调用）结合，直接启发了 KG-Agent 中用自然语言誘导 LLM 选择工具并把 reasoning trace 与动作结合的代理式交互设计。"
+    },
+    {
+      "title": "Auto-GPT for Online Decision Making: Benchmarks and Additional Opinions",
+      "authors": "Hui Yang, Sifu Yue, Yunzhong He",
+      "year": 2023,
+      "arxiv_id": "2306.02224",
+      "role": "Inspiration",
+      "relationship_sentence": "AutoGPT 演示了将 LLM 作为能自发规划、调用外部工具并管理短/长期记忆的自治体，KG-Agent 在工具编排与知识记忆管理上借鉴了这种自治式工作流以实现无需人工干预的 KG 推理。"
+    },
+    {
+      "title": "ProgPrompt: Generating Situated Robot Task Plans using Large Language Models",
+      "authors": "Ishika Singh, Valts Blukis, Arsalan Mousavian, Ankit Goyal, Danfei Xu, Jonathan Tremblay, Dieter Fox, Jesse Thomason, Animesh Garg",
+      "year": 2023,
+      "arxiv_id": "2209.11302",
+      "role": "Inspiration",
+      "relationship_sentence": "ProgPrompt 论述了用程序化表示和可执行片段来组织代理推理流程，KG-Agent 采用类似思想以代码/程序化语法表示多跳 KG 推理并据此合成指令数据去微调 LLM。"
+    },
+    {
+      "title": "TIARA: Multi-grained Retrieval for Robust Question Answering over Large Knowledge Bases",
+      "authors": "Yiheng Shu, Zhiwei Yu, Yuhan Li, Börje F. Karlsson, Tingting Ma, Yuzhong Qu, Chin-Yew Lin",
+      "year": 2022,
+      "arxiv_id": "2210.12925",
+      "role": "Gap Identification",
+      "relationship_sentence": "检索增强方法通过检索并序列化三元组喂入 LLM，但丢失 KG 的结构信息并面临冗余与噪声问题，KG-Agent 正是为克服这一检索式方法在结构利用与多步推理上的不足而设计。"
+    },
+    {
+      "title": "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+      "authors": "Wanjun Zhong, Lianghong Guo, Qiqi Gao, He Ye, Yanlin Wang",
+      "year": 2023,
+      "arxiv_id": "2305.10250",
+      "role": "Foundation",
+      "relationship_sentence": "MemoryBank 提出在长时任务中对代理进行记忆读写的系统化做法，KG-Agent 在其基础上设计了针对 KG 推理的知识记忆模块以保存中间实体/路径并支持多轮决策。"
+    }
+  ],
+  "synthesis_narrative": "近年的工作在三个技术方向上为 KG-Agent 提供了直接的构建模块和问题意识：一类是面向 KG 的协同交互方法（以 StructGPT 为代表），它们把 LLM 的语言理解能力与对 KG 的结构化查询结合起来，通过多轮交互或 SPARQL grounding 完成多跳问答；另一类是语言代理范式（如 ReAct、AutoGPT、ProgPrompt），這些工作提出把 chain-of-thought 与显式 action/工具调用、程序化 prompt、以及短/长期记忆结合起来，从而实现自动化的工具选择、执行与记忆管理；第三类则是检索增强的 KGQA 流派（RNG-KBQA/TIARA 等）和记忆增强机制（MemoryBank），它们分别暴露了检索式丢失结构信息与需要有效记忆策略的局限。将这些具体细节合并，显现出两方面的机会：一是需要一个能自主选择工具、执行 KG 操作并在多个推理步之间维护中间知识的代理框架；二是需要用可执行的程序化表示来训练较小 LLM，使其能可靠地生成可执行操作序列。KG-Agent 正是在这种背景下成为自然的下一步：它综合了代理式工具调用与记忆管理、以代码/程序化指令微调 LLM 的做法，并且针对 StructGPT 与检索式方法的局限设计了自适应的迭代决策与 KG 执行器，从而使较小模型也能高效完成复杂的 KG 推理。"
+}

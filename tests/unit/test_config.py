@@ -18,5 +18,18 @@ def test_find_project_root_falls_back_when_cwd_has_no_markers(tmp_path):
 
     root = find_project_root(start=empty_dir)
 
-    assert (root / "raw").exists()
     assert (root / "docs").exists()
+    assert (root / "KnowledgeBase").exists() or (root / "src" / "paper_wiki").exists()
+
+
+def test_default_data_dirs_live_under_knowledge_base(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    settings = Settings()
+
+    kb = settings.resolved_knowledge_base_dir()
+    assert kb == (settings.project_root / "KnowledgeBase").resolve()
+    assert settings.resolved_raw_dir() == (kb / "raw").resolve()
+    assert settings.resolved_artifacts_dir() == (kb / "artifacts").resolve()
+    assert settings.resolved_graph_state_dir() == (kb / "graph_state").resolve()
+    assert settings.resolved_graph_updates_dir() == (kb / "graph_updates").resolve()
+    assert settings.resolved_prompts_dir() == (settings.project_root / "prompts").resolve()

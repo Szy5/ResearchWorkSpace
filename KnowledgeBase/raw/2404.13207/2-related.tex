@@ -1,0 +1,105 @@
+\section{Related Work}
+\label{sec:related}
+
+
+\begin{comment}
+\xhdr{Knowledge Base Question-Answering and Retrieval}
+
+\textbf{unstructured qa dataset:} single-document dataset: SQuAD, NewsQA, Natural Questions, MS MARCO, CoQA ; mult-document dataset: HotpotQA, TriviaQA, SearchQA,  WikiHop, QuAC
+
+\textbf{structured qa dataset:} KGQA, use pre-existing knowledge bases with pre-defined rules to generate qa pairs, WebQuestions, WebQuestionsSP, ComplexWebQuestions~~\cite{ComplexWebQuestions}, SimpleQuestions, ComplexQuestions,  KQA Pro, MetaQA, LC-QuAD 2.0, QALD
+
+\textbf{semi-structure qa dataset:} Only exist tabular + textual dataset.  WikiTableQuestions, Spider, WikiSQL, TabFact, HybridQA, TabMCQ
+
+
+open-domain question answering tasks 
+
+HotpotQA~~\cite{yang2018hotpotqa} feature: multi-hop reasoning, multiple supporting documents, provide sentence level supporting facts, factoid comparison questions (arithmetic comparison). Collection: human curated, crowdsourcing on wikipedia. Format: RC, no candidate set
+
+SQuAD: single-hop reasoning, answer by single sentences matching. Collection: crowdworkers on wikipedia. Format: reading comprehension, no candidate set
+
+TriviaQA: multiple supporting documents, supporting documents collected by information retrieval after qa pairs generated, syntactic and lexical variability. Disadvantage: answer extraction from documents Collection: from trivia qa pairs, use bing search and wiki page of relevant entities.
+
+SearchQA: multiple supporting documents. Collection: start from existing qa pair and augment by IR by google.
+
+MS-MARCO: system generated free-form answer evaluated by pre-defined metrics (eg. BLEU-1, ROUGE-L), have reliability issue
+
+ComplexWebQuestions: focus on question decomposition: conjunctions, superlatives,
+comparatives, and compositions,  Collection: SPARQL + mechanical turk
+
+QA through semantic parsing has focused primarily on compositionality:
+questions are translated to compositional programs that encode a sequence of actions for finding the answer in a knowledge-base (KB) 
+
+WebQuestions: semantic parsing, KB
+
+WikiTableQuestions: semantic parsing, complex questions on semi-structured tables 
+
+
+WikiHop and MedHopo~~\cite{WelblSR18},: multi-hop reasoning
+
+
+open-domain:
+Structured knowledge-based QA(KB)~~\cite{BerantCFL13, YihCHG15} known as KBQA.
+
+unstructured knowledge-based QA~~\cite{IzacardG21, realm, KarpukhinOMLWEC20, LeeCT19, YangXLLTXLL19}
+
+UniK-QA~~\cite{UniK-QA}
+SearchQA~~\cite{dunn2017searchqa}
+TriviaQA~~\cite{TriviaQA}
+
+Knowledge base question answering datasets are either limited in scale or in the complexity of questions.
+
+WikiHop and MedHop~~\cite{WelblSR18}, ComplexWebQuestions~~\cite{ComplexWebQuestions} diversity restricted by the KB schema.
+\end{comment}
+
+
+% We identify three primary categories on retrieval-oriented question answering (QA) datasets 
+% \shiyu{of retrieval-based question answering (QA) dataset?} \qian{of what? of retrieval system?} 
+% based on the knowledge sources they utilize: unstructured, structured, and semi-structured knowledge bases. 
+% Each of these categories plays a crucial role in advancing the field of information retrieval and question answering, yet they also present distinct limitations that our work seeks to address.
+
+% \xhdr{Unstructured QA Datasets} 
+% The line of work explores retrieving answers from a single document~\cite{rajpurkar-etal-2016-squad} or multiple document sources~\cite{trischler-etal-2017-newsqa, yang-etal-2018-hotpotqa, TriviaQA, WelblSR18, dunn2017searchqa}.
+% For example, SQuAD~\cite{rajpurkar-etal-2016-squad} focuses on extracting answers from a single document, testing model's ability to understand and retrieve information within a specific context. For multi-document retrieval, HotpotQA~\cite{yang-etal-2018-hotpotqa} demands reasoning over multiple documents and includes sentence-level supporting facts, enhancing the complexity of the retrieval task. TriviaQA~\cite{TriviaQA} combines questions from trivia games with evidence documents, evaluating both retrieval and reasoning over multiple sources. 
+% Moreover, some works~\cite{DBLP:conf/nips/NguyenRSGTMD16, kwiatkowski-etal-2019-natural} leverage generated results by search engines as ground truth answers or information sources for retrieval. 
+\xhdr{Unstructured QA Datasets}
+This research domain consists of methods for retrieving answers from unstructured text, either from a single document~\cite{rajpurkar-etal-2016-squad} or multiple documents~\cite{trischler-etal-2017-newsqa, yang-etal-2018-hotpotqa, TriviaQA, WelblSR18, dunn2017searchqa}. For instance, SQuAD~\cite{rajpurkar-etal-2016-squad} is designed for answer extraction within a specific document, while approaches like HotpotQA~\cite{yang-etal-2018-hotpotqa} and TriviaQA~\cite{TriviaQA} extend to multi-document contexts. Additionally, some studies utilize search engine outputs as a basis or supplementary data for question answering~\cite{DBLP:conf/nips/NguyenRSGTMD16, kwiatkowski-etal-2019-natural}.
+However, unstructured QA datasets often lack the depth of relational reasoning commonly required in answering complex user queries. \revision{In contrast, \benchmarkh contains queries demanding multi-hop relational reasoning to challenge model's ability of handling structured information. }
+% \jure{This is a nice summary but it does not answer how STARK differers/related to this line of work. Say: "In contrast, STARK is..." or "STARK extends this line of work by ..." or something similar.}
+% Datasets like SQuAD~\cite{rajpurkar-etal-2016-squad} focus on extracting answers from a single document, testing the model's ability to understand and retrieve information within a specific context. NewsQA~\cite{trischler-etal-2017-newsqa} introduces the challenge of answering questions from news articles, emphasizing real-world applicability and information synthesis. Natural Questions~\cite{kwiatkowski-etal-2019-natural} requires answering questions based on Google search results, reflecting genuine user inquiries and web search scenarios. MS MARCO~\cite{DBLP:conf/nips/NguyenRSGTMD16} provides real-world queries with system-generated answers, aiming to improve search engine response accuracy. Multi-hop datasets extend these challenges, featuring retrieval from multiple documents instead of single one to answer the question; for example, HotpotQA~\cite{yang-etal-2018-hotpotqa} demands reasoning over multiple documents and includes sentence-level supporting facts, enhancing the complexity of the retrieval task. TriviaQA~\cite{joshi-etal-2017-triviaqa} combines questions from trivia games with evidence documents, testing both retrieval and reasoning over multiple sources. SearchQA~\cite{dunn2017searchqa} augments Jeopardy! questions with snippets from Google searches, introducing a real-world noise into the QA process. WikiHop~\cite{WelblSR18} is designed for multi-hop reasoning across multiple documents, reflecting the interconnected nature of real-world knowledge. However, these unstructured QA datasets often lack the depth of relational reasoning found in structured data. 
+
+% \xhdr{Structured QA Datasets} Within this category, the datasets challenge models to retrieve answers from structured knowledge bases, either knowledge graphs~\cite{bordes-etal-2014-question,yih-etal-2016-value,talmor-berant-2018-web,journals/corr/BordesUCW15,cao-etal-2022-kqa,GAO_FODOR_KIFER_2019,he2024gretriever} or tabular data~\cite{zhongSeq2SQL2017, yu-etal-2018-spider}.
+% For example, ComplexWebQuestions~\cite{talmor-berant-2018-web} challenge models' abilities to decompose complex queries and interpret queries using entities and relationships defined in knowledge graphs. 
+% % SimpleQuestions~\cite{journals/corr/BordesUCW15} focuses on single-relation questions, testing the precision of entity and relation extraction.  
+% % KQA Pro~\cite{cao-etal-2022-kqa} and MetaQA~\cite{GAO_FODOR_KIFER_2019}, with multi-hop questions, offer challenges in multi-hop reasoning and complex retrieval.
+% GraphQA~\cite{he2024gretriever} textualizes graphs by describing node attributes and edges with natural language, offering language models a way to handle KBQA. 
+% For datasets with tabular data,  WikiSQL~\cite{zhongSeq2SQL2017} and Spider~\cite{yu-etal-2018-spider} both address the task of converting natural language questions to SQL queries, with WikiSQL concentrating on single-table databases and Spider extending to complex multi-tables.
+\xhdr{Structured QA Datasets} These datasets challenge models to derive answers from structured sources such as knowledge graphs~\cite{bordes-etal-2014-question,yih-etal-2016-value,talmor-berant-2018-web,journals/corr/BordesUCW15,cao-etal-2022-kqa,GAO_FODOR_KIFER_2019,he2024gretriever} or tabular data~\cite{zhongSeq2SQL2017, yu-etal-2018-spider}. ComplexWebQuestions~\cite{talmor-berant-2018-web} and GraphQA~\cite{he2024gretriever} propose challenges in interpreting complex queries and textualizing graph structures in KBQA, respectively. For tabular data, WikiSQL~\cite{zhongSeq2SQL2017} focuses on translating queries to SQL for single-table databases, whereas Spider~\cite{yu-etal-2018-spider} tackles multi-table scenarios.
+\revision{Despite the emphasis on relational data, the restriction to predefined entities and relationships limits the scope of queries. \benchmarkh integrates textual content within structured frameworks to enhance the depth and breadth of information retrieval, promoting richer and more nuanced understanding from extensive textual data.}
+
+% \xhdr{Semi-Structured QA Datasets} Another line of work focuses on semi-structured QA with tabular and textual data. WikiTableQuestions~\cite{pasupat-liang-2015-compositional} emphasizes comprehension of table structure and textual content, reflecting the semi-structured nature of many real-world datasets. TabFact~\cite{Chen2020TabFact:} and HybridQA~\cite{chen-etal-2020-hybridqa} combine textual and tabular data, requiring models to validate statements or answer questions using both data types. TabMCQ~\cite{journals/corr/JauharTH16} introduces multiple-choice questions based on tables, adding complexity in understanding and reasoning over semi-structured data. 
+% However, different from this work, these existing datasets mainly focus on tables as structured sources, which may not incorporate rich relational information that naturally exists between entities. 
+% Additionally, previous attempts to combine text and tabular data through external web links or additional text columns often result in data structures that are hard to navigate. 
+% Therefore, \revision{Addressing these challenges, \benchmarkh enhances integration, allowing for fluent navigation and advanced retrieval within complex semi-structured knowledge bases. This facilitates more effective relational reasoning and text handling, positioning \benchmarkh as a superior benchmark for assessing retrieval systems in realistic informational contexts.}
+% \jure{The ending is too general (from Therefore...). Be specific how Stark adds to this line of work.}
+
+\xhdr{Semi-Structured QA Datasets}
+This category merges tabular and textual data, presenting challenges in semi-structured data comprehension. WikiTableQuestions~\cite{pasupat-liang-2015-compositional} stresses the integration of table structures with textual elements. TabFact~\cite{Chen2020TabFact:}, HybridQA~\cite{chen-etal-2020-hybridqa}, and TabMCQ~\cite{journals/corr/JauharTH16} extend this by combining validation of textual statements with tabular reasoning. However, datasets leveraging tables as structured frameworks often lack in depicting the rich relational dynamics among entities. Moreover, prior efforts to link textual and tabular information via external sources have led to cumbersome data constructs. \revision{Addressing these challenges, \benchmarkh enhances integration, allowing for flexible navigation and advanced retrieval within complex semi-structured knowledge bases, and facilitating more effective relational reasoning and text handling.}
+% However, different from this work, these existing datasets mainly focus on tables as structured sources, which might not capture complex entity relationships effectively. 
+% Previous attempts to combine text and tabular data through hyperlinks or additional text columns often result in data structures that are hard to navigate and interpret. 
+% Moreover, these approaches usually fail to fully represent the nuanced relationships between textual and relational data, leading to a disjointed representation that can impede effective data analysis and retrieval. 
+% These highlight the need for a more comprehensive semi-structured retrieval benchmark that can seamlessly integrate textual and relational data, providing a more flexible analytical testbed.
+%\qian{This seems contradicts what you said previously in the intro i.e. existing work only does one or the other. What is the difference between tables and what you are doing? ``often do not incorporate the rich narrative context found in textual descriptions" does this mean their query is too simple or they don't use text in the tables?}
+
+
+\begin{comment}
+semi-structure datasets to be added:
+WikiMovies: raw text and a preprocessed knowledge base in the movie domain
+text: Wikipedia, kb: Open Movie Database (OMDb) and MovieLens + extract from text. 100k questions
+open KG QA 
+
+WebQuestionsSP: semantic-parse labeled dataset
+
+\end{comment}
+ 
+

@@ -1,12 +1,14 @@
 # Paper-Wiki 技术方案 v1.5
 
-> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-08-02 | 状态：持续维护
+> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-08-05 | 状态：持续维护
 
 ---
 
 ## 零、当前实现状态
 
 本文档是长期维护文档，既记录已经落地的工程设计，也保留后续 Layer 2/Layer 3 的规划。每次功能实现、架构调整或范围变更后，都应同步更新本节与相关设计章节。Web v1 原型现在作为本地审查工作站入口存在，但不等同于 Layer 3 检索 API。
+
+**路径约定（2026-08-05）**：运行时论文数据统一落在仓库根下的 `KnowledgeBase/`（可用 `KNOWLEDGE_BASE_DIR` / `RAW_DIR` / `ARTIFACTS_DIR` / `GRAPH_*_DIR` 覆盖）。默认布局为 `KnowledgeBase/raw/`、`KnowledgeBase/artifacts/`（含 `.jobs` / `.recommendations` / `.publishing`）、`KnowledgeBase/graph_state/`、`KnowledgeBase/graph_updates/`。`prompts/` 仍在仓库根（代码资产，非论文数据）。下文中的 `raw/{slug}/`、`artifacts/{slug}/` 等相对路径均指该 KnowledgeBase 子树。
 
 | 层次 | 当前状态 | 已落地内容 | 尚未落地内容 |
 | ---- | -------- | ---------- | ------------ |
@@ -778,7 +780,7 @@ sequenceDiagram
 - `web/services/job_manager.py` 仍用进程内线程池执行同步生成任务，但每次状态变化会原子写入 `artifacts/.jobs/{job_id}.json`。`GET /api/jobs` 支持按 `slug`、`target`、`status` 查询，供管理页展示历史和页面恢复轮询。
 - 页面切换或浏览器刷新不会取消 worker。批量候选、状态和 job 映射保存在 `localStorage`；推荐刷新从任务列表找回。服务进程退出后不恢复执行，启动时把遗留 `pending/running` 标记为失败并保留原因。
 - `POST /api/papers/batch-review` 同时设置 `meta_reviewed` 与 `prior_works_reviewed`；管理页以表格方式提供关键词、reviewed、primary pattern 过滤、多选和批量审查。删除、图谱纠错和失败任务重试仍未实现。
-- `/api/publishing/markdown/*` 把 UTF-8 Markdown、可选正文图片/封面保存到 `artifacts/.publishing/{document_id}/`。`publishing/markdown_renderer.py` 确定性输出摸鱼绿主题正文片段，只使用内联样式和 `span leaf`，不包含脚本、外链 CSS 或文档外壳；草稿发布复用现有图片替换和 WeChat client，并作为后台 job 执行。
+- `/api/publishing/markdown/*` 把 UTF-8 Markdown、可选正文图片/封面保存到 `artifacts/.publishing/{document_id}/`。`publishing/markdown_renderer.py` 确定性输出摸鱼绿主题正文片段，只使用内联样式和 `span leaf`，不包含脚本、外链 CSS 或文档外壳；草稿发布复用现有图片替换和 WeChat client，并作为后台 job 执行。未提供封面或 `thumb_media_id` 时，`publishing/cover_generator.py` 按标题生成纯色 JPEG 封面并上传。
 - 今日推荐卡片使用固定两列布局：文本占剩余宽度，缩略图始终位于整个卡片的右侧。
 
 ---

@@ -1,0 +1,11 @@
+\begin{abstract}
+Reinforcement learning (RL) has significantly enhanced the reasoning capabilities of large language models (LLMs), yet the training process remains notoriously fragile. 
+In this work, we investigate a critical source of this instability: \textbf{over-optimization}, where models exploit training heuristics at the expense of generalizable reasoning. 
+While reverse KL regularization is the standard defense against such degradation, our analysis reveals that it is often insufficient in this regime, as it fails to ensure comprehensive coverage of the reference distribution. %insufficient coverage of the reference distribution.
+%lack of active engagement with the reference distribution. 
+To address this, we propose \textbf{ARMOR ({\ul A}nchor {\ul R}ollout and {\ul M}ixed {\ul O}ptimization for {\ul R}L)}, a framework that shifts the paradigm from passive penalty to active sample stabilization. 
+ARMOR comprises two key components: 
+(1) \textbf{Anchor Rollout}, which leverages off-policy data from the reference policy to preserve established solution patterns; 
+and (2) \textbf{Mixed Optimization}, which reformulates the policy objective to enable controlled exploration without relying on auxiliary losses. 
+Extensive experiments on reasoning benchmarks validate that ARMOR effectively mitigates validation collapse, enabling sustained performance improvements over extended training horizons.
+\end{abstract}

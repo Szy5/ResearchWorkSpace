@@ -1,0 +1,42 @@
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.99\columnwidth}
+        \centering
+        \begin{tcolorbox}[title=Graph Inductive Reasoning Prompt]
+            \small
+            ============================= Prompt Input ================================
+    
+            \# Reasoning Paths:
+
+            \texttt{<Reasoning Path 1>}\texttt{<Hypothesis Answer 1>}
+
+            $\ldots$
+
+            \texttt{<Reasoning Path K>}\texttt{<Hypothesis Answer K>}
+            
+            \vspace{10pt}
+
+            \# Question: 
+            
+            \texttt{<Question>}
+
+            \vspace{10pt}
+
+            Based on the reasoning paths, please answer the given question. Please keep the answer as simple as possible and only return answers. Please return each answer in a new line.
+            
+            \vspace{10pt}
+            ============================= LLM Output ================================
+    
+            \texttt{<Answer 1>}
+
+            \texttt{<Answer 2>}
+
+            $\ldots$
+            
+            
+        \end{tcolorbox}
+        \vspace{1mm}
+    \end{minipage}
+    \caption{The prompt template for graph inductive reasoning.}
+    \label{fig:reasoning_prompt}
+\end{figure}

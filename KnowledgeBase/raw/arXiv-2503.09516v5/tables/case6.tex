@@ -1,0 +1,30 @@
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 6 (successful): \Ours can easily answer the question with multi-hop reasoning when sufficient and accurate context is retrieved.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Where is the company that distributed XXXTentacion's single "Revenge" based? \\
+        \hline
+        \textbf{Ground Truth}: San Francisco, California \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find the company that distributed XXXTentacion's single "Revenge". I'll search for it.} \\
+\search{XXXTentacion's single "Revenge" distributed company} \\
+\info{Doc 1(Title: "Revenge (XXXTentacion mixtape)") Revenge (XXXTentacion mixtape) Revenge is a mixtape by American rapper XXXTentacion, released on May 16, 2017 by Empire Distribution. It consists of eight previously released songs that were available for streaming on XXXTentacion's SoundCloud. It was preceded by the lead single ""Look at Me"", which peaked at number 34 on the US ""Billboard"" Hot 100. The lead single from the tape, called ""Look at Me"", premiered on December 31, 2015 on SoundCloud. The song was later released to iTunes as a single on January 29, 2016 until it was later re-released for digital download again with a remastered and clean ...
+} \\
+\hdashline
+\think{I found out that the company distributed XXXTentacion's single "Revenge" is Empire Distribution. Now I need to find the location of the company.} \\
+\search{Empire Distribution location} \\
+\info{Doc 1(Title: "Empire Distribution") Empire Distribution EMPIRE Distribution, Records and Publishing Inc. (marketed as EMPIRE) is an American distribution company and record label founded in 2010 by Ghazi Shami and headquartered in San Francisco, California with offices in New York City and Atlanta. It has released albums in various genres such as RB, reggae, rock, gospel, Latin, country and pop, but it is predominantly focused on hip hop music. Companies and artists such as Top Dawg Entertainment (Kendrick Lamar, Schoolboy Q, Ab-Soul), Steel Wool (Anderson Paak, Watsky, Jez Dior), Jazz Anderson, Cody Wolfe, Kane Brown, Funk Volume (Dizzy Wright, Jarren Benton), ESGN (Freddie Gibbs), ...
+} \\
+\hdashline
+\think{I found out that the company Empire Distribution is based in San Francisco, California. Now I can provide the answer.} \\
+\answer{San Francisco, California}\\
+        \hline
+    \end{tabular}
+\end{table}
+

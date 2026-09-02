@@ -1,0 +1,40 @@
+
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{A case study of R1 and \Ours.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Curious is a women's fragrance by a singer born in what city and state? \\
+        \hline
+        \textbf{Ground Truth}: McComb, Mississippi \\
+        \hline
+        \textbf{R1}: \\
+        % \hline
+        \think{The singer is Beyoncé, who was born in Houston, Texas.} \\ 
+        \answer{Houston} \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find out which city and state a singer, by whom the women's fragrance "Curious" was created, was born in.} \\
+\search{Curious fragrance information} \\
+\info{Doc 1(Title: "Curious (fragrance)") Curious (fragrance) Curious is a women's fragrance by Britney Spears for Elizabeth Arden, and is the first perfume to be endorsed by Britney Spears, preceding ""Fantasy."" Spears reportedly earned \$52 million from the endorsement. ""Curious"" was released in September 2004, and was very successful internationally. It was the number one fragrance of 2004 in department stores, and in 2005, ""Curious"" was honored by the Fragrance Foundation as Best Women's Fragrance. The fragrance is a white floral scent. Its notes are Louisiana magnolia, golden Anjou pear, lotus flower, tuberose, star jasmine, pink cyclamen, vanilla-infused musk, sandalwood and blonde woods. Elizabeth Arden ...
+} \\
+\hdashline
+\think{I need to find out which city and state Britney Spears, the singer behind "Curious" fragrance, was born in.} \\
+\search{Britney Spears birthplace} \\
+\info{Doc 1(Title: "Britney Spears") the best-selling female albums artist of the 2000s. In 2004, she launched a perfume brand with Elizabeth Arden, Inc., from which sales exceeded US\$1.5 billion, . Spears was born in McComb, Mississippi, the second child of Lynne Irene Bridges and James Parnell Spears. Her maternal grandmother, Lillian Portell, was English (born in London), and one of Spears's maternal great-great-grandfathers was Maltese. Her siblings are Bryan James and Jamie Lynn. Britney was born in the Bible Belt, where socially conservative evangelical Protestantism is a particularly strong religious influence. Spears was baptized into the Southern Baptist Convention, but later in life studied ...
+} \\
+\hdashline
+\think{Since Britney Spears was born in McComb, Mississippi, I need to find out which city and state that is.} \\
+\search{McComb, Mississippi location} \\
+\info{Doc 1(Title: "McComb, Mississippi") McComb, Mississippi McComb is a city in Pike County, Mississippi, United States, approximately south of Jackson. As of the 2010 census, the city had a total population of 12,790. It is the principal city of the McComb, Mississippi Micropolitan Statistical Area. McComb was founded in 1872 after Henry Simpson McComb of the New Orleans, Jackson and Great Northern Railroad, a predecessor of the Illinois Central Railroad (now part of the Canadian National Railway), decided to move the railroad's maintenance shops away from New Orleans, Louisiana, to avoid the attractions of that city's saloons. The railroad purchased land in Pike County, ...
+} \\
+\hdashline
+\think{I have found that Britney Spears was born in McComb, Mississippi. Since the question asks for the city and state, I just need to confirm the state, which I already know from the previous search.} \\
+\answer{McComb, Mississippi}\\
+        \hline
+    \end{tabular}
+\end{table}

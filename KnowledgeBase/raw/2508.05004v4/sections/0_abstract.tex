@@ -1,0 +1,10 @@
+Self-evolving Large Language Models (LLMs) offer a scalable path toward superintelligence by autonomously generating, refining, and learning from their own experiences. However, existing methods for training such models still rely heavily on vast human curated tasks and labels, typically via fine-tuning or reinforcement learning, which poses a fundamental bottleneck to advancing AI systems toward capabilities beyond human intelligence.
+To overcome this limitation, we introduce \method{}, a fully autonomous framework that generates its own training data from scratch.
+Starting from a single base LLM, \method{} initializes two independent models with distinct roles -- a \textbf{Challenger} and a \textbf{Solver}. These models are optimized \textbf{separately} and \textbf{co-evolve} through interaction: the Challenger is rewarded for proposing tasks near the edge of the Solver’s capability, and the Solver is rewarded for solving increasingly challenging tasks posed by the Challenger. This process yields a targeted, self-improving curriculum without any pre-existing tasks and labels.
+Empirically, \method{} substantially improves reasoning capability across different backbone LLMs, e.g., boosting the Qwen3-4B-Base by +6.49 on math reasoning benchmarks, and +7.54 on general-domain reasoning benchmarks. 
+
+\begin{center}
+\raisebox{-0.15\height}{\includegraphics[width=0.03\textwidth]{figures/github.png}}
+Code: \url{https://github.com/Chengsong-Huang/R-Zero}.
+\end{center}
+

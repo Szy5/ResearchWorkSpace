@@ -1,0 +1,6 @@
+\section*{Limitations} \label{limitations}
+Although KG-Agent demonstrates remarkable performance across various complex factual question answering tasks, there are some limitations of our method.
+First, we only use the LLaMA2-7B as the backbone LLM, which has a strong capability after instruction tuning. Hence, more experiments are required to evaluate other LLMs with comparable parameter sizes, such as Mistral-7B~\cite{Mistral} or CodeLLaMA-7b~\cite{CodeLLaMA}.
+Second, we focus on reasoning over the KG to answer the factual questions. We should consider extending our framework to deal with more types of knowledge sources, \eg databases or tables.
+Third, we only evaluate factual question answering tasks based on KG. Future work should include wider evaluation scenarios to evaluate the universality of our method, \eg data-to-text and formal-language-to-text~\cite{xie-EMNLP-22}. 
+Finally, we have tried our best to tune the LLM only to answer the questions based on the KG information, and avoid generating discriminatory and risky responses for user questions. However, we should add more rule-based methods to post-process the predictions and filter the illegal responses.

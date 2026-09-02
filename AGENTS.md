@@ -4,8 +4,10 @@
 
 This repository is a personal research-paper knowledge base. The default development boundary for routine work is:
 
-- Layer 0: read-only raw paper assets under `raw/{paper-slug}/`.
-- Layer 1: generated per-paper artifacts under `artifacts/{paper-slug}/`.
+- Layer 0: read-only raw paper assets under `KnowledgeBase/raw/{paper-slug}/`.
+- Layer 1: generated per-paper artifacts under `KnowledgeBase/artifacts/{paper-slug}/`.
+- Layer 2 local graph snapshots live under `KnowledgeBase/graph_state/` and `KnowledgeBase/graph_updates/`.
+- Prompt templates stay at repo-root `prompts/` (code assets, not runtime paper data).
 
 Some Layer 2 graph and publishing utilities already exist. Maintain them only when the user explicitly asks for graph/publishing work. Do not implement new Layer 2 (`wiki/`) or Layer 3 (`retrieval/`, `api/`) phases unless the user explicitly asks for that phase.
 
@@ -56,14 +58,14 @@ pytest
 ## Coding Rules
 
 - Keep Layer 0 raw files read-only.
-- Write generated files only under `artifacts/{paper-slug}/`.
+- Write generated files only under `KnowledgeBase/artifacts/{paper-slug}/` (or the configured `ARTIFACTS_DIR`).
 - The minimal paper assets contract is `manifest.json`, `assets/paper.md`, `assets/sections.json`, `assets/figures/manifest.json` plus image files, and `assets/references.json`.
 - `paper-wiki assets <slug...> [--overwrite]` must stay deterministic and must not call an LLM.
 - `ingest` should build or reuse assets before generating `summary.md`, `prior_works.json`, and `sci_pattern.json`.
 - Layer 1 downstream code should consume `PaperAssetsBundle` through `AssetsReader`; do not reintroduce a legacy `ParsedPaper` adapter in the ingest main path.
 - Validate JSON artifacts with Pydantic models before writing.
 - `summary.md` must remain a content-only Markdown reading note; do not add YAML frontmatter or paper metadata there. It may include a deterministic trailing semantic appendix derived from `prior_works.json` and `sci_pattern.json`.
-- Paper metadata and review state live in `artifacts/{paper-slug}/manifest.json` under `paper`, with `reviewed: false` until a human review happens.
+- Paper metadata and review state live in `KnowledgeBase/artifacts/{paper-slug}/manifest.json` under `paper`, with `reviewed: false` until a human review happens.
 - Do not let ingestion update `wiki/index.md`, graph files, concepts, embeddings, or any retrieval index in the Layer0/Layer1 phase.
 - When adding tests, prefer deterministic parser and mock-LLM tests; real API smoke tests should be explicit and should not expose secrets.
 

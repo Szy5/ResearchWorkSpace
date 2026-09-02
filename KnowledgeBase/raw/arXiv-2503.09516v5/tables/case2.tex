@@ -1,0 +1,25 @@
+
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 2 (failed): \Ours sometimes fail to decompose the complex problem and can be mislead by irrelevent searched passages.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: What was the title of the debut studio album by Weezer which contained the hit Buddy Holly and Undone – The Sweater Song?  \\
+        \hline
+        \textbf{Ground Truth}: The Blue Album  \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to find the title of the debut studio album by Weezer which contained the hit songs "Buddy Holly" and "Undone – The Sweater Song". I'll search for it.} \\
+\search{debut studio album by Weezer which contained the hit Buddy Holly and Undone – The Sweater Song} \\
+\info{Doc 1(Title: "Weezer discography") Weezer discography The discography of Weezer, an American rock band, consists of 11 studio albums, two compilation albums, one video album, six extended plays, 28 singles and 24 music videos. Weezer's self-titled debut studio album, often referred to as ""The Blue Album"", was released in May 1994 through DGC Records. The album was a huge commercial success, peaking at number 16 on the US ""Billboard"" 200 and spawning the singles ""Undone – The Sweater Song"" and ""Buddy Holly"", both of which were responsible for launching Weezer into mainstream success with the aid of music videos directed by Spike Jonze. ...
+} \\
+\hdashline
+\think{I found out that the debut studio album by Weezer which contained the hit songs "Buddy Holly" and "Undone – The Sweater Song" is the self-titled album, often referred to as "The Blue Album". Now I can provide the answer.} \\
+\answer{Weezer}\\
+\hline
+\end{tabular}
+\end{table}

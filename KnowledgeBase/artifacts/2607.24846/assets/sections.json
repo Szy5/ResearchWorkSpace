@@ -1,0 +1,205 @@
+{
+  "sections": [
+    {
+      "id": "sec-abstract",
+      "type": "abstract",
+      "title": "Abstract",
+      "level": 0,
+      "order": 0,
+      "parent_id": "",
+      "source": null,
+      "text": "Traditional conversational recommenders entangle retrieval and response generation within a single text interface, so exact entity cues fade as the dialogue's intent evolves, which compromises explanation credibility. We address this within the ACM RecSys Challenge 2026, which mandates both top-20 ranking and evidence-grounded response generation. This paper presents the third-place solution by team ``swyoo'' for the Blind-B industry track. We decouple retrieval and response into separate pipelines connected strictly via ranked tracks and metadata. Retrieval combines a hybrid lexical-dense pool for exact matching with a task-adapted pool driven by fine-tuned Qwen 8B adapters. Candidates are calibrated via LightGBM, then routed to an evidence-grounded propose-assign-select (PAS) framework to structure responses. This system also ranked second on the explanation-quality leaderboard in the final blind evaluation. Our findings demonstrate that: (i) isolating retrieval and response preserves both catalog cues and fluid intent; (ii) structuring generation via explicit evidence assignment is key to this near-best-in-class explanation reliability.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-introduction",
+      "type": "section",
+      "title": "Introduction",
+      "level": 1,
+      "order": 1,
+      "parent_id": "",
+      "source": null,
+      "text": "Conversational music recommendation (CRS) must balance precise catalog entity retrieval with fluid dialogue tracking [melchiorre2025jam, kemper2024rarec]. Traditional architectures route both tasks through a single text interface, so as later turns emphasize evolving preferences, earlier entity mentions are diluted within the accumulated query text and dropped from retrieval, undermining the exact catalog matches that credible explanations require [qin2024credible]. To resolve this, we propose an operationally decoupled architecture that separates retrieval and response. As shown in Figure fig:pipeline, these pipelines connect strictly via ranked candidates and metadata evidence, directly aligning with the ACM RecSys Challenge 2026[^1] objectives of top-20 ranking and evidence-grounded response generation.\n\nFigure fig:textviewsb illustrates this single-interface vulnerability. At turn 4, a listener requests \"melancholic darkwave\" citing *Switchblade Symphony*; by turn 6, they add \"gothic rock\" and a \"heavier beat\" without repeating the artist. A keyword baseline (`bm25_qmr`) drops the ground-truth track---\"Dollhouse (Razed In Black Mix)\"---to 20th place due to this entity shift. Our system instead runs a hybrid lexical--dense pool for exact matching alongside a conversational pool driven by fine-tuned Qwen 8B adapters (Figure fig:textviewsa): the 8B pool alone recovers the target to fourth place, RRF of the two views lifts it to second, and LightGBM ranks it first.\n\nAfter ranking, generating explanations requires strict factual grounding. Instead of relying on free-form generation, we adapt an evidence-grounded PAS framework (Figure fig:pas). PAS converts response generation into a joint reasoning step conditioned on candidate-level evidence and a matched demonstration, followed by deterministic validation to anchor outputs to verified catalog attributes. We release our full pipeline[^2]. Our main technical contributions are:\n\n- An operationally decoupled CRS framework separating retrieval from response generation.\n\n- A multi-view calibration pipeline merging hybrid and Qwen 8B adapter pools via LightGBM.\n\n- The PAS response architecture enforcing structural evidence assignment to improve explanation reliability.\n\n*Figure: System overview. Two retrieval views merge only at calibration; PAS grounds the response in the fixed top 20.*\n\n[^1]: <https://www.recsyschallenge.com/2026/>\n\n[^2]: <https://github.com/yoobros/music-crs-challenge>",
+      "labels": [
+        "fig:pipeline"
+      ],
+      "citations": [
+        "kemper2024rarec",
+        "melchiorre2025jam",
+        "qin2024credible"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-method",
+      "type": "section",
+      "title": "Method",
+      "level": 1,
+      "order": 2,
+      "parent_id": "",
+      "source": null,
+      "text": "As shown in Figure fig:pipeline, our pipeline sequentially enriches the track catalog with external metadata, routes dialogue through two complementary retrieval pools, calibrates candidate rankings via LightGBM, and structures the final output using an evidence-grounded PAS framework.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-official-data-and-external-metadata",
+      "type": "subsection",
+      "title": "Official Data and External Metadata",
+      "level": 2,
+      "order": 3,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "The official TalkPlayData-Challenge dataset suite[^1] supplies a 47,071-track catalog along with dialogue sessions and conversation goals. To mitigate data sparsity, we integrate external metadata from TalkPlayTools-Env[^2] for descriptive audio, LRCLIB[^3] for lyrics fallback, and MusicBrainz[^4] for structured fields. As shown in Table tab:metadata, these sources provide complementary coverage, enriching 96.6% of the catalog with at least one external field.\n\n**Table: Coverage of external metadata over the 47,071-track catalog. Source rows may overlap.**\n\n```latex\n\\begin{table}[h]\n\\caption{Coverage of external metadata over the 47,071-track catalog.\n Source rows may overlap.}\n \\label{tab:metadata}\n \\centering\n \\scriptsize\n \\renewcommand{\\arraystretch}{0.9}\n \\setlength{\\tabcolsep}{4pt}\n \\begin{tabular}{@{}lp{3.3cm}rr@{}}\n \\toprule\n Source & Information used & Tracks & Coverage \\\\\n \\midrule\n TalkPlayTools-Env & lyrics, caption, chord, tempo, key & 13,745 & 29.2\\% \\\\\n LRCLIB & lyrics fallback & 28,162 & 59.8\\% \\\\\n MusicBrainz & IDs, release, label, country, tags & 38,585 & 82.0\\% \\\\\n Any source & at least one sourced field & 45,475 & 96.6\\% \\\\\n \\bottomrule\n \\end{tabular}\n \\vspace{-2mm}\n\\end{table}\n```\n\nFor example, the track \"Dollhouse\" in Figure fig:textviewsb expands its baseline gothic and industrial tags with external fields such as 130.21 BPM and D# minor. This enriched profile flows downstream: keywords expand BM25 documents, structured properties populate conversational track briefs, and captions and lyrics ground PAS response generation; missing fields are strictly omitted.\n\n[^1]: <https://huggingface.co/datasets/talkpl-ai/TalkPlayData-Challenge-Dataset>\n\n[^2]: <https://huggingface.co/datasets/talkpl-ai/TalkPlayTools-Env>\n\n[^3]: <https://lrclib.net/>\n\n[^4]: <https://musicbrainz.org/>",
+      "labels": [
+        "tab:metadata"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-pool-specific-retrieval-interfaces",
+      "type": "subsection",
+      "title": "Pool-Specific Retrieval Interfaces",
+      "level": 2,
+      "order": 4,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "Rather than issuing a single query, our architecture routes retrieval through two parallel interfaces (Figure fig:textviews). The hybrid pool (`bm25_qmr`) combines sparse and dense mechanisms. The sparse component runs two BM25 searches [robertson1994okapi]: a baseline catalog search and a variant enriched with catalog tags and external keywords. Its query fuses metadata from prior music turns with filtered current-request tokens, and an RRF layer [cormack2009rrf] merges their rankings. The dense component uses a 0.6B Qwen3 embedding model [qwen3embedding2025], joining historical metadata with the lowercased current request to query official document vectors. A second RRF fuses the sparse and dense rankings without score calibration, producing the hybrid pool's candidate list.\n\n*Figure: Two final-pool pipelines and temporal separation of inputs. (a) Topology of the hybrid and conversational pipelines. (b) Input-target pairs for Turn 6. The bottom subtable details the 8B model's query structure.*\n\nThe conversational pool (`qemb_twotower_8b`) relies entirely on natural language on both sides to track long-range session dynamics. The query format strictly structures the dialogue history into four ordered fields: `Recent listens:` lists prior tracks chronologically; `Session so far:` supplies an optional cached preference trajectory summary under 25 words; `Context:` aggregates explicit goals, eras, and popularity cues; and `Looking for:` contains the current explicit request. When context window limits are reached, a strict truncation priority rule preserves the user's immediate intent: because `Looking for:` sits adjacent to the final embedding token, it is never dropped, whereas lower-priority historical context fields are truncated first. To optimize this contextual mapping, we fine-tune an 8B parameter encoder model using 4-bit QLoRA [dettmers2023qlora] under an in-batch InfoNCE contrastive objective [oord2018cpc] with LogQ frequency correction [yi2019sampling]. The dense retrieval is executed across five session-level cross-validation folds, and their rankings are combined via RRF into the unified `qemb_twotower_8b` pool (bagging).\n\nTurn 1 lacks dialogue history: BM25 and dense queries collapse into the current request tokens, and the 8B query retains only the `Context:` and `Looking for:` fields. Document representations remain unchanged, and the downstream LightGBM feature row records the turn number.",
+      "labels": [
+        "fig:textviews"
+      ],
+      "citations": [
+        "cormack2009rrf",
+        "dettmers2023qlora",
+        "oord2018cpc",
+        "qwen3embedding2025",
+        "robertson1994okapi",
+        "yi2019sampling"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-candidate-fusion-and-calibration",
+      "type": "subsection",
+      "title": "Candidate Fusion and Calibration",
+      "level": 2,
+      "order": 5,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "To consolidate retrieval, the system unions the top-100 candidates from each pool. A LightGBM [ke2017lightgbm] ranker then scores and calibrates this final list. Table tab:features outlines the input feature schema. The model ingests individual ranks and scores from both pools, alongside their cross-pool RRF metrics. Turn number, request category, and goal specificity define the session context. Non-retrieved candidates receive sentinel values. Training uses out-of-fold scoring to prevent data leakage from the 8B retrieval model.\n\n**Table: LightGBM feature schema.**\n\n```latex\n\\begin{table}[h]\n\\caption{LightGBM feature schema.}\n \\label{tab:features}\n \\centering\n \\scriptsize\n \\renewcommand{\\arraystretch}{0.9}\n \\setlength{\\tabcolsep}{5pt}\n \\begin{tabular}{@{}lll@{}}\n \\toprule\n Source & Fields & Decision evidence \\\\\n \\midrule\n Hybrid pool & rank, score & exact/general support \\\\\n Conversational pool & rank, score & dialogue support \\\\\n Cross-pool RRF & rank, score & retrieval agreement \\\\\n Context & turn, category, specificity & request regime \\\\\n \\bottomrule\n \\end{tabular}\n\\end{table}\n```\n\n*Figure: PAS runtime execution mapped to a single-shot demonstration workflow. Candidate-level evidence groups and a bucket-matched example condition a single LLM call, followed by deterministic validation.*\n\n*Figure: Offline demonstration compilation and runtime routing mechanisms. The current request signature queries the shared 18-example bank. The A|HL|mid route then selects a matching example.*\n\n**Table: Public-test retrieval results; 0.6B is not task-adapted.**\n\n```latex\n\\begin{table*}[!t]\n\\begin{minipage}[t]{0.49\\textwidth}\n \\caption{Public-test retrieval results; 0.6B is not task-adapted.}\n \\label{tab:retrieval}\n \\centering\n \\scriptsize\n \\renewcommand{\\arraystretch}{0.9}\n \\setlength{\\tabcolsep}{5pt}\n \\begin{tabular}{@{}lccc@{}}\n \\toprule\n Configuration & nDCG & R@20 & R@100 \\\\\n \\midrule\n Enriched BM25 ensemble & .1599 & .3321 & .4793 \\\\\n Untrained 0.6B dense & .1210 & .2385 & .3531 \\\\\n Hybrid lexical--dense & .1550 & .3170 & .4639 \\\\\n 8B five-fold RRF & .2165 & .4363 & .6619 \\\\\n Full cross-pool RRF & .2198 & \\textbf{.4406} & \\textbf{.6630} \\\\\n + LightGBM & \\textbf{.2208} & .4400 & \\textbf{.6630} \\\\\n \\bottomrule\n \\end{tabular}\n \\end{minipage}\\hfill\n \\begin{minipage}[t]{0.47\\textwidth}\n \\caption{Blind-A response check on fixed track IDs.}\n \\label{tab:response}\n \\centering\n \\scriptsize\n \\renewcommand{\\arraystretch}{0.9}\n \\setlength{\\tabcolsep}{5pt}\n \\begin{tabular}{@{}lccc@{}}\n \\toprule\n Generator & Demos & Judge & Composite \\\\\n \\midrule\n GLM-5.2 PAS & 3 & 4.80 & .6556 \\\\\n Gemini-3.1-Flash-Lite PAS & 3 & 4.75 & .6518 \\\\\n GLM-5.2 PAS & 1 & \\textbf{4.90} & \\textbf{.6631} \\\\\n \\bottomrule\n \\end{tabular}\n \\end{minipage}\n\\end{table*}\n```\n\n**Table: Category nDCG@20 and relative gains (\\%) by retrieval pool and dialogue stage. Bold marks the best retrieval result in each category.**\n\n```latex\n\\begin{table}[!t]\n\\caption{Category nDCG@20 and relative gains (\\%) by retrieval pool and\n dialogue stage. Bold marks the best retrieval result in each category.}\n \\label{tab:pool-category}\n \\centering\n \\fontsize{6}{6.9}\\selectfont\n \\setlength{\\tabcolsep}{1.7pt}\n \\resizebox{\\columnwidth}{!}{\n \\begin{tabular}{@{}lrrrrrrrrr@{}}\n \\toprule\n Category (N) & BM25 & 0.6B & Adapt. 8B & Fusion & $\\Delta_{\\mathrm{crawl}}$ & $\\Delta_{\\mathrm{best}}$ & Early & Mid. & Late \\\\\n \\midrule\n Sound traits (61) & .161 & .147 & \\textbf{.219} & .216 & $+5.5$ & $-1.7$ & $-7.2$ & $-0.4$ & $+0.8$ \\\\\n Lyrics (142) & .178 & .126 & .224 & \\textbf{.229} & $+6.3$ & $+2.5$ & $+5.5$ & $+4.7$ & $-1.8$ \\\\\n Artwork (58) & .139 & .109 & .174 & \\textbf{.176} & $+2.7$ & $+0.8$ & $-0.8$ & $-3.2$ & $+7.5$ \\\\\n Activity fit (86) & .152 & .119 & .200 & \\textbf{.205} & $+2.9$ & $+2.3$ & $+3.8$ & $-2.4$ & $+7.2$ \\\\\n Discovery (95) & .173 & .127 & .214 & \\textbf{.217} & $+4.9$ & $+1.1$ & $-0.6$ & $-1.0$ & $+5.0$ \\\\\n Memory (95) & .193 & .153 & .275 & \\textbf{.281} & $+3.2$ & $+2.1$ & $+4.0$ & $+2.3$ & $+0.2$ \\\\\n Mood (77) & .156 & .098 & .197 & \\textbf{.201} & $+7.7$ & $+1.7$ & $-2.3$ & $+1.4$ & $+5.2$ \\\\\n Artist (135) & .177 & .150 & .242 & \\textbf{.245} & $+2.4$ & $+1.2$ & $+2.2$ & $-3.1$ & $+5.2$ \\\\\n Exact hit (18) & .118 & .070 & .164 & \\textbf{.180} & $+24.4$ & $+10.1$ & $+9.3$ & $+14.7$ & $+6.5$ \\\\\n Trends (77) & .136 & .095 & .211 & \\textbf{.217} & $+2.9$ & $+3.2$ & $-1.6$ & $+1.1$ & $+11.6$ \\\\\n Era (156) & .132 & .094 & \\textbf{.196} & .195 & $+7.9$ & $-0.1$ & $-3.0$ & $+1.5$ & $+1.2$ \\\\\n \\bottomrule\n \\end{tabular}}\n\\end{table}\n```",
+      "labels": [
+        "fig:demo-compiler",
+        "fig:pas",
+        "tab:features",
+        "tab:pool-category",
+        "tab:response",
+        "tab:retrieval"
+      ],
+      "citations": [
+        "ke2017lightgbm"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-pas-response-generation",
+      "type": "subsection",
+      "title": "PAS Response Generation",
+      "level": 2,
+      "order": 6,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "We adapt the PAS framework [wang2023goalex] to enforce structural constraints on response claims for the top-20 ranked tracks. Figure fig:pas illustrates the complete runtime execution alongside a sample trace. First, the propose stage partitions the 20 candidates into distinct evidence groups under fixed precedence rules: query alignment, lyric resonance, taste continuity, pool coherence, and discovery. In the sample trace, tokens matching \"driving bassline\" and \"dark and intense\" yield a 0.60 similarity score for \"Camel\" by Flying Lotus, satisfying the query-alignment threshold.\n\nA single structured LLM call processes the proposed candidate groups together with one routed demonstration. This demonstration provides response selection guidance rather than introducing additional recommendation candidates. Second, within this single call, the assign step identifies usable personalization anchors and supported themes. Third, the select step chooses a core track, optional supplementary tracks for requests seeking multiple tracks, and optional historical references. The same joint call generates the raw response text. Lastly, deterministic rules validate and repair title formatting errors or citation violations. If the draft matches any blacklisted session phrases, PAS triggers a single generation retry.\n\nFigure fig:demo-compiler outlines the offline compilation process for the reusable demonstration bank. The compilation pipeline samples 1,000 eligible recommendation turns from the TalkPlayData training split. GLM-5.2 generates the initial candidate responses. An independent LLM-as-judge scores personalization and explanation metrics on a 1-to-5 scale. We normalize these outputs into a unified quality metric. The final score weights this quality metric at 75% and lexical novelty at 25%. Viable candidates must contain between 15 and 130 words and achieve a minimum combined score of 0.7. A coverage-aware filtering step balances the final selection across request category, specificity, and turn position. This selection process yields a fixed 18-example runtime demonstration bank.\n\nAt runtime, each incoming request derives a routing key based on its category, specificity, and turn. The router evaluates the exact matching bucket first. If that bucket is empty, the system sequentially falls back to category matches, specificity or turn matches, and the global bank. The router injects the highest-scoring demonstration from the first nonempty layer. Figure fig:demo-compiler displays the key `A|HL|mid`, where `A` represents a sound-focused category, `HL` encodes high goal specificity with low track specificity, and `mid` indicates a mid-dialogue turn. The trace shown in Figure fig:pas instantiates this routed example.",
+      "labels": [
+        "sec:pas_generation"
+      ],
+      "citations": [
+        "wang2023goalex"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experiments",
+      "type": "section",
+      "title": "Experiments",
+      "level": 1,
+      "order": 7,
+      "parent_id": "",
+      "source": null,
+      "text": "",
+      "labels": [
+        "sec:experiments"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-evaluation-setup",
+      "type": "subsection",
+      "title": "Evaluation Setup",
+      "level": 2,
+      "order": 8,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "We score 8,000 turns from the 1,000-session public test split against all 47,071 tracks using nDCG@20, R@20, and R@100. Blind-A and Blind-B contain 80 truncated sessions each and are used only for final external checks. Response ablations fix track IDs. In Table tab:response, Judge is the score returned by the organizers' undisclosed LLM judge, and Composite is the official aggregate score.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-results-and-controlled-ablations",
+      "type": "subsection",
+      "title": "Results and Controlled Ablations",
+      "level": 2,
+      "order": 9,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "Table tab:retrieval summarizes public-test retrieval results. Individual 8B folds range from .2018 to .2138 in nDCG@20, from .4100 to .4298 in R@20, and from .6369 to .6435 in R@100. Five-fold RRF provides the largest ranking gain. It improves over the mean individual fold by .0076 nDCG@20 and raises R@100 from .6409 to .6619.\n\nThe pools recover different targets. At least one pool places the target in the top 20 on 3,838 turns. Both succeed on 2,188; the conversational pool alone succeeds on 1,302, and the hybrid pool alone succeeds on 348. Their top-20 candidate sets have a mean Jaccard overlap of .231. This complementarity makes fusion useful: cross-pool RRF raises nDCG@20 from .2165 to .2198. LightGBM further raises it to .2208, while R@20 changes from .4406 to .4400 and R@100 remains .6630. These mixed changes support interpreting LightGBM as candidate-order calibration rather than as a broad retrieval gain.\n\nWith tracks fixed, Table tab:response isolates response generation. Among GLM-5.2 runs, one routed demonstration outperforms three. On Blind-B, PAS raises the official composite from .55 to .58. This supports the routed one-shot choice under the automatic judge but does not support a claim about human preference.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-pool-behavior-by-request-and-turn",
+      "type": "subsection",
+      "title": "Pool Behavior by Request and Turn",
+      "level": 2,
+      "order": 10,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "Table tab:pool-category tests whether fusion helps uniformly. For each subset, $\\Delta_{\\mathrm{best}}$ is $100(\\mathrm{Fusion}/\\mathrm{best}-1)$, where best is the strongest of BM25, 0.6B, and 8B. $\\Delta_{\\mathrm{crawl}}$ is $100(\\mathrm{BM25}/\\mathrm{BM25}_{\\mathrm{no\\ crawl}}-1)$. Early, Mid., and Late report $\\Delta_{\\mathrm{best}}$ for turns 1--2, 3--5, and 6--8; $N$ is the number of sessions.\n\nBold values in Table tab:pool-category identify each category's best result. The adapted 8B pool is the strongest individual pool in all eleven categories; fusion is best in nine. Its benefit appears more often later in the dialogue: fusion improves over the best individual pool in five categories during early turns, six during middle turns, and ten during late turns. Sound-focused and era-focused requests are the two aggregate exceptions.\n\nCrawl-derived fields raise enriched BM25 from .1524 to .1599 nDCG@20, an aggregate 4.9% gain, with category-level gains ranging from +2.4% to +24.4% (Table tab:pool-category). The untrained 0.6B dense component does not improve BM25 on the public test split; adding it lowers the hybrid result from .1599 to .1550. Replacing BM25's music-only query with the full dialogue further lowers hybrid nDCG@20 to .1527. The released BM25 interface therefore retains prior track metadata and the current request but excludes earlier user and assistant text.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-analysis-and-limitations",
+      "type": "section",
+      "title": "Analysis and Limitations",
+      "level": 1,
+      "order": 11,
+      "parent_id": "",
+      "source": null,
+      "text": "Three design lessons emerge. Tailoring input text to each scoring mechanism lets the hybrid interface exploit exact catalog cues while the conversational interface tracks evolving language, as Figure fig:textviews shows. The low candidate overlap and complementary target hits between these channels create productive pool disagreement, explaining why cross-pool RRF outperforms single-pool baselines (Section sec:experiments). Finally, explicit evidence and role assignments let PAS prioritize evidence-backed selection over surface realization.\n\nThese findings point toward extending the LightGBM ranker, which currently relies on only two upstream pools and compact features; stronger retrieval components and richer track--dialogue features would give the calibrator more informative signals and further extend its reranking gains.\n\nSeveral limitations remain. Uneven external metadata can constrain PAS despite deterministic validation, and the in-house judge may introduce model bias during offline compilation. The 18-example synthetic bank also cannot cover every dialogue state or sparse request bucket, and the five adapted 8B folds plus LLM-based synthesis require substantial compute. This study therefore leaves runtime latency, serving cost, and human preference unevaluated.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-conclusion",
+      "type": "section",
+      "title": "Conclusion",
+      "level": 1,
+      "order": 12,
+      "parent_id": "",
+      "source": null,
+      "text": "Isolating retrieval from response generation optimizes recommendation accuracy and system transparency. Pool-specific text interfaces safeguard exact catalog cues, cross-pool RRF captures complementary ranking signals, and the PAS framework prevents ungrounded claims through structured constraints. Empirical evaluation confirms that external crawl enrichment drives performance gains across all request categories, while fusion delivers its largest benefits in late-dialogue turns. This clear separation of concerns supported our third-place finish in the Blind-B industry track, proving that decoupling retrieval from surface realization maintains competitive performance while keeping all decisions fully inspectable.=-1\n\n=10000 {ACM-Reference-Format} {references}\n\n{document}",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    }
+  ]
+}

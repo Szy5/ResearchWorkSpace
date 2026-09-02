@@ -1,0 +1,24 @@
+% \vspace{-5pt}
+\section{Conclusion}
+% \vspace{-3pt}
+In this work, we tackle the critical challenge of \textit{over-optimization} in scaling RL for reasoning.
+We identify that standard reverse KL regularization is insufficient due to an intrinsic \textbf{stability-exploration dilemma}: its mode-seeking nature leads to mode collapse, while uniform constraints cause stagnation.
+To resolve this, we introduce \textbf{ARMOR}, a framework that synergizes \textbf{Anchor Rollout} to actively stabilize the sample distribution and \textbf{Mixed Optimization} to construct an adaptive trust region for exploration.
+Extensive experiments confirm that ARMOR effectively prevents degradation and unlocks sustained performance gains across diverse training settings.
+
+% \section{Conclusion and Future Work}
+
+% \textbf{Conclusion}.
+% In this work, we tackle the critical challenge of \textit{over-optimization} in scaling RL for reasoning.
+% We identify that standard reverse KL regularization is insufficient due to an intrinsic \textbf{stability-exploration dilemma}: its mode-seeking nature leads to mode collapse, while uniform constraints cause stagnation.
+% To resolve this, we introduce \textbf{ARMOR}, a framework that synergizes \textbf{Anchor Rollout} to actively stabilize the sample distribution and \textbf{Mixed Optimization} to construct an adaptive trust region for exploration.
+% Extensive experiments confirm that ARMOR effectively prevents degradation and unlocks sustained performance gains across diverse training settings.
+
+% \textbf{Limitations and Future Work}.
+% While ARMOR offers a robust solution for RL scaling, we acknowledge several limitations that point toward future directions:
+% \textit{(1) Computational Overhead:} Incorporating anchor samples through rejection sampling incurs additional inference cost.
+% While we regard this as a justified investment for stable scaling, future work could mitigate this cost with an offline replay buffer to recycle high-quality anchors.
+% % Utilizing an offline replay buffer could reduce such overhead.
+% \textit{(2) Additional Hyperparameter:} Currently, the reference reset strategy is determined manually. 
+% Future work could explore adaptive scheduling to automate this process.
+% \textit{(3) Theoretical Analysis:} While our trust-region analysis explains how Mixed Optimization safely incorporates more signals, establishing a theoretical guarantee linking this adaptation to superior convergence or optimality remains an open challenge.

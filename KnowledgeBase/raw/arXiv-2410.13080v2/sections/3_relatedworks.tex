@@ -1,0 +1,12 @@
+% \vspace{-0.2cm}
+\section{Related Work}
+\noindent\textbf{LLM reasoning.} Many studies have been proposed to analyze and improve the reasoning ability of LLMs \citep{wei2022chain,wangself,yao2024tree}. To elicit the reasoning ability of LLMs, Chain-of-thought (CoT) reasoning \citep{wei2022chain} prompts the model to generate a chain of reasoning steps in response to a question. \citet{wangself} propose a self-consistency mechanism that generates multiple reasoning paths and selects the most consistent answer across them. The tree-of-thought \citep{yao2024tree} structures reasoning as a branching process, exploring multiple steps in a tree-like structure to find optimal solutions. Other studies focus on fine-tuning LLMs on various reasoning tasks to improve reasoning abilities \citep{yu2022alert,hoffman2024training}. For instance, \citet{openai_o1} adopts reinforcement learning to train their most advanced LLMs called ``OpenAI o1'' to perform complex reasoning, which produces a long internal chain of thought before final answers.
+
+\noindent\textbf{KG-enhanced LLM reasoning.}
+To mitigate the knowledge gap and hallucination issues in LLM reasoning, research incorporates KGs to enhance LLM reasoning \citep{pan2023unifying}. KD-CoT \citep{wang2023knowledge} retrieve facts from an external knowledge graph to guide the CoT performed by LLMs. RoG \citep{luo2024rog} proposes a planning-retrieval-reasoning framework that retrieves reasoning paths from KGs to guide LLMs conducting faithful reasoning. To capture graph structure, GNN-RAG \citep{mavromatis2024gnn} and GFM-RAG \citep{luo2025gfmrag} adopt the graph neural network to effectively retrieve from KGs. Instead of retrieving, StructGPT \citep{jiang2023structgpt} and ToG \citep{sunthink} treat LLMs as agents to interact with KGs to find reasoning paths leading to the correct answers.
+
+%StructGPT \citep{jiang2023structgpt} treats LLMs as agents to interact with KGs to find a reasoning path leading to the correct answer. 
+
+
+
+% \noindent\textbf{Constrained decoding.}

@@ -1,0 +1,549 @@
+\section{Benchmark details}
+\label{app:details}
+
+\subsection{Semi-structured Knowledge Bases (SKBs)}
+\label{app:skb}
+
+We present the public sources that we used to construct the SKBs in the table below. We have adhered to the licenses of each public resource.
+\input{tables/benchmark_sources}
+
+We build an interactive platform to inspect the data of all three SKBs at \textcolor{cyan}{\url{https://stark.stanford.edu/skb_explorer.html}}. 
+We introduce more detailed data statistics below. 
+
+\xhdr{Amazon SKB} In total, it comprises around 1.0M entities (\texttt{product} entities: 0.9M, \texttt{brand} entities: 0.1M, \texttt{category} entities: 1.4k, \texttt{color} entities: 1.7k) and 9.4M relations (\texttt{also\_bought}: 2.8M, \texttt{also\_viewed}: 1.9M, \texttt{has\_brand}: 1.7M, \texttt{has\_category}: 2.3M, \texttt{has\_color}: 0.6M).
+
+\xhdr{MAG SKB}
+    This SKB contains around 1.9M entities under four entity types  (\texttt{author}: 1.1M, \texttt{paper}: 0.7M, \texttt{institution}: 8.7K, \texttt{field\_of\_study}: 59.5k) and 39.8M relations under four relation types  (\texttt{author\_writes\_paper}: 13.5M, \texttt{paper\_has\_field\_of\_study}: 14.5M, \texttt{paper\_cites\_paper}: 9.7M, \texttt{author\_affiliated\_with\_institution}: 2.0M). 
+    
+\xhdr{Prime SKB}
+The entity count in our knowledge base is approximately 129.3K, with around 8.1M relations. The numbers of entities in each type are listed below:
+\begin{center}
+    \begin{verbatim}
+    #disease:            17,080 
+    #gene/protein:       27,671 
+    #molecular_function: 11,169 
+    #drug:                7,957 
+    #pathway:             2,516 
+    #anatomy:            14,035 
+    #effect/phenotype:   15,311 
+    #biological_process: 28,642 
+    #cellular_component:  4,176 
+    #exposure:              818
+    \end{verbatim}
+\end{center}
+
+\subsection{\revision{\amazont}}
+\label{app:amazon}
+
+
+% We divide the synthesized queries on each dataset into training, validation, and testing subsets, with the ratios detailed in Table~\ref{tab:benchmark_stats}, \hw{while using the human-generated queries as additional sets for evaluation.} 
+% For the \amazonh dataset, we randomly allocate a subset of queries with 20 or fewer answers to the validation and testing sets, while the remaining queries are assigned to the training set. For the \magh and \primekgt, we use random splits to divide the data.
+
+\xhdr{Relational query templates} These are the \textbf{basic} relational templates on \amazont. Note that the final relational template can be composed of multiple basic templates. For example, `\texttt{(color → product ← brand)}' represents a relational template combined from two basic relational templates.
+\begin{table}[h]
+\begin{tabularx}{\textwidth}{c|X}
+\toprule
+metapath          & Query template\\
+\midrule
+\texttt{(brand → product)} & "Can you list the products made by <brand>?" \\
+\texttt{(product → product)} & "Which products are similar to <product>?" \\
+\texttt{(color → product)} & "Can you provide a list of products that are available in <color>?" \\
+\texttt{(category → product)}& "What products are available in the <category> category?" \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+
+
+\subsection{\magt}
+\label{app:mag}
+
+\xhdr{Relational query templates} We constructed seven relational templates below:
+
+\begin{table}[h]
+\begin{tabularx}{\textwidth}{c|X}
+\toprule
+metapath          & multi-hop query template\\
+\midrule
+ \texttt{(author → paper)} & "Can you list the papers authored by <author>?" \\
+\texttt{(paper → paper)} &  "Which papers have been cited by the paper <paper>?"\\
+\texttt{(field\_of\_study → paper)} & "Can you provide a list of papers in the field of <field\_of\_study>?"\\
+\texttt{(institution → author → paper)}& "What papers have been published by researchers from <institution>?"\\
+\texttt{(paper → author → paper)}& "What papers have been published by researchers that are coauthors of <paper>?"\\
+\makecell{\texttt{(paper → author → paper} \\ \texttt{ ← field\_of\_study ← paper)}}&"Can you find papers that share a coauthor with <paper> and are also in the same field of study?" \\
+\makecell{\texttt{(institution → author → } \\ \texttt{paper ← field\_of\_study)}} & "Are there any papers associated with <institution> and are in the field of <field\_of\_study>?" \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% \begin{verbatim}
+% {
+% (author → paper): "Can you list the papers authored by <author>?",
+% (paper → paper): "Which papers have been cited by the paper <paper>?",
+% (field_of_study → paper): "Can you provide a list of papers in the field 
+%     of <field_of_study>?",
+% (institution → author → paper): "What papers have been published by 
+%     researchers from <institution>?",
+% (paper → author → paper): "What papers have been published by researchers 
+%     that are coauthors of <paper>?",
+% (paper → author → paper ← field_of_study ← paper): "Can you find papers
+%      that share a coauthor with <paper> and are also in the same field of study?",
+% (institution → author → paper ← field_of_study): "Are there any papers 
+%     associated with <institution> and are in the field of <field_of_study>?"
+% }
+% \end{verbatim}
+For example, the metapath \texttt{(field\_of\_study $\rightarrow$ paper)} requires an initial \texttt{field\_of\_study} entity to be filled in the corresponding query template. For multi-hop metapaths, the last metapath \texttt{(institution $\rightarrow$ author $\rightarrow$ paper $\leftarrow$ field\_of\_study)} requires an \texttt{institution} entity and a \texttt{field\_of\_study} entity to initialize the query. 
+
+\subsection{\primekgt}
+\label{app:prime}
+% \xhdr{Relational tuples}
+% \begin{scriptsize}
+% \begin{verbatim}
+% [(anatomy, expression absent, gene/protein), 
+% (anatomy, expression present, gene/protein), 
+% (anatomy, parent-child, anatomy), 
+% (biological_process, interacts with, exposure), 
+% (biological_process, interacts with, gene/protein), 
+% (biological_process, parent-child, biological_process), 
+% (cellular_component, interacts with, exposure), 
+% (cellular_component, interacts with, gene/protein), 
+% (cellular_component, parent-child, cellular_component), 
+% (disease, associated with, gene/protein), 
+% (disease, contraindication, drug), 
+% (disease, indication, drug), 
+% (disease, linked to, exposure), 
+% (disease, off-label use, drug), 
+% (disease, parent-child, disease), 
+% (disease, phenotype absent, effect/phenotype), 
+% (disease, phenotype present, effect/phenotype), 
+% (drug, carrier, gene/protein), 
+% (drug, contraindication, disease),
+% (drug, enzyme, gene/protein), 
+% (drug, indication, disease), 
+% (drug, off-label use, disease), 
+% (drug, side effect, effect/phenotype), 
+% (drug, synergistic interaction, drug), 
+% (drug, target, gene/protein), 
+% (drug, transporter, gene/protein), 
+% (effect/phenotype, associated with, gene/protein), 
+% (effect/phenotype, parent-child, effect/phenotype), 
+% (effect/phenotype, phenotype absent, disease), 
+% (effect/phenotype, phenotype present, disease), 
+% (effect/phenotype, side effect, drug), 
+% (exposure, interacts with, biological_process),
+% (exposure, interacts with, cellular_component), 
+% (exposure, interacts with, gene/protein), 
+% (exposure, interacts with, molecular_function),
+% (exposure, linked to, disease), 
+% (exposure, parent-child, exposure), 
+% (gene/protein, associated with, disease), 
+% (gene/protein, associated with, effect/phenotype), 
+% (gene/protein, carrier, drug), 
+% (gene/protein, enzyme, drug), 
+% (gene/protein, expression absent, anatomy), 
+% (gene/protein, expression present, anatomy), 
+% (gene/protein, interacts with, biological_process), 
+% (gene/protein, interacts with, cellular_component), 
+% (gene/protein, interacts with, exposure), 
+% (gene/protein, interacts with, molecular_function), 
+% (gene/protein, interacts with, pathway), 
+% (gene/protein, ppi, gene/protein), 
+% (gene/protein, target, drug), 
+% (gene/protein, transporter, drug), 
+% (molecular_function, interacts with, exposure), 
+% (molecular_function, interacts with, gene/protein), 
+% (molecular_function, parent-child, molecular_function), 
+% (pathway, interacts with, gene/protein), 
+% (pathway, parent-child, pathway)]
+% \end{verbatim}
+% \end{scriptsize}
+
+\xhdr{Relational query templates} For synthesized queries, we listed 28 multi-hop templates designed by experts to cover various relation types and ensure their practical relevance. 
+
+For instance, the query ``What is the drug that targets the genes or proteins expressed in <anatomy>?'' serves applications in precision medicine and pharmacogenomics, 
+aiding researchers and healthcare professionals in identifying drugs that act on genes or proteins associated with specific anatomical areas and enabling more targeted treatments. 
+
+\vspace{10pt}
+\begin{mdframed}[backgroundcolor=gray!5, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\begin{scriptsize}
+\begin{verbatim}
+{   
+(effect/phenotype → [phenotype absent] → disease ← [!indication] ← drug): 
+    "Find diseases with zero indication drug and are associated with <effect/phenotype>",
+(drug → [contraindication] → disease ← [associated with] ← gene/protein): 
+    "Identify diseases associated with <gene/protein> and are contraindicated with <drug>",
+(anatomy → [expression present] → gene/protein ← [expression absent] ← anatomy): 
+    "What gene or protein is expressed in <anatomy1> while is absent in <anatomy2>?",
+(anatomy → [expression absent] → gene/protein ← [expression absent] ← anatomy): 
+    "What gene/protein is absent in both <anatomy1> and <anatomy2>?",
+(drug → [carrier] → gene/protein ← [carrier] ← drug): 
+    "Which target genes are shared carriers between <drug1> and <drug2>?",
+(anatomy → [expression present] → gene/protein → [target] → drug): 
+    "What is the drug that targets the genes or proteins which are expressed in <anatomy>?",
+(drug → [side effect] → effect/phenotype → [side effect] → drug): 
+    "What drug has common side effects as <drug>?",
+(drug → [carrier] → gene/protein → [carrier] → drug): 
+    "What is the drug that has common gene/protein carrier with <drug>?",
+(anatomy → [expression present] → gene/protein → enzyme → drug): 
+    "What is the drug that some genes or proteins act as an enzyme upon, 
+     where the genes or proteins are expressed in <anatomy>?",
+(cellular_component → [interacts with] → gene/protein → [carrier] → drug): 
+    "What is the drug carried by genes or proteins that interact with <cellular_component>?",
+(molecular_function → [interacts with] → gene/protein → [target] → drug): 
+    "What drug targets the genes or proteins that interact with <molecular_function>?",
+(effect/phenotype → [side effect] → drug → [synergistic interaction] → drug): 
+    "What drug has a synergistic interaction with the drug that has <effect/phenotype> 
+    as a side effect?",
+(disease → [indication] → drug → [contraindication] → disease): 
+    "What disease is a contraindication for the drugs indicated for <disease>?",
+(disease → [parent-child] → disease → [phenotype present] → effect/phenotype): 
+    "What effect or phenotype is present in the sub type of <disease>?",
+(gene/protein → [transporter] → drug → [side effect] → effect/phenotype): 
+    "What effect or phenotype is a [side effect] of the drug transported by <gene/protein>?",
+(drug → [transporter] → gene/protein → [interacts with] → exposure): 
+    "What exposure may affect <drug>s efficacy by acting on its transporter genes?",
+(pathway → [interacts with] → gene/protein → [ppi] → gene/protein): 
+    "What gene/protein interacts with the gene/protein that related to <pathway>?",
+(drug → [synergistic interaction] → drug → [transporter] → gene/protein): 
+    "What gene or protein transports the drugs that have a synergistic interaction with <drug>?",
+(biological_process → [interacts with] → gene/protein → [interacts with] → biological_process): 
+    "What biological process has the common interactino pattern with gene or proteins as 
+    <biological_process>?",
+(effect/phenotype → [associated with] → gene/protein → [interacts with] → biological_process): 
+    "What biological process interacts with the gene/protein associated with <effect/phenotype>?",
+(drug → [transporter] → gene/protein → [expression present] → anatomy): 
+    "What anatomy expressesed by the gene/protein that affect the transporter of <drug>?",
+(drug → [target] → gene/protein → [interacts with] → cellular_component): 
+    "What cellular component interacts with genes or proteins targeted by <drug>?",
+(biological_process → [interacts with] → gene/protein → [expression absent] → anatomy): 
+    "What anatomy does not express the genes or proteins that interacts with <biological_process>?",
+(effect/phenotype → [associated with] → gene/protein → [expression absent] → anatomy): 
+    "What anatomy does not express the genes or proteins associated with <effect/phenotype>?",
+(drug → [indication] → disease → [indication] → drug) 
+ & (drug → [synergistic interaction] → drug): 
+    "Find drugs that has a synergistic interaction with <drug> and both are indicated 
+    for the same disease.",
+(pathway → [interacts with] → gene/protein → [interacts with] → pathway) 
+    & (pathway → [parent-child] → pathway): 
+    "Find pathway that is related with <pathway> and both can [interacts with] the same gene/protein.",
+(gene/protein → [associated with] → disease → [associated with] → gene/protein) 
+    & (gene/protein → [ppi] → gene/protein): 
+    "Find gene/protein that can interect with <gene/protein> and both are associated 
+    with the same disease.",
+(gene/protein → [associated with] → effect/phenotype → [associated with] → gene/protein) 
+    & (gene/protein → [ppi] → gene/protein): 
+    "Find gene/protein that can interect with <gene/protein> and both are associated 
+    with the same effect/phenotype."
+}
+\end{verbatim}
+\end{scriptsize}
+\end{mdframed}
+
+where $[\cdot]$ denotes the relation type.
+\section{\revision{Mathematical Definitions of Shannon Entropy and Type-Token Ratio}}
+\label{app:math}
+\textbf{Shannon Entropy.} Shannon Entropy is a measure of the uncertainty in a set of possible outcomes, quantifying the amount of information or disorder within a dataset. It is defined as follows:
+
+\[
+H(X) = - \sum_{i=1}^{n} p(x_i) \log p(x_i)
+\]
+
+where \( X \) is the set of possible outcomes, \( p(x_i) \) is the probability of occurrence of the outcome \( x_i \), and \( n \) is the total number of unique outcomes. Higher entropy values indicate greater diversity in the distribution of outcomes.\cite{https://doi.org/10.1002/j.1538-7305.1948.tb01338.x}
+
+\textbf{Type-Token Ratio (TTR).} The Type-Token Ratio is a measure of lexical diversity, calculated as the ratio of the number of unique words (types) to the total number of words (tokens) in a text. It is defined as follows:
+
+\[
+\text{TTR} = \frac{V}{N}
+\]
+
+where \( V \) is the number of unique words and \( N \) is the total number of words in the text. Higher TTR values indicate a higher proportion of unique words, reflecting greater lexical diversity. \cite{262c3ab1-41bb-3b12-a85c-0620dcf5ed8c}
+
+\section{Instructions for Generating Queries}
+\label{app:instruction}
+
+For the process of generating queries by human, the participants were given a list of entity IDs that we randomly sampled from the entire entity set. Then, they were asked to follow the following instructions with the support of our built interactive platform at {\textcolor{cyan}{\url{https://stark.stanford.edu/skb_explorer.html}}}. 
+
+\vspace{10pt}
+\begin{mdframed}[backgroundcolor=gray!10, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\textbf{Task: }
+
+1) Given the provided entity ID, review the associated document and any connected entities and multi-hop paths.
+
+2) Find interesting aspects of the entities by examining both their relational structures and the textual information available.
+
+3) Write your queries from these aspects such that the entity can satisfy all of them. 
+
+\textbf{Note:}
+
+1) Please do not leak the name of the entity in the query. 
+
+2) You can skip some entity IDs if you think the knowledge involved is hard to understand. 
+
+3) Feel free to be creative with content of your queries, you can also include additional context. There is NO restriction on how you express the queries.
+\end{mdframed}
+After collecting the queries, we filtering the ground truth answers manually by human validation. 
+
+\section{Experiments}
+
+% \xhdr{Hit@$k$} It checks if at least one ground truth answer is within the top-$k$ predictions. We use Hit@1 to evaluate the top recommendation's accuracy and Hit@5 to assess precision in a broader set.
+
+% \xhdr{Recall@$k$} We use Recall@$k$ for synthesized testing queries, as their answer lengths are no larger than 20. It measures the proportion of ground truth answer(s) in the top-$k$ predictions, showing the model's ability to find all relevant items.
+
+% \xhdr{Mean Reciprocal Rank (MRR)} MRR evaluates the average rank of the first relevant item in the predictions by calculating the reciprocal of its rank. It highlights the model's performance in presenting the correct item early, emphasizing the importance of the first correct answer.
+
+\subsection{More Experimental Results}
+\label{app:exp}
+\input{tables/human_evaluation}
+
+\section{Prompts and LLM versions for Query Synthesization}
+\label{app:prompts}
+
+We summarize the LLM versions in Table~\ref{tab:llm_versions_datasets}. 
+We chose these models based on a joint consideration of their cost, how accurate they are, and whether they were the latest model during different phases of the project. While we used different LLMs, we checked each step separately to make sure the good quality in our benchmark datasets.
+
+\begin{table}[h]
+    \centering
+    \caption{Summary of LLM Versions for Query Synthesization}
+    \resizebox{\textwidth}{!}{ % Resize table to fit the text width
+    \begin{tabular}{l|ccc}
+        \toprule
+        \textbf{Step} & \amazonh & \magh & \primekgh \\
+        \midrule
+        Step 2: Extracting textual requirements & \texttt{gpt-3.5-turbo-16k} & \texttt{claude-2.0} & \texttt{claude-2.0} \\
+        \midrule
+        Step 3: Combining relational and textual requirements & \multicolumn{3}{c}{\texttt{claude-2.0}, \texttt{gpt-4-0125-preview}} \\
+        \midrule
+        Step 4: Filtering additional answers & \multicolumn{3}{c}{\texttt{claude-2.1}, \texttt{claude-2.0}, \texttt{claude-instant-1.2}} \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:llm_versions_datasets}
+\end{table}
+
+\subsection{Extracting textual requirements}
+\label{app:text}
+
+% Extracting textual requirements:  We utilize GPT-3.5-turbo-16k for the \amazonh and Claude-v2 for the other two datasets to conduct this step, where the prompts used are included in Appendix~\ref{app:prompts}.  
+% \karthik{how?}
+
+% Combining relational and textual requirements: We conduct two-stage fusion using two different LLMs, \ie Claude-v2 and GPT-4-Turbo, to avoid bias that might arise from relying on a single LLM and ensure a more diverse set of simulated queries.
+
+% Filtering additional answers: For the verification, we employ three Claude models. 
+
+\begin{mdframed}[backgroundcolor=cyan!5, linecolor=black, linewidth=2pt, 
+                innerleftmargin=10pt, innerrightmargin=10pt, 
+                innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \amazont: Textual requirement extraction}
+\begin{lstlisting}
+You are an intelligent assistant that extracts diverse positive requirements and negative perspectives for an Amazon product. I will give you the following information:
+- product: <product name>
+- dimensions: <product dimensions>
+- weight: <product weight>
+- description: <product description>
+- features: #1: <feature #1>  ...
+- reviews: 
+  #1:
+    summary: <review summary>
+    text: <full review text>
+  #2: ...
+- Q&A: 
+  #1:
+    question: <product-related question>
+    answer: <answer to product-related question>
+  #2: ...
+Based on the given product information, you need to (1) identify the product's generic category, (2) list all of the negative perspectives and their sources, and (2) extract up to five hard and five soft requirements relevant to customers' interests along with their sources. (1) For example, the product's generic category can be "a chess book" or "a phone case for iphone 6", do not use the product name directly. (2) Negative perspectives are those that the product doesn't fulfill, which come from the negative reviews or Q&A. (3) For the requirements, you should only focus on the product's advantages and positive perspects. Hard requirements mean that product must fulfil, such as size and functionality. Soft requirements are not as strictly defined but still desirable, such as a product is easy-to-use. For (2) and (3), each source is a composite of the key and index (if applicable) separated by "-", such as "description", "Q&A-#1". You should provide the response in a specific format as follows where "item" refers to the product's generic category, e.g., "a chess book". 
+Response format:
+{
+  "item": <the product's generic category> ,
+  "negative": [[<source of negative perspective>, <negative perspective description>]],
+  "hard": [[<source of hard requirement>, <hard requirement description>], ...],
+  "soft": [[<source of soft requirement>, <soft requirement description>], ...]
+}
+Here is an example of the response: 
+{
+  "item": "a camping chair",
+  "negative": [["reviews-#3", "the chair is not sturdy enough"], ["Q&A-#1", "wrong color"]],
+  "hard": [["description", "has a breathable mesh back"], ["description", "the arm is adjustable"], ["dimensions", "more than 35 inches long"], ["features-#7", "with a arm rest cup holder"], ["Q&A-#4", "need to come with a carrying bag"]],
+  "soft": [["description", "suitable for outdoors"], ["features-#9", "compact and save space"], ["reviews-#6", "light and portable"]]
+}
+This is the information of the product that you need to write response for:
+<product_doc>
+Response: 
+\end{lstlisting}
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=pink!25, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \magt: Textual requirement extraction}
+\begin{lstlisting}
+You are a helpful assistant that helps me extract one short requirement (no more than 10 words) about a paper from the paper information that researchers might be interested in. The requirement can be about the paper content, publication date, publication venue, etc. The requirement should be general and not too specific. I will give you the paper information, and you should return a short phrase about the paper, starting with 'the paper...'. This is the paper information:
+<doc_info>
+Please only return the short and general requirement without additional comments.
+\end{lstlisting}
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=lime!10, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \primekgt: Textual requirement extraction}
+\begin{lstlisting}
+You are a helpful assistant that helps me extract <n_properties> from a given <target> information that a <role> may be interested in. 
+<role_instruction> 
+Each property should be no more than 10 words and start with "the <target>". You should also include the source of each property as indicated in the paragraph names of the information, e.g., "details.mayo_symptoms", "details.summary", etc. You should return a list of properties and their sources following the format:
+[["<short_property1>", "<source1>"], ["<short_property2>", "<source2>"], ...]
+This is the information:
+<doc_info>
+Please provide only the list with <n_properties> in your response. Response:
+\end{lstlisting}
+\end{mdframed}
+
+According to the role assigned to simulate the query content, the \texttt{<role\_instruction>} as shown below is filled in accordingly.
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+role          & role instruction\\
+\midrule
+ Doctor & {Doctors typically ask questions aimed at diagnosing and treating. Their questions tend to be direct and practical, focusing on aspects involving side effects, symptoms, and complications etc.}\\
+ \noalign{\vspace{1.5ex}}
+ Medical scientist & {Medical scientists often ask questions that reflect the complexity and depth of the scientific inquiry in the medical field. Their questions tend to be detailed and specific, focusing on aspects such as: etiology and pathophysiology, genetic factors, association with pathway, protein, or molecular function. }\\
+ \noalign{\vspace{1.5ex}}
+ Patient & {Patients typically don't know the professional medical terminology. Their questions tend to be straightforward, focusing on practical concerns on the symptons, effects, and inheritance etc., instead of the detailed mechanisms, which may also include more context. }\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+
+\subsection{Combining relational and textual requirements}
+\label{app:fusion}
+
+\begin{mdframed}[backgroundcolor=cyan!5, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \amazont: Fuse relational and textual requirements}
+\begin{lstlisting}
+You are an intelligent assistant that generates queries about an Amazon item. I will provide you with the item name, requirements, and its negative customer reviews. Your task is to create a natural-sounding customer query that leads to the item as the answer, using the requirements that are non-conflicting with the negative reviews, and provide the indices of the requirements used. For example:
+
+Information:
+- item: a soccer rebounder
+- requirements:
+#1: needs a heavy-duty 1-inch to 3-inch steel tube frame
+#2: should be adjustable for practicing different skills
+#3: should be durable
+#4: usually be viewed together with <SKLZ Star-Kick Hands Free Solo Soccer Trainer>
+- negative reviews:
+#1: it was broken after a few uses
+
+Response:
+{
+  "index": [1, 2, 4],
+  "query": "Please recommend a soccer rebounder with a steel frame, about 2 inches thick, that can adapt to different skill levels. We had a blast using the <SKLZ Star-Kick Hands Free Solo Soccer Trainer> with my family, and I'm on the lookout for something similar." 
+}
+
+As the negative review indicates that the soccer rebouncer lacks durability, your query should only incorporate requirements #1, #2, and #4 while excluding #3. A requirement should only be excluded if it conflicts with negative feedback or is unlikely to align with customers' interests. For relational requirements about another <product>, do not directly use "usually bought/viewed together with <product>" in the query. You must deduce the item's relationship with <product> into substitute or complement, and create various user scenarios, such as the item should be compatible or used with <product> (for complements) or match in style with <product> (for substitute), to make the queries sound natural. Except for <product>, you should change the description but convey similar meanings. The query structure is completely flexible. Here is the information to generate the requirement indices and a natural-sounding query:
+
+Information:
+<product_req_and_neg_comments>
+Response:
+\end{lstlisting}
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=lime!10, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \magt: Fuse relational and textual requirements}
+\begin{lstlisting}
+You are a helpful assistant that helps me generate a new query by incorporating an additional requirement into a given query, and form a coherent and natural-sounding question. 
+This is the existing query: 
+<query>
+This is the additional requirement: 
+<additional_textual_requirement>
+You should be creative in combining the existing query and requirement, and flexible in structuring the new query, adding context as needed. Please return the new query without additional comments:
+\end{lstlisting}
+
+The prompt of a second-time rewrite by GPT-4 Turbo:
+\begin{lstlisting}
+You are a helpful assistant that helps make a researcher's query about a paper more natural-sounding, akin to the language used in ArXiv web searches. You should change the description but convey similar meanings. The query structure is completely flexible. The original query:
+"<query>"
+Please only output the new query without additional comments:
+\end{lstlisting}
+\end{mdframed}
+
+
+\begin{mdframed}[backgroundcolor=pink!25, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \primekgt: Fuse relational and textual requirements}
+\begin{lstlisting}
+You are a helpful assistant that helps me generate a natural-sounding and coherent query as if you were a <role>. The query should be created based on a list of requirements for searching <plural_target> in a database. I will provide you with the requirements in the following format:
+[<requirement1>, <requirement2>, ...]
+You should create the query based solely on the given requirements. Moreover, you should craft the query from the perspective of a <role>. 
+<role_instruction>
+For example, a query from a <role> could be
+"<example_query>"
+You can be flexible in structuring the query and adding additional context. Ensure that the query uses different descriptions than the original property descriptions while retaining similar meanings. The query should sound concise and natural. These are the requirements:
+<requirements>
+Please create the query based on the given requirements and provide only the query without additional comments. Your response:
+\end{lstlisting}
+
+The prompt of a second-time rewrite by GPT-4 Turbo:
+\begin{lstlisting}
+You are a helpful assistant that helps me rewrite a query that searches for <plural_target> from the perspective of a <role>. You should maintain the requirements from the original query and the characteristics of the <role>, while being creative and flexible in structuring the query. Ensure the revised query is concise and natural-sounding. Original query: "<query>". Please output only the rewritten query:
+\end{lstlisting}
+\end{mdframed}
+
+\subsection{Filtering additional answers}
+\begin{mdframed}[backgroundcolor=cyan!5, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \amazont: Filtering additional answers}
+\subsection*{Filter products by general category}
+\begin{lstlisting}
+You are an intelligent assistant that identifies whether an Amazon product belongs to a given category. I will give you the product information. You should only answer yes / no in the response. For examples, the product <SKLZ Star-Kick Hands Free Solo Soccer Trainer> belongs to the category "soccer trainer" and the product <Test your Opening, Middlegame and Endgame Play - VOLUME 2> belongs to the category "a chess opening book", while <Baby Girls One-piece Shiny Athletic Leotard Ballet Tutu with Bow> doesn't belong to category "an adult tutu".
+
+Information:
+- product title: <<product_title>>
+- product description: <product_description>
+
+Does the product belong to "<target_category>"? Response (yes/no): 
+\end{lstlisting}
+
+\subsection*{Filter products by requirements}
+\begin{lstlisting}
+You are a helpful assistant that helps me check whether an Amazon product satisfies the given requirements. I will provide you with the product information, which may include the product description, features, reviews, and Q&A from customers. Your task is to assess whether the product meets each requirement based on the provided information. If there is no information that supports the requirement, your response for that requirement is "NA". If there is relevant information that supports the requirement, your response for that requirement is the information source that fulfills the requirement. Each information source is a composite of the key and index (if applicable), separated by "-", such as "description", "features-#3", "Q&A-#1", "reviews-#2". If there are multiple sources, 
+
+Response:
+{
+    1: "NA" or [the information sources that satisfy the requirement #1], 
+    2: "NA" or [the information sources that satisfy the requirement #2], 
+    ...
+}
+
+Here is the product information:
+<product_doc>
+The requirements are as follows:
+<customer_requirements>
+
+Response: 
+\end{lstlisting}
+\end{mdframed}
+
+\begin{mdframed}[backgroundcolor=lime!10, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \magt: Filtering additional answers}
+\begin{lstlisting}
+You are a helpful assistant that helps me verify whether a given <target_node_type> is subject to a requirement. I will provide you with the <target_node_type> information and the requirement, and you should return only a 'True' or 'False' value, indicating whether the <target_node_type> meets the requirement.
+This is the <target_node_type> information:
+<doc_info>
+This is the requirement:
+<additional_textual_requirement>
+Please return only the boolean value without additional comments:
+\end{lstlisting}
+\end{mdframed}
+
+
+\begin{mdframed}[backgroundcolor=pink!25, linecolor=black, linewidth=2pt, innerleftmargin=10pt, innerrightmargin=10pt, innertopmargin=3pt, innerbottommargin=10pt]
+\section*{Prompt for \primekgt: Filtering additional answers}
+\begin{lstlisting}
+You are a helpful assistant tasked with verifying whether a given <target> satisfies each of the provided requirements. I will give you the requirements in the following format:
+{1: <requirement1>, 2: <requirement2>, ...}
+When evidence in the <target> information confirms a requirement is met, cite the source, for example, 'details.mayo_symptoms', 'details.summary'. If no direct evidence exists, indicate this with 'NA'. The output in JSON format should be as follows:
+{1: 'NA' or <source1>, 2: 'NA' or <source2>, ...}
+This is the <target> information:
+<doc_info>
+These are the requirements:
+<requirements>
+Please provide only the JSON in your response. Response:
+\end{lstlisting}
+\end{mdframed}
+
+

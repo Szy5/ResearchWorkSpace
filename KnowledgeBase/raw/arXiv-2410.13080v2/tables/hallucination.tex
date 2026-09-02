@@ -1,0 +1,19 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+% \usepackage{graphicx}
+\begin{table}[]
+    \centering
+    \caption{Analysis of reasoning hallucination in \ourmethod.}
+    \label{tab:hallucination}
+    % \resizebox{\columnwidth}{!}{%
+    \begin{tabular}{@{}l|cc|cc@{}}
+    \toprule
+    \multicolumn{1}{c|}{\multirow{2}{*}{Models}}                 & \multicolumn{2}{c|}{WebQSP}                & \multicolumn{2}{c}{CWQ}                    \\ \cmidrule(l){2-5} 
+    \multicolumn{1}{c|}{}                                        & Reasoning Hall. & Answer Hit & Reasoning Hall. & Answer Hit \\ \midrule
+    \ourmethod   $w/o$ constraint & 59.1\%                        & 70.12      & 66.5\%                        & \textbf{66.21}      \\ 
+    \ourmethod                                    & \textbf{0\%}                           & \textbf{78.34}      & \textbf{0\%}                           & 64.29      \\
+    \bottomrule
+    \end{tabular}%
+    % }
+    \end{table}

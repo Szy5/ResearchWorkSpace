@@ -1,0 +1,11 @@
+\begin{abstract}
+
+Agent systems based on large language models (LLMs) are increasingly deployed for autonomous tasks, yet existing evaluations mostly focus on task success rather than whether agents know {\em when to abstain}. This gap poses real risks: under ambiguity, conflicting constraints, or tool failures, agents may execute unintended and irreversible actions.
+To close this gap, we present the first systematic evaluation framework for agentic abstention: the calibrated ability of tool-using LLM agents to recognize when not to act.
+At its core, \benchmark{} is a paired-task benchmark built on an agent-native taxonomy of 8 abstention scenarios across pre-execution reasoning and runtime discovery. It contains 263 paired tasks across 42 executable sandbox environments, where each pair consists of a should-act task and a should-abstain variant produced through a controlled perturbation to the instruction, tool, or environment state.
+Scaling such paired evaluations poses two practical challenges: manually authoring diverse tasks is expensive, and static benchmarks risk data contamination as models evolve. To address both, we propose \pipeline{}, a fully automated pipeline that synthesizes sandbox environments and generates paired tasks end-to-end, validated by deterministic replay and semantic LLM judges. Its scalable design enables on-demand regeneration of fresh task instances, and three independent annotators rate 94--98\% of sampled tasks as well-designed.
+Across 17 frontier LLMs in 4 agent harnesses, the best agent (Gemini 3.1 Pro) achieves only 59.5\% paired accuracy (correct on both the act and abstain sides of each paired task). More importantly, abstention capability is largely independent of general task-solving capability, indicating that scaling task-solving alone will not close this gap.
+We identify failure modes such as \emph{post-hoc abstention}, in which agents execute irreversible actions before recognizing abstention triggers. For instance, an agent may cancel a flight reservation before noticing contradictory rebooking instructions, leaving the user stranded. These findings underscore the need for rigorous abstention evaluation to develop more trustworthy LLM agents.
+Our code and dataset are open-sourced at \href{https://agentabstain.github.io}{\texttt{agentabstain.github.io}}.
+
+\end{abstract}

@@ -1,0 +1,262 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage[preprint]{colm2025_conference}
+\usepackage{booktabs}
+\usepackage{multirow} 
+
+\usepackage{makecell}
+\usepackage{soul}
+\usepackage{stfloats}
+\usepackage{color}
+\usepackage{xcolor}
+\definecolor{darkgreen}{RGB}{83,129,53}
+\definecolor{darkred}{RGB}{163,21,21}
+
+\usepackage{tikz}
+\usepackage{subfig}
+\usepackage{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{wrapfig}
+\usepackage{amssymb,mathrsfs}
+% \usepackage{arydshln}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{pgfplotstable}
+\usepackage{pgf}
+\usepackage[normalem]{ulem}
+\usepackage{colortbl}
+\usepackage{ulem}
+\usepackage{xspace}
+
+
+\usepackage{listings}
+% <>
+
+% Standard package includes
+\usepackage{scalerel} 
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{bm}
+\usepackage{booktabs}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
+\usepackage{verbatim}
+\usepackage{tabularx}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\thinkrow}[1]{\rowcolor{yellow!10} \texttt{<think>} #1 \texttt{</think>} \\}
+\newcommand{\searchrow}[1]{\rowcolor{green!10} \texttt{<tool\_call>} #1 \texttt{</tool\_call>} \\}
+\newcommand{\resultrow}[1]{\rowcolor{white} \texttt{<tool\_response>} #1 \texttt{</tool\_response>} \\}
+\newcommand{\answerrow}[1]{\rowcolor{blue!10} \texttt{<answer>} #1 \texttt{</answer>} \\}
+
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable,listings}
+
+\tcbuselibrary{breakable} % 加载分页支持库
+\newtcolorbox{examplebox}[2][]{ % 允许传入可选参数 [#1] 和必选标题参数 {#2}
+    breakable, % 关键：允许跨页分割
+    colback=white, % 框体内背景色
+    colframe=cyan, % 边框颜色
+    coltitle=white, % 标题文字颜色
+    fonttitle=\bfseries, % 标题字体加粗
+    title=#2, % 框体标题（第二个必选参数）
+    % 以下为跨页分割线的样式设置（可选）
+    overlay middle={\draw[cyan, line width=1pt](frame.south west)--(frame.south east);}, % 分割处添加横线
+    overlay last={\draw[cyan, line width=1pt](frame.south west)--(frame.south east);}, % 最后一页底部横线
+    #1 % 允许在调用时传入其他可选参数以覆盖默认样式
+}
+\usepackage{listings}
+\lstdefinelanguage{text}{}
+\lstset{
+   language=text, % 确保按纯文本处理 (特别是 < 和 >)
+   basicstyle=\ttfamily,   % 使用打字机字体 (monospaced)
+   breaklines=true,      % 自动换行
+   columns=flexible      % 解决长单词间的间距问题
+}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters \usepackage[T5]{fontenc} See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out, but it will improve the layout of the manuscript, and will typically save some space.
+\usepackage{microtype}
+
+% This is also not strictly necessary, and may be commented out. However, it will improve the aesthetics of text in the typewriter font.
+\usepackage{inconsolata}
+
+%Including images in your LaTeX document requires adding additional package(s)
+\usepackage{graphicx}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}} \renewcommand{\algorithmicensure}{\textbf{Output:}} \renewcommand{\algorithmicrepeat}{\textbf{do}} \renewcommand{\algorithmicuntil}{\textbf{while}}
+
+
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+
+\usepackage{booktabs}   % 三线表支持
+\usepackage{threeparttable} % 表格注释支持
+\usepackage{graphicx}   % resizebox 支持
+\usepackage{xcolor}     % 颜色定义支持（若需要彩色标记）
+
+\newcommand{\greencheck}{$\checkmark$} % 绿色对钩
+\newcommand{\redwrong}{$\times$}      % 红色叉号
+
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{adjustbox}
+\usepackage{color}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{colortbl}
+\usepackage{multicol}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{lineno}
+\usepackage{xspace}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{arydshln}
+% \usepackage{wrapfig}
+\usepackage{caption}
+
+% \usepackage{array}   % Optional: Improves table column alignment
+
+% \usepackage{array}       % Enhances table formatting, allowing p{} column definitions
+% \usepackage{xcolor}      % Allows color customization for text
+
+
+% \usepackage{subfigure}  % Deprecated but still functional
+
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true, citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+
+\newcommand{\think}[1]{\textcolor{blue}{\texttt{<think>}} #1 \textcolor{blue}{\texttt{</think>}}}
+\newcommand{\search}[1]{\textcolor{cyan}{\texttt{<search>}} #1 \textcolor{cyan}{\texttt{</search>}}}
+\newcommand{\info}[1]{\textcolor{brown}{\texttt{<information>}} #1 \textcolor{brown}{\texttt{</information>}}}
+\newcommand{\answer}[1]{\textcolor{purple}{\texttt{<answer>}} #1 \textcolor{purple}{\texttt{</answer>}}}
+
+\title{\centering \raisebox{-.25\height}{\includegraphics[width=0.7cm]{logo/knowcoder-logo.pdf}} KnowCoder-A1: Incentivizing Agentic Reasoning Capability with Outcome Supervision for KBQA}
+
+\author{Zhuo Chen$^{1,2,3}$,  Fei Wang$^{1,2}$\thanks{Corresponding authors}\ \ , 
+Zixuan Li$^{1,2}$\footnotemark[1]\ \ , Zhao Zhang$^{1,2}$, \\
+\textbf{Weiwei Ding$^{1,2}$,}
+\textbf{Chuanguang Yang$^{1,2}$,}  
+\textbf{Yongjun Xu$^{1,2}$,}
+\textbf{Xiaolong Jin$^{1,2,3}$,}
+\textbf{Jiafeng Guo$^{1,2,3}$}\\
+$^1$Institute of Computing Technology, Chinese Academy of Sciences \\
+% $^2$School of Computer Science, Shenyang Aerospace University, Shenyang, China \\
+$^2$State Key Laboratory of AI Safety \\
+$^3$School of Computer Science, University of Chinese Academy of Sciences\\
+\texttt{\{wangfei@ict.ac.cn, lizixuan@ict.ac.cn\}}
+}
+
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\newcommand{\ours}{\textsc{KnowCoder-A1}}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\newcommand{\hamed}[1]{\textcolor{red}{[Hamed: #1]}}
+
+
+\newcommand{\se}{\mathcal{R}}
+
+\begin{document}
+
+% \begin{center}
+%  \LARGE \textbf{KnowCoder-V2: Deep Knowledge Analysis}
+% \end{center}
+
+% \ifcolmsubmission \linenumbers \fi
+
+\maketitle
+
+\vspace{-10mm}
+\begin{center}
+    \url{https://ict-goknow.github.io/KnowCoderA1} \\
+    % \textbf{GitHub:} \url{https://github.com/your-repository}
+\end{center}
+
+
+
+
+% 1) Online processing of massive information into
+% structured knowledge is inefficient and difficult to scale. 2) Many complex
+% analysis tasks demand computation over structured knowledge, beyond simple
+% knowledge-augmented generation. 3) Some tasks share the same structured
+% knowledge and not necessarily being processing repeatedly.
+
+% Existing deep research frameworks
+% can autonomously search for information from diverse online sources and create
+% thorough reports on research. However, these frameworks face two major
+% challenges:
+
+\begin{abstract}
+Knowledge Base Question Answering (KBQA) aims to answer natural-language questions over a structured Knowledge Base (KB). Recent work improves KBQA by adopting an agentic reasoning paradigm, in which Large Language Models (LLMs) iteratively decompose a question, generate its corresponding logical queries, and interact with the KB to derive the answer. However, these methods typically fine-tune LLMs on reasoning trajectories synthesized via process supervision, which offers weak incentives for exploration and thus fails to strengthen the agentic reasoning ability. In this paper, we propose \ours, an LLM that can autonomously perform agentic reasoning on KBs to obtain answers. To incentivize autonomous exploration, \ours\space trains the LLM under outcome-only supervision via a multi-stage curriculum reinforcement learning with an easy-to-hard curriculum. To establish foundational agentic capabilities, \ours\space first fine-tunes the LLM on a small set of high-quality trajectories obtained through outcome-based rejection sampling. Then, to alleviate the reward sparsity inherent in outcome-only supervision, it applies multi-stage curriculum RL with reward schedules that progress from easy to hard. Trained with outcome-only supervision, \ours\space exhibits powerful reasoning behaviors and consistently outperforms prior approaches across three mainstream datasets. Notably, on the zero-shot subset of GrailQA, \ours\space achieves up to an 11.1\% relative improvement while using only one-twelfth of the training data, demonstrating strong agentic reasoning capabilities. Code is available at \url{https://github.com/ICT-GoKnow/KnowCoder-A1}.
+
+\renewcommand{\thefootnote}{}
+\renewcommand{\thefootnote}{\arabic{footnote}}%
+
+\end{abstract}
+
+\input{1.introduction}
+\input{2.related_work}
+\input{3.Preliminaries}
+\input{4.methodology}
+\input{5.evaluation}
+
+
+\section{Conclusion}\label{sec:conclusion} In this paper, we focused on a key limitation of existing agentic KBQA paradigms: their reliance on process supervision, which provides weak incentives for autonomous exploration. To overcome this, we proposed \ours, our first agentic reasoning model for KBQA. It is trained by a multi-stage curriculum reinforcement learning framework that effectively leverages outcome-only supervision through a carefully designed learning curriculum. Specifically, \ours\space first establishes foundational reasoning capabilities via a cold-start fine-tuning stage on a small, high-quality dataset created through outcome-based rejection sampling. It then enhances the agent’s exploratory capacity through curriculum RL, employing a progressive reward schedule that transitions from easy to hard tasks. Extensive experiments demonstrate the effectiveness of our approach. Further analyses reveal that \ours\space learns to act as a robust and flexible agent, capable of recovering from errors and strategically exploring diverse reasoning trajectories. Future work may investigate more advanced reflection mechanisms to mitigate remaining error types and extend this curriculum strategy to other complex, agent-based reasoning tasks.
+
+% \section*{Author Contributions}
+% If you'd like to, you may include  a section for author contributions as is done
+% in many journals. This is optional and at the discretion of the authors.
+
+% \section*{Acknowledgments}
+% % Use unnumbered first level headings for the acknowledgments. All
+% % acknowledgments, including those to funding agencies, go at the end of the paper.
+% % This research was supported by Apple PhD Fellowship.
+% % Research was supported in part by US DARPA INCAS Program No. HR0011-21-C0165 and BRIES Program No. HR0011-24-3-0325, National Science Foundation IIS-19-56151, the Molecule Maker Lab Institute: An AI Research Institutes program supported by NSF under Award No. 2019897, and the Institute for Geospatial Understanding through an Integrative Discovery Environment (I-GUIDE) by NSF under Award No. 2118329. Any opinions, findings, and conclusions or recommendations expressed herein are those of the authors and do not necessarily represent the views, either expressed or implied, of DARPA or the U.S. Government.
+
+% This research was supported in part by Apple PhD Fellowship, in part by US DARPA INCAS Program No. HR0011-21-C0165 and BRIES Program No. HR0011-24-3-0325, in part by the Office of Naval Research contract number N000142412612, in part by NSF grant numbers IIS-19-56151 and 2402873, in part by the Molecule Maker Lab Institute: An AI Research Institutes program supported by NSF under Award No. 2019897 and the Institute for Geospatial Understanding through an Integrative Discovery Environment (I-GUIDE) by NSF under Award No. 2118329, in part by Cisco, and in part by the Center for Intelligent Information Retrieval. Any opinions, findings, and conclusions or recommendations expressed herein are those of the authors and do not necessarily represent the views, either expressed or implied, of the sponsors or the U.S. Government.
+
+% \section*{Ethics Statement}
+% Authors can add an optional ethics statement to the paper. 
+% For papers that touch on ethical issues, this section will be evaluated as part of the review process. The ethics statement should come at the end of the paper. It does not count toward the page limit, but should not be more than 1 page. 
+
+
+
+\bibliography{colm2025_conference}
+\bibliographystyle{colm2025_conference}
+
+% \appendix
+\input{6.appendix}
+
+
+
+
+% You may include other additional sections here.
+
+\end{document}

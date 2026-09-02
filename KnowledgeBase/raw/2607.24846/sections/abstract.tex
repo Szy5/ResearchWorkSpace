@@ -1,0 +1,26 @@
+\begin{abstract}
+% 원본
+% We present a conversational music recommender with separate text interfaces
+% and evidence-grounded response generation. A hybrid lexical--dense pool
+% combines externally enriched lexical matching with 0.6B dense retrieval over
+% official catalog metadata. A
+% task-adapted conversational pool encodes structured query and document briefs
+% with five fold-specific 8B adapters; RRF combines their rankings. LightGBM
+% calibrates the two pools' candidate union
+% while retaining each pool's rank and score as separate evidence. On the response
+% side, the model-agnostic PAS procedure first groups
+% supporting evidence and commits listener anchors, track roles, and permissible
+% musical claims. It then generates the response. Deterministic checks validate
+% titles, claims, and repeated phrasing. An offline LLM-as-judge pipeline compiles
+% a balanced demonstration bank and routes one matched example to each request.
+% Team swyoo placed third in the Blind-B industry track.
+
+% 220자 상세
+% Traditional conversational recommender systems are usually engineered around a single shared text interface that struggles to simultaneously preserve exact catalog entities and capture fluidly evolving dialogue intent, often failing to guarantee explanation credibility. The ACM RecSys Challenge 2026 tackles this shortcoming by requiring both top-20 track ranking and evidence-grounded natural-language response generation over dynamic conversational trajectories. This paper presents the third-place approach of the "swyoo" team for the Blind-B industry track. Our core approach decouples retrieval and response into operationally distinct pipelines, connecting them strictly via ranked candidate tracks and supporting metadata. To implement this separation on the retrieval side, we pipeline two complementary views: a hybrid lexical-dense pool for exact text matching, and a task-adapted conversational pool driven by fine-tuned Qwen 8B adapters. We then combine these candidate views using LightGBM, routing the finalized top tracks to an evidence-grounded Propose-Assign-Select (PAS) procedure that structures the final response. This unified system achieved high recommendation accuracy and alignment scores on the blind evaluation tracks, highlighting its robust generalization ability across diverse music request categories. Our findings highlight two takeaways: (i) isolating retrieval and response into tailored text interfaces preserves both precise catalog cues and evolving conversational intent; (ii) restricting dialogue generation to structured evidence assignment prior to surface realization yields substantial performance gains in explanation reliability and interpretability.
+
+% 180자로 축소
+% Traditional conversational recommenders often rely on a single shared text interface, struggling to simultaneously preserve exact catalog entities and track evolving dialogue intent, which compromises explanation credibility. Addressing this, the ACM RecSys Challenge 2026 requires both top-20 ranking and evidence-grounded response generation over dynamic trajectories. This paper presents the third-place solution of team "swyoo" for the Blind-B industry track. Our core approach decouples retrieval and response into operationally distinct pipelines, connecting them strictly via ranked tracks and supporting metadata. On the retrieval side, we combine a hybrid lexical-dense pool for exact matching with a task-adapted conversational pool driven by fine-tuned Qwen 8B adapters. We then calibrate these candidate views using LightGBM, routing the top tracks to an evidence-grounded Propose-Assign-Select (PAS) procedure that structures the response. This integrated system achieved high recommendation accuracy and alignment scores on blind evaluation tracks, demonstrating robust generalization across diverse music categories. Our findings highlight two takeaways: (i) isolating retrieval and response into tailored text interfaces preserves both precise catalog cues and fluid intent; (ii) structuring dialogue generation through explicit evidence assignment prior to surface realization substantially improves explanation reliability.
+
+% 더 축소
+Traditional conversational recommenders rely on a single text interface, struggling to simultaneously preserve exact entities and track evolving intent, which compromises explanation credibility. Addressing this, the ACM RecSys Challenge 2026 mandates both top-20 ranking and evidence-grounded response generation. This paper presents the third-place solution by team ``swyoo'' for the Blind-B industry track. We decouple retrieval and response into separate pipelines connected strictly via ranked tracks and metadata. Retrieval combines a hybrid lexical-dense pool for exact matching with a task-adapted pool driven by fine-tuned Qwen 8B adapters. Candidates are calibrated via LightGBM, then routed to an evidence-grounded propose-assign-select (PAS) framework to structure responses. This system achieved high accuracy and alignment scores on blind evaluation tracks. Our findings demonstrate that: (i) isolating retrieval and response preserves both catalog cues and fluid intent; (ii) structuring generation via explicit evidence assignment substantially improves explanation reliability.
+\end{abstract}

@@ -1,0 +1,135 @@
+
+\definecolor{first}{RGB}{237, 106, 89}
+\definecolor{second}{RGB}{255, 192, 0}
+\definecolor{third}{RGB}{91, 155, 213}
+\newcommand{\res}[2]{#1\textsubscript{ $\pm$ #2}}
+\newcommand{\fir}[2]{\textcolor{first}{\textbf{#1\textsubscript{$\pm$#2}}}}
+\newcommand{\sed}[2]{\underline{#1\textsubscript{ $\pm$ #2}}}
+\newcommand{\thi}[2]{{#1\textsubscript{ $\pm$ #2}}}
+\newcommand{\firi}[1]{\textcolor{first}{\textbf{#1}}}
+\newcommand{\seci}[1]{\underline{#1}}
+\newcommand{\thii}[1]{{#1}}
+\newcommand{\colorres}[3]{\textcolor{#1}{\textbf{#2} \textsubscript{$\pm$ \textbf{#3}}}}
+
+\begin{table*}[!t]
+\caption{Performance and efficiency comparison of KGQA methods on WebQSP and CWQ datasets. The maximum turn number is set to $H=5$. All scores are percentages.}
+\label{tab:webqsp_cwq_performance_efficiency_comparison_colored}
+\vspace{-0.5em}
+\begin{center}
+\renewcommand{\arraystretch}{1.05}
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabularx}{1.08\textwidth}{c@{\hspace{0.2em}}c@{\hspace{0.6em}}c@{\hspace{0.2em}}c@{\hspace{0.6em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c@{\hspace{0.5em}}c}
+\toprule
+& \multicolumn{2}{c}{\thead{\normalsize Datasets $\rightarrow$}} & \multicolumn{3}{c}{\dataset{WebQSP}} &  \multicolumn{3}{c}{\dataset{CWQ}}
+\\
+\cmidrule(lr){4-6} \cmidrule(lr){7-9}
+& \thead{\normalsize Methods} & \thead{Modules}
+& \thead{Hits@1 (\%)} & \thead{Total Tokens} & \thead{Gen Tokens}
+& \thead{Hits@1 (\%)} & \thead{Total Tokens} & \thead{Gen Tokens}
+\\
+\midrule
+\multirow{8}{*}{\rotatebox{90}{Qwen 2.5-7B}}
+& {IO} & 1
+& \res{21.37}{0.07} & \res{151.59}{0.03} & \res{9.29}{0.03}
+& \res{16.63}{0.01} & \res{159.76}{0.01} & \res{8.57}{0.01}
+\\
+& {CoT} & 1
+& \res{17.27}{0.09} & \res{260.43}{0.02} & \res{49.13}{0.02}
+& \res{14.95}{0.02} & \res{292.46}{0.01} & \res{72.27}{0.01}
+\\
+& {SC} & 1
+& \res{19.26}{0.19} & \res{2098.01}{0.92} & \res{407.60}{0.92}
+& \res{17.63}{0.17} & \res{2364.62}{1.24} & \res{603.13}{1.24}
+\\
+\cmidrule(lr){2-9}
+& {RoG} & 2
+& \res{79.89}{0.35} & \res{814.61}{0.70} & \res{246.95}{0.67}
+& \res{46.32}{0.49} & \res{1219.72}{0.61} & \res{259.46}{0.58}
+\\
+& {ToG} & 4
+& \res{65.00}{4.63} & \res{6455.04}{753.60} & \res{941.52}{109.27}
+& \res{32.25}{0.43} & \res{8396.80}{87.06} & \res{1358.54}{17.24}
+\\
+& {PoG} & 5
+& \res{64.81}{0.84} & \res{4474.30}{91.92} & \res{241.14}{5.17}
+& \res{32.00}{2.53} & \res{8293.67}{1454.76} & \res{369.84}{45.59}
+\\
+& {ReknoS} & 3
+& \res{61.22}{5.46} & \res{2822.34}{209.87} & \res{558.43}{45.52}
+& \res{53.45}{3.03} & \res{2908.55}{222.47} & \res{602.08}{39.33}
+\\
+\midrule
+\multirow{8}{*}{\rotatebox{90}{Qwen 2.5-72B}}
+& {IO} & 1
+& \res{24.66}{0.07} & \res{153.50}{0.02} & \res{11.20}{0.02}
+& \res{22.20}{0.02} & \res{162.04}{0.03} & \res{10.85}{0.03}
+\\
+& {CoT} & 1
+& \res{21.84}{0.04} & \res{271.46}{0.02} & \res{60.16}{0.02}
+& \res{22.92}{0.04} & \res{296.81}{0.04} & \res{76.62}{0.04}
+\\
+& {SC} & 1
+& \res{22.62}{0.07} & \res{2177.75}{1.23} & \res{487.34}{1.23}
+& \res{24.76}{0.27} & \res{2385.73}{0.51} & \res{624.24}{0.51}
+\\
+\cmidrule(lr){2-9}
+& {RoG} & 2
+& \res{81.63}{3.33} & \res{812.32}{7.81} & \res{244.53}{7.79}
+& \res{45.05}{2.87} & \res{1205.48}{2.51} & \res{245.34}{2.51}
+\\
+& {ToG} & 4
+& \res{74.47}{0.25} & \res{6810.27}{39.73} & \res{942.91}{5.80}
+& \res{43.18}{1.02} & \res{9024.77}{271.68} & \res{1358.32}{41.02}
+\\
+& {PoG} & 5
+& \res{72.88}{6.57} & \res{4759.10}{210.29} & \res{316.25}{16.85}
+& \res{43.62}{1.38} & \res{7969.21}{1631.58} & \res{503.29}{116.35}
+\\
+& {ReknoS} & 3
+& \res{75.23}{9.25} & \res{2472.90}{115.94} & \res{488.44}{39.87}
+& \res{60.88}{2.54} & \res{2278.71}{196.08} & \res{548.52}{27.79}
+\\
+\midrule
+\multirow{8}{*}{\rotatebox{90}{Qwen 3-235B}}
+& {IO} & 1
+& \res{24.01}{0.18} & \res{136.05}{0.06} & \res{14.75}{0.06}
+& \res{20.22}{0.09} & \res{147.36}{0.16} & \res{17.17}{0.16}
+\\
+& {CoT} & 1
+& \res{26.94}{0.22} & \res{274.66}{0.32} & \res{84.36}{0.32}
+& \res{24.38}{0.33} & \res{317.42}{0.31} & \res{118.23}{0.31}
+\\
+& {SC} & 1
+& \res{27.60}{0.15} & \res{2200.20}{1.26} & \res{677.79}{1.26}
+& \res{26.13}{0.23} & \res{2551.71}{0.78} & \res{958.22}{0.78}
+\\
+\cmidrule(lr){2-9}
+& {RoG} & 2
+& \res{81.68}{0.24} & \res{960.58}{5.90} & \res{254.31}{0.11}
+& \res{48.94}{0.39} & \res{1217.51}{10.26} & \res{252.45}{5.18}
+\\
+& {ToG} & 4
+& \res{75.67}{0.37} & \res{6831.66}{28.39} & \res{996.12}{5.21}
+& \res{39.82}{0.73} & \res{5389.00}{33.01} & \res{802.97}{9.84}
+\\
+& {PoG} & 5
+& \res{79.13}{1.89} & \res{6818.26}{908.76} & \res{418.26}{49.36}
+& \res{44.69}{0.27} & \res{10177.37}{1859.27} & \res{548.77}{82.56}
+\\
+& {ReknoS} & 3
+& \res{84.73}{1.78} & \res{2795.53}{139.20} & \res{592.38}{4.18}
+& \res{65.63}{4.86} & \res{2677.92}{281.97} & \res{684.38}{14.06}
+\\
+\midrule
+\oursrow
+& \thead{\textbf{\framework{} \scriptsize{(Ours)}}\\\scriptsize{Qwen2.5-3B}} & 1
+& \res{82.75}{0.04} & \res{3237.17}{30.34} & \res{308.67}{0.56}
+& \res{65.31}{0.14} & \res{3205.95}{42.34} & \res{311.14}{0.52}
+\\
+\bottomrule
+\end{tabularx}
+}
+\vspace{-1.5em}
+\end{center}
+\end{table*}

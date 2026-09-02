@@ -1,0 +1,52 @@
+\begin{table}[]
+    \centering
+    \caption{Examples of faithful and interpretable reasoning of \ourmethod.}
+    \vspace{-3mm}
+    \label{tab:case_int}
+    \resizebox{1\columnwidth}{!}{%
+    \begin{tabular}{@{}c|p{5in}@{}}
+        \toprule
+        Question             & Lou Seal is the mascot for the team that last won the World Series when?                                                                                                                                                                                                                                                                                         \\ \midrule
+        Answer               & 2014                                                                                                                                                                                                                                                                                                                                                 \\ \midrule
+        Reasoning Paths      & Lou Seal $\to$ sports.mascot.team $\to$ San Francisco Giants $\to$ sports.sports\_championship\_event.champion $\to$ 2014 World Series                                                                                                                                                                                        \\
+        \midrule
+        \ourmethod & \begin{tabular}[c]{@{}p{5in}@{}}Based on the provided reasoning paths, we can determine when the team for which Lou Seal is the mascot last won the World Series:\\\\
+
+            1. Lou Seal is associated with the San Francisco Giants.\\
+            2. The San Francisco Giants are associated with winning the 2014 World Series.\\\\
+            
+            Therefore, the San Francisco Giants, the team for which Lou Seal is the mascot, last won the World Series in 2014.\end{tabular}                                                                                                                                                                                                                                                                                                                                            \\ \bottomrule
+            \toprule
+            Question             & what is my timezone in louisiana?                                                                                                                                                                                                                                                                                         \\ \midrule
+            Answer               & Central Time Zone                                                                                                                                                                                                                                                                                                                                                 \\ \midrule
+            Reasoning Paths      & \begin{tabular}[c]{@{}p{5in}@{}} Louisiana $\to$ location.location.partially\_containedby $\to$ Tangipahoa River $\to$ geography.river.origin $\to$ Osyka $\to$ location.location.time\_zones $\to$ Central Time Zone \\\\
+                Louisiana $\to$ location.location.containedby $\to$ Alexandria $\to$ location.location.containedby $\to$ United States of America $\to$ location.location.time\_zones $\to$ Central Time Zone 
+            \end{tabular}\\
+        \midrule
+            \ourmethod & \begin{tabular}[c]{@{}p{5in}@{}}Based on the reasoning paths provided, it can be determined that Louisiana is in the Central Time Zone. \\\\
+
+                Here's the explanation: \\\\
+                
+                1. The first reasoning path tells us that Louisiana is partially contained by the Tangipahoa River, which is a geographical feature. However, it doesn't directly mention the time zone. \\\\
+                
+                2. The second reasoning path establishes that Louisiana is contained by Alexandria, which is in turn contained by the United States of America. The United States of America is in the Central Time Zone. \\\\
+                
+                Therefore, based on these reasoning paths, the time zone in Louisiana is the Central Time Zone.\end{tabular}                                                                                                                                                                                                                                                                                                                                            \\ \bottomrule
+                \toprule
+                Question             & Which child of Walt Disney died from lung cancer?                                                                                                                                                                                                                                                                                         \\ \midrule
+                Answer               & Sharon Mae Disney                                                                                                                                                                                                                                                                                                                             \\ \midrule
+                Reasoning Paths      & \begin{tabular}[c]{@{}p{5in}@{}} Lung cancer $\to$ people.deceased\_person.cause\_of\_death $\to$ Sharon Mae Disney\\\\
+                    Lung cancer $\to$ people.deceased\_person.cause\_of\_death $\to$ Walt Disney \\\\
+                    Walt Disney $\to$ people.deceased\_person.cause\_of\_death $\to$ Lung cancer \\\\
+                    Walt Disney $\to$ people.person.children $\to$ Diane Disney Miller \\\\
+                    Walt Disney $\to$ people.cause\_of\_death.people $\to$ Circulatory collapse \\\\
+                    Walt Disney $\to$ people.person.parents $\to$ Flora Call Disney \\\\
+                    Walt Disney $\to$ people.person.parents $\to$ Elias Disney \\\\
+                    Walt Disney $\to$ people.person.parents $\to$ Sharon Mae Disney
+                \end{tabular}\\
+            \midrule
+                \ourmethod & \begin{tabular}[c]{@{}p{5in}@{}}Based on the reasoning paths provided, it appears that Sharon Mae Disney is the child of Walt Disney who died from lung cancer.\\\\ 
+                    
+                The reasoning path "Walt Disney $\to$ people.deceased\_person.cause\_of\_death $\to$ Lung cancer" directly connects Walt Disney to lung cancer as a cause of death, and since Sharon Mae Disney is also linked to lung cancer as a cause of death through the path "Lung cancer $\to$ people.deceased\_person.cause\_of\_death $\to$ Sharon Mae Disney," it can be concluded that Sharon Mae Disney is the child of Walt Disney who died from lung cancer.\end{tabular}                                                                                                                                                                                                                                                                                                                                            \\ \bottomrule
+    \end{tabular}}
+\end{table}

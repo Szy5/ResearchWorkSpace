@@ -1,0 +1,56 @@
+\section{Preliminaries}
+\label{sec:preli}
+
+Our work builds upon recent advancements in reinforcement learning for fine-tuning large language models. We briefly review two key methodologies that are relevant to our framework.
+
+\subsection{Group Relative Policy Optimization}
+
+Group Relative Policy Optimization (GRPO)~\citep{Shao2024DeepSeekMathPT} is a reinforcement learning algorithm for fine-tuning policy LLMs $\pi_\theta$ without a separately learned value function. Its key idea is to normalize rewards within a group of responses sampled from the same prompt, thereby stabilizing optimization.
+
+\paragraph{Setup.}  
+Given a query $\mathbf{q}$, the old policy $\pi_{\theta_{\text{old}}}$ generates $G$ candidate responses $\{\mathbf{o}_1,\dots,\mathbf{o}_G\}$. Each response $\mathbf{o}_i$ is assigned a scalar reward $R(\mathbf{q},\mathbf{o}_i)$. Group-wise z-score normalization is then applied to obtain an advantage shared across the tokens of the response:
+$$
+\hat{A}_{i,t}
+=
+\frac{R(\mathbf{q},\mathbf{o}_i) - \operatorname{mean}\!\bigl(\{R(\mathbf{q},\mathbf{o}_1),\dots,R(\mathbf{q},\mathbf{o}_G)\}\bigr)}
+{\operatorname{std}\!\bigl(\{R(\mathbf{q},\mathbf{o}_1),\dots,R(\mathbf{q},\mathbf{o}_G)\}\bigr) + \varepsilon_{\text{norm}}},
+$$
+where $\varepsilon_{\text{norm}}$ is a small constant for numerical stability. The same normalized advantage $\hat{A}_{i,t}$ is applied to all tokens of response $\mathbf{o}_i$.
+
+\paragraph{Policy Update.}  
+Let
+$
+r_{\theta}(o_{i,t}) \;=\; \frac{\pi_{\theta}(o_{i,t}\mid \mathbf{q},\mathbf{o}_{i,<t})}
+{\pi_{\theta_{\text{old}}}(o_{i,t}\mid \mathbf{q},\mathbf{o}_{i,<t})}.
+$
+The policy is updated with a clipped surrogate objective, similar to PPO, combined with a KL-divergence penalty to constrain policy drift:
+\[\scalebox{0.85}{
+$
+\mathcal{L}_{\text{GRPO}}(\theta)
+= -\frac{1}{G}\sum_{i=1}^G \frac{1}{|\mathbf{o}_i|}
+\sum_{t=1}^{|\mathbf{o}_i|}
+\min\!\Bigl(
+r_{\theta}(o_{i,t})\,\hat{A}_{i,t},\;
+\operatorname{clip}\bigl(r_{\theta}(o_{i,t}),\,1-\epsilon,\,1+\epsilon\bigr)\,\hat{A}_{i,t}
+\Bigr)
+\;+\;
+\beta\,
+\operatorname{KL}\!\bigl(\pi_{\theta}(\mathbf{q}) \,\|\, \pi_{\theta_{\text{old}}}(\mathbf{q})\bigr)$
+}\]
+
+Maximizing the negative of this loss encourages the policy to increase the probability of tokens contributing to responses with positive relative advantages, while clipping prevents overly aggressive updates. The KL penalty, weighted by $\beta$, further stabilizes training by preventing the new policy from drifting too far from the old one.
+
+
+\subsection{Reinforcement Learning with Verifiable Rewards}
+\label{sec:rlvr}
+
+Reinforcement Learning with Verifiable Rewards (RLVR)~\citep{Lambert2024TLU3P} is a paradigm for fine-tuning models in domains where response quality can be deterministically verified. RLVR relies on a rule-based verifier $v : \mathcal{X} \to \{0,1\}$ that assigns a binary reward to each response $x_i$:
+\[
+  r_i \;=\; v(x_i)
+  \;=\;
+  \begin{cases}
+    1, & \text{if } x_i \text{ satisfies a task-specific correctness check},\\[4pt]
+    0, & \text{otherwise}.
+  \end{cases}
+\]
+This reward structure is especially effective for tasks like math, code generation with clear correctness criteria, and serves as the foundation for the reward mechanism in our Solver training.

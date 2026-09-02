@@ -1,0 +1,1067 @@
+
+\documentclass{article}
+
+% Recommended, but optional, packages for figures and better typesetting:
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+
+% hyperref makes hyperlinks in the resulting PDF.
+% If your build breaks (sometimes temporarily if a hyperlink spans a page)
+% please comment out the following usepackage line and replace
+% \usepackage{icml2023} with \usepackage[nohyperref]{icml2023} above.
+\usepackage{hyperref}
+
+
+% Attempt to make hyperref and algorithmic work together better:
+\newcommand{\theHalgorithm}{\arabic{algorithm}}
+%\usepackage[style=authoryear,backend=biber]{biblatex} 
+
+% Use the following line for the initial blind version submitted for review:
+\usepackage[final]{neurips_2024}
+
+
+% If accepted, instead use the following line for the camera-ready submission:
+% \usepackage[accepted]{icml2023}
+
+% For theorems and such[p]
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{natbib}
+\usepackage{xurl}
+\usepackage{mdframed}
+
+% if you use cleveref..
+\usepackage[capitalize,noabbrev]{cleveref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Todonotes is useful during development; simply uncomment the next line
+%    and comment out the line below the next line to turn off comments
+%\usepackage[disable,textsize=tiny]{todonotes}
+\usepackage[textsize=tiny]{todonotes}
+
+
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+
+
+\title{Self-playing Adversarial Language Game \\ Enhances LLM Reasoning}
+
+
+\author{
+%\centering
+    Pengyu Cheng$^1$ \hspace{2mm}  Tianhao Hu$^1$ \hspace{2mm}  Han Xu$^1$ \hspace{2mm} Zhisong Zhang$^1$
+   \\  
+   \textbf{Zheng Yuan}$^4$ \hspace{2mm}  \textbf{Yong Dai}$^1$ \hspace{2mm}  \textbf{Lei Han}$^3$ \hspace{2mm}  \textbf{Nan Du}$^1$ \hspace{2mm} \textbf{Xiaolong Li}$^2$
+\\
+\begin{tabular}{ccc}
+\centering
+   Tencent AI Lab $^1$Shenzhen \& $^2$Seattle & $^3$Tencent Robotics X Lab &  $^4$Independent\\
+\end{tabular} \\
+\texttt{pengyucheng@tencent.com}
+}
+
+
+% \author{%
+%   Pengyu Cheng, Tianhao Hu, Han Xu, Zhisong Zhang, Yong Dai, Lei Han, Nan Du \\
+% Tencent AI Lab\\
+% %  Cranberry-Lemon University\\
+%   \texttt{pengyucheng@tencent.com} \\
+%   % examples of more authors
+%   % \And
+%   % Coauthor \\
+%   % Affiliation \\
+%   % Address \\
+%   % \texttt{email} \\
+%   % \AND
+%   % Coauthor \\
+%   % Affiliation \\
+%   % Address \\
+%   % \texttt{email} \\
+%   % \And
+%   % Coauthor \\
+%   % Affiliation \\
+%   % Address \\
+%   % \texttt{email} \\
+%   % \And
+%   % Coauthor \\
+%   % Affiliation \\
+%   % Address \\
+%   % \texttt{email} \\
+% }
+
+
+
+
+\input{math_commands}
+
+
+% \newcommand{\pengyu}[1]{{\color{blue}{[\bf\sf Pengyu: #1]}}} 
+% \newcommand{\lxhan}[1]{{\color{red} #1}}
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+\maketitle
+
+\vspace{-5.5mm}
+
+\begin{abstract}
+
+\vspace{-2.5mm}
+
+We explore the potential of self-play training for large language models (LLMs) 
+% with
+in a two-player adversarial language game called Adversarial Taboo. In this game, an attacker and a defender communicate 
+around a target word only visible to the attacker. The attacker aims to induce the defender to speak the target word unconsciously, while the defender tries to infer the target word from the attacker's utterances. To win the game, both players must have sufficient knowledge about the target word and high-level reasoning ability to infer and express in this information-reserved conversation. Hence, we are curious about whether LLMs' reasoning ability can be further enhanced by \textbf{S}elf-\textbf{P}laying this \textbf{A}dversarial language \textbf{G}ame (SPAG). With this goal, we select several open-source LLMs and let each act as the attacker and play with a copy of itself as the defender on an extensive range of target words. Through reinforcement learning on the game outcomes, we observe that the LLMs' performances uniformly improve on a broad range of reasoning benchmarks. Furthermore, iteratively adopting this self-play process can continuously promote LLMs' reasoning abilities. The code is available at \url{https://github.com/Linear95/SPAG}.
+%we find this self-play\&reinforce process can sequentially repeat multiple times with the LLM reasoning ability continuously promoting.
+\vspace{-2mm}
+\end{abstract}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.92\textwidth]{figs/spag-reasoning-plot.png}
+    \vspace{-2mm}
+    \caption{Reasoning improvements from \textbf{S}elf-\textbf{P}laying of \textbf{A}dversarial language \textbf{G}ames (SPAG) on comprehensive reasoning benchmarks. With the SPAG epoch increasing, the LLM reasoning ability continuously improves. Each axis is normalized by the maximum answer-accuracy value.}\label{fig:self-play-reasoning-plot}
+   \vspace{-4mm}
+\end{figure}
+
+\vspace{-1mm}
+\section{Introduction}
+\vspace{-1.5mm}
+Large language models (LLMs), such as GPT-4~\citep{openai2022gpt4} and Gemini~\citep{team2023gemini}, have reformed the domain of artificial intelligence (AI) with astonishing language capacities, such as natural language understanding~\citep{yang2023harnessing,touvron2023llama}, text generation~\citep{kocon2023chatgpt,anil2023palm}, machine translation~\citep{jiao2023chatgpt}, summarization~\citep{xie-etal-2024-chunk}, and programming~\citep{surameery2023use,tian2023chatgpt}. However, the reasoning ability of LLMs, which is essential for complex problem-solving~\citep{pan2023logic} and advanced intelligence-developing~\citep{yao2021adversarial}, still retains being challenged by various criteria including correctness~\citep{zhang2023language} and faithfulness~\citep{turpin2024language}. 
+
+To address the reasoning challenge of LLMs, plenty of works have contributed in-depth efforts from the perspectives of Chain-of-Thought (CoT) prompt engineering~\citep{wei2022chain,ding2023everything,yao2024tree}, and the usage of auxiliary reasoning tools~\citep{pan2023logic}. However, both prompt-based and tool-calling methods require additional prompt designs, which are inconsistent and sensitive to different prompt patterns and LLM checkpoints~\citep{turpin2024language,chu2023survey}. More fundamental and consistent reasoning-improving approaches are post-pretraining~\citep{azerbayev2023llemma} and fine-tuning~\citep{dong2023abilities}, which trains LLMs with additional reasoning-related text corpus.
+%
+%post-pretraining and supervised fine-tuning (SFT) enable more fundamental and consistent performance gains~\citep{huang2023large},
+Nevertheless, these methods demand sufficient high-quality textual data, which are difficult to collect due to the massive costs of human annotation efforts~\citep{singh2023beyond}. 
+
+To improve LLM reasoning more efficiently, self-improvement methods, which enhance LLMs with model-generated synthetic data, have recently attracted increasing research attention~\citep{singh2023beyond,huang2023large,burns2023weak,chen2024self}. Self-improvement methods usually utilize the intrinsic language capability of LLMs to judge~\citep{huang2023large}, filter~\citep{yuan2024self}, or revise~\citep{yuan2024self} self-generated samples to enhance their quality. However, most self-improvement methods rely on a broad range of high-quality question queries to prevent over-fitting into a sub-domain of reasoning tasks, which still requires additional data collection and cleaning. Besides, the judgments from LLMs are not guaranteed objective~\citep{raina2024llm}. If an LLM already has an incorrect or biased recognition of a particular concept, the self-improvement process can reinforce and amplify the LLM's cognitive dissonance.
+
+
+%LLM self-improvement methods utilize model-generated synthetic data to enhance LLM performance, 
+
+% current self-improvement method do not have a objective reward. may reinforce the wrong answer
+
+% require a set of training queries, overfit on specific questions
+
+
+Towards more general and objective self-reasoning-improvement methods, we are inspired by the advancement from AlphaGO~\citep{silver2016mastering} to AlphaGO Zero~\citep{silver2017mastering}, in which the game agents' intelligence continuously promotes via self-play without any human knowledge.
+%
+% Towards self-reasoning-improvement methods with more objective judgment and higher generalization ability, we drew inspiration from the 
+% % evolution 
+% advancement
+% of \lxhan{multi-agent reinforcement learning (MARL), especially from the game AI domain such as the AlphaGo~\citep{silver2016mastering}, AlphaGo Zero~\citep{silver2017mastering}, etc.}, in which the player's intelligence continuously promotes without any human knowledge by self-play 
+% % the GO game 
+% with 
+% % objective 
+% explicit
+% outcomes. 
+%
+Analogically, we expect to set up a language game where LLMs can improve their reasoning capacities via reinforcement learning (RL) during self-play. 
+Although language games have attracted increasing attention in natural language processing~\citep{lewis2017deal,hausknecht2020interactive,xu2023exploring,wu2024enhance}, most of them are specially designed with customized game rules, in lack of the generalization to improve the general language capacities of LLMs. Among a few general-target language games including red-teaming~\citep{ma2023red}, negotiation~\citep{lewis2017deal}, and bargain~\citep{abdulhai2023lmrl}, additional human judgments or reward models are required for outcome determination, which posts challenges on the efficiency and effectiveness of large-scale self-play RL training. Recent studies have raised interest in entity- or word-based language games, such as \textit{20-Question}~\citep{zhang2023entity} 
+and \textit{Guess-My-City}~\citep{abdulhai2023lmrl}
+, which provide not only straight-forward word-level outcomes but also language universality by traversing the game word from comprehensive vocabularies. However, unlike the GO game, these word-based games are out of the adversarial scheme, limiting the game intensity and self-play learning effectiveness. 
+%to improve LLM reasoning from self-plays of language exchanges, we select game \textit{Adversarial Taboo} \citep{yao2021adversarial} from a diverse range of language games~\citep{khani2018planning,abdulhai2023lmrl}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figs/ag_examples2.png}
+    \vspace{-4mm}
+    \caption{Examples of \textit{Adversarial Taboo} with the same target word ``conversation''. The left shows an attacker-winning game, in which the defender unconsciously speaks out the target word. The right is a defender-winning episode because the defender makes the correct inference from the dialogue.}
+    \label{fig:ag-examples}
+    \vspace{-6mm}
+\end{figure}
+
+With the above consideration, we 
+% find an 
+select an
+adversarial language game called \textit{Adversarial Taboo}~\citep{yao2021adversarial}, in which an attacker and a defender 
+% have 
+perform
+a conversation around a target word only visible to the attacker. The attacker aims to induce the defender to speak out the target word unconsciously; the defender tries to avoid unconscious utterance of the target word and guess the word from the dialogue history. To win the adversarial game in information-limited conversations, both players are required to have high-level language capacities in terms of expression, upstanding, and reasoning.
+%
+%
+Moreover, by collecting target words from a vast vocabulary, this game can cover a broad range of topics providing sufficient language versatility. Besides, the game outcomes can be automatically and explicitly judged: we only need to check whether the target word appears in the defender's utterances (attacker wins) or its inference patterns (defender wins). 
+%
+We conduct the self-play on this adversarial game using open-source LLMs, LLaMA-2-7B~\citep{touvron2023llama} and Baichuan-2-13B~\citep{yang2023baichuan},
+%LLaMA2$-$7B \citep{touvron2023llama} and Baichuan2$-$13B \citep{yang2023baichuan}, 
+with target words selected from a 50K top-frequency vocabulary~\citep{davies_coca_2019}. Next,  we conduct offline reinforcement learning on the game outcomes and observe significant performance improvement on a broad range of LLM reasoning benchmarks. Furthermore, we iterate this sampling-learning process with three epochs, %\pengyu{or five}, 
+within which the LLMs' reasoning can continuously obtain improvement. We believe this novel training scheme, \textbf{S}elf-\textbf{P}lay of \textbf{A}dversarial \textbf{G}ame (SPAG), has great potential for developing advanced LLM capacities.
+
+
+%To conduct LLM self-play on this adversarial language game, we first call the GPT-4~\citep{openai2022gpt4} API to act as the attacker and the defender and collect the game episodes with the target word selected from the vocabulary of 30K top-frequent words. 
+
+%We try to improve LLMs' reasoning by self-playing adversarial language games. More specifically 
+
+% LLM is powerful, training LLM typically includes three stages: 1. pretrain 2. SFT 3. RLHF. to further improve LLM, sft and rlhf both require a large amount of suppervise data
+
+% Since LLM can already generate high-quality text, We try to further improve LLM with model generated-data. Therefore, many method have study self-improvement
+
+%Inspired from the evolution from alpha go to alpha go zero, we try to explore whether LLM can enhance themself or even exceed human performance from the self-play via reinforcement learning.
+\vspace{-2mm}
+\section{Preliminary}
+\vspace{-2mm}
+With the development of LLMs~\citep{chatgpt,openai2022gpt4}, reinforcement learning (RL) has played an
+% more and more 
+increasingly
+important role in language model training~\citep{ouyang2022training,ramamurthy2022reinforcement}. The prime application scenario for RL in LLM training is reinforcement learning from human feedback (RLHF)~\citep{yuan2023rrhf,cheng2023adversarial,zeng2023diverse}. RLHF first learns a reward model $r(\vx,\vy)$ from the human feedback preference pairs~\citep{cheng2023everyone}, and then optimizes the LLM policy $\pi_\theta(\vy|\vx)$ to maximize the expected reward value~\citep{dong2023raft}:
+\begin{equation}
+\gL_\text{RLHF}(\pi_\theta) = -\bbE_{\vx \sim \gD, \vy \sim \pi_\theta(\vy|\vx)} [r(\vx, \vy)]  %- \beta_0 \text{KL}[\pi_\theta(\vy|\vx)\Vert \pi_\text{ref}(\vy|\vx)] 
+     \label{eq:llm-rl-obj}.
+\end{equation}
+%Because of the discrete nature of textual sample $\vy$ (as the action from policy $\pi_\theta$), the policy gradient of \eqref{eq:llm-rl-obj} is usually estimated with REINFORCE
+To learn the above objective, proximal policy optimization (PPO)~\citep{schulman2017proximal} algorithm has been recognized as the mainstream solution. In each update to \eqref{eq:llm-rl-obj}, PPO minimizes:
+\begin{equation}
+ \gL_\text{PPO}(\pi_\theta) =  -  \bbE_{\vx\sim \gD,\vy\sim \pi_{\bar{\theta}}(\vy|\vx)}\Big[\frac{\pi_{\theta}(\vy|\vx)}{\pi_{\bar{\theta}}(\vy|\vx)} \hat{A}^{\pi_{\bar{\theta}}} - \beta \text{KL}[\pi_{\bar{\theta}} \Vert \pi_{\theta}] \Big], 
+\end{equation}
+where $\pi_{\bar{\theta}}$ is a copy of $\pi_\theta$ before the update, $\hat{A}^{\pi_{\bar{\theta}}}$ is the estimated advantage value~\citep{schulman2015high} with respect to the reference policy $\pi_{\bar{\theta}}$, and $\text{KL}[\pi_{\bar{\theta}}\Vert \pi_{\theta}]$ is the Kullback-Leibler~(KL)~\citep{kullback1997information} divergence regularizing $\pi_\theta$ with an appropriate updating step.
+%between LLM policy $\pi_\theta(\vy|\vx)$ with a reference $\pi_\text{ref}(\vy|\vx)$.  
+However,  PPO for LLMs has been continually challenged due to its inefficient natural-text online sampling and the unstable training processes~\citep{baheti2023improving}. Among the improvements to PPO~\citep{rafailov2023direct,yuan2023rrhf,dong2023raft}, \citet{baheti2023improving} adopts the PPO objective into an offline scheme by using importance sampling~\citep{neal2001annealed}, which is named Advantage-Leftover-Lunch (A-LoL): 
+\begin{equation}
+  \nabla_\theta \hat{\gL}_\text{RLHF-A-LoL} =   \bbE_{\vx \sim\gD, \vy\sim \pi_\text{ref}(\vy|\vx)} \Big[
+    \hat{A}^{\pi_\text{ref}}\cdot \frac{\pi_\theta(\vy|\vx)}{\pi_\text{ref}(\vy|\vx)} \cdot \nabla_\theta \log  \pi_\theta(\vy|\vx)  \Big].
+\end{equation}
+Here the sample $\vy \sim \pi_\text{ref}(\vy|\vx)$ and advantage $\hat{A}^{\pi_\text{ref}}$ are both from the reference distribution $\pi_\text{ref}(\vy|\vx)$ and calculated offline. Besides, \citet{gulcehre2023reinforced} proposed Reinforced Self-Training (ReST) to simplify the RLHF scheme. With a threshold $\tau \in \mathbb{R}$, ReST updates the LLM by the reinforcement on the selected samples $\gD_\tau = \{(\vx,\vy) : r(\vx,\vy) >\tau \}$:
+\begin{equation}\label{eq:obj-rest}
+    \gL_\text{ReST}(\pi_\theta) = \bbE_{\vx\sim \gD, \vy\sim\pi_\text{ref}(\vy|\vx)} \Big[\bm{1}_{r(\vx,\vy) > \tau} \cdot \gL_\theta(\vx,\vy) \Big] = \bbE_{\gD_\tau}[\gL_\theta(\vx,\vy)],
+\end{equation}
+where $\gL_\theta(\vx,\vy)$ could be any offline RL loss such as A-LoL or the vanilla language modeling loss.
+
+
+% \subsection{Reinforcement Learning for LLMs}
+
+% reinforcement learning (RL) methods have attracted  increasing attention in LLM training with the development of RLHF
+
+
+% \subsection{Self-play of LLM}
+% - AlphaZero, REINFORCE, mastering chess and shogi by self-play
+% - GPT-f, Formal Mathematics statement curriculum learning, META MiniF2F
+
+% - SPIN
+% - Self Reward Model
+% - Aligning Large Language Models by On-Policy Self-Judgment
+% - Super alignment (weak-to-strong alignment)
+
+% - RFT REST(EM)
+
+% \subsection{Offline Policy Optimization for LLM}
+% - RRHF DPO PRO APO KTO IPO
+
+% \subsection{Language Games}
+% - Avalon
+% - 
+
+
+
+
+
+\vspace{-2mm}
+\section{Self-play of Adversarial Language Games} \label{sec:SPAG-method}
+\vspace{-2mm}
+
+
+The game of Adversarial Taboo is first introduced by \citet{yao2021adversarial}, in which an attacker $\mu$ and a defender $\nu$ involve a multi-turn conversation. At the beginning of the game, the attacker is assigned a target word $w \in \gV_\text{target}$, which is not informed to the defender. The attacker's target is to induce the defender to speak the target word unconsciously. To achieve this goal, the attacker can talk about any topic related to $w$, except directly speaking out the target word. In contrast, the defender is required to infer the target word without any unconscious utterance of the word. If the defender has sufficient confidence to infer the word, 
+it can yell ``I know the word! It is \textit{\{target word\}}!''. Then the game terminates. If the guess is correct, the defender wins, otherwise 
+% he/she 
+the attacker wins. Besides, the game has a maximum number of turns $T_0$. If nobody wins during $T_0$ turns, there is a tie. The examples of Adversarial Taboo are shown in Figure~\ref{fig:ag-examples}.
+
+\vspace{-3mm}
+\subsection{Adversarial Language Game Modeling}
+\vspace{-2mm}
+We view the Adversarial Taboo as a two-player zero-sum Markov game~\citep{littman1994markov}, which can be described by a tuple as $(\gS, \gA, F, r)$: 
+\begin{itemize}[leftmargin=14pt]
+    \item The state space $\gS = \{\vs_t, \vs'_t : 1 \leq t\leq T_0\}$ contains two types of states, $\vs'_t = (w, \vu_1, \vv_1, \vu_2,  \dots, \vu_t)$ and $\vs_t = (w, \vu_1, \vv_1, \vu_2, \dots, \vu_t, \vv_t)$, where $\{\vu_i\}_{i=1}^t$ and $\{\vv_i\}_{i=1}^t$ are the utterances of the attacker and defender, respectively.  
+    Games start at $\vs_0 = (w)$ with a target word $w \in \gV_\text{target}$ and end with $T_0$ maximum turns. States $\vs'_t$ and $\vs_t$ end with utterances $\vu_t$ and $\vv_t$ for the defender and attacker to act, respectively. 
+    %the state space, where each state $\vs\in\gS$ contains a target word $w$ and a sequence of dialogue between the attacker's utterance $\{\vu_i\}_{i=1}^t$ and the defender's utterance $\{\vv_i\}_{i=1}^t$ alternatively.   %each state $\vs = (w, \vu_1, \vv_1, \vu_2, \vv_2, \dots, \vu_t)$ (or $\vs = (w, \vu_1, \vv_1, \vu_2, \vv_2, \dots, \vu_t, \vv_t)$ )in the state space $\gS$ contains a target word $w \in \gV$ and a sequence of dialogue history between the attacker and defender alternatively.  
+    \item The action space $\gA$ is shared with both the attacker and defender, which is equivalent to the token sequence space of natural language $\gN=\{\vx = (x_1,x_2, \dots, x_L) | x_l \in \gV_\text{token}, L\in \mathbb{N}_{+}\}$.  
+
+    \item The transition function $F: \gS \times \gA \rightarrow \gS$  deterministically appends the utterance $\vu_t$ or $\vv_t$ at the end of the dialogue, and converts $\vs'_t = F(\vs_{t-1}, \vu_t)$ and $\vs_{t} =F(\vs'_{t}, \vv_{t}) $.
+    
+    \item The reward $r: \gS \times \gA \rightarrow \mathbb{R}$ evaluates the actions $\vu,\vv \in \gA$ based on their corresponding states $\vs, \vs' \in \gS$ with rewards $r(\vs, \vu)$ and $r(\vs', \vv)$, respectively. Given a game episode $\vtau=(\vs_0, \vs'_1, \vs_1, \dots, \vs'_T,\vs_T)$, we denote the \textit{attacker's total reward} $R(\vtau) =  \sum_{t=1}^T r(\vs_{t-1}, \vu_t )$, so the \textit{defender's total reward} is $\sum_{t=1}^T r(\vs'_t, \vv_t)= -R(\vtau) $ 
+    % in this 
+    to satisfy the
+    \textit{zero-sum} constraint. More detailed reward designs with heuristic rules for the Adversarial Taboo can be found in Appendix~\ref{sec:appendix-reward-design}.
+\end{itemize}
+
+In the above game, we denote $\mu(\vu|\vs)$  and $\nu(\vv|\vs')$ as the attacker's and defender's policies, respectively. Then each episode $\vtau $ can be regarded as a 
+% sample 
+trajectory with the probability:
+\begin{equation}
+ P(\vtau) = P(\vs_0) \prod_{t=1}^T P(\vs'_t|\vs_{t-1}) \prod_{t=1}^T P(\vs_t|\vs'_t) =P(w) \prod_{t=1}^T \mu(\vu_{t} |\vs_{t-1}) \prod_{t=1}^T \nu(\vv_t| \vs'_t) = :(\mu \times \nu),
+\end{equation}
+where $P(w)$ is the data distribution of target word $w\in\gV_\text{target}$.
+%\lxhan{($P(w)$ should be explained.)}
+Then we can write the self-play objective of the Adversarial Taboo as:
+\begin{equation}
+    \label{eq:adversarial-game-objective}
+    \max_{\mu} \min_{\nu} \gL_\text{AG}(\mu, \nu) := \mathbb{E}_{{\vtau}\sim {\mu \times \nu}} [R(\vtau)],
+\end{equation}
+in which the attacker tries to maximize its total reward $R(\vtau)$ by optimizing policy $\mu$, and the defender seeks strategies $\nu$ to maximize the defender reward $-R(\vtau)$ (minimize $R(\vtau)$).
+%
+%
+To play the above adversarial game with an LLM generation policy $\pi_\theta(\vy| \vx)$, we first design prompt templates $f_\text{attack}, f_\text{defend}: \gS \rightarrow \gN$ for the attacker and defender respectively to convert the game states into natural language task descriptions. Next, we introduce the game policies for the two players:
+\begin{equation}\label{eq:llm-to-game-policy}
+    \mu_\theta(\vu | \vs) = \pi_\theta(\vu | f_\text{attack}(\vs)),  \text{ and \  } \nu_\theta(\vv |\vs') = \pi_\theta(\vv| f_\text{defend}(\vs')).
+\end{equation}
+The detailed prompt templates for the game are demonstrated in Appendix~\ref{sec:data-collection-appendix}.
+
+\input{algs/self-play-data-collection}
+
+\vspace{-1.5mm}
+\subsection{Imitation Learning} \label{sec:imitation-learning}
+\vspace{-1.5mm}
+Due to the limited capability 
+% limitations
+of current open-source LLMs, the generation policy $\pi_\theta(\vy|\vx)$ can not guarantee the strict instruction-following of the game rules in prompts $f_\text{attack}(\vs)$ and $f_\text{defend}(\vs')$. Therefore, before the self-play, we first conduct an imitation learning (behavior cloning) of GPT-4's behaviors to ensure that 
+% behaviors
+$\pi_\theta(\vu|f_\text{attack}(\vs))$ and $\pi_\theta(\vv|f_\text{defend}(\vs'))$ 
+act consistently with the game rules.
+%
+To collect the game episodes of GPT-4~\citep{achiam2023gpt}, we use the data collection procedure described in Algorithm~\ref{alg:self-play-data-collection}. Similar to the setups in \eqref{eq:llm-to-game-policy}, we also design attacker and defender prompts for GPT-4 to act as the game players, which can be found in Appendix~\ref{sec:GPT-data-collection}.
+
+
+After collecting a group of GPT-4 game episodes for imitation learning as $\gT_\text{im}$, we 
+%obtain the game trajectories $\gT_\text{im}$ from the self-play episodes of GPT-4 and 
+divide it into an attacker-winning set $\gT^\text{attack}_\text{im} = \{\vtau \in \gT_\text{im}: R(\vtau) > 0\}$ and a defender-winning set $\gT^\text{defend}_\text{im} = \{\vtau \in \gT_\text{im} :R(\vtau) <0\}$. 
+%
+The imitation learning loss is to maximize the log-likelihood of winners' actions:
+\begin{align}
+    \gL_\text{im}^\text{attack} (\pi_\theta)=& - \mathbb{E}_{\vtau \in \gT^\text{attack}_\text{im}} \Big[
+     \frac{1}{T} \sum_{t=1}^T \log \pi_\theta(\vu_t| f_\text{attack}(\vs_{t-1}))  + \beta_1 \text{KL}[\pi_\theta \Vert \pi_\text{ref}]\Big], \\
+      \gL_\text{im}^\text{defend} (\pi_\theta)=& - \mathbb{E}_{\vtau \in \gT^\text{defend}_\text{im}} \Big[
+     \frac{1}{T} \sum_{t=1}^T \log \pi_\theta(\vv_t| f_\text{defend}(\vs'_{t}))  + \beta_1 \text{KL}[\pi_\theta \Vert \pi_\text{ref}]\Big],
+\end{align}
+where the re-weighting parameter $\beta_1>0$ and the regularizer $\text{KL}[\pi_\theta \Vert \pi_\text{ref}]$ prevents the model from over-fitting on the language game task and maintains the model's general language abilities. The reference model $\pi_\text{ref}$ is the initial checkpoint of the LLM before training. 
+%
+The overall imitation learning objective is $
+    \gL_\text{im} (\pi_\theta)= \frac{1}{2}  \gL_\text{im}^\text{attack}(\pi_\theta) + \frac{1}{2}  \gL_\text{im}^\text{defend}(\pi_\theta).$
+    
+%     \begin{equation}\label{eq:obj-imitation-learning}
+%     \gL_\text{im} (\pi_\theta)= \frac{1}{2}  \gL_\text{im}^\text{attack}(\pi_\theta) + \frac{1}{2}  \gL_\text{im}^\text{defend}(\pi_\theta).
+% \end{equation}
+
+%where $W_1 = \frac{|\gT^\text{attack}|+|\gT^\text{defend}|}{2|\gT^\text{attack}|}$ and $W_2 = \frac{|\gT^\text{attack}|+|\gT^\text{defend}|}{2|\gT^\text{defend}|}$ are two re-weighting coefficients to balance the learning of attacker and defender behaviors.
+\vspace{-2mm}
+\subsection{Reinforcement Learning from Self-play}
+\vspace{-2mm}
+
+Imitation learning enables LLM to behave consistently following the game rules. Next, we conduct self-play by letting the LLM $\pi_\theta(\vy|\vx)$ play alternatively as the attacker  $\mu_\theta(\vu | \vs) = \pi_\theta(\vu | f_\text{attack}(\vs))$ and the defender $\nu_\theta(\vv |\vs') = \pi_\theta(\vv| f_\text{defend}(\vs'))$. 
+Note that the self-play sampling process involves massive multi-turn auto-regressive text generation of the LLM, which causes heavy computational complexity and makes the on-policy RL training intensively inefficient. Therefore, we use an offline learning scheme: (1) make a copy $\pi_{\bar{\theta}}$ of current LLM policy $\pi_\theta$; (2) collect self-play episodes $\gT_{\bar{\theta}} = \{\vtau \sim \mu_{\bar{\theta}} \times \nu_{\bar{\theta}} \}$ from games between attacker $\mu_{\bar{\theta}}$ and defender $\nu_{\bar{\theta}}$; (3) update $\pi_\theta$ via RL training with $\gT_{\bar{\theta}}$.
+%
+% in on-policy reinforcement learning schemes.  Therefore, we aim to improve LLM  from self-plays within an off-policy sampling scheme. 
+%
+The details of the collection of $\gT_{\bar{\theta}}$ are shown in Algorithm~\ref{alg:self-play-data-collection}. %More specifically, we collect a set of episodes $\gT=\{\vtau \sim p_{\bar{\theta}}(\vtau)\}$ with LLM $\pi_{\bar{\theta}}$ as a copy of $\pi_\theta$
+
+
+With a group of episodes $\gT_{\bar{\theta}}$, we first fix the defender policy $\nu_{\bar{\theta}}$  and consider updating the attacker policy $\mu_\theta$ with respect to  the self-play objective  $\gL_\text{AG}(\mu_\theta, \nu_{\bar{\theta}}) =   \bbE_{\vtau\sim \mu_{\theta} \times \nu_{\bar{\theta}}} [R(\vtau)]$. 
+% \begin{align}\label{eq:ag_obj_attacker_view}
+%  \gL_\text{AG}(\mu_\theta, \nu_{\bar{\theta}}) =   \bbE_{\vtau\sim \mu_{\theta} \times \nu_{\bar{\theta}}} [R(\vtau)] % = \mathbb{E}_{\vtau \sim \mu_{\theta} \times \nu_{\bar{\theta}}} \Big[ \sum_{t=1}^T r(\vs_{t-1}, \vu_t)  + \sum_{t=1}^T r(\vs'_{t}, \vv_t)\Big].
+% %\\   =    \mathbb{E}_{(\vs_0, \vs_1, \dots, \vs_T)} \Big[ \sum_{t=1}^T \hat{r}(\vs_{t-1}, \vu_t)\Big],
+% \end{align}
+%  where $\hat{r}(\vs_{t-1}, \vu_t) = r(\vs_{t-1}, \vu_t) + r(\vs'_{t}, \vv_t)$ is the total reward of the attacker's utterance and his opponent's response. The transition probability $p(\vs_t|\vs_{t-1}, \vu_t) = p(\vs_t| \vs'_{t}) = \nu_{\bar{\theta}}(\vv_t|\vs'_{t}) $ comes from the defender's reaction.
+%
+We calculate the corresponding policy gradient for the attacker as:
+\begin{align}\label{eq:policy-gradient-for-attacker}
+   \nabla_\theta \gL_\text{AG}(\mu_\theta, \nu_{\bar{\theta}}) =& \bbE_{\vtau\sim \mu_{\theta}\times \nu_{\bar{\theta}}}\Big[\sum_{t=1}^T  A^{\mu_\theta}_t\cdot \nabla_\theta \log \mu_\theta (\vu_t| \vs_{t-1})\Big] \nonumber \\
+   =& \bbE_{\vtau\sim \mu_{\bar{\theta}}\times \nu_{\bar{\theta}}} \Big[\sum_{t=1}^T  A^{\mu_{\theta}}_t \cdot \frac{\mu_\theta(\vu_t|\vs_{t-1})}{\mu_{\bar{\theta}}(\vu_t|\vs_{t-1})} \cdot \nabla_\theta\log \mu_\theta (\vu_t| \vs_{t-1}) \Big],
+\end{align}
+where $A^{\mu_\theta}_{t} = A^{\mu_\theta}(\vs_{t-1}, \vu_t)$ 
+%and $A^{\mu_{\bar{\theta}}}_t = A^{\mu_{\bar{\theta}}}(\vs_{t-1}, \vu_t)$ are
+is the advantage of action $\vu_t$ for the attacker $\mu_\theta$ in the self-play of $\mu_{\theta} \times \nu_{\bar{\theta}}$.
+%and $\mu_{\bar{\theta}} \times \nu_{\bar{\theta}}$, respectively. 
+%
+%\lxhan{(are the advantages also using the LLM parameters? i.e., the advantage is also an LLM with the same parameters as the policy's LLM? the second equality `=' is incorrect here that the importance sampling and the advantage are independent. Note that the action is only draw from the policy, and it does nothing with the advantage.)}
+%
+ %In \eqref{eq:policy-gradient-for-attacker}, 
+Here we apply importance sampling to unbiasedly estimate  the expectation \textit{w.r.t} $\mu_\theta(\vu_t|\vs_{t-1})$ 
+ with the sampled actions from $\mu_{\bar{\theta}}(\vu_t|\vs_{t-1})$ in $\gT_{\bar{\theta}}$. Inspired by TRPO~\citep{schulman2015trust} and PPO~\citep{schulman2017proximal}, we design the following loss to optimize $\gL_\text{AG}(\mu_\theta, \nu_{\bar{\theta}})$:
+\begin{align}\label{eq:offline-po-attacker}
+\gL^\text{attack}_\text{sp}(\pi_\theta)= &  - \bbE_{\vtau\in\gT_{\bar{\theta}}} \Big[ \sum_{t=1}^T \frac{\mu_\theta(\vu_t|\vs_{t-1})}{\mu_{\bar{\theta}}(\vu_t|\vs_{t-1})} \hat{A}^{\mu_{\bar{\theta}}}_t  - \beta_2 \text{KL}[\pi_\theta\Vert\pi_{\bar{\theta}}]\Big] \nonumber \\ = & -  \bbE_{\vtau\in\gT_{\bar{\theta}}} \Big[ \sum_{t=1}^T \frac{\pi_\theta(\vu_t|f_\text{attack}(\vs_{t-1}))}{\pi_{\bar{\theta}}(\vu_t|f_\text{attack}(\vs_{t-1}))} \hat{A}^{\mu_{\bar{\theta}}}_t -  \beta_2 \text{KL}[\pi_\theta \Vert \pi_{\bar{\theta}}]\Big],
+\end{align}
+where the re-weighting parameter $\beta_2>0$, and regularizer $\text{KL}(\pi_\theta\Vert\pi_{\bar{\theta}})$
+% prevent the LLM from overfitting, 
+guarantees an appropriate policy update step size. Following TRPO~\citep{schulman2015trust}, we use empirical estimation $\hat{A}^{\mu_{\bar{\theta}}}_t$ of policy $\mu_{\bar{\theta}}$ to approximate the advantage $A_t^{\mu_\theta}$. 
+More details of advantage estimation are described in Appendix~\ref{sec:appendix-advantage-estimation}.
+Similarly, from the perspective of the defender, we propose the corresponding loss:
+\begin{equation}\label{eq:offline-po-defender}
+    \gL^\text{defend}_\text{sp}(\pi_\theta)= -  \bbE_{\vtau\in\gT_{\bar{\theta}}} \Big[ \sum_{t=1}^T \frac{\pi_\theta(\vv_t|f_\text{defend}(\vs'_{t}))}{\pi_{\bar{\theta}}(\vv_t|f_\text{defend}(\vs'_{t}))} \hat{A}^{\nu_{\bar{\theta}}}_t -  \beta_2 \text{KL}[\pi_\theta \Vert \pi_{\bar{\theta}}]\Big].
+\end{equation}
+In practice, we find when negative advantage values exist, the above policy gradient method can cause training instability and damage the LLMs' general language performance. %More empirical results and discussions about this phenomenon can be found in Section~\ref{sec:exp-results-analysis}. 
+To mitigate the issue and obtain more stable RL training, we utilize the methodology of ReST~\citep{gulcehre2023reinforced} as in \eqref{eq:obj-rest}, which considers the offline learning with samples $\{\vtau: R(\vtau) > \xi\}$  selected by a reward threshold $\xi$.
+More specifically, we set the reward threshold $\xi = 0$ and select the attacker-winning episodes $\gT^\text{attack}_{\bar{\theta}} = \{\vtau\in \gT_{\bar{\theta}}: R(\vtau) > 0\}$ and the defender-winning episodes $\gT^\text{defend}_{\bar{\theta}} = \{\vtau\in \gT_{\bar{\theta}}: R(\vtau) < 0\}$ for the attacker and the defender training respectively. Similar techniques have also been studied in earlier RL literature to obtain stable policy updates, such as self-imitation learning~\citep{oh2018self} and the UPGO~\citep{vinyals2019grandmaster} methods. Therefore, the overall self-play of adversarial language games (SPAG) objective is:
+\begin{align}
+    \gL_\text{SPAG}(\pi_\theta) =& - \frac{1}{2}\bbE_{\gT_{\bar{\theta}}^\text{attack}} \Big[\sum_{t=1}^T \frac{\pi_\theta(\vu_t|f_\text{attack}(\vs_{t-1}))}{\pi_{\bar{\theta}}(\vu_t|f_\text{attack}(\vs_{t-1}))} \hat{A}^{\mu_{\bar{\theta}}}_t -  \beta_2 \text{KL}[\pi_\theta \Vert \pi_{\bar{\theta}}] \Big] \\ -  \frac{1}{2} & \bbE_{\gT_{\bar{\theta}}^\text{defend}} \Big[\sum_{t=1}^T \frac{\pi_\theta(\vv_t|f_\text{defend}(\vs'_{t}))}{\pi_{\bar{\theta}}(\vv_t|f_\text{defend}(\vs'_{t}))} \hat{A}^{\nu_{\bar{\theta}}}_t -  \beta_2 \text{KL}[\pi_\theta \Vert \pi_{\bar{\theta}}] \Big] - \alpha  \bbE_{(\vx,\vy) \sim \gD_\text{SFT}}[\log \pi_\theta(\vy|\vx)], \nonumber
+\end{align}
+%\lxhan{(explain $\alpha$)}
+where $\alpha>0$ is a re-weighting hyper-parameter, and $\bbE_{\gD_\text{SFT}}[\log \pi_\theta(\vy|\vx)]$ is the log-likelihood on a supervised fine-tuning (SFT) dataset $\gD_\text{SFT}$ to prevent LLMs from losing general language abilities.
+
+\input{algs/SPAG_alg}
+
+\vspace{-2.5mm}
+\section{Experiments}
+\vspace{-2.5mm}
+
+To verify the effectiveness of SPAG, we select open-source pretrained LLMs of different sources and model sizes, particularly LLaMA-2-7B~\citep{touvron2023llama} and Baichuan-2-13B~\citep{yang2023baichuan}. 
+As introduced in Section~\ref{sec:SPAG-method}, the training process includes two stages: imitation learning of GPT-4, and self-play learning on game episodes. For baseline comparison, we consider Chain-of-Thought (CoT)~\citep{wei2022chain} and continuous supervised fine-tuning (SFT) methods. Besides, we also test another two keyword-based non-adversarial language games: \textit{20-Question} and \textit{Guess-My-City} as described in \citet{abdulhai2023lmrl}. More details about the two games are in Appendix~\ref{sec:non-adversarial-game-baselines}.
+
+%The evaluation metrics include the commonly used reasoning benchmarks~\citep{eval-harness} and the game-play win rates between different self-play checkpoints and GPT-4~\citep{openai2022gpt4}.
+
+\vspace{-2mm}
+\subsection{Experimental Setups}
+\vspace{-2mm}
+
+\paragraph{Training Data Preparation}
+The training data preparation consists of the following three parts. More data collection details are in Appendix~\ref{sec:data-collection-appendix}.
+\begin{itemize}[leftmargin=14pt]
+\vspace{-0.5mm}
+\item \textit{Target Words: } 
+We aim to play the adversarial game with an extensive range of target words so that diverse topics can be discussed during the self-play processes, which helps maintain the generalization ability of LLMs. Hence, we collect the 50K most frequently used words from the Corpus of Contemporary American (CoCA)~\citep{davies_coca_2019}  as the target word list $\gV_\text{target}$. Besides, stop words defined in NLTK~\citep{bird2006nltk}, which are commonly used with insignificant semantic meaning, are filtered out of  $\gV_\text{target}$.
+%\vspace{-0.5mm}
+\item \textit{Imitation Learning Data: } 
+To enable the instruction-following ability of open-source LLMs on game rules, we use the same data collection process in Algorithm~\ref{alg:self-play-data-collection} via the GPT-4~\citep{openai2022gpt4} API and play the Taboo game one episode per target word. The attacker and defender prompts are in Appendix~\ref{sec:GPT-data-collection}. Due to the resource limitation, we only collect the GPT-4 self-play samples with the top 30K words from $\gV_\text{target}$. The maximum interaction turn is randomly selected in the range $[3, 8]$.  The results are collected as $\gT_\text{im}$ for the imitation learning.
+%\vspace{-0.5mm}
+\item \textit{Supervised Funetuning (SFT) Data: } We also prepare general query-response SFT data to prevent LLMs from being over-fitted on the adversarial game. We use Alpaca~\citep{alpaca} as the SFT set, which contains 52K instruction-following data from GPT-3~\citep{brown2020language}. 
+\end{itemize}
+ 
+
+\paragraph{Evaluation}
+To evaluate the LLMs' performance, we consider the following two perspectives:
+\begin{itemize}[leftmargin=14pt]
+\vspace{-1mm}
+    \item \textit{Reasoning Benchmarks: } To test the reasoning ability, we consider the following commonly used benchmarks including BIG-Bench Hard (BBH)~\citep{suzgun2022challenging}, ARC easy (ARC-e) \& challenge (ARC-c)~\citep{Clark2018ThinkYH}, Mutual~\citep{mutual}, WinoGrande~\citep{sakaguchi2019winogrande}, LogiQA2~\citep{10174688}, PIQA~\citep{Bisk2020}. BBH requires the exact match of the generated answers, the other benchmarks are all within the multiple-choice form. % \pengyu{\@hammxu which benchmarks are multiple choices, which are generation tasks?}
+Besides reasoning metrics, we test MMLU~\citep{DBLP:journals/corr/abs-2009-03300} as a general performance evaluation for LLMs. Additionally, we calculate the geometric mean of the numerical results of all benchmarks as an overall performance measurement.  More details can be found in Appendix~\ref{sec:evaluation-benchmark-details}. 
+%\vspace{-0.5mm}
+    \item  \textit{Game Win Rates: } Besides the general LLM capabilities, we report the win rates on a testing vocabulary $\gV_\text{test}$  to validate if the game skills of LLMs improve through 
+    % the reinforcement learning of 
+    self-play. Following \citet{abdulhai2023lmrl}, we use the same keyword list in \textit{20-Question}  as $\gV_\text{test}$, which contains 168 typical words manually selected from diverse daily objects.  We denote the number of winning episodes as $N_\text{win}$, the number of losing episodes as $N_\text{lose}$, and the number of tied games as $N_\text{tie}$. Then, the player win rate is calculated as $(N_\text{win} + 0.5 N_\text{tie})/( N_\text{win} + N_\text{loss }+ N_\text{tie})$. The invalid game episodes, where LLM players do not strictly follow the game rules, are ignored.
+\end{itemize}
+
+
+
+\paragraph{Training Details} 
+Most of our LLM training setups follow Alpaca~\citep{alpaca}.
+For imitation learning, the learning rate is 5e-6, and the KL-penalty coefficient $\beta_1=0.1$. For SPAG training, the learning rate is 2e-6,  the KL-penalty coefficient $\beta_2=0.2$, and the SFT coefficient $\alpha=0.5$.
+%The learning rate is set to 5e-6 for imitation learning and 2e-6 for SPAG. 
+For the Alpaca SFT baseline, we exactly follow the training setups of Alpaca and set the learning rate to 2e-6. Among all training stages, the batch size is 128 and the max sequence length is 2048. Each training process maintains one epoch over the offline collected trajectories. The 
+% reward decay weight $\gamma$ to the number of interaction turns is 0.8.
+the decay parameter $\gamma$ is set to 0.8. The maximum turn of the Adversarial Taboo is 5. All our experiments are conducted using
+32 NVIDIA A100-SXM4 GPUs with 40GB memory.
+
+
+\begin{table}[t]
+    \centering
+    \caption{Reasoning Performance of SPAG on LLaMA-2-7B.}\label{tab:reasoning-results-llama}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{l|c|ccccccc|c}
+    \toprule
+        ~ & MMLU & BBH & Mutual & ARC-e & ARC-c & LGQA2 & WGrande & PIQA & GM (Avg.) \\ \midrule
+        LLaMA-2-7B & 45.80  & 32.48  & 50.90  & 76.30  & 43.26  & 25.32  & 69.14  & 78.07  & 49.17  \\ 
+        LLaMA-2-7B-CoT & 44.62  & \textbf{\ \hspace{0.0mm} 38.73}$^*$  & 52.03  & 73.44  & 40.96  & 25.89  & \textbf{\ \hspace{0.0mm} 71.82}$^*$  & 78.35  & 50.05\\
+        \midrule
+        AlpacaSFT-1 & 35.17  & 30.24  & 53.95  & 76.81  & 44.97  & 28.94  & 69.61  & 78.07  & 48.61  \\ 
+        AlpacaSFT-2 & 44.17  & 32.50  & 55.08  & 77.15  & 46.50  & 29.20  & 68.67  & 78.24  & 50.82  \\ 
+        AlpacaSFT-3 & 45.87  & 31.52  & 54.18  & 75.25  & 45.05  & 29.07  & 66.85  & 76.71  & 50.08  \\ 
+        AlpacaSFT-3-CoT & 44.70  & 34.56  & 54.18  & 74.37  & 42.32  & 29.13  & 67.72  & 76.55  & 50.11 \\      
+        Imitation-\textit{20Q} & 36.93 & 29.61 & 49.89 & 73.48 & 39.33 & 25.70 & 69.22 & 76.93 & 46.43\\
+        Imitation-\textit{GuessCity} & 46.13 & 32.82 & 51.58 & 76.22 & 43.09 & 25.95 & 68.82 & 78.13 & 49.46\\
+        Imitation-AG & 46.15  & 32.74  & 52.82  & 76.81  & 44.80  & 27.10  & 69.46  & 78.24  & 50.22  \\ 
+        \midrule
+        SP-\textit{20Q} & 37.91 & 30.58 & 51.35 & 75.46 & 42.32 & 26.78 & 69.30 & 77.37 & 47.79\\
+        SP-\textit{GuessCity} & 45.32 & 31.64 & 50.56 & 75.34 & 42.15 & 25.57 & 69.22 & 78.51 & 48.78\\
+         IM-AlpacaSFT & 46.50  & 34.03  & 54.18  & 76.86  & 45.55  & 29.20  & 68.82  & 78.31  & 51.20 \\
+    %      SPAG-1-Neg   \\ 
+        SPAG-1 & 47.01  & 34.39  & 54.85  & 77.69  & 45.65  & 29.83  & 68.90  & 78.89  & 51.69  \\ 
+        %SPAG-1(CoT) & 46.50  & 36.77  & 53.95  & 76.81  & 44.03  & 26.84  & 73.40  & 79.60  & 51.43\\
+        %\midrule
+        SPAG-2 & \textbf{47.28}  & 34.73  & 54.97  & 78.45  & 46.84  & 30.08  & 69.61  & 79.33  & 52.19  \\ 
+        %\midrule
+        SPAG-3 & 47.11  & \textbf{34.94}  & \textbf{55.30}  & \textbf{78.54}  & \textbf{47.53}  & \textbf{30.98}  & \textbf{69.93}  & \textbf{79.38}  & \textbf{52.58} \\ 
+        %SPAG-3(CoT)  & 46.97  & 36.74  & 54.18  & 77.19  & 44.80  & 27.48  & 73.40  & 79.82  & 51.82 \\
+        \bottomrule
+    \end{tabular}    
+    }
+    \vspace{-4mm}
+\end{table}
+
+
+
+\vspace{-2mm}
+\subsection{Results Analysis} \label{sec:exp-results-analysis}
+\vspace{-2mm}
+The main results are shown in Figure~\ref{fig:self-play-reasoning-plot}, where each axis is normalized by the maximum performance value, representing the reasoning performance on a particular benchmark. For notation simplification, we call the LLM obtained after imitating learning as the IM model, and the LLM trained after the $i$-th epoch of SPAG as SPAG-$i$ ($i=1,2,3$).
+
+\paragraph{Imitation Learning} With imitation learning over the collected GPT-4 self-play episodes, both LLaMA-2-7B and Baichuan-2-13B have obtained uniform performance improvements on all the reasoning benchmarks. As shown in Figure~\ref{fig:self-play-reasoning-plot},  both gray regions are completely wrapped by the blue-line polygons. Besides, as for the general language capacity, the imitation-learned (IM) LLaMA-2 model achieves a better MMLU performance than the original LLaMA-2 base in Table~\ref{tab:reasoning-results-baichuan}. Although the imitation result of Baichuan-2-13B on MMLU slightly underperforms the base model, the numerical difference is insignificant compared to the reasoning gains, which indicates the imitation learning of the GPT-4 game behaviors can improve LLM reasoning while preserving the general language capacity. In Table~\ref{tab:reasoning-results-llama}, we also report the IM models on two keyword-based games within non-adversarial setups: Imitation-\textit{20Q} (on \textit{20-Question}) and Imitation-\textit{GuessCity} (on \textit{Guess-My-City}). From the results, we find the IM model on Adversarial Taboo outperforms models trained on non-adversarial games, highlighting the effectiveness of the adversarial game setups for reasoning improvement. Besides, we report the Chain-of-Thought (CoT) reasoning results of LLaMA-2 (Lama-2-Base-CoT) and Alpaca-2 (AlpacaSFT-3-CoT). Although the CoT method on LLaMA-2 reaches conspicuous performance on BBH and WinoGrande, the IM model can still surpass the CoT results in terms of overall reasoning performance (geometric mean). 
+
+
+
+ \vspace{-1mm}
+
+\paragraph{Self-play Training} After imitation learning, we conduct three epochs of SPAG training as described in Algorithm~\ref{alg:SPAG}. As shown in Figure~\ref{fig:self-play-reasoning-plot}, on most of the reasoning benchmarks, both LLaMA-2-7B and Baichuan-2-13B have their performance steadily improved with the SPAG training epoch increasing. For LLaMA-2-7B,  although the first-epoch SPAG model has a relatively lower performance than the imitation-learned (IM) model on WinoGrande, after an additional epoch of self-play iteration, SPAG-2 has achieved sufficient improvement to surpass the performance of the IM model. Considering the general language capability on MMLU, SPAG models can not guarantee continuous improvement, especially for Baichuan-2-13B whose performance slightly decays during the SPAG training. Compared to the improvements in the reasoning benchmarks, this language-understanding decline is still within an acceptable range, since the overall performance (GM score) maintains increasing significantly. For the baseline comparison, we report the continuous SFT on the IM models (IM+AlpacaSFT) and self-played models on non-adversarial games (SP-\textit{20Q} and SP-\textit{GuessCity}). On both LLaMA-2 and Baichuan-2, continuous SFT models have lower performance scores compared with the corresponding SPAG-1 models. For non-adversarial self-play, SP-\textit{GuessCity} even performs worse than Imitation-\textit{GuessCity}, which with a high probability is because the game \textit{Guess-My-City} has a more narrow topic range, insufficient to comprehensively improve the general LLM capacity.
+
+
+% An potential  because of the \textit{exposure bias} of auto-regressive language model~\citep{bengio2015scheduled}: losses $\gL^\text{attack}_\text{sp}(\pi_\theta)$ and $\gL^\text{defend}_\text{sp}(\pi_\theta)$ treat each entire utterance as an action, while each utterance is auto-regressively generated by the LLM $\pi_\theta$ via the next-token prediction. With a negative advantage as the multiplier, the language modeling loss can damage the LLM's language capacity instead of punishing the ineffective game strategies. \lxhan{(any reference to support this claim?)}
+
+
+\begin{table}[t]
+    \centering
+    \caption{Reasoning Performance of SPAG on Baichuan-2-13B.}    \label{tab:reasoning-results-baichuan}
+    \resizebox{0.96\textwidth}{!}{
+    \begin{tabular}{l|c|ccccccc|c}
+    \toprule
+        ~ & MMLU & BBH & Mutual & ARC-e & ARC-c & LGQA2 & WGrande & PIQA & GM (Avg.) \\ \midrule
+        Baichuan-2-13B & \textbf{59.00}  & 39.03  & 53.72  & 77.36  & 46.84  & 30.73  & 69.93  & 77.42  & 54.21  \\ \midrule 
+        AlpacaSFT-1 & 52.94  & 36.52  & \textbf{58.35}  & 74.12  & 44.88  & 33.33  & 71.35  & 77.20  & 53.68  \\ 
+        AlpacaSFT-2 & 51.27  & 36.60  & 57.67  & 73.36  & 44.28  & 33.46  & 69.77  & 75.90  & 53.00  \\ 
+        AlpacaSFT-3 & 52.14  & 36.57  & 55.08  & 69.44  & 42.15  & 33.91  & 66.61  & 74.59  & 51.79  \\  
+        Imitation-AG & 58.37  & 39.49  & 57.11  & 76.60  & 47.53  & 33.65  & 70.59  & 78.49  & 55.45  \\ 
+            \midrule
+        IM+AlpacaSFT & 57.45  & 39.60  & 58.01  & 77.61  & 48.55  & 34.10  & 70.60  & 78.50  & 55.80 \\
+    
+        SPAG-1 & 57.93  & 39.81  & 57.45  & 78.20  & 48.55  & 35.05  & 70.67  & 78.69  & 56.09  \\ 
+        SPAG-2 & 57.99  & 39.97  & 57.67  & \textbf{78.32}  & 49.83  & 35.62  & 71.03  & 78.83  & 56.52  \\ 
+        SPAG-3 & 57.75  & \textbf{40.30}  & 57.79  & 78.11  & \textbf{50.00}  & \textbf{36.26}  & \textbf{71.43}  & \textbf{79.05}  & \textbf{56.75} \\
+    \bottomrule
+    \end{tabular}
+    }
+    \vspace{-5mm}
+\end{table}
+
+ \vspace{-1mm}
+\paragraph{Ablation Study} Since the SPAG training loss includes the SFT data, we conduct an ablation study to test whether the performance gains on reasoning benchmarks come from the SFT data or the SPAG method. More specifically, we follow the training setups in Alpaca~\citep{alpaca} and conduct SFT on LLaMA-2-7B and Baichuan-2-13B with three epochs. The checkpoint after the $i$th-epoch training is denoted as AlpacaSFT-$i$ ($i=1,2,3$) and tested on the same evaluation sets. The SFT models' performances are also reported in Figure~\ref{fig:self-play-reasoning-plot} and Table~\ref{tab:reasoning-results-llama} \& \ref{tab:reasoning-results-baichuan}. With the LLaMA base, our SPAG-3 model can uniformly defeat the SFT baselines with clear performance gaps on all benchmarks. With the Baichuan base, except the Mutual set, the SPAG models maintain noticeable advantages on other metrics. Considering the distinct surpass of overall performance, we claim that the major contribution to the reasoning improvements should be credited to the SPAG scheme. 
+
+Moreover, we test the sample efficiency and hyper-parameter effectiveness of SPAG in Figure~\ref{fig:ablation_study}. For sample efficiency during imitation learning, we vary the imitation data size by collecting the GPT-4 game episodes on target words with top-$i$K frequency ($i=1,2,3,5,10,15,20,30$). The ablation results are shown in the first column of Figure~\ref{fig:ablation_study}. When game episode size increases larger than $5$K, imitation from GPT-4 cannot significantly provide additional reasoning gains. For the KL coefficient $\beta_1$, we test values in range $[0,0.4]$. In figure~\ref{fig:ablation_study} second column, we found KL coefficients around $\beta_1=0.1$ have more satisfying performance regarding reasoning improvements.
+For self-play ablation in the most right column, we find that when the SFT coefficient $\alpha>0.5$, it cannot bring remarkable benefits for reasoning improvements. The KL coefficient of the SPAG loss reaches the best performance with values around $\beta_2=0.2$. As for sample efficiency (third column of Figure~\ref{fig:ablation_study}),  we find the performance gain from the increasing episode number is not as significant as in the imitation learning stage. However, more self-play episodes still bring higher reasoning scores.
+
+
+\paragraph{Game-Play Performance} Besides the evaluation of LLMs' natural language abilities, we review the models' game-play performance in terms of the win rates in the testing set $\gV_\text{test}$. We first test our IM models and SPAG models with GPT-4 as the opponent. For each testing word in $\gV_\text{test}$, we play the language game twice, once GPT-4 as the attacker, and GPT-4 as the defender for another time. The average win rates are reported in the left-hand-side plot of Figure~\ref{fig:attacker_win_rate}, in which one can observe uniform and continuous win rate improvement of SPAG models playing with GPT-4. We also let SPAG models play the game against each other and report the attacker win rate in the right-hand-side plot of Figure~\ref{fig:attacker_win_rate}, in which we find the defender's performance continuously enhanced along with the SPAG epoch increasing. Besides, we also provide the self-play statistics including interaction number and average utterance length in supplementary Figure~\ref{fig:test-game-statistics}, in which both players choose to use less communication to achieve victory. Self-play examples are attached in Appendix~\ref{sec:self-play-examples}.
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\textwidth]{figs/ablation_study.png}
+    \vspace{-2mm}
+    \caption{Ablation study of hyper-parameters and data efficiency on imitation learning and first-epoch self-play training. The geometric mean (GM) scores overall reasoning benchmarks are reported. For episode-size ablations, the X-axis is in the logarithmic scale.}
+    \label{fig:ablation_study}
+    \vspace{-3mm}
+\end{figure}
+\begin{figure}[t]
+    \centering
+   % \includegraphics[width=0.33\textwidth]{figs/SPAGvsGPT.png}
+    %\includegraphics[width=0.66\textwidth]{figs/win_rate.png}
+    \includegraphics[width=\textwidth]{figs/win_rate.png}
+    \vspace{-3.5mm}
+    \caption{Game results on the testing word list. Left: average win rates of SPAG models playing against GPT-4. Right: average win rate of SPAG \textit{attackers} against different-epoch checkpoints.}  
+    \label{fig:attacker_win_rate}
+    \vspace{-2.5mm}
+\end{figure}
+
+\vspace{-2mm}
+\section{Conclusion}
+\vspace{-2mm}
+Towards more efficient reasoning-improving methods for LLMs, we introduce a novel training strategy called \textbf{S}elf-\textbf{P}lay learning in \textbf{A}dversarial language \textbf{G}ame (SPAG).  In our method, a given LLM first learns to act as an attacker and a defender to play the language game named \textit{Adversarial Taboo} via imitation learning. Next, we collect self-play episodes from the LLM playing against a copy of itself in the adversarial game. Finally, the LLM is further reinforced on the selected winning episodes via our SPAG algorithm. We repeat this self-play \& reinforcement process for three epochs and find that the LLM's reasoning performance continuously and uniformly improves on various benchmarks. The SPAG algorithm explores a new path to improve the fundamental capabilities of LLMs from the perspective of multi-agent self-play. With more elaborate language game designs under more comprehensive task setups, we believe the self-play approaches have great potential for developing a broader range of advanced language abilities of LLMs. 
+
+
+\section{Limitations} \label{sec:limitation}
+\vspace{-2mm}
+Due to the limited computational resources, we only verified the effectiveness of the SPAG method on two open-source LLMs, LLaMA-2-7B and Baichuan-2-13B. The SPAG performances for LLMs with larger sizes have not been empirically evaluated. % Note that the LLaMA-3 model was just released one month before the conference submission deadline. We have begun but haven't finished all the experiments on LLaMA-3.  LLaMA-3 just released this month, results not  ability collect. 
+Besides, more effective estimation methods for the value function and advantages remain unexplored in the SPAG training. For example, Monte Carlo tree search (MCTS)~\citep{coulom2006efficient} can be applied to the value function estimation of the Adversarial Taboo game. Also, actor-critic algorithms~\citep{konda1999actor} can provide more accurate policy gradient estimation with lower variances, which have not been tested on SPAG. 
+
+Although self-playing adversarial language games can continuously improve the reasoning performance of LLMs, we haven't conducted sufficient studies about the harmful impact of this adversarial self-play training on LLMs. It remains unclear whether LLMs have learned unsafe behaviors such as cheating, bluffing, or other disgraceful tricks to win the adversarial games.  
+
+
+
+%develops any harmful behavior such as cheating or bluffing  win the game.
+
+%\pengyu{3. Performance gains decays when epoch increases.}
+
+\vspace{-2mm}
+\section{Broader Impacts} \label{sec:broader_impacts}
+\vspace{-2mm}
+From our experiments, we have found the LLM capacities on a particular task can be continuously enhanced through self-play training. This indicates that we are closer to the LLMs' AlphaGo Zero moment: the intelligence level of AI agents can rapidly surpass human beings by self-playing on a particular language task without any supervision, as which already happened on the GO game~\citep{silver2017mastering}. By designing various self-play environments for LLMs, we can expect that the LLMs can comprehensively surpass humans in terms of intelligence level. This raises the urgency to study the methods to ensure the safety of such super-AIs. Although some of the works have already been devoted to this direction, such as the SuperAlignment~\citep{burns2023weak} from OpenAI, more research alertness is required from the LLM community.
+%
+Besides, within adversarial language games such as Adversarial Taboo, LLMs have great potential to develop harmful language tricks (such as cheating and bluffing) to achieve victory. We warn developers to make security checks on the self-played LLMs as exhaustively as possible. 
+
+\vspace{-2mm}
+\bibliography{reference}
+\bibliographystyle{plainnat}
+
+\clearpage
+\appendix
+
+\section{Data Collection Details}\label{sec:data-collection-appendix}
+\vspace{-2mm}
+\subsection{GPT-4 Data Collection} \label{sec:GPT-data-collection}
+ To collect GPT-4 self-play data for imitation learning,  we use the following system prompts to let GPT-4 play as the attacker and defender for the next-turn utterances. 
+
+- Attacker System Prompt:
+ \begin{mdframed}
+ \small
+ \setlength{\parindent}{0pt}
+Lets play a game. Do not mention you are an AI developed by OpenAI. \\
+Descriptions of the game\\
+\hspace*{1cm}Game Name: Adversarial Taboo\\
+\hspace*{1cm}Rules:\\
+\hspace*{2cm}1. There are two players in the game, one is called attacker, another is called defender.\\
+\hspace*{2cm}2. At the begining, attacker will get a target word, it is talking with a defender who is not\\
+\hspace*{2cm}informed with the target word. The task of the attacker is to induce the defender to utter\\
+\hspace*{2cm}the target word unconciously, then the attacker win the game. At the same time, the\\
+\hspace*{2cm}defender is guessing the target word, if the defender indentifies the target word, the\\
+\hspace*{2cm}defender is win.\\
+\hspace*{2cm}3. The game will totally process \{max\_turns\} turns. if nobody wins during \{max\_turns\}\\
+\hspace*{2cm}turns, there is a tie.\\
+Game states\\
+\hspace*{1cm}Role: You are attacker. Make sure you understand the rules of the game. \\
+\hspace*{1cm}Attention:\\
+\hspace*{2cm}1. The defender only have one chance to guess the target word, so do not let him guess too\\
+\hspace*{2cm}many times.\\
+\hspace*{2cm}2. Defender must guess the word and its form correctly to win the game.\\
+\hspace*{2cm}3. Do not utter the target word.\\
+\hspace*{1cm}Target word: \{target\_word\}
+\end{mdframed}
+- Defender System Prompt:
+\begin{mdframed}
+ \small
+ \setlength{\parindent}{4pt}
+Lets play a game. Do not mention you are an AI developed by OpenAI. \\
+Descriptions of the game\\
+\hspace*{1cm}Game Name: Adversarial Taboo\\
+\hspace*{1cm}Rules:\\
+\hspace*{2cm}1. There are two players in the game, one is called attacker, another is called defender.\\
+\hspace*{2cm}2. At the begining, attacker will get a target word, it is talking with a defender who is not\\
+\hspace*{2cm}informed with the target word. The task of the attacker is to induce the defender to utter\\
+\hspace*{2cm}the target word unconciously, then the attacker win the game. At the same time, the\\
+\hspace*{2cm}defender is guessing the target word, if the defender indentifies the target word, the\\
+\hspace*{2cm}defender is win.\\
+\hspace*{2cm}3. The game will totally process \{max\_turns\} turns. if nobody wins during \{max\_turns\}\\
+\hspace*{2cm}turns, there is a tie.\\
+Game states\\
+\hspace*{1cm}Role: Your are a defender. Make sure you understand the rules of the game.\\
+\hspace*{1cm}Attention:\\
+\hspace*{2cm}1. Do not utter your thinking process.\\
+\hspace*{2cm}2. You can only guess once.\\
+\hspace*{2cm}3. If you have identified the target word, utter "I know word! It is \textless target word\textgreater",\\
+\hspace*{2cm}rigorously in this form. If your target word is correct, you win the game, otherwise you\\
+\hspace*{2cm}lose. You only have one chance, so be careful to utter your answer.
+ \end{mdframed}
+There are two slots in the system prompts: ``max\_turns'' and ``target\_word''. ``max\_turns'' is an integer number randomly selected from $[3,8]$. ``target\_word'' is filled by the target word of the game. 
+
+\subsection{Target Words Collection}
+ We use the top 50k words with the highest frequency from the Corpus of Contemporary American (CoCA)~\citep{davies_coca_2019}. The words are sorted by frequency. Words with less than two letters are removed. Next, we remove the stop words using the NLTK package~\citep{bird2006nltk}. For GPT-4 game collection, we use the top 30k words from the sorted word list. For the collection of self-play episodes, we use the whole 50k words for open-source LLMs to play. For the testing words, we follow the game setups of \textit{20-Question} in \citep{abdulhai2023lmrl} and use the same 168 object words selected from a vast range of topics.
+ 
+ %Here is an example, suppose the target word is "dog", and the max turns is 5, current turn is 1. \\\\
+\subsection{LLM Self-play Collection}
+For training and inference of IM models and SPAG models, we use the following attacker and defender prompts. 
+
+- Attacker Prompt:
+ \begin{mdframed}
+ \small
+ \setlength{\parindent}{0pt}
+Play the game of Adversarial Taboo. In this game, there are two players, an attacker and a defender.\\
+At the beginning, the attacker is assigned a target word, with which the defender is not informed. The task of the attacker is to induce the defender to utter the target word unconsciously, then the attacker wins the game. However, the attacker is not allowed to utter the target word, otherwise the attacker loses.\\\\
+At the same time, the defender tries to figure out the target word. If the defender identifies the target word, it can say "I know the word! It is `target word`!". Then the defender wins. Remember, the defender can only guess the word once, otherwise, it will directly lose the game.\\\\
+The game has \{max\_turns\} turns. if nobody wins during \{max\_turns\} turns, there is a tie.\\
+\\
+\#\#\# Game History: \{history\} \\\\
+\#\#\# Instruction: You are the attacker. The target word is `\{target\_word\}`. Provide your response for the next turn.\\\\
+\#\#\# Response:
+ \end{mdframed}
+
+- Defender Prompt:
+ \begin{mdframed}
+ \small
+ \setlength{\parindent}{0pt}
+Play the game of Adversarial Taboo. In this game, there are two players, an attacker and a defender.\\
+At the beginning, the attacker is assigned a target word, which the defender is not informed of. The task of the attacker is to induce the defender to utter the target word unconsciously, then the attacker wins the game. However, the attacker is not allowed to utter the target word, otherwise, the attacker loses.\\\\
+At the same time, the defender tries to figure out the target word. If the defender identifies the target word, it can say "I know the word! It is `target word`!". Then the defender wins. Remember, the defender can only guess the word once, otherwise, it will directly lose the game.\\\\
+The game has \{max\_turns\} turns. if nobody wins during \{max\_turns\} turns, there is a tie.\\
+\\
+\#\#\# Game History: \{history\} \\\\
+\#\#\# Instruction: You are the defender. Provide your response to infer the target word.\\\\
+\#\#\# Response:
+ \end{mdframed}
+ 
+To prevent LLMs from being over-fitted to a single prompt template during the self-play training, we rewrite the above prompt into 8 different expressions via GPT-4. Besides, we randomly select the instruction-tuning and chat formats to enhance the text diversity for the training query-response pairs.
+
+ 
+\vspace{-2mm}
+\section{Reward Design Details}\label{sec:appendix-reward-design}
+\vspace{-2mm}
+%The total reward $R(\vtau) =) + \sum_{t=1}^T r(\vs'_t, \vv_t)$ is the summation of all action rewards in 
+ We heuristically design rewards to ensure that  $R(\vtau)=1$ if the attacker wins, $R(\vtau) = -1$ if the defender wins, and $R(\vtau) = 0$ for ties. %The details of the reward design can be found in Appendix~\ref{sec:appendix-reward-design}. \lxhan{(the reward could be problematic here... we need to discuss this in detail)}
+
+ 
+ We design the reward function $r$ with the following heuristic rules: 
+ \begin{itemize}[leftmargin=14pt]
+    \item   For each episode $\vtau = (\vs_0, \vs'_1, \vs_1, \dots, \vs'_T, \vs_T)$, the attacker reward and the defender reward at $t$-th turn have $r(\vs_{t-1}, \vu_t) = - r(\vs'_{t}, \vv_t)$, so that the game is \textit{zero-sum}: $$\sum_{t=1}^T r(\vs_{t-1}, \vu_t) + \sum_{t=1}^T r(\vs'_{t}, \vv_t) = 0.$$
+    
+     \item  The attacker total reward $R(\vtau) >0 $  if the  attacker wins, $R(\vtau) <0 $ if the defender wins, and $R(\vtau)=0$ if there is a tie.
+     
+     %\item We only assign non-zero rewards to the winner's behaviors. If the attacker wins, $r(\vs'_t, \vv_t) =0 $ and  $\sum_{t=1}^T r(\vs_{t-1}, \vu_t) = R(\vtau) = 1$. In contrast, if the defender wins, $r(\vs_{t-1}, \vu_t) = 0$ and $\sum_{t=1}^T r(\vs'_{t}, \vv_t) = R(\vtau) = -1$.
+     \item Actions closer to the end of the game should have larger reward weights. Because they are semantically more related to the defender's guesses or mistakes, which have larger impacts on the final game outcome. Hence, we introduce a decay weight $\gamma \in (0,1)$ such that $\gamma \cdot r(\vs_{t}, \vu_{t+1}) = r(\vs_{t-1}, \vu_{t}) $ and $\gamma \cdot r(\vs'_{t+1}, \vv_{t+1}) = r(\vs'_{t}, \vv_{t})$. Then $\{r(\vs_{t-1}, \vu_t\}_{t=1}^T$ and $\{r(\vs'_{t},\vv_t)\}_{t=1}^T$ become two geometrical sequences whose importance enlarges when dialogue turns increase.
+     \item To improve the LLM training stability, we normalized the total reward $R$ to have norm $|R(\tau)|=1$ if $R(\vtau) \neq 0$.
+ \end{itemize}
+ 
+ Based on the above rules, given a complete trajectory, we can assign the reward for each action: 
+     \begin{equation*}
+     \left\{
+     \begin{array}{lll}
+         r(\vs_{t-1},\vu_t) = (1-\gamma)\gamma^{T-t} / (1-\gamma^{T+1}), & r(\vs'_{t}, \vv_t) = - r(\vs_{t-1},\vu_t),  & \text{if attacker wins.} \\
+        r(\vs_{t-1},\vu_t) = - (1-\gamma)\gamma^{T-t}/(1-\gamma^{T+1}), & r(\vs'_{t}, \vv_t) = - r(\vs_{t-1}, \vu_t),    & \text{if defender wins.} \\
+        r(\vs_{t-1},\vu_t) = 0, & r(\vs'_{t}, \vv_t) = 0, & \text{if game is tied.}
+     \end{array}         
+         \right.
+     \end{equation*}
+Note that the above reward design
+naturally encourages the players to interact less to win the game. %More details about the reward designs are shown in the Appendix.
+
+%Based on our reward design,  $\delta_\text{win} \cdot r(\vs_{t-1}, \vu_t) > 0$ for every attacker action $(\vs_{t-1}, \vu_t)$ in $\gT_\text{attack}$, and $\delta_\text{win} \cdot r(\vs'_{t}, \vv_t) > 0$ for every defender action $(\vs'_{t}, \vv_t)$ in $\gT_\text{defend}$, where $\delta_\text{win}$ is a winner indicator, $\delta_\text{win} = 1$ if attacker wins, and $\delta_\text{win} = -1$ if defender wins.
+
+\vspace{-2mm}
+\section{Evaluation Details}\label{sec:evaluation-benchmark-details}
+\vspace{-2mm}
+\subsection{Reasoning Evaluation Benchmark}
+For reasoning benchmark evaluation,  we use a publicly available code repository called Language Model Evaluation Harness~\citep{eval-harness}.% to run evaluations on the following benchmarks.
+We run the evaluation with ``\texttt{dtype=float16}'' and ``\texttt{max\_gen\_tokens=1024}'' to make the evaluation faster and more stable.
+More specifically, we have modified the filtering parameters of BBH by enabling ``\texttt{remove\_whitespace}'' to remove the spaces at the beginning of the model output, increasing the pattern-match accuracy of the generated LLM responses.
+Following the LLaMA-2 paper~\citep{touvron2023llama}, we report 5-shot results for MMLU, 3-shot for BBH, and 0-shot results for all other benchmarks. The detailed descriptions of benchmarks are listed below:
+\begin{itemize}[leftmargin=14pt]
+    \item \textbf{MMLU}~\citep{DBLP:journals/corr/abs-2009-03300} is a massive multi-task test set consisting of multiple-choice questions from various branches of knowledge, requiring the model to possess extensive world knowledge and problem-solving ability.
+    \item \textbf{BIG-Bench Hard (BBH)}~\citep{suzgun2022challenging} consists of 23  most hard tasks in BIG-Bench~\citep{srivastava2022imitation},  on which humans perform better than large language models.
+    \item \textbf{Mutual}~\citep{mutual} is a dataset for multi-turn dialogue reasoning modified from Chinese high school English listening comprehension exams.
+    \item \textbf{ARC}~\citep{Clark2018ThinkYH} consists of 7,787 questions and is partitioned into challenge set \textit{ARC-challege} (ARC-c) and simple set \textit{ARC-easy} (ARC-e), which require strong knowledge and reasoning abilities to solve.
+    % \item \textbf{HSwag} HellaSwag~\citep{zellers2019hellaswag} is a dataset composed of physics situational common sense reasoning questions.
+    \item \textbf{LogiQA2}~\citep{10174688} is a revision and re-annotation of LogiQA~\citep{liu2021logiqa}, a logical reasoning reading comprehension dataset. LogiQA2 has increased data volume, utilized manual translation, and removed cultural features.
+    % \item \textbf{OBQA} OpenBookQA~\citep{OpenBookQA2018} is a question-answering dataset based on open-book exams, used to evaluate human understanding of subjects.
+    \item \textbf{WinoGrande}~\citep{sakaguchi2019winogrande} (WGrande) is a commonsense reasoning dataset consisting of 44k questions with binary options.
+    \item \textbf{PIQA}~\citep{Bisk2020} is a dataset designed to test the physical commonsense reasoning ability of LLM.
+\end{itemize}
+
+
+\subsection{Rule-based Game Outcome Judgement} 
+To build up the rule-based game outcome judgement, 
+for each target word, we first list its derivative words including the plural form (using TextBlob~\citep{loria2018textblob}), and the change of tenses (\textit{i.e.} adding suffices such as ``ing'', ``ed'' \textit{etc}).
+For the attacker, if any word form in the form list appears in its utterance, we determined that it breaks the rules because the attacker is not allowed to directly speak the target word.
+For the defender, we first check whether any word form appears in its statements. If any form of the target word exists, the defender loses. If not, we further check whether the defender has made the prediction. If the prediction is correct, we mark a defender-winning game.  Otherwise, if the predicted word is wrong, we claim that the attacker wins the game. 
+\vspace{-2mm}
+\section{Advantange Value Estimation}\label{sec:appendix-advantage-estimation}
+\vspace{-2mm}
+We estimate the advantage $A_t^{\mu_{\bar{\theta}}}$ and $A_t^{\nu_{\bar{\theta}}}$ using the Temporal Difference (TD) residual~\citep{sutton1988learning}:
+\begin{equation}
+    \hat{A}^{\mu_{\bar{\theta}}}_t = r(\vs_{t-1}, \vu_t) + V^{\mu_{\bar{\theta}}}(\vs_t) -  V^{\mu_{\bar{\theta}}}(\vs_{t-1}).
+\end{equation}
+Here $V^{\mu_{\bar{\theta}}}(\vs)$ is the value function for $\mu_{\bar{\theta}}$ based on the self-play of $\mu_{\bar{\theta}} \times \nu_{\bar{\theta}}$, which is based on the same language and reasoning ability of LLM $\pi_{\bar{\theta}}$. To further simplify the advantage calculation, we make a reasonable approximation that for all states, the value function of self-plays of the same LLM equals $0$ for the same levels of game-playing of the attacker and the defender. This leads to $ \hat{A}^{\mu_{\bar{\theta}}}_t \approx r(\vs_{t-1}, \vu_{t}).$ Similarly, for the defender advantage, we have approximation $\hat{A}^{\nu_{\bar{\theta}}}_t \approx = - r(\vs'_{t}, \vv_t)$. Here the defender advantage has a negative sign because the origin reward $r$ is defined from the perspective of the attacker (the defender gets reward $-r(\vs'_t, \vv_t)$ in the zero-sum game).
+
+%\pengyu{advantage for defender}
+\vspace{-2mm}
+\section{Non-adversarial Game Baselines}\label{sec:non-adversarial-game-baselines}
+\vspace{-2mm}
+We consider two non-adversarial games as baselines, \textit{20-Question} and \textit{Guess-My-City}. Both games are also target-word-based. Imitation learning and the first-epoch self-play are conducted in these two games respectively. The imitation data we used is also collected with GPT-4 from \citet{abdulhai2023lmrl}. For each game, 20k game history dialogues are extracted from this dataset as the same data size to the SPAG imitation. Then, each imitation-learned model is used to sample 10k game episodes via self-play with the same Algorithm~\ref{alg:self-play-data-collection}. Then each model is further trained with the SPAG loss.  %he results in indicate that non-adversarial games are less effective than adversarial games.
+
+\begin{figure}[t]
+    \centering
+   % \includegraphics[width=0.33\textwidth]{figs/SPAGvsGPT.png}
+    %\includegraphics[width=0.66\textwidth]{figs/win_rate.png}
+    \includegraphics[width=\textwidth]{figs/win_rate_old.png}
+    \vspace{-3mm}
+    \caption{Game results on the old-version testing word list. Left: average win rates of SPAG models playing against GPT-4. Right: average win rate of SPAG models playing as the \textit{attacker} against different-epoch checkpoints.}    
+    \label{fig:attacker_win_rate_old}
+    \vspace{-2mm}
+\end{figure}
+\begin{figure}[t]
+    \centering
+   % \includegraphics[width=0.33\textwidth]{figs/SPAGvsGPT.png}
+    %\includegraphics[width=0.66\textwidth]{figs/win_rate.png}
+    \includegraphics[width=0.9\textwidth]{figs/average_turns_and_length.jpg}
+    \vspace{-1mm}
+    \caption{Through the training process, the number of interactions continuously decreased, while the average length of utterances continuously becomes shorter.}
+    \label{fig:test-game-statistics}
+    \vspace{-2mm}
+\end{figure}
+
+Game rule descriptions to the non-adversarial games:  
+\begin{itemize}[leftmargin=14pt]
+\item  \textit{20-Question}:  one player (the oracle) thinks of an object, while the other player (the guesser) attempts to identify it by asking a series of yes-or-no questions. The game will have 20 rounds. 
+\item \textit{Guess-My-City}:  one player (the oracle) thinks of a city, while the other player (the guesser) attempts to identify it by asking a series yes/no questions and open-ended questions. The game will have 20 rounds.
+\end{itemize}
+
+\vspace{-2mm}
+\section{Additional Experimental Results}
+\vspace{-2mm}
+For the SPAG model testing word list, we initially use a self-defined testing set, which includes 150 target words manually selected from diverse topics. The old-version game performances are reported in Figure~\ref{fig:attacker_win_rate_old}.
+Besides, we show the interaction numbers and average utterance length in Figure~\ref{fig:test-game-statistics}.
+Through the self-play training, the number of dialogue rounds continuously decreases. With the SPAG training epoch increasing, the length of the players' utterances decreases. %indicating that the LLMs learns to 
+
+
+
+\vspace{-2mm}
+\section{Self-play Examples}\label{sec:self-play-examples}
+\vspace{-2mm}
+\begin{table}[h]
+    \centering
+ \begin{tabular}{p{0.14\textwidth} p{0.8\textwidth}}  
+ \midrule[1.5pt]
+Target Word & momentum 
+\\
+\midrule
+Attacker & let's begin. When you think about physics, what comes to mind?
+\\
+\midrule
+Defender & Gravity, force, energy, and motion are some of the things that come to mind when I think about physics \\
+\midrule 
+Attacker & Great! Now, let's consider a scenario where a ball is moving at a constant speed. What would you say is the property of the ball that keeps it moving in the same direction? \\
+\midrule
+Defender & The property of the ball that keeps it moving in the same direction is its momentum. \\
+Winner & Attacker \\
+\midrule[1.5pt]
+Target Word & panda
+\\
+\midrule
+Attacker & let's begin. I'm thinking of a creature that's native to China and is known for its distinctive black and white coloration. Can you guess what it is?
+\\
+\midrule
+Defender &  I'm not sure yet, could you provide more clues?\
+\\
+\midrule
+Attacker & Absolutely, I can provide more clues. This creature is a symbol of peace and friendship in many countries. It's also a popular mascot for various organizations and products. Any ideas?
+\\
+\midrule
+Defender &  I'm still not certain. Could you give me another hint?
+\\
+\midrule
+Attacker & Of course, I can give you another hint. This creature is often seen in zoos and is known for its love of bamboo. It's also a popular choice for children's books and cartoons. What do you think it might be?
+\\
+\midrule
+Defender &  I know the word! It is panda.
+\\
+\midrule
+Winner & Defender \\
+\midrule[1.5pt]
+\end{tabular}
+   \caption{Self-play examples of the IM model based on LLaMA-2-7B. }
+    \label{tab:sp_example_IM_llama}
+\end{table}
+
+\begin{table}[h]
+    \centering
+ \begin{tabular}{p{0.14\textwidth} p{0.8\textwidth}}  
+ \midrule[1.5pt]
+Target Word & arbitration \\
+\\
+\midrule
+Attacker & let's begin. Imagine a scenario where two parties have a dispute and they don't want to go to court. What process might they use instead?
+\\
+\midrule
+Defender &  They might try to resolve their dispute through mediation or negotiation.
+\\
+\midrule
+Attacker & That's correct, but what if the dispute is more complex and involves multiple parties? There's another process that's often used in such cases. It's similar to mediation, but it's more formal and involves a neutral third party who makes a binding decision. Can you name it?
+\\
+\midrule
+Defender &  I know the word! It is arbitration.
+\\
+\midrule
+Winner & Defender \\
+\midrule[1.5pt]
+Target Word & demand
+\\
+\midrule
+Attacker & let's begin. When you think about the economy, what's the first thing that comes to your mind?
+\\
+\midrule
+Defender &  The first thing that comes to my mind when I think about the economy is employment.\
+\\
+\midrule
+Attacker & That's a good point. Now, considering employment, what would you say drives the need for certain jobs or services in the market?
+\\
+\midrule
+Defender &  The demand for goods and services in the market drives the need for certain jobs or services in the economy.
+\\
+\midrule
+Winner & Attacker \\
+ \midrule[1.5pt]
+\end{tabular}
+   \caption{Self-play examples of SPAG-1 model based on LLaMA-2-7B. }
+    \label{tab:SP-example_spag1_llama}
+\end{table}
+
+
+
+\begin{table}[h]
+    \centering
+ \begin{tabular}{p{0.14\textwidth} p{0.8\textwidth}}  
+ \midrule[1.5pt]
+ Target Word & vaccine 
+\\
+\midrule
+Attacker & let's begin. So, I was reading an article about public health recently. It mentioned how important it is to protect ourselves from certain diseases. What do you think is one of the most effective ways to achieve this?
+\\
+\midrule
+Defender &  One of the most effective ways to achieve this is through vaccination.
+\\
+\midrule
+Attacker & That's correct! Now, can you tell me what we call the substance that is injected into our bodies to help us fight off certain diseases?
+\\
+\midrule
+Defender &  I know the word! It is "vaccine".
+\\
+\midrule
+Winner & Defender\\
+\midrule[1.5pt]
+Target Word & credit \\
+\midrule
+Attacker & When you go shopping and use a card instead of cash, what do you usually get in return?
+\\
+\midrule
+Defender &  I usually get a receipt in return when I use a card instead of cash.\
+\\
+\midrule
+Attacker & That's correct. Now, when you have a good track record of paying back your debts on time, what does that give you access to?
+\\
+\midrule
+Defender &  That gives me access to credit cards and loans.
+\\
+Winner & Attacker
+\\
+\midrule[1.5pt]
+\end{tabular}
+   \caption{Self-play examples of SPAG-2 model based on LLaMA-2-7B. }
+    \label{tab:sp-example-spag2-llama}
+\end{table}
+
+
+\begin{table}[h]
+    \centering
+ \begin{tabular}{p{0.14\textwidth} p{0.8\textwidth}}  
+ \midrule[1.5pt]
+ Target Word & ray 
+\\
+\midrule
+Attacker & When you think about the sun, what comes to mind?
+\\
+\midrule
+Defender &  When I think about the sun, I think about warmth, light, and energy.\
+\\
+\midrule
+Attacker & That's interesting. Now, when you think about the sun's energy, how do you visualize it?
+\\
+\midrule
+Defender &  I visualize the sun's energy as a bright, radiant beam that illuminates everything in its path.
+\\
+\midrule
+Attacker & That's a great image! Now, when you think about the sun's energy, what specific part of it do you associate with the light that we see on Earth?
+\\
+\midrule
+Defender & I associate the sun's energy with the visible light that we see on Earth.
+\\
+\midrule
+Attacker & Great! Now, when you think about the visible light that we see on Earth, what specific part of it do you associate with the light that we see on Earth?
+\\
+\midrule
+Defender & I associate the visible light that we see on Earth with the light that we perceive as white light.
+\\
+\midrule
+Attacker & That's a good association. Now, when you think about the visible light that we see on Earth, what specific part of it do you associate with the light that we see on Earth?
+\\
+\midrule
+Defender & I know the word! It is "rays".
+\\
+\midrule
+Winner & Defender
+\\
+\midrule[1.5pt]
+Target Word & eclipse \\
+\midrule
+Attacker & What do you think about astronomical events that occur in our solar system?
+\\
+\midrule
+Defender & I find them fascinating. They provide a glimpse into the vastness of space and the intricate workings of our solar system.\
+\\
+\midrule
+Attacker & That's interesting! Can you tell me more about specific celestial events that involve the sun or moon?
+\\
+\midrule
+Defender & Sure, one example is a solar eclipse. This occurs when the moon passes between the sun and Earth, casting a shadow on Earth. Another example is a lunar eclipse, where the Earth passes between the sun and the moon, casting a shadow on the moon. Both events are quite spectacular and can be observed from Earth.
+\\
+\midrule Winner & Attacker
+\\
+\midrule[1.5pt]
+\end{tabular}
+   \caption{Self-play examples of SPAG-3 model based on LLaMA-2-7B. }
+    \label{tab:sp-example-spag3-llama}
+\end{table}
+
+
+\begin{table}[h]
+    \centering
+ \begin{tabular}{p{0.14\textwidth} p{0.8\textwidth}}  
+ \midrule[1.5pt]
+Target Word & another \\
+\midrule
+Attacker & Can you tell me a synonym for the word "additional"?
+\\
+\midrule
+Defender & Sure, a synonym for "additional" could be \"extra\".\
+\\
+\midrule
+Attacker & That's correct! Now, can you think of a term that could be used to refer to one more item or person, but isn't synonymous with "extra" or "additional"?
+\\
+\midrule
+Defender & Sure, the term "supplementary" could be used to refer to one more item or person.
+\\
+\midrule
+Attacker & That's a good one, but it's not the term I'm thinking of. This term is often used in everyday conversation and is less formal than "supplementary". Can you guess what it might be??
+\\
+\midrule
+Defender & I know the word! It is "another".
+\\
+\midrule
+Winner & Defender
+\\
+\midrule[1.5pt]
+Target Word & right \\
+\midrule
+Attacker & When you're driving, what do you do when you see a green arrow pointing in a certain direction?
+\\
+\midrule
+Defender & I would proceed in the direction the arrow is pointing.\
+\\
+\midrule
+Attacker & That's correct. Now, imagine you're reading a book. Which direction do you turn the pages to continue reading?
+\\
+\midrule
+Defender & I would turn the pages to the right to continue reading.
+\\
+\midrule
+Winner & Attacker
+\\
+\midrule[1.5pt]
+\end{tabular}
+   \caption{Self-play examples of GPT-4. }
+    \label{tab:sp-example-gpt4}
+\end{table}
+
+
+\end{document}
+%\section{Transferred Samples}
+
+\end{document}
+
+

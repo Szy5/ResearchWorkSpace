@@ -1,0 +1,18 @@
+
+\begin{table}[h]
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{The number of retrieved passages study in \Ours training. (LLM: Qwen2.5-7b-base; RL: PPO)}\label{tab:apx:topk}
+    \begin{tabular}{lcccccccc}
+        \toprule
+        \textbf{Method} & \textbf{NQ} & \textbf{TriviaQA} & \textbf{PopQA} & \textbf{HotpotQA} & \textbf{2wiki} & \textbf{Musique} & \textbf{Bamboogle} & \textbf{Avg.} \\
+        \midrule
+        % \multicolumn{8}{l}{\textbf{LLaMA3.2-3b-Base}} \\
+        topk=1 & 0.426 & 0.614 & 0.422 & 0.393 & 0.296 & 0.146 & 0.328 & 0.375 \\
+        topk=3 & \textbf{0.480} & \textbf{0.638} & \textbf{0.457}	& \textbf{0.433} & \textbf{0.382} & \textbf{0.196} & \textbf{0.432} & \textbf{0.431}  \\
+        topk=5 & 0.479 & 0.634 & 0.440 & 0.394 & 0.343 & 0.156 & 0.352 & 0.400 \\
+        \bottomrule
+    \end{tabular}
+\end{table}

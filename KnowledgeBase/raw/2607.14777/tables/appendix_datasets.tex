@@ -1,0 +1,63 @@
+% Required packages:
+% \usepackage{booktabs}
+% \usepackage{tabularx}
+% \usepackage{array}
+% \usepackage{makecell}
+
+\begin{table}[ht!]
+\centering
+\caption{Detailed information on the agentic benchmarks and training data.}
+\label{tab:appendix_datasets_summary}
+\vspace{0.04in}
+
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.12}
+\renewcommand{\tabularxcolumn}[1]{m{#1}}
+
+\begin{tabularx}{\linewidth}{
+    @{}
+    >{\raggedright\arraybackslash}p{0.18\linewidth}
+    >{\raggedright\arraybackslash}X
+    >{\centering\arraybackslash}p{0.15\linewidth}
+    >{\centering\arraybackslash}p{0.15\linewidth}
+    >{\centering\arraybackslash}p{0.15\linewidth}
+    @{}
+}
+\toprule
+\textbf{Domain}
+& \textbf{Benchmark(s)}
+& \makecell{\textbf{\#SFT Train}\\\textbf{Samples}}
+& \makecell{\textbf{\#RL Train}\\\textbf{Samples}}
+& \makecell{\textbf{\#Test}\\\textbf{Samples}} \\
+\midrule
+
+\makecell[l]{Embodied\\Reasoning}
+& ALFWorld
+& 180
+& 2,400
+& \makecell{140 (seen)\\134 (unseen)} \\
+
+\addlinespace[0.45em]
+\rowcolor{gray!10}
+\makecell[l]{Web\\Navigation}
+& WebShop
+& 180
+& 2,400
+& 128 \\
+
+\addlinespace[0.45em]
+
+\makecell[l]{Search-Augmented\\QA}
+& \makecell[l]{
+    NQ $\cdot$ TriviaQA $\cdot$ PopQA\\
+    HotpotQA $\cdot$ 2WikiMultiHopQA\\
+    MuSiQue $\cdot$ Bamboogle
+}
+& 180
+& 19,200
+& 51,713 \\
+
+\bottomrule
+\end{tabularx}
+\end{table}

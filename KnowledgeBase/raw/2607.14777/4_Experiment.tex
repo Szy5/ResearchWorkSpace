@@ -1,0 +1,117 @@
+\section{Experiment}
+\subsection{Experimental Setting}
+% \paragraph{Training Datasets.}
+% XXX
+
+\paragraph{Benchmarks.}
+We evaluate \textsc{Seed} across three complementary forms of long-horizon agency. \textit{ALFWorld}~\citep{shridhar2021alfworld} casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six task families: \textit{Pick}, \textit{Look}, \textit{Clean}, \textit{Heat}, \textit{Cool}, and \textit{Pick2}. \textit{WebShop}~\citep{yao2022webshop} evaluates interactive web navigation, where an agent searches for products, inspects their attributes, and completes a purchase according to a natural-language request. We use the standard set of 128 test tasks. Finally, following the Search-R1 protocol~\citep{jin2025searchr1}, \textit{Search-based QA} requires an agent to gather evidence through search before answering questions from Natural Questions~\citep{kwiatkowski2019natural}, TriviaQA~\citep{joshi2017triviaqa}, PopQA~\citep{mallen2023popqa}, HotpotQA~\citep{yang2018hotpotqa}, 2WikiMultiHopQA~\citep{ho2020constructing}, MuSiQue~\citep{trivedi2022musique}, and Bamboogle~\citep{press2023measuring}. Together, these benchmarks cover embodied control, web-based decision making, and tool-augmented information seeking.
+
+\vspace{-0.08in}
+
+\paragraph{Baselines.}
+We compare \textsc{Seed} with prompting, outcome-based RL, and distillation baselines. \textit{Vanilla} evaluates the instruction-tuned backbone without post-training, whereas \textit{Skill-Prompt} provides natural-language skills only in the evaluation context. \textit{GRPO}~\citep{shao2024deepseekmath} optimizes group-normalized trajectory rewards without auxiliary supervision. \textit{Skill-GRPO} additionally conditions the policy on skills during RL. We also include representative self-distillation and skill-distillation methods: \textit{OPSD}~\citep{zhao2026selfdistilledreasoner}, \textit{GRPO+OPSD}, \textit{Skill-SD}~\citep{wang2026skillsd}, \textit{RLSD}~\citep{yang2026rlsd}, and \textit{SDAR}~\citep{lu2026sdar}. These comparisons distinguish the effects of outcome optimization, access to skill context, and dense teacher-derived supervision. An asterisk denotes evaluation with skills; all other methods operate from the ordinary interaction history without privileged skill inputs at test time. We use matched backbones, rollout budgets, and training schedules for all reproduced post-training baselines.
+
+\vspace{-0.08in}
+
+\input{tables/experiment}
+
+\paragraph{Evaluation Metrics.}
+For ALFWorld, we report the success rate for each task family and their unweighted macro-average. For WebShop, we follow the environment protocol and report both the mean normalized task-completion score and the exact success rate. For Search-based QA, we compute answer accuracy separately on all seven subsets and report their unweighted macro-average. All metrics are expressed as percentages, and higher values indicate better performance.
+\vspace{-0.08in}
+
+\paragraph{Implementation Details.}
+We use Qwen2.5-3B-Instruct and Qwen2.5-7B-Instruct~\citep{yang2024qwen25}, as well as Qwen3-1.7B-Instruct~\citep{yang2025qwen3}, as our backbone models.
+\textit{SFT stage:}
+For each backbone, we sample $M=180$ training tasks and collect $K_0=8$ rollout trajectories per task, resulting in 1,440 completed trajectories.
+We then query GLM-5.2~\citep{zai2026glm52} as an external trajectory analyzer to extract hindsight skills from these trajectories.
+After lightweight format validation, the retained trajectory--skill pairs are used to fine-tune the corresponding backbone for three epochs.
+\textit{RL stage:}
+The resulting SFT checkpoint initializes both the policy and the synchronized trajectory analyzer.
+We train each model for 150 policy updates, using a batch size of 16 on ALFWorld and WebShop and 128 on Search-based QA.
+The rollout group size is set to $N=8$ for all benchmarks.
+Additional details on SFT data construction, skill annotation, optimization, and hyperparameter settings are provided in Appendix~\ref{app:implementation_details}.
+
+\subsection{Main Results}\label{subsec32_main_results}
+Table~\ref{tab:main_results} reports the results across different model scales and agentic domains. Three findings emerge:
+
+\textbf{\textsc{Seed} consistently outperforms outcome-only RL through dense supervision.} Relative to GRPO, \textsc{Seed} improves the ALFWorld macro-average by 14.9-45.9 points, Search-based QA by 1.4-9.3 points, the WebShop task-completion score by 8.7-19.8 points, and the success rate by 5.5-39.0 points across the three backbones. Compared with Skill-GRPO, which conditions exploration on natural-language skills but still broadcasts a single terminal-reward-derived advantage to all valid tokens, \textsc{Seed} further improves the ALFWorld average by 26.6-70.9 points, Search-based QA by 1.8-11.6 points, the WebShop score by 9.3-13.7 points, and the success rate by 6.2-31.2 points. These consistent improvements over both GRPO and Skill-GRPO demonstrate that dense token-level hindsight supervision provides more effective credit assignment than outcome-only optimization, leading to substantially stronger performance across long-horizon agentic tasks.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{figures/training_dynamics.pdf}
+    \caption{
+        \textbf{Training dynamics on ALFWorld.}
+        We compare \textsc{Seed} and GRPO using Qwen2.5-3B-Instruct as the backbone. Translucent curves show raw measurements, while solid curves show 13-point centered moving averages.
+    }
+    \label{fig:training_dynamics}
+\end{figure}
+
+\textbf{Internalizing skills is substantially more effective than inserted prompts.}
+Skill-Prompt, which provides skills only during evaluation, underperforms \textsc{Seed} on every aggregate metric across all three backbones. \textsc{Seed} also exceeds Skill-GRPO* in 11 of the 12 aggregate comparisons, despite using no skill context during evaluation. These results indicate that hindsight skills are more effective when distilled into the policy than when supplied as additional context at inference time.
+
+\textbf{Self-evolving hindsight distillation is stronger than static self-distillation.}
+Across the static distillation baselines, \textsc{Seed} achieves the best or tied best result in 10 of the 12 aggregate comparisons. The advantage is clearest on ALFWorld, where \textsc{Seed} outperforms the strongest static baseline by 7.4 points with Qwen2.5-3B, 10.2 points with Qwen2.5-7B, and 38.1 points with Qwen3-1.7B. This pattern supports the benefit of synchronizing the analyzer with the latest policy, so hindsight supervision adapts to the trajectories and failure modes encountered during training.
+
+\subsection{Training Dynamics}
+Figure~\ref{fig:training_dynamics} compares the optimization dynamics of \textsc{Seed} and GRPO on ALFWorld. The success-rate curves diverge early: by training step 40, \textsc{Seed} reaches roughly 57\% while GRPO remains near 35\%, and the advantage persists thereafter. \textsc{Seed} also reduces the mean episode length more quickly, from approximately 28 turns to 13, compared with about 16 turns for GRPO at the end of training. Because shorter trajectories coincide with higher success, this reduction reflects more efficient task execution rather than premature termination. Together, these trends indicate that \textsc{Seed} improves task completion and interaction efficiency by reducing unproductive exploration and learning more direct solution strategies.
+
+
+\subsection{Sample Efficiency}\label{subsec33_efficiency_analysis}
+Figure~\ref{fig:sample_efficiency_line} shows that \textsc{Seed} consistently outperforms GRPO across all data fractions and can match or surpass the performance of GRPO trained with substantially more data. Using only 60\% of the training instances, \textsc{Seed} achieves a score of 80.7, exceeding the 75.0 obtained by GRPO with the full training set. Similarly, with 40\% of the data, \textsc{Seed} reaches 58.9, closely matching GRPO trained with twice as much data, which achieves 58.6 at the 80\% setting. These results demonstrate that \textsc{Seed} extracts more informative and effective supervision from each completed trajectory than outcome-only RL based solely on terminal rewards. Detailed results are provided in Appendix~\ref{app:sample_efficiency}.
+
+\subsection{Cross-Domain Generalization}\label{subsec34_cross_domain_generalization}
+We further evaluate the 3B checkpoint trained with \textsc{Seed} and GRPO on the ALFWorld unseen split. As shown in Figure~\ref{fig:generalization_bar}, \textsc{Seed} increases the macro-average success rate from 70.9 to 86.2, outperforming GRPO by 15.3 points and achieving better performance in five of the six task families. The largest improvements are observed on \textit{Heat} (+35.0), \textit{Look} (+18.3), and \textit{Pick} (+16.5). These results indicate that the policy trained with \textsc{Seed} acquires reusable behavioral strategies that transfer effectively to unseen environments, rather than merely memorizing the training trajectories. Detailed results are provided in Appendix~\ref{app:ood_generalization}.
+
+\begin{figure}[ht!]
+\centering
+\begin{minipage}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/sample_efficiency_line.pdf}
+    \vspace{-0.15in}
+    \caption{
+        \textbf{Sample efficiency analysis.} \textsc{Seed} consistently outperforms GRPO across different data fraction settings and surpasses full-data GRPO using only 60\% of the training data.
+    }
+    \label{fig:sample_efficiency_line}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{figures/generalization_bar.pdf}
+    \vspace{-0.15in}
+    \caption{
+        \textbf{Cross-domain generalizability on ALFWorld Unseen.} \textsc{Seed} generally outperforms GRPO across unseen task types, demonstrating stronger cross-domain generalizability.
+    }
+    \label{fig:generalization_bar}
+\end{minipage}
+\end{figure}
+
+\input{tables/ablation_on_seed}
+
+\subsection{Ablation Studies and Analysis}
+Table~\ref{tab:ablation_seed} evaluates the contribution of the three core components of \textsc{Seed}.
+
+\textbf{The impact of hindsight-skill SFT.}
+Removing hindsight-skill SFT decreases the ALFWorld average from 91.8 to 86.0, corresponding to a 5.8-point drop. This result shows that equipping the actor and analyzer with an initial trajectory-analysis capability provides an important foundation for the subsequent self-evolving training process.
+
+\textbf{The impact of self-evolving OPD.}
+Removing self-evolving OPD reduces the average performance to 87.0, a decrease of 4.8 points. This indicates that the one-time skill supervision introduced during SFT is insufficient on its own, and that continuously distilling supervision from newly collected trajectories is necessary to keep pace with the evolving policy.
+
+\textbf{The impact of on-policy skills.}
+Replacing on-policy skills with skills from a static offline library leads to the largest performance degradation, lowering the average to 84.4 by 7.4 points. This finding highlights the importance of deriving guidance from the current policy's own trajectories, as such skills better reflect its evolving behaviors and failure modes.
+
+\paragraph{Qualitative Analysis. }
+Figure~\ref{fig:case_comparison} presents a representative example of the behavioral differences between GRPO and \textsc{Seed}. GRPO visits the target receptacle before locating the required object, interacts with irrelevant objects, and repeatedly explores unproductive locations until reaching the step limit. In contrast, \textsc{Seed} follows a more coherent and goal-directed trajectory: it searches plausible storage locations, identifies the candle on the second shelf, and completes the task with the correct placement action. The more direct trajectory exhibited by \textsc{Seed} is consistent with its stronger performance and higher interaction efficiency reported in the preceding experiments.
+
+
+\begin{figure}[ht!]
+    \centering
+    \includegraphics[width=\linewidth]{figures/SEED_case.pdf}
+    \caption{
+        \textbf{Qualitative comparison on ALFWorld.}
+        For the task “put a candle in toilet,” the GRPO-
+        trained agent searches the target receptacle before locating the candle, takes an irrelevant toilet-paper
+        item, and then enters an off-task loop. In contrast, SEED systematically checks plausible shelves,
+        finds the candle, and completes the required placement in five steps.
+    }
+    \label{fig:case_comparison}
+\end{figure}

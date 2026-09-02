@@ -1,0 +1,131 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "GraphWalker",
+  "created_at": "2026-07-14T05:52:38.014175+00:00",
+  "updated_at": "2026-07-15T05:38:28.046501+00:00",
+  "paper": {
+    "title": "GraphWalker: Agentic Knowledge Graph Question Answering via Synthetic Trajectory Curriculum",
+    "authors": [
+      "Shuwen Xu",
+      "Yao Xu",
+      "Jiaxiang Liu",
+      "Chenhao Yuan",
+      "Wenshuo Peng",
+      "Jun Zhao",
+      "Kang Liu"
+    ],
+    "abstract": "Agentic knowledge graph question answering (KGQA) requires an agent to iteratively interact with knowledge graphs (KGs), posing challenges in both training data scarcity and reasoning generalization. Specifically, existing approaches often restrict agent exploration: prompting-based methods lack autonomous navigation training, while current training pipelines usually confine reasoning to predefined trajectories. To this end, this paper proposes GraphWalker, a novel agentic KGQA framework that addresses these challenges through Automated Trajectory Synthesis and Stage-wise Fine-tuning. GraphWalker adopts a two-stage SFT training paradigm: First, the agent is trained on structurally diverse trajectories synthesized from constrained random-walk paths, establishing a broad exploration prior over the KG; Second, the agent is further fine-tuned on a small set of expert trajectories to develop reflection and error recovery capabilities. Extensive experiments demonstrate that our stage-wise SFT paradigm unlocks a higher performance ceiling for a lightweight reinforcement learning (RL) stage, enabling GraphWalker to achieve state-of-the-art performance on CWQ and WebQSP. Additional results on GrailQA and our constructed GraphWalkerBench confirm that GraphWalker enhances generalization to out-of-distribution reasoning paths. The code is publicly available at https://github.com/XuShuwenn/GraphWalker",
+    "year": 2026,
+    "venue": "COLM",
+    "arxiv_id": "2603.28533",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-14"
+  },
+  "source": {
+    "raw_dir": "raw/GraphWalker",
+    "entry_file": "colm2026_conference.tex",
+    "source_files": [
+      {
+        "path": "colm2026_conference.tex",
+        "sha256": "c378ad081160a861c2a11a9bd5b98cf005e6da6497ca9bf3749b2290618f7f96",
+        "bytes": 6627
+      },
+      {
+        "path": "1.introduction.tex",
+        "sha256": "6ab9cf80c8f7241d3765d7c8aacdeb93778ef051dcfcce2fdf27d0bc7a798e6f",
+        "bytes": 9038
+      },
+      {
+        "path": "3.preliminaries.tex",
+        "sha256": "db0f7a79364fc2e586de3856dbefd2fb779c109b996bd9aba3b2cba8c5e25999",
+        "bytes": 2444
+      },
+      {
+        "path": "4.methodology.tex",
+        "sha256": "88135bbe7e327676b64a3e643ee298e6fb7e7d55e5e0ba226038757daea1c78b",
+        "bytes": 12195
+      },
+      {
+        "path": "5.experiments.tex",
+        "sha256": "b03c09636f84ea01c5049abdf762dda3087c1cec8d15c14251455df661334927",
+        "bytes": 14911
+      },
+      {
+        "path": "2.related_work.tex",
+        "sha256": "94a7e9e9c09949e3661027e2c0aa8e388e7ce124df8cadd63b7feb6d405b51f4",
+        "bytes": 1920
+      },
+      {
+        "path": "6.appendix.tex",
+        "sha256": "24dec4b8630d5acdfbe641636bad9bdbab2f09af2270352808d1a73b20dab10a",
+        "bytes": 654
+      },
+      {
+        "path": "appendix/data_construction.tex",
+        "sha256": "1a12a189bd8f445892c45f1e340b66f3e139a6d4aa708a5436dd3658860554ac",
+        "bytes": 4329
+      },
+      {
+        "path": "appendix/alg.tex",
+        "sha256": "f9da5a1efb064cdfb1e4fdb59ee762a91d9e8cb3d878e151e1ecccf2682024ab",
+        "bytes": 1041
+      },
+      {
+        "path": "appendix/datasets.tex",
+        "sha256": "8f1e6944e24342c847690894ea0f2bc6e6059e367da3f7392002c5250a30d7d9",
+        "bytes": 3803
+      },
+      {
+        "path": "appendix/baselines.tex",
+        "sha256": "fd03ab6e76c277abcecd2d2263ee498cb2f4772ae93f339826fdf42fd71326d5",
+        "bytes": 4012
+      },
+      {
+        "path": "appendix/further.tex",
+        "sha256": "85bf91db75f813b3b2edff5b94851cdabf0b0b8f3c35b09a922971c147b38af8",
+        "bytes": 2797
+      },
+      {
+        "path": "appendix/case_study.tex",
+        "sha256": "793f7fc2ac8abbe68372c5d5f4838ec4828ed2a4132da3f3f66156ccf406c25a",
+        "bytes": 15337
+      },
+      {
+        "path": "appendix/kg_deployment.tex",
+        "sha256": "e7779f31244a7f6b472a95e946746e51c7a81c0a428188d3818b3edd22ea3de7",
+        "bytes": 3325
+      },
+      {
+        "path": "appendix/training_details.tex",
+        "sha256": "acdd5b1091aa82e95c3388874ea450072b55ef8b395025bc60225ac52b31f542",
+        "bytes": 1444
+      },
+      {
+        "path": "appendix/prompts.tex",
+        "sha256": "5bee7967e5a44fb5c98c406bf46807e8a39f6923955f4a42abbe1ea43e93a302",
+        "bytes": 28717
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 29,
+    "figures": 11,
+    "references": 41
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": []
+}

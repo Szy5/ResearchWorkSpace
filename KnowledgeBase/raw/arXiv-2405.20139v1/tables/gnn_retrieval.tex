@@ -1,0 +1,24 @@
+\begin{wraptable}{R}{0.5\textwidth}
+\vspace{-0.2in}
+	\centering
+	\caption{Retrieval results for WebQSP.}
+	\label{tab:analysis_retrieval}%
+	\resizebox{\linewidth}{!}{
+	\begin{threeparttable}
+		\begin{tabular}{@{}l|cc|cc@{}}
+			\toprule
+
+        \multirow{2}{*}{\textbf{Retriever}} & \multicolumn{2}{c|}{\textbf{1-hop questions}} & \multicolumn{2}{c}{\textbf{2-hop questions}} \\
+            & \#Input Tok. & \%Ans. Cov. &  \#Input Tok. & \%Ans. Cov. \\       
+            \midrule
+            RoG~\citep{luo2024rog} & 150& \textbf{87.1} & 435 & 82.1 \\
+            \midrule
+            GNN ($L=1$) & 112 & 83.6 & 2,582 & 79.8 \\
+             GNN ($L=3$) & 105 & 82.4 & 357& \textbf{88.5}\\
+			\bottomrule
+		\end{tabular}%
+		\end{threeparttable}
+}
+
+
+\end{wraptable}%

@@ -1,0 +1,874 @@
+\documentclass{article}
+
+\usepackage{natbib}
+\setcitestyle{numbers,square}
+\usepackage[preprint]{neurips_2024}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{latexsym}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts} 
+\usepackage{nicefrac}
+\usepackage{microtype} 
+\usepackage{xcolor} 
+\usepackage{bm}
+\usepackage{makecell}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+
+\usepackage{multirow}
+\usepackage{bbding}
+\usepackage{colortbl}
+\definecolor{mygray}{gray}{.92}
+\let\Bbbk\relax 
+\usepackage{amsmath,amsthm,amssymb}
+\newtheorem{myDef}{Definition}
+\usepackage{color}
+\newcommand{\red}{\bf\color{red}}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{pifont}
+
+\newtheoremstyle{boldremark}
+  {} % Space above
+  {} % Space below
+  {} % Body font
+  {} % Indent amount
+  {\bfseries} % Theorem head font
+  {.} % Punctuation after theorem head
+  {.5em} % Space after theorem head
+  {} % Theorem head spec (can be left empty, meaning ‘normal’)
+\theoremstyle{boldremark}
+\newtheorem{remark}{Remark}
+
+
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2023}
+
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2023}
+
+
+% to avoid loading the natbib package, add option nonatbib:
+%    
+% \usepackage[nonatbib]{neurips_2024}
+% \usepackage[numbers]{natbib}
+% \usepackage[square,sort,comma,numbers]{natbib}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+% \usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+
+\usepackage[normalem]{ulem}
+
+
+\usepackage[breaklinks, colorlinks,linkcolor=red,urlcolor=blue, citecolor=blue]{hyperref}
+
+\usepackage[nameinlink]{cleveref}
+%\usepackage{cleveref}
+\Crefname{figure}{Figure}{Figures}
+\crefname{figure}{Figure}{Figures}
+\crefname{example}{Example}{Example}
+\crefname{theorem}{Theorem}{Theorem}
+\crefname{corollary}{Corollary}{Corollary}
+\crefname{lemma}{Lemma}{Lemma}
+\crefname{proposition}{Proposition}{Proposition}
+\crefname{assumption}{Assumption}{Assumption}
+\crefname{section}{Section}{Section}
+\crefname{algorithm}{Algorithm}{Algorithm}
+
+
+
+% Colors
+\definecolor{blu}{rgb}{0,0,1}
+\def\blu#1{{\color{blu}#1}}
+\definecolor{gre}{rgb}{0,.5,0}
+\def\gre#1{{\color{gre}#1}}
+\definecolor{red}{rgb}{1,0,0}
+\def\red#1{{\color{red}#1}}
+
+\title{KnowGPT: \underline{Know}ledge \underline{G}raph based \underline{P}romp\underline{T}ing for Large Language Models}
+% \author{ Anonymous Author(s)}
+\author{%
+  Qinggang Zhang\textsuperscript{1*}, Junnan Dong\textsuperscript{1*}, Hao Chen\textsuperscript{1}, Daochen Zha\textsuperscript{2}, Zailiang Yu\textsuperscript{3},\textbf{Xiao Huang}\textsuperscript{1}\\
+%   Department of Computer Science\\
+  \textsuperscript{1}The Hong Kong Polytechnic University, \textsuperscript{2}Rice University, \textsuperscript{3}Zhejiang Lab\\
+  \small{\texttt{\{qinggangg.zhang,hanson.dong\}@connect.polyu.hk, sundaychenhao@gmail.com}}\\ \small{\texttt{daochen.zha@rice.edu, yuzl@zhejianglab.com,xiaohuang@comp.polyu.edu.hk}} 
+  }
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+
+Large Language Models (LLMs) have demonstrated remarkable capabilities in many real-world applications. Nonetheless, LLMs are often criticized for their tendency to produce hallucinations, wherein the models fabricate incorrect statements on tasks beyond their knowledge and perception. To alleviate this issue, researchers have explored leveraging the factual knowledge in knowledge graphs (KGs) to ground the LLM's responses in established facts and principles. However, most state-of-the-art LLMs are closed-source, making it challenging to develop a prompting framework that can efficiently and effectively integrate KGs into LLMs with hard prompts only. Generally, it usually suffers from three critical issues, including huge search space, high API costs, and laborious prompt engineering, that impede the widespread application in practice.
+To this end, we introduce a novel \underline{\textbf{Know}}ledge \underline{\textbf{G}}raph-based \underline{\textbf{P}}romp\underline{\textbf{T}}ing framework, namely {\bf \texttt{KnowGPT}}, to enhance LLMs with domain knowledge. \texttt{KnowGPT} contains a knowledge extraction module to extract the most informative knowledge from KGs, and a context-aware prompt construction module to automatically convert extracted knowledge into effective prompts. Experiments on three benchmark datasets demonstrate that \texttt{KnowGPT} significantly outperforms all competitors. Notably, \texttt{KnowGPT} achieves a $92.6\%$ accuracy on \texttt{OpenbookQA} leaderboard, close to human-level performance.
+
+
+\end{abstract}
+
+
+
+\section{Introduction}
+
+
+
+Large Language Models (LLMs), such as GPT-4~\cite{openai2023gpt4} and Claude 3~\cite{anthropic2024claude}, have surprised the world with superior performance in a wide range of real-world applications~\cite{kung2023performance,zha2023data}. Despite their impressive performance, LLMs are frequently criticized for their limited ability to handle factual information accurately and their tendency to generate hallucinations, especially when faced with questions requiring domain-specific or professional knowledge not covered in their training corpus~\cite{amaro2023ai,shen2023chatgpt}. For example, when queried about nutrient composition, an LLM might erroneously associate it with ``energy'', as depicted in Figure~\ref{fig:running}. 
+This error stems from the model's insufficient biological knowledge. 
+Therefore, integrating domain knowledge into LLMs is crucial for reducing hallucinations and unlocking their full potential in diverse industry applications~\cite{gravel2023fabricate}. 
+
+Recently, retrieval-augmented generation has been explored, which can enhance LLMs with external knowledge from text corpora or online sources~\cite{lewis2020retrieval,zhao2023survey,minaee2024large}. It combines LLMs with external knowledge retrieval systems to help reduce hallucinations. However, these models face challenges in real-world applications due to the varying quality of available data. Domain knowledge is often scattered across different sources, such as textbooks, research papers, technical manuals, and industry reports~\cite{li2022survey}. These textual documents may have varying levels of quality, accuracy, and completeness, leading to potential inconsistencies or errors in the retrieved knowledge~\cite{zhu2021retrieving}.
+
+
+
+\begin{wrapfigure}{l}{6.15cm}
+\centering
+% \vspace{-0.4cm}
+\includegraphics[width=0.45\textwidth]{resources/running_example.pdf}
+\caption{\footnotesize A real-world question from OpenbookQA. GPT-3.5 could effectively correct the answer given the scientific reasoning background from ConceptNet (\textcolor{blue}{blue}: question concepts, \textcolor{purple}{red}: answers, \textcolor[rgb]{0.5,0.6,0.7}{grey}: entities not present in questions).}
+\label{fig:running}
+% \vspace{3mm}
+\end{wrapfigure}
+
+A promising avenue for addressing the above issue entails the integration of Knowledge Graphs (KGs) into LLMs. 
+KGs provide a structured representation of domain knowledge, as they are constructed based on rigid ontologies that clearly define the jargon, acronyms, specialized terminologies and their relationships in specific domains.
+The enormous factual knowledge stored in KGs holds the potential to ground the model's responses in established facts and principles~\cite{hu2023survey,yang2024give,pan2024unifying}. 
+For instance, in Figure~\ref{fig:running}, an LLM can correct itself by leveraging the related background knowledge in ConceptNet~\cite{speer2017conceptnet}. Earlier studies adopted a heuristic way to inject knowledge from KGs into the LLMs during pre-training or fine-tuning. For example, ERNIE~\cite{sun2021ernie} incorporates entity embeddings and aligns them with word embeddings in the pre-training phase, encouraging the model to better understand and reason over entities. Similarly, KnowBERT~\cite{peters2019knowledge} integrates entity linkers with BERT to infuse knowledge about entities during fine-tuning for knowledge-intensive applications.  
+Another line of work focuses on retrieving relevant knowledge from KGs at inference time to augment the language model's context. Typically, K-BERT~\cite{liu2020k} uses an attention mechanism to select relevant triples from KGs based on the query context, which are then appended to the input sequence. Similarly, KEPLER~\cite{wang2021kepler} learns joint embeddings of text and KG entities to enhance the model's predictions.  Subsequent works have further integrated graph neural networks alongside LLMs for joint reasoning~\cite{QA-GNN,GreaseLM,dong2023hierarchy} and introduced interactions between text tokens and KG entities within the intermediate layers of LLMs~\cite{sun2021jointlk,taunk2023grapeqa}.
+
+However, as LLMs have been keeping evolving, most SOTA LLMs remain \emph{closed-source} in practice. For instance, GPT-4~\cite{openai2023gpt4} and Claude 3~\cite{anthropic2024claude} exclusively grant access through their APIs, which means we can only retrieve model responses by submitting textual inputs, with model specifics inaccessible. As such, the research focus has recently shifted towards KG prompting that enhances fixed LLMs with KG-based hard prompts~\cite{liu2023pre,pan2024unifying}. 
+KG Prompting for LLMs has been a new learning paradigm in natural language processing. Specifically, CoK~\cite{wang2023boosting} introduces Chain-of-Knowledge prompting to decompose LLM-generated reasoning chains into evidence triples, verifying their factuality and faithfulness using an external KG. 
+Mindmap~\cite{wen2023mindmap} provides more transparency on LLMs' decision-making by enabling comprehension and reasoning over structured KG inputs. RoG~\cite{luo2023reasoning} presents a planning-retrieval-reasoning framework that synergizes LLMs and KGs for more transparent and interpretable reasoning. KGR~\cite{guan2024mitigating} proposes an autonomous approach to retrofit LLM-generated responses by leveraging KGs to extract, verify, and refine factual information throughout the reasoning process, effectively mitigating hallucination for knowledge-intensive applications.
+
+
+Despite the promising performance of existing KG prompting methods, three critical issues hinder their widespread application in practice. 
+\textbf{\ding{182}} Huge search space. Real-world KGs often consist of millions of triples, resulting in a vast search space when retrieving relevant knowledge for prompting. \textbf{\ding{183}} High API cost. Closed-source LLMs, like GPT-4 and Claude 3, are accessible through proprietary APIs, which can incur significant costs when performing KG prompting at scale. Thus, careful selection of the most informative knowledge from KGs is essential to minimize costs.   \textbf{\ding{184}} Laborious prompt design. LLMs are highly sensitive to prompts, with even minor variations in prompts conveying the same semantic meaning potentially yielding drastically different responses. However, existing methods rely on manually designed or rule-based prompts to present factual knowledge from KGs.  These hard prompts are inherently inflexible and rigid, lacking the adaptability to accommodate variations in question semantics and KG structures. 
+
+
+To this end, we propose a novel \underline{\textbf{Know}}ledge \underline{\textbf{G}}raph-based \underline{\textbf{P}}romp\underline{\textbf{T}}ing framework, namely {\bf \texttt{KnowGPT}}, which leverages the factual knowledge in KGs to ground the model's responses in established facts and principles.
+In this paper, we aim to answer two key research questions.  \textbf{\ding{182}} Given a query and a large-scale KG, how could we effectively and efficiently retrieve factual knowledge from KG that is relevant to the query?  \textbf{\ding{183}} Given the raw knowledge extracted from KGs, how could we convert the extracted knowledge into an effective prompt that is easily understandable for LLM?
+
+We shed light on the the above questions with a novel prompt learning method that
+is rather effective, generalizable, and cost-efficient. Specifically, to address question \textbf{\ding{182}}, we leverage deep reinforcement learning (RL) to extract the most informative knowledge from KGs. To encourage the agent to discover more informative knowledge chains, we devise a tailored reward scheme that promotes the reachability, context-relatedness, and conciseness of the extracted paths. Then, a policy network is trained to maximize the reward using training questions and applied to unseen questions. To tackle question \textbf{\ding{183}}, we introduce a prompt construction strategy based on Multi-Armed Bandit (MAB). Given several knowledge extraction strategies and prompt templates, an MAB is learned to select the most effective combination for each question by balancing exploration and exploitation. The learned MAB is then applied to new questions to select knowledge extraction strategies and prompt templates automatically.
+Our main contributions are summarized as follows:
+\begin{itemize}[leftmargin=*]
+\item Formally define the problem of KG-based prompting, which leverages the structured knowledge in KGs to ground the LLM's responses in established facts and principles.
+\item Propose \texttt{KnowGPT}, a novel prompting framework that leverages deep reinforcement learning (RL) and Multi-Armed Bandit (MAB) to generate effective prompts for domain-specific queries.
+\item Implement \texttt{KnowGPT} upon GPT-3.5. Experiments on three QA datasets shows \texttt{KnowGPT} outperforms SOTA baseline models by a large margin. 
+Notably, \texttt{KnowGPT} achieves an average improvement of 23.7\% over GPT-3.5 and an average improvement of 2.9\% over GPT-4. Additionally, it attains a 92.6\% accuracy on the OpenbookQA leaderboard, which is comparable to human performance.
+\end{itemize}
+
+
+\section{Problem Statement}
+
+We formally define the problem of \emph{knowledge graph based prompting for LLMs} in question answering. We represent each question as a question context $\mathcal{Q} = \{\mathcal{Q}_s, \mathcal{Q}_t\}$, where $\mathcal{Q}_s = \{e_1, e_2, ..., e_m\}$ is a set of $m$ \emph{source entities}, and $\mathcal{Q}_t = \{e_1, e_2, ..., e_n\}$ is a set of $n$ \emph{target entities}. Following prior work~\cite{MHGRN,yasunaga2022deep}, $\mathcal{Q}_s$ is extracted by concept recognition, and we assume it is given in our problem. Similarly, each target entity in $\mathcal{Q}_t$ is extracted from a corresponding candidate answer. We denote an LLM as $f$, a real-world KG as $\mathcal{G}$, which consists of triples (head entity, relation, tail entity), denoted as $(h,r,t)$. In our setting, we only have access to the APIs of $f$. However, we can employ open-source lightweight language models (not $f$), like Bert-Base~\cite{devlin2018bert}, to initialize question embeddings. Using the above notations, we describe our problem below.\\
+\vspace{3mm}
+\fbox{\parbox{0.98\textwidth}{\vspace{0.05cm}
+Given a question $\mathcal{Q}$, an LLM $f$, and a domain KG $\mathcal{G}$, we aim to learn a prompting function $f_\text{prompt}(\mathcal{Q}, \mathcal{G})$, which generates a prompt $\textbf{x}$ that incorporates the context of $\mathcal{Q}$ and the factual knowledge in $\mathcal{G}$, such that the prediction of the LLM $f(\textbf{x})$ can output the correct answers for $\mathcal{Q}$. 
+}} 
+
+\begin{figure*}[!t]
+\centering
+    \includegraphics[width=14.cm]{resources/Figure1_final.pdf}
+    \vspace{-5mm}
+    \caption{\footnotesize The overall architecture of our proposed knowledge graph prompting framework, i.e., \texttt{KnowGPT}.  Given the question context with multiple choices, we first retrieve a question-specific subgraph from the real-world KG. \textit{Knowledge Extraction} is first dedicated to searching for the most informative and concise reasoning background subject to the context. Then the \textit{Prompt Construction} module is optimized to prioritize the combination of knowledge and formats subject to the given question.}
+    \label{fig:fig1}
+    \vspace{-5mm}
+\end{figure*}
+\section{\texttt{KnowGPT} Framework}
+Learning the prompting function $f_\text{prompt}(\mathcal{Q}, \mathcal{G})$ involves two challenges, i.e., what knowledge should be used in $\mathcal{G}$, and how to construct the prompt. To address these challenges, we present \texttt{KnowGPT}, which extracts raw knowledge with deep RL and then constructs the prompt with MAB. An overview of our framework is shown in Figure~\ref{fig:fig1}.
+
+
+\subsection{Knowledge Extraction with Deep Reinforcement Learning}
+% \subsection{Knowledge Retrieval }
+Intuitively, the relevant reasoning background lies in a question-specific subgraph $\mathcal{G}_{\text{sub}}$ that contains all the \textit{source} entities $\mathcal{Q}_s$, \textit{target} entities $\mathcal{Q}_t$, and their neighbors. An ideal subgraph $\mathcal{G}_{\text{sub}}$ is expected to have the following properties: \((i)\) $\mathcal{G}_{\text{sub}}$ encompasses as many source and target entities as possible, \((ii)\) the entities and relations within $\mathcal{G}_{\text{sub}}$ exhibit a strong relevance to question context, and \((iii)\) $\mathcal{G}_{\text{sub}}$ is concise with little redundant information such that it can be fed into LLMs with limited lengths.
+
+However, it is challenging to find such a $\mathcal{G}_{\text{sub}}$ since extracting a subgraph is NP-hard. To effectively and efficiently find a satisfactory $\mathcal{G}_{\text{sub}}$, we develop a tailored knowledge extraction method, named $\mathcal{P}_\text{RL}$, that employs deep RL to sample reasoning chains in a trial-and-error fashion. Specifically, we assume $\mathcal{G}_{\text{sub}}$ is constructed based on a set of reasoning chains $\mathcal{P} = \{\mathcal{P}_1, \mathcal{P}_2, ..., \mathcal{P}_m\}$, where each knowledge chain $\mathcal{P}_i = \{(e_i, r_1, t_1), (t_1, r_2, t_2), ..., (t_{|\mathcal{P}_i|-1}, r_{|\mathcal{P}_i|}, t_{|\mathcal{P}_i|})\}$ is a path in $\mathcal{G}$ starting from the $i$-$th$ source entity in $\mathcal{Q}_s$, and $|\mathcal{P}_i|$ is the path length. $\mathcal{G}_{\text{sub}}$ encompasses all the entities and relations appeared in $\mathcal{P}$. We model the sampling of each reasoning path as a Markov Decision Process (MDP) with state, action, transition, and reward, defined as follows.
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{State:} A state indicates the current location in KG, i.e., one of the entities in KG. Specifically, it represents the spatial change from entity $h$ to $t$. Inspired by the prior study~\cite{xiong2017deeppath}, we define the state vector $\boldsymbol{s}$ as:\vspace{-2mm}
+    \begin{equation}
+        \boldsymbol{s}_{t} = (\boldsymbol{e}_{t}, \boldsymbol{e}_{target} - \boldsymbol{e}_{t}), 
+    \end{equation}
+    where $\boldsymbol{e}_{t}$ and $\boldsymbol{e}_{target}$ are the embedding vectors of the current entity and the target entity. To get the initial node embeddings for entities extracted from the background KG, we adopt the approach proposed by the previous study~\cite{MHGRN}. Specifically, we transform knowledge triples from the KG into sentences and feed them into pre-trained LM to get node embeddings.
+    \item \textbf{Action:} The action space encompasses all the neighboring entities of the current entity, enabling the agent to explore the KG flexibly. By taking an action, the agent will move from the current entity to the chosen neighboring entity.
+    \item \textbf{Transition:} The transition model $\mathrm{P}$ measures the probability of moving to a new state ($s'$) given existing state ($s$) and the undertaken action ($a$). In KGs, the transition model takes on the form $\mathrm{P}(s'|s,a) = 1$ if $s$ is directed to $s'$ through action $a$; Otherwise, $\mathrm{P}(s'|s,a) = 0$.
+    
+    \item \textbf{Reward:} To determine the quality of the formed path, we define the reward based on reachability: 
+\begin{equation}
+r_{reach} =
+\begin{cases}
+    +1 , & \textit{if } target; \\
+    -1 , & \textit{otherwise},
+\end{cases}
+\end{equation} 
+which represents whether the path eventually reaches the target within limited steps. Specifically, the agent receives a  reward of $+1$ if it can attain the target within $K$ actions. Otherwise, it will receive $-1$ as the reward.
+    
+\end{itemize}
+
+Reaching a target entity is not our sole focus.  To avoid overlong and rigmarole reasoning chains, we also design two auxiliary rewards to promote context-relatedness and path conciseness. 
+
+
+
+
+\subsubsection{Context-relatedness Auxiliary Reward} 
+The key motivation is to encourage paths closely related to the given question context. Specifically, we evaluate the semantic relevance of a path $\mathcal{P}_i$ to the context $\mathcal{Q}$. Inspired by the prevailing study~\cite{QA-GNN}, a fixed but well-trained matrix $\boldsymbol{W}$ is applied to map the path embedding $\boldsymbol{\mathcal{P}}$ to the same semantic space with context embedding $\boldsymbol{c}$. To this end, this auxiliary reward is formulated as:
+\vspace{-2mm}
+\begin{equation}
+    r_{\text{cr}} = \frac{1}{|i|} \sum_{source}^{i}cos(\boldsymbol{W\times\mathcal{P}}_{i}, \boldsymbol{c}),
+\end{equation}
+where $\boldsymbol{c}$ is the embedding of context $\mathcal{Q}$ we obtained from a pre-trained LM~\cite{devlin2018bert} and the embedding of path $\mathcal{P}_{i}$ is the average of the embeddings of all the entities and relations we have walked through till $i$, i.e., $Avg(\boldsymbol{e}_{source}+\boldsymbol{re}_{1}...+\boldsymbol{e}_{i})$, where $i\leq length(\mathcal{P}_{target})$. This step-by-step reward scheme provides rewards before the target is reached.
+
+
+\subsubsection{Conciseness Auxiliary Reward} There are two additional significant challenges for the candidate reasoning background.  \((i)\) The natural limitation of LLMs for over-long context understanding gives constrained budgets for prompts, where the extracted knowledge chain is expected to be concise enough to ensure the full understanding by closed-source LLMs. \((ii)\) The prohibitive cost of calling  LLMs' API guides the prompt to be more concise. By limiting the step size, we encourage the policy to find as much valuable information as possible within the shortest path length.
+
+Considering the inevitable homogeneity in the large-scale real-world KG constructed from the online corpus, each step in the final path is ideally a necessity. Specifically, we evaluate the conciseness of a path to reduce twists and turns on redundant entities, e.g., synonyms. Thus, the reward for the conciseness of a path $\mathcal{P}_{i}$ is formulated as follows.
+\begin{equation}
+    r_{\text{cs}} = \frac{1}{|\mathcal{P}_{i}|}.
+\end{equation}
+To this end, our overall reward modeling consists of three major criteria that comprehensively incentivize the entire policy learning for an effective knowledge extraction. 
+
+
+\subsubsection{Training Policy Network}
+To solve the MDP defined above, a tailored policy network $\pi_{\theta}(s,a) = p(a|s;\theta) $ is trained to extract a reasoning chain in the KG. We optimize the network with policy gradient~\cite{xiong2017deeppath}.
+% \daochen{Add citation}. [done]
+The optimal policy navigates the agent from the source entity to the target entity while maximizing the accumulated rewards. We provide more training details in the Appendix.
+
+
+
+\subsection{Prompt Construction with Multi-armed Bandit}
+In this subsection, we design a tailored prompt construction strategy based on Multi-Armed Bandit (MAB). The key idea is to learn to select the best knowledge extraction and prompt templates at a meta-level. We will begin by outlining the overall strategy, followed by detailing its instantiation with two knowledge extraction methodologies and three templates.
+
+Suppose we have several knowledge extraction strategies $\{\mathcal{P}_1, \mathcal{P}_2, ..., \mathcal{P}_m\}$ and several candidate prompt formats $\mathcal{F} = \{\mathcal{F}_1, \mathcal{F}_2, ..., \mathcal{F}_n\}$. Each knowledge extraction strategy $\mathcal{P}_i$ is a method for selecting reasoning background given a question context, such as the RL-based strategy discussed above. Every prompt template $\mathcal{F}_j$ represents a mechanism to transform the triples within the subgraph into a prompt for an LLM prediction.
+
+
+The prompt construction problem is to identify the best combination of $\mathcal{P}$ and $\mathcal{F}$ for a given question. We define the overall process of selection as a reward maximization problem, $\max \sum r_{pf}$, where $r_{pf}$ is obtained as:
+\begin{equation}
+\sigma( f(\mathcal{P}\mathcal{F}_{(i)})) =
+\begin{cases}
+    1 & \textit{if } accurate; \\
+    0 & \textit{otherwise}.
+\end{cases}
+\end{equation} 
+Specifically, $\mathcal{P}\mathcal{F}_{(i)}$, $i\in\{0,1,\cdots, m \times n\}$ is one of the combination, and $r_{pf}\in \{0,1\}$ indicates the performance of the output of LLM in answering the current question. 
+
+To capture the context-aware correlation between questions and different combinations of knowledge and prompt formats, we formulate the selection mechanism of MAB with an expectation function $E(\cdot)$. It adaptively measures the potential expectation of a combination for different questions. 
+
+\begin{equation}%\small
+    E(\mathcal{Q}|\mathcal{P}\mathcal{F}_{(i)}) = \boldsymbol{c} \times \bm{\alpha}_{(i)} + \beta_{(i)}.
+    \vspace{1mm}
+\end{equation}
+Here, $\boldsymbol{c}$ represents the embedding of $\mathcal{Q}$. The vector \textbf{$\bm{\alpha}{(i)}$} corresponds to a set of non-negative parameters associated with $\mathcal{P}\mathcal{F}{(i)}$, which have been learned during the previous $k$-$1$ iterations. Additionally, $\beta_{(i)}$ stands for a balancing factor introducing noise according to a Gaussian distribution.
+
+Empirically maximizing $\boldsymbol{c} \times \bm{\alpha}_{i}$ could encourage exploitation~\cite{chen2019new,dong2023active} for the best combination, we could effectively update $\bm{\alpha}_{(i)}$ via modeling the correlations between the context embedding of the anchor question ${\bf c}_{i}$ and all the previously selected contexts ${\bf C}_{(i)}$ for particular combination $\mathcal{P}\mathcal{F}_{(i)}$ in former $k$ steps, and the rewards $\textbf{r}_{pf}^{(i)}$ obtained from the selection of the current combination. Concretely, the $\bm{\beta} ^{(b)}$ is updated as:
+\begin{equation}%\small
+\begin{aligned}
+     & J({\bf C}_{(i)}^{(k)},\textbf{r}_{pf}^{(i)(k)}) =  \sum\limits_{k=1}^K(\textbf{r}_{pf}^{(i)(k)} - {\bf C}_{(i)}^{(k)} \bm{\alpha}^{(i)})^{2} + {\lambda}^{i}  \parallel  \bm{\alpha}^{(i)} \parallel _2^2. \\
+     & \to \bm{\alpha}^{(i)} = \left( ({\bf C}_{(i)}^{(k)})^{\top} {\bf C}_{(i)}^{(k)} + {\lambda}^{i} \textbf{I} \right)^{-1} ({\bf C}_{(i)}^{(k)})^{\top} \textbf{r}_{pf}^{(i)(k)}.
+\end{aligned}
+\end{equation}
+
+Here, $J$ denotes the OLS training loss. $\textbf{I}\in\mathbb{R}^{d \times d}$ is an identity matrix and $\lambda^{i}$ is a regularization factor that controls the complexity of the model.
+
+Similarly, in order to encourage exploration within less frequently selected pairings, we employ an upper confidence bound approach to balance exploration and exploitation. This is achieved through the introduction of the parameter $\beta^{(i)}$. Inspired by prevailing studies~\cite{walsh2012exploring,dong2023active}, we can derive the following exploration term $\beta^{(i)}$:
+\begin{equation}%\small
+\begin{aligned}
+\beta^{(i)} & = \
+&\gamma \times \sqrt{{\bf c}_{i}\left(({\bf C}_{(i)}^{(k)})^{\top} {\bf C}_{(i)}^{(k)} + {\lambda}^{i} \textbf{I}\right)^{-1} ({\bf c}_{(i)})^{\top} },
+\end{aligned}
+\end{equation}
+where $\gamma$ is a fixed constant, i.e., $\gamma= 1+ \sqrt{ln(2/ \delta)/2 }$.
+
+When the model picks a combination with a large $\boldsymbol{c} \times \bm{\alpha}_{i}$, it signifies an exploitation process. 
+Likewise, when the model selects a combination with larger $\beta^{(i)}$, this variance indicates an exploration process due to the model making fewer selections of the current combination.  Thus, jointly maximizing $\boldsymbol{c} \times \bm{\alpha}_{i} + \beta_{(i)}$ could help us get rid of the dilemma of exploration and exploitation.
+
+Consequently, our MAB design can leverage the feedback from the LLM to optimize the selection policy. By maximizing the expectation function $E(\cdot)$, it learns to balance the exploitation and exploration to prioritize the most promising prompts for specific question contexts.
+
+
+
+\subsubsection{Implementation}
+We implement the above MAB strategies with two knowledge extraction strategies and three templates. Note that our MAB design is general and can be implemented with more knowledge extraction strategies and prompt templates for better performance. The knowledge extraction strategies include:
+
+\begin{itemize} [leftmargin=*]
+\item $\mathcal{P}_\text{RL}$: The RL-based knowledge extraction strategy presented in the previous subsection.
+\item $\mathcal{P}_\text{sub}$: A heuristic sub-graph extraction strategy that extracts a 2-hop subgraph around both the source and target entities. Detailed implementation can be found in Section~\ref{app:entity_link} of Appendix. Since RL is notoriously unstable~\cite{sutton2018reinforcement}, we introduce $\mathcal{P}_\text{sub}$ as an alternative candidate strategy for the MAB selection, ensuring a fallback option if the RL-based approach does not perform well.
+\end{itemize}
+
+The prompt templates include:
+ 
+\begin{itemize} [leftmargin=*]
+    \item \textbf{Triples}, denoted as $\mathcal{F}_{t}$, are indeed the originally extracted knowledge and empirically tested that could be understood by the black-box LLMs, e.g., (\textit{Sergey\_Brin}, \textit{founder\_of}, \textit{Google}),(\textit{Sundar\_Pichai}, \textit{ceo\_of}, \textit{Google}), (\textit{Google}, \textit{is\_a}, \textit{High-tech Company}).
+    \item \textbf{Sentences} is a following solution to transform the knowledge into a colloquial  $\mathcal{F}_{s}$, e.g., ‘\textit{Sergey Brin, who is a founder of Google, a high-tech company, has now passed the reigns to Sundar Pichai, who is currently serving as the CEO of the company.}’
+    \item  \textbf{Graph Description}, $\mathcal{F}_{g}$ prompts the LLM by treating the knowledge as a structured graph. We preprocess the extracted knowledge with black-box LLM itself to generate the description by highlighting the center entity, e.g., ‘\textit{Google, a high-tech company, stands central in the network. The entity is strongly associated with significant individuals in the tech industry. Sergey Brin, one of the founders, established Google, underscoring its historical beginnings. In the present graph context, Sundar Pichai is recognized as the CEO of Google, symbolizing the company's current leadership. Thus, Google serves as a vital link between these key figures.}’ 
+
+\end{itemize}
+
+Considering two knowledge extraction methods: $\mathcal{P}_\text{sub}$ and $\mathcal{P}_\text{RL}$, as well as three prompt translation methods: $\mathcal{F}_{t}$, $\mathcal{F}_{s}$ and $\mathcal{F}_{g}$, the MAB is trained to learn from the feedback from LLMs to prioritize the most appropriate combination among two extraction methods and three predefined prompt formats for different real-world question contexts, i.e., 
+ $\mathcal{P}\mathcal{F} = \{(\mathcal{P}_{sub}\mathcal{F}_{t}),$
+$(\mathcal{P}_{sub}\mathcal{F}_{s}),
+(\mathcal{P}_{sub}\mathcal{F}_{g}),
+(\mathcal{P}_{RL}\mathcal{F}_{t}),
+(\mathcal{P}_{RL}\mathcal{F}_{s}),
+(\mathcal{P}_{RL}\mathcal{F}_{g})\}$.
+
+
+
+
+
+\section{Experiments}
+We conduct extensive experiments to evaluate \texttt{KnowGPT} on three benchmark question-answering datasets, covering both commonsense and domain-specific QA. We implement \texttt{KnowGPT} upon GPT-3.5.
+Our experiments are designed to answer the following research questions:
+
+\begin{itemize} [leftmargin=*]
+    \item \textbf{RQ1 (Main results)}:  How does \texttt{KnowGPT} perform when compared with the state-of-the-art LLMs and KG-enhanced QA baselines? 
+    \item \textbf{RQ2 (Ablation Study)}: How does each key component of \texttt{KnowGPT} contribute to the performance?
+    \item \textbf{RQ3 (Case study)}: How could KG help solve complex reasoning tasks? See Appendix~\ref{sec:rq3}.
+\end{itemize}
+\subsection{Experimental Setup}
+{\bf Datasets}.
+We evaluate \texttt{KnowGPT} on three QA datasets spanning two fields: CommonsenseQA~\cite{CommonsenseQA} and OpenBookQA~\cite{mihaylov2018can} serve as benchmarks for commonsense reasoning, while MedQA-USMLE~\cite{app11146421} acts as a domain-specific QA benchmark. The statistics of these three datasets can be found in Table~\ref{tab:DatasetStatistics} in the Appendix.
+
+{\bf Baselines}.
+We carefully select baseline models from four categories for a comprehensive evaluation.
+\noindent {\textit{LM + Fine-tuning}}.
+We compare our method with vanilla fine-tuned LMs. Specifically, we choose Bert-base, Bert-large~\cite{devlin2018bert}, and RoBerta-large~\cite{liu2019roberta} as representative fine-tune LM methods. To conduct commonsense and biomedical QA, we fine-tune these three LMs via additional linear layers. 
+
+\noindent \textit{KG-enhanced LM}.
+We have also implemented several recently released models for integrating KGs into question answering, which encompass MHGRN~\cite{MHGRN}, QA-GNN~\cite{QA-GNN}, HamQA~\cite{dong2023hierarchy}, JointLK~\cite{sun2021jointlk}, GreaseLM~\cite{zhang2022greaselm} and GrapeQA~\cite{taunk2023grapeqa}. 
+To ensure a fair comparison, we implement these baselines with advanced language models that are optimized for particular datasets. 
+Specifically, RoBerta-large~\cite{liu2019roberta} is used for CommenseQA, while AristoRoBERTa~\cite{clark2020f} is designated for OpenBookQA. For MedQA, we opt for the top-tier biomedical language model, SapBERT~\cite{liu2020self}. Note that due to the white-box nature of these methods and their high computation overheads, it is infeasible to apply them to state-of-the-art LLMs, like GPT-3.5 and GPT-4.
+
+\noindent \textit{LLM + Zero-shot}.
+We include several representative generative LLMs, including ChatGLM, ChatGLM2, Baichuan-7B, InternLM, GPT-3, GPT-3.5 and GPT-4 as knowledge-agnostic alternatives. Specifically, we used the model ‘text-davinci-002’ provided by OpenAI as the implementation of GPT-3, and ‘gpt-3.5-turbo’ and ‘gpt-4’ as the implementations of GPT-3.5 and GPT-4, respectively (we have provided more implementation details of all LLMs in Appendix A.4). The question-answering task is conducted under the zero-shot setting with the question query from the test set as input.
+
+\noindent \textit{LLM + KG Prompting}. To verify the effectiveness of our prompting strategy, we also add the state-of-the-art KG prompting methods, i.e., CoK~\cite{wang2023boosting}, RoG~\cite{luo2023reasoning}, and Mindmap~\cite{wen2023mindmap} as baselines.  Notably, we did include KGR~\cite{guan2024mitigating} in our main results, since the authors have not released their codes.
+
+\begin{table}[thp]\small
+	\centering
+ \vspace{-2mm}
+	\caption{Performance comparison among baseline models and \texttt{KnowGPT} on three benchmark datasets.}
+	% \vspace{-3mm}
+	\label{tab:main_results}
+	\setlength{\tabcolsep}{0.6mm}
+	\begin{tabular}{clcccccc} 
+	\toprule
+ \multirow{2}{*}{\textbf{Catagory}} & \multirow{2}{*}{\textbf{Model}}  
+	
+    &\multicolumn{2}{c}{\textbf{CommonsenseQA}}
+	& \multicolumn{2}{c}{\textbf{OpenBookQA}} 
+	&\multicolumn{2}{c}{\textbf{MedQA}}\\
+	\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+	& &IHdev-Acc. &IHtest-Acc. &Dev-Acc. &Test-Acc. &Dev-Acc. &Test-Acc.\\ \midrule[0.6pt]
+        \multirow{3}{*}{LM + Fine-tuning}
+        &Bert-base &0.573 &0.535 &0.588 &0.566 &0.359 &0.344 \\
+        &Bert-large &0.611 &0.554 &0.626 &0.602 &0.373 &0.367 \\
+        &RoBerta-large &0.731 &0.687 &0.668 &0.648 &0.369 &0.361 \\ \midrule
+        % \cmidrule(lr){1-1} \cmidrule(lr){2-8}
+        \multirow{6}{*}{KG-enhanced LM}
+        &MHGRN &0.745 &0.713 &0.786 &0.806 &- &- \\
+        &QA-GNN &0.765 &0.733 &0.836 &0.828 &0.394 &0.381 \\
+        &HamQA &0.769 &0.739 &0.858 &0.846 &0.396 &0.385 \\
+        &JointLK &0.777 &0.744 &0.864 &0.856 &0.411 &0.403 \\
+        &GreaseLM &0.785 &0.742 &0.857 &0.848 &0.400 &0.385 \\ 
+        &GrapeQA &0.782 &0.749 &0.849 &0.824 &0.401 &0.395 \\ 
+        \midrule
+       
+        % \cmidrule(lr){2-8}
+        
+        % Black-Box LLMs
+        \multirow{9}{*}{LLM + Zero-shot}
+        &ChatGLM &0.473 &0.469&0.352 &0.360 &0.346 &0.366\\
+        % &LLaMA &  &  & & & &\\
+        % ~\cite{du2022glm}
+        &ChatGLM2 &0.440 &0.425 &0.392 &0.386 &0.432 &0.422 \\
+        &Baichuan-7B & 0.491 & 0.476 &0.411 &0.395 &0.334 &0.319\\
+        &InternLM &0.477  &0.454  &0.376 &0.406 &0.325 & 0.348\\
+        &Llama2 (7b) &0.564 &0.546 &0.524 & 0.467&0.338 &0.340 \\
+        &Llama3 (8b) &0.745 &0.723 &0.771 &0.730 &0.639 &0.697 \\
+        % \\\midrule
+        % 0.406
+        &GPT-3 &0.539 &0.520 &0.420 &0.482 &0.312 &0.289 \\
+        &GPT-3.5 &0.735 &0.710 &0.598 &0.600 &0.484 &0.487 \\
+        &GPT-4 &0.776 &0.786 &0.878 &0.910 &0.739 &0.763 \\ 
+        % \cmidrule(lr){2-8}
+        \midrule
+        \multirow{3}{*}{LLM + KG Prompting }
+        &CoK &0.759 &0.739 &0.835 &0.869 &0.706 &0.722 \\
+         &RoG &0.750&0.734 &0.823 &0.861 &0.713 &0.726 \\
+        & Mindmap & 0.789& 0.784 &0.851 &0.882 &0.747 &0.751\\
+        \midrule
+        Ours
+        &\texttt{KnowGPT} &\textbf{0.827} &\textbf{0.818} &\textbf{0.900} &\textbf{0.924} &\textbf{0.776} &\textbf{0.781} \\\cmidrule(lr){1-8}
+        \texttt{KnowGPT} vs. GPT-3.5
+        &+ 23.7\% (Avg.) &+ 9.2\% &+ 10.8\% &+ 31.2\% &+ 32.4\% &+ 29.2\% &+ 29.4\% \\
+        \texttt{KnowGPT} vs. GPT-4
+        &+2.9\% (Avg.) & + 5.1\%&+ 3.3\% &+ 2.2\% &+ 1.4\% &+ 3.7\% &+ 1.8\% \\   
+    \bottomrule
+	\end{tabular}	
+ \vspace{1mm}\\
+ \footnotesize{*We used `text-davinci-002' and `gpt-3.5-turbo' provided by OpenAI as the implementation of GPT models.\\
+ *The results compared with fine-tuning LLMs on CommonsenseQA  are placed in Table~\ref{tab:finetune_llm} of Appendix.\\}
+ \vspace{-5mm}
+ % We used `text-davinci-002' provided by OpenAI as the implementation of GPT-3, and `gpt-3.5-turbo' for GPT-3.5.
+\end{table}
+\subsection{Main Results (RQ1)}
+To address \textbf{RQ1}, we evaluate \texttt{KnowGPT} by comparing it to state-of-the-art baselines on the three benchmark datasets. 
+\texttt{KnowGPT} is based on the original GPT-3.5. We measure the performance using accuracy, which calculates the percentage of questions correctly predicted by the model out of the total questions in the test set. We have the following observations:
+\begin{itemize}[leftmargin=*]
+    \item \texttt{KnowGPT} outperforms all categories of methods, including sixteen different baselines, across all datasets and model architectures. This suggests that \texttt{KnowGPT} can effectively inject the knowledge from KGs to LLMs.
+    \item \texttt{KnowGPT} surpasses the performance of GPT-3.5 and even GPT-4. On average, \texttt{KnowGPT} achieves a 23.7\% higher testing accuracy than GPT-3.5. Specifically, \texttt{KnowGPT} outperforms GPT-3.5 by 10.8\%, 32.4\%, and 29.4\% on the CommonsenseQA, OpenBookQA, and MedQA datasets, respectively. More importantly, despite being based on GPT-3.5, \texttt{KnowGPT} outperforms the state-of-the-art LLM GPT-4 by 3.3\%, 1.4\%, and 1.8\% on the CommonsenseQA, OpenBookQA, and MedQA datasets, respectively. These results confirm that black-box knowledge injecting can effectively enhance the capabilities of LLMs.
+    %, and even outperforms the more complicated and expensive GPT-4.
+    \item  \texttt{KnowGPT} outperforms all KG-enhanced LMs significantly. This implies our black-box knowledge injection method proficiently encodes knowledge into LLMs. Furthermore, it showcases the superiority of our black-box approach, given its adaptable application to GPT-3.5 using only the model API, a feat not achievable by white-box methods.
+\end{itemize}
+
+\subsubsection{Leaderboard Ranking}
+We submit our results onto the official leaderboard maintained by the authors of OpenbookQA. The full records on the leaderboard are shown on the website\footnote{\url{https://leaderboard.allenai.org/open_book_qa/submissions/public}. 
+}, while our result can be found from here\footnote{\url{https://leaderboard.allenai.org/open_book_qa/submission/cp743buq4uo7qe4e9750}.}.
+
+We summarize the related submissions in Table~\ref{tab:csqa_leaderboard}, including three categories: traditional KG-enhanced LM, fine-tuning of LLMs, e.g., T5-11B used in UnifiedQA, and ensemble of multiple predictors. \texttt{KnowGPT} significantly outperforms traditional KG-enhanced LMs with 5.2\% improvements when compared to the best baseline. 
+The third group of methods occupies the leaderboard by leveraging ensemble learning strategies. Nevertheless, \texttt{KnowGPT} can still obtain competitive performance without ensembling with  0.6\% above GenMC Ensemble~\cite{huang2022clues}. Notably, our \texttt{KnowGPT} is remarkably comparable to the human performance. 
+
+\begin{table}[!ht]
+
+    \caption{OpenBookQA Official Leaderboard records of three groups of related models. 
+    }
+    \centering
+    \setlength{\tabcolsep}{6.mm}
+    \begin{tabular}{lcclc}
+    \toprule
+    \multicolumn{5}{c}{\textbf{Human Performance}  (\textbf{0.917})}\\
+    \midrule
+    w/o KG & 0.778 &&UnifiedQA~\cite{unifiedqa} & 0.872\\
+    MHGRN~\cite{MHGRN} & 0.806 &&DRAGON~\cite{yasunaga2022deep}& 0.878\\  
+    QA-GNN~\cite{QA-GNN} & 0.828 && GenMC~\cite{huang2022clues} & 0.898 \\ \cmidrule(lr){4-5}
+    GreaseLM~\cite{zhang2022greaselm} & 0.848& &Human Performance  &  0.917
+   \\
+    HamQA~\cite{dong2023hierarchy}  & 0.850 &&GenMC Ensemble~\cite{huang2022clues}& 0.920\\
+    JointLK~\cite{sun2021jointlk} & 0.856 && X-Reasoner~\cite{huang2023mvp}& 0.952 \\\cmidrule(lr){4-5}
+    GSC~\cite{wang2021gnn} & 0.874 && \texttt{KnowGPT} & \textbf{0.926}\\
+    \bottomrule
+    \end{tabular}
+    \label{tab:csqa_leaderboard}
+    \vspace{-3mm}
+\end{table}
+
+
+
+
+\subsection{Ablation Studies (RQ2)}
+
+
+To answer \textbf{RQ2}, we conduct two ablation studies. \textbf{First}, in Table~\ref{tab:ablation1}, we measure the importance of the tailored reinforcement learning-based knowledge extraction module, i.e., $\mathcal{P}_\text{RL}$. Specifically, we compare it with the heuristic sub-graph extraction strategy, i.e., $\mathcal{P}_\text{sub}$. The performance is evaluated by directly feeding the extracted knowledge with the prompt format of `Sentence', i.e., $\mathcal{F}_{s}$, to GPT-3.5. We also include `w/o KG' as the baseline where GPT-3.5 is asked to independently answer the given question with no reasoning background provided. The results clearly indicate the vital role of our proposed knowledge extraction strategies. \textbf{Second}, we compare each of the three prompt formats subject to the same extracted knowledge. The detailed results are shown in Table~\ref{tab:ablation2}. Though different formats perform similarly within the difference of 2.2\% - 3.3\%, they are particularly suitable for different kinds of questions. We illustrate this observation in the following case study section. Both ablation studies support the indispensability of each module, armed with a tailored deep reinforcement learning-based knowledge extraction and a context-aware prompt translation, our \texttt{KnowGPT} performs best on all three benchmark datasets.
+
+
+
+\begin{table}[ht]
+\begin{minipage}[b]{0.45\linewidth}\centering
+\caption{Ablation study on the effectiveness of two knowledge extraction methods. }
+	% \vspace{-3mm}
+	\label{tab:ablation1}
+\resizebox{1.0\columnwidth}{!}{
+\begin{tabular}{cccccc} 
+	\toprule
+	\multirow{2}{*}{\textbf{Knowledge Extraction}} & \multirow{2}{*}{\textbf{Model}} 
+    &\multicolumn{2}{c}{\textbf{CSQA}}
+	& \textbf{OBQA}
+	&\textbf{MedQA}\\
+	\cmidrule(lr){3-4} \cmidrule(lr){5-5} \cmidrule(lr){6-6}
+	& &IHdev &IHtest  &Test  &Test\\ \midrule[0.6pt]
+         \multirow{3}{*}{w/o KG}
+        &GPT-3 &0.539 &0.520 &0.482 &0.289 \\
+        &GPT-3.5 &0.735 &0.710 &0.598 &0.487 \\
+        &GPT-4 &0.776 &0.786 &0.910 &0.763 \\ \cmidrule(lr){1-6}
+        \multirow{1}{*}{$\mathcal{P}_\text{sub}$}
+        &GPT-3.5 &0.750 &0.739 &0.865 &0.695 \\ \cmidrule(lr){1-6}
+        \makecell[c]{$\mathcal{P}_\text{RL}$}
+        &GPT-3.5 &0.815 &0.800 &0.889 &0.755 \\ \cmidrule(lr){1-6}
+        Ours
+        &\texttt{KnowGPT} &\textbf{0.827} &\textbf{0.818} &\textbf{0.924} &\textbf{0.781} \\
+    \bottomrule
+	\end{tabular}	}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.45\linewidth}
+\centering
+\caption{Ablation study on different prompt formats for the extracted knowledge.
+ }
+
+ \label{tab:ablation2}
+	
+\resizebox{1.0\columnwidth}{!}{
+	\begin{tabular}{cccccc} 
+	\toprule
+	\multirow{2}{*}{\textbf{Knowledge Extraction}} & \multirow{2}{*}{\textbf{Prompts}}  
+    &\multicolumn{2}{c}{\textbf{CSQA}}
+	& \textbf{OBQA}
+	&\textbf{MedQA}\\
+	\cmidrule(lr){3-4} \cmidrule(lr){5-5} \cmidrule(lr){6-6}
+	& &IHdev &IHtest  &Test  &Test\\ \midrule[0.6pt]
+         \multirow{3}{*}{$\mathcal{P}_\text{sub}$}
+        &$\mathcal{F}_{t}$ &0.728 &0.701 &0.832 &0.589 \\
+        &$\mathcal{F}_{s}$ &0.750 &0.739 &0.865 &0.695 \\
+        &$\mathcal{F}_{g}$ &0.737 &0.715 &0.871 &0.680 \\ \midrule[0.6pt]
+        \multirow{3}{*}{$\mathcal{P}_\text{RL}$}
+        &$\mathcal{F}_{t}$ &0.782 &0.769&0.853 &0.739 \\
+        &$\mathcal{F}_{s}$ &0.815 &0.800 &0.889 &0.755 \\
+        &$\mathcal{F}_{g}$ &0.806 &0.793 &0.906 &0.762 \\ 
+        \midrule[0.6pt]
+        \multicolumn{2}{c}{Full \texttt{KnowGPT}}
+        &\textbf{0.827} &\textbf{0.818} &\textbf{0.924} &\textbf{0.781} \\
+    \bottomrule
+	\end{tabular}	}
+	
+\end{minipage}
+\vspace{-5mm}
+\end{table}
+
+
+
+
+\section{Limitation}\label{sec:discussion_limitation}
+Through our exploration, we realize the natural limitations of KnowGPT brought by real-world KGs. Existing KGs are automatically constructed based on online corpora. This inevitably introduces a considerable number of noisy triples into KGs. The noisy knowledge may mislead the LLMs to wrong predictions despite the effectiveness of our prompting methods. In the future, we would leverage KnowGPT with off-the-shelf KG refinement algorithms to improve the quality of KGs.
+
+% \section{Conclusion and Future Work}
+\section{Conclusion}
+The main objective of this paper is to tackle the hallucination issue that arises when applying LLM to specific domains. 
+Although LLMs have strong reasoning capabilities, they still struggle to answer professional questions in specific domains, especially when the pre-training corpus lacks relevant knowledge. To address this issue, we propose a KG-augmented LLM model, named KnowGPT, which injects relevant domain knowledge from KGs into LLMs to assist the LLM in accurately answering professional questions.  A novel framework, namely \texttt{KnowGPT}, is presented to integrate KGs into LLMs effectively with model APIs only. We first train a deep RL policy to extract informative and concise reasoning background from the KG. Then we learn an MAB to select the most effective knowledge extraction method and prompt template for each question.
+Extensive experiments on both general and domain-specific QA show superior performance of \texttt{KnowGPT} compared to all competitors. 
+
+\iffalse
+\section*{References}
+
+References follow the acknowledgments in the camera-ready paper. Use unnumbered first-level heading for
+the references. Any choice of citation style is acceptable as long as you are
+consistent. It is permissible to reduce the font size to \verb+small+ (9 point)
+when listing the references.
+Note that the Reference section does not count towards the page limit.
+\medskip
+
+{
+}
+\fi
+
+% \newpage
+
+\bibliography{main}
+\bibliographystyle{plain}
+
+
+
+
+
+\newpage
+\appendix
+
+\section{Related Work}
+To address the hallucination issues that arise when applying LLMs to specific domains, researchers have proposed various methods, which can be broadly categorized into three main categories: Fine-Tuning (FT),  Retrieval-Augmented Generation (RAG) and KG-enhanced LLMs.
+\subsection{Fine-tune LLMs with Domain-specific Data}
+To help the language model generate more accurate responses in specific domains, extensive studies have been conducted to investigate the efficacy of fine-tuning LLMs with specialized data~\cite{gururangan2020don,lee2020patent,lee2020biobert,ge2024openagi}.
+Fine-tuning involves training the pre-trained LLM on a smaller dataset of domain-specific text, allowing the model to adapt its knowledge to the target domain. By exposing the LLM to domain-specific vocabulary, terminology, and patterns, fine-tuning enables the model to generate more accurate and relevant responses for domain-specific tasks~\cite{gururangan2020don}. Fine-tuning LLMs with domain-specific data has been successfully applied across various domains. For example, in the healthcare domain, fine-tuned LLMs have been used for clinical note analysis~\cite{alsentzer2019publicly}, biomedical text mining~\cite{lee2020biobert}, and medical dialogue~\cite{valizadeh2022ai}. Similarly, in the legal domain, fine-tuned LLMs have shown promise in tasks such as legal document classification~\cite{chalkidis2019neural}, contract analysis~\cite{chalkidis2021lexglue}, and legal judgment prediction~\cite{zhong2020does}.
+
+However, recent research has highlighted the limitations and risks associated with fine-tuning LLMs using domain-specific data~\cite{korbak2022controlling}. A study conducted by Google Research highlighted that using fine-tuning to update LLMs' knowledge can be problematic, particularly when the new knowledge conflicts with pre-existing information~\cite{gekhman2024does}. In such cases, acquiring new data through FT can lead to the model generating new hallucinations and even experiencing catastrophic forgetting~\cite{korbak2022controlling,yang2024self}. Besides that, many state-of-the-art LLMs are confined to a \emph{black-box} role in practice. For instance, Calaude3~\cite{anthropic2024claude} and GPT-4~\cite{openai2023gpt4} exclusively grant access through their APIs, which means we can only retrieve model responses by submitting textual inputs, with model specifics inaccessible. This lack of access to model architecture and parameters prevents us from employing these fine-tuning methods.
+
+
+\subsection{Retrieval-Augmented Generation for LLMs}
+
+Recently, Retrieval-Augmented Generation (RAG) models have been extensively explored to enhance LLMs with external knowledge from text corpora or online sources~\cite{lewis2020retrieval,zhao2023survey,minaee2024large}. Combining LLMs with external knowledge retrieval systems can help reduce hallucinations. However, these approaches face challenges in domain-specific applications: $(i)$  Data quality. Domain knowledge is often scattered across different sources, such as textbooks, research papers, technical manuals, and industry reports~\cite{li2022survey}. These textual documents may have varying levels of quality, accuracy, and completeness, leading to potential inconsistencies or errors in the retrieved knowledge~\cite{zhu2021retrieving}.
+$(ii)$ Knowledge hierarchy.
+Domain knowledge is always complex and hierarchical and contains a high degree of jargon, acronyms, and specialized terminology. However, textual documents typically present this information in a linear and unstructured manner.
+The lack of explicit relationships and structured organization limits the reasoning and inference capabilities of RAG models, as they cannot leverage the structured connections within domain knowledge to derive new insights or generate more contextually appropriate responses~\cite{santoro2016meta}.
+ $(iii)$ Huge search space.  There is a lot of domain-irrelevant information in these textual documents, while domain-specific terminologies are always sparsely distributed over these documents~\cite{siriwardhana2023improving}. The retrieval model can be computationally expensive and time-consuming, especially when dealing with large-scale knowledge sources, as the model needs to search through vast amounts of unstructured text to find relevant information~\cite{metzler2021rethinking}.
+ 
+\subsection{Integration of KGs and LLMs}
+KG-enhanced LLM aims to leverage the structured knowledge in knowledge graphs~\cite{li2022kcube,li2022constructing,shengyuan2024differentiable,zhang2022contrastive,zhang2023integrating} to ground the model's responses in established facts~\cite{hu2023survey,yang2024give,pan2024unifying}. 
+This grounding ensures that the generated outputs are based on reliable information rather than arbitrary or fabricated statements. 
+
+{\bf Integrating KGs during Training}. 
+Earlier studies adopted a heuristic way to inject knowledge from KGs into the LLMs during pre-training or fine-tuning. For example, ERNIE~\cite{sun2021ernie} incorporates entity embeddings and aligns them with word embeddings in the pre-training phase, encouraging the model to better understand and reason over entities. KnowBERT~\cite{peters2019knowledge} integrates entity linkers with BERT to introduce knowledge about entities during fine-tuning for downstream tasks. 
+
+{\bf Integrating KGs during Inference}.
+Another line of work focuses on retrieving relevant knowledge from KGs at inference time to augment the language model's context. Typically, K-BERT~\cite{liu2020k} uses an attention mechanism to select relevant triples from a KG based on the input context, which are then appended to the input sequence. Similarly, KEPLER~\cite{wang2021kepler} learns joint embeddings of text and KG entities, enabling efficient retrieval of relevant knowledge to enhance the model's predictions.  Later works further integrated graph neural networks alongside LLMs for joint reasoning~\cite{QA-GNN,GreaseLM,dong2023hierarchy} and introduced interactions between text tokens and KG entities within the intermediate layers of LLMs~\cite{sun2021jointlk,taunk2023grapeqa}.
+
+{\bf KG Prompting for LLM}. The methods above all assume they know everything about LLMs, including model architectures and parameters. However, as LLMs have been keeping evolving, many SOTA LLMs are confined to a \emph{black-box} role in practice. As such, the research focus has shifted towards KG prompting that enhances fixed LLMs with KG-based hard prompts. 
+KG Prompting for LLMs has been a new learning paradigm in natural language processing~\cite{liu2023pre,pan2024unifying}. Specifically, CoK~\cite{wang2023boosting} introduces a novel Chain-of-Knowledge prompting to decompose LLM-generated reasoning chains into evidence triples. It then verifies the triples' factuality and faithfulness using an external knowledge graph, ensuring the accuracy and reliability of the LLM outputs. 
+% While ChatRule~\cite{luo2023chatrule} leverage both the semantic and structural information of KGs to prompt LLMs to generate logical rules.
+By allowing the models to comprehend and reason over structured KG inputs, Mindmap~\cite{wen2023mindmap} enhances the LLMs' ability to incorporate external knowledge, reduce hallucinations, and provide more transparency into their decision-making process. RoG~\cite{luo2023reasoning} presents a planning-retrieval-reasoning framework that synergizes the strengths of LLMs and KGs to enhance the reasoning capabilities of language models in a more transparent and interpretable manner. Instead of retrieving factual information from KGs, KGR~\cite{guan2024mitigating} proposes to autonomously retrofit the initial draft responses generated by LLMs. This innovative technique leverages the knowledge stored within KGs to mitigate hallucination by effectively extracting, verifying, and refining factual information throughout the entire reasoning process of LLMs.
+
+{\bf Our model}.
+Despite the promising performance of existing KG prompting methods, their extensive deployment and practical implementation in domain-specific applications are still impeded by two critical issues. \textbf{\ding{182}} The cost associated with calling the LLM API or deploying LLMs with cloud services is prohibitive.  For example, GPT-4 is estimated to cost at least thousands of dollars for pilot-scale customer service, making the careful selection of the most informative triples from KGs essential to minimize costs. \textbf{\ding{183}} LLMs are highly sensitive to prompts, with even minor variations in prompts conveying the same semantic meaning potentially yielding drastically different responses. However, existing methods rely on manually designed or rule-based prompts to present factual knowledge from KGs. These hard prompts are always fixed and rigid, lacking the flexibility to adapt to variations in question semantics and KG structures. % require manual design of prompt templates (which incurs significant human labor costs) or rule-based generation. Consequently, 
+% a customized approach to encoding factual knowledge from extracted KGs for each question is often necessary to achieve optimal performance, requiring significant effort and expertise in prompt engineering. 
+In this paper, we shed light on the whole community with a novel prompt learning method that is rather effective, generalizable and cost-efficient. There are two key components in our proposed \texttt{KnowGPT} including (i) knowledge retrieval, which leverages deep RL to extract relevant knowledge from KGs, and (ii) context-aware decision module to translate the structured knowledge from KGs into the appropriate prompt format.
+
+\section{Implementation Details}
+\subsection{Entity Linking and Heuristic Knowledge Extraction}\label{app:entity_link}
+% \subsubsection{Heuristic knowledge extraction Method ($\mathcal{P}_{sub}$) : }
+For each QA context, we adopt the methodology outlined in the prior research~\cite{KagNet,yasunaga2022deep} to extract the subgraph from the background knowledge graph (KG), denoted as $\mathcal{G}$. We commence by executing entity linking on $\mathcal{G}$, resulting in an initial collection of nodes, $V_{topic}$. Next, we incorporate bridge entities that appear within a 2-hop path between any two linked entities from $V_{topic}$, yielding the set $V_{retrieval}$. Subsequently, we refine this set by evaluating the relevance score for each node, adhering to the method proposed~\cite{yasunaga2022deep}. From this refined set, only the top 200 nodes, based on score, are retained. We then extract all edges connecting any pair of nodes in $V_{sub}$, creating the retrieved subgraph $G_{sub}$. Each node within $G_{sub}$ is designated a type based on its association to either the topic entities $Q$ or target entities $A$. Intuitively, the relevant reasoning background lies in a question-specific subgraph $\mathcal{G}_{sub}$ that contains all the \textit{source} entities $S$, \textit{target} entities $A$, and their $k$-hop neighbors. Therefore, the reasoning background could be provided as the $\mathcal{G}_{sub}$, we denote this direct knowledge extraction method as $\mathcal{P}_{sub}$.
+\subsection{Feature  Initialization of Background KG}
+To calculate the initial node embeddings for entities extracted from the background KG, we adopt the approach proposed by the previous study~\cite{MHGRN}. Specifically, we transform knowledge triples from the KG into sentences and feed them into pre-trained LMs to get node embeddings. Specifically, to ensure a fair comparison, we implement all the KG-enhanced baselines and our model with the same advanced language models that are optimized for particular datasets. 
+Specifically, RoBert-large~\cite{liu2019roberta} is used for CommenseQA, while AristoRoBERTa~\cite{clark2020f} is designated for OpenBookQA. For MedQA, we opt for the top-tier  biomedical language model, SapBERT~\cite{liu2020self}, to enhance comprehension of the biomedical field.
+
+\subsection{Statistical Analysis of Datasets}
+We evaluate \texttt{KnowGPT} on three QA datasets spanning two fields: CommonsenseQA~\cite{CommonsenseQA} and OpenBookQA~\cite{mihaylov2018can} serve as benchmarks for commonsense reasoning, while MedQA-USMLE~\cite{app11146421} acts as a domain-specific QA benchmark.  While the official test set serves primarily for leaderboard rankings, we initially assess model efficacy using the in-house (IH) data split introduced in~\cite{KagNet}.  The official dataset is denoted as CSQA, while the IH split is represented by CSQA(IH)*. The statistics of these three datasets can be found in Table~\ref{tab:DatasetStatistics}.
+
+\begin{table}[!ht]\small
+  \caption{The statistical information of three datasets.}
+  \label{tab:DatasetStatistics}
+\centering
+% \vspace{-2mm}
+\setlength{\tabcolsep}{2.5mm}
+\begin{tabular}{lccccc}
+\toprule
+     Dataset &Question &Choices &Train  &Dev   &Test \\ \midrule
+CSQA & \#12102 & 5 & $9741$    & $1221$  & $1140$     \\ 
+CSQA(IH) & \#12102 & 5 & $8500$    & $1221$  & $1241$ \\
+OBQA  & \#5957 & 4 & 4957 &500   & 500   \\
+MedQA &\#12723 &4 &10178 &1272 &1273 
+\\ \bottomrule
+\end{tabular}\\
+
+% \vspace{-3mm}
+\end{table}
+
+\noindent \textbf{CommonsenseQA} is a multiple-choice question-answering dataset, each question accompanied by five potential answers. Answering its 12,102 questions necessitates a foundation in commonsense knowledge. While the official test set serves primarily for leaderboard rankings, we initially assess model efficacy using the in-house (IH) data split introduced in~\cite{KagNet}.  The official dataset is denoted as CSQA, while the IH split is represented by CSQA(IH)*.
+
+
+\noindent \textbf{OpenBookQA}, commonly abbreviated as \textit{OBQA}, comprises 5,957 multiple-choice questions, each offering four possible answers. To successfully answer these questions, one must have a comprehensive understanding of fundamental scientific facts and its applications. 
+
+\noindent \textbf{MedQA-USMLE}, abbreviated as \textit{MedQA}, is a dataset consisting of 4-option multiple-choice questions that demand a grasp of biomedical and clinical understanding. These questions are sourced from preparatory tests for the United States Medical Licensing Examinations, and the dataset encompasses 12,723 questions. We adhere to the original data divisions as outlined in~\cite{app11146421}.
+
+\noindent \textbf{Background Knowledge}
+To facilitate common sense reasoning, we employ \texttt{ConceptNet}~\cite{speer2017conceptnet}, an extensive commonsense knowledge graph comprising more than 8 million interconnected entities through 34 concise relationships. For tasks specific to the medical domain, we leverage \texttt{USMLE}~\cite{QA-GNN} as our foundational knowledge source. USMLE is a biomedical knowledge graph that amalgamates the Disease Database segment of the Uniﬁed Medical Language System (UMLS)~\cite{gkh061} and DrugBank~\cite{gkx1037}. This repository encompasses 9,958 nodes and 44,561 edges.
+
+\subsection{Implementation of Baselines }\label{appendix-sec:hardware-software-config}
+To verify the effectiveness of our proposed KnowGPT, we carefully selected baseline models from three aspects to ensure a comprehensive evaluation, among which Bert-base, Bert-large~\cite{devlin2018bert}, and RoBert-large~\cite{liu2019roberta} are picked for being representative fine-tune LM methods; MHGRN~\cite{MHGRN}, QA-GNN~\cite{QA-GNN}, HamQA~\cite{dong2023hierarchy}, JointLK~\cite{sun2021jointlk}, GreaseLM~\cite{zhang2022greaselm} and GrapeQA~\cite{taunk2023grapeqa} represent the state-of-art KG-enhanced LMs; ChatGLM~\cite{du2022glm}, ChatGLM2~\cite{zeng2022glm}, Baichuan-7B, InternLM~\cite{team2023internlm}, GPT-3~\cite{NEURIPS2020_1457c0d6}, GPT-3.5~\cite{ouyang2022training} and GPT-4~\cite{openai2023gpt4} are picked for being representative generative large language models.  To verify the effectiveness of our proposed prompting strategy used KnowGPT, we also add the state-of-the-art KG prompting methods, i.e., CoK~\cite{wang2023boosting}, RoG~\cite{luo2023reasoning}, and Mindmap~\cite{wen2023mindmap} as baselines.  Notably, while some LLM baselines are actually open-source, we conduct the question-answering task under the zero-shot setting with the question query from the test set as input. All baseline methods used in this paper are based on their open-source implementations or officially-released APIs. Notably, we used the model ‘text-davinci-002’ provided by OpenAI as the implementation of GPT-3, and ‘gpt-3.5-turbo’ and ‘gpt-4’ as the implementations of GPT-3.5 and GPT-4, respectively. All baseline methods used in this paper are based on their open-source implementations. We list the source links in Table~\ref{app_tab:code_link}. All models are implemented in Pytorch and trained on an RTX 3090 with 24 RAM. We use their best configuration as the default value for other distinctive hyperparameters in the baseline methods. To reduce the randomness, we use the random seed and report the average results of three runs.
+
+
+
+\begin{table}[!ht]
+\centering
+	\caption{Implementation codes for baselines.}
+	\label{app_tab:code_link}
+	\resizebox{0.85\textwidth}{!}{
+	\begin{tabular}{ll}
+
+		\toprule
+		Baseline & Code source                                                   \\
+		\hline
+		MHGRN   & \url{https://github.com/INK-USC/MHGRN.git}              \\
+		QA-GNN & \url{https://github.com/michiyasunaga/qagnn.git}               \\
+		HamQA  & \url{https://github.com/DEEP-PolyU/HamQA_TheWebConf23.git}               \\
+		GreaseLM   & \url{https://github.com/snap-stanford/GreaseLM.git} \\
+		JointLK     & \url{https://github.com/Yueqing-Sun/JointLK.git}                     \\
+		ChatGLM    & \url{https://github.com/THUDM/ChatGLM-6B.git}                   \\
+		ChatGLM2    & \url{https://github.com/THUDM/ChatGLM2-6B.git}                         \\
+		Baichuan-7B  & \url{https://github.com/baichuan-inc/Baichuan-7B.git}                     \\ 
+        InternLM & \url{https://github.com/InternLM/InternLM.git}\\
+        GPT3 & \url{https://platform.openai.com/docs/api-reference/models} \\
+        GPT-3.5 & \url{https://openai.com/GPT-3.5}\\
+        GPT-4 & \url{https://openai.com/research/gpt-4}\\
+        RoG & \url{https://github.com/RManLuo/reasoning-on-graphs}\\
+        MindMap & \url{https://github.com/wyl-willing/MindMap}\\
+  \bottomrule
+	\end{tabular}
+ }
+\end{table}
+
+
+\section{Supplementary Results}
+\subsection{Compared to Fine-tune LLMs}\label{app:tuned_llm}
+To further verify the effectiveness of  the knowledge injection framework, we also add several open-source trainable LLMs, i.e., ChatGLM, ChatGLM2, LLaMA-B, Baichuan-7B, InternLM and Vicuna-7B,  and fine-tune them for commonsense reasoning on the benchmark CommonseQA.  As shown in the Table~\ref{tab:finetune_llm}, Our KnowGPT achieves comparable performance with no tuning on the LLM. 
+\begin{table}[thp]
+\centering
+    \caption{Fine-tuned LLMs on three benchmark datasets.}  
+    \label{tab:finetune_llm} 
+    % \begin{adjustwidth}{-0. cm}{-0. cm}\centering  
+    % \scalebox{1.0}{  
+    \setlength\tabcolsep{15pt} % default value: 6pt  
+    \begin{tabular}{l c c c }  
+    \toprule  
+    % \rowcolor{black!20!}
+     \textbf{LLM} &  \textbf{CommonsenseQA}  &  \textbf{OpenBookQA} &  \textbf{MedQA}\\ \midrule
+     ChatGLM& 55.9\%  & 54.2\% & 40.4\%\\
+    ChatGLM2& 60.0\% & 55.6\% & 45.5\% \\
+    LLaMA-7B & 65.0\% & 58.8\% & 46.9\%\\
+    Baichuan-7B& 58.8\% & 56.1\% & 43.4\%\\
+    Alpaca-7B& 68.7\% & 63.3\% & 47.1\%\\
+    Vicuna-7B& 66.7\% & 64.0\% & 45.2\%\\
+     InternLM-7B & 75.2\% &70.7\% & 48.3\%\\
+    
+    \midrule
+   % \rowcolor{yellow!20!} 
+   \texttt{KnowGPT} & \textbf{81.8\%} & \textbf{92.4\%} &\textbf{78.1\%}\\
+
+    \bottomrule  
+    \end{tabular}
+    % }  
+    % \end{adjustwidth}  
+\end{table}  
+\subsection{Case Studies (RQ3)}\label{sec:rq3}
+
+For \textbf{RQ3}, we provide insights into how \texttt{KnowGPT} facilitates the prompt translation with a real case from CommonsenseQA. We visualize both the extracted knowledge and the textual inputs to GPT-3.5 in Figure~\ref{fig:case1}. In this example, given the same extracted knowledge, GPT-3.5 answers correctly based on the sentence format that we provide. In contrast, it fails to answer the question with triples and graph descriptions. They clearly indicate the superiority of \texttt{KnowGPT} in an automatic context-aware prompt translation. We make the following observations: \((i)\) Triple format $\mathcal{F}_{t}$ is intuitively suitable for all the simple questions by directly indicating the one-hop knowledge. \((ii)\) Graph description may inevitably introduce noise to ensure the completeness and contextual fluency of the directed graph. In this example, since `vacation' appears in both question and answer choices, over-emphasizing and connecting the knowledge about `vacation' with other concepts in the graph misleads the model to make a prediction with an oblique focus. \((iii)\) Our \texttt{KnowGPT} has shown superior performance in automatically constructing suitable prompts for particular questions.
+
+
+\begin{figure}[thb]
+    \centering
+    \includegraphics[width=14.cm]{resources/casestudy1.pdf}
+    \caption{A case study on exploring the effectiveness of different prompt formats for particular questions.
+    % ., based on the same extracted knowledge. 
+    The extracted knowledge is shown in the middle of this figure in the form of a graph, where the nodes in blue are the key topic entities and the red is the target answer. The text boxes at the bottom are the final prompts generated based on three different formats.  }
+    \label{fig:case1}
+    \vspace{-6mm}
+\end{figure}
+
+\subsection{The effect of prompt format on different types of questions.}
+Generally, based on the complexity of the reasoning background, questions can be roughly categorized into three classes: (i) Simple question, like “What could be used as an electrical conductor?”. (ii) Multi-hop reasoning question, like “Which school did Bill Gates' wife graduate from?” (iii) Global reasoning questions: “What do cats have in common with most mammals?”
+
+Different types of questions correspond to different reasoning background. For example, simple questions only require basic factual triples, while multi-hop reasoning questions need a reasoning chain, and global reasoning questions require a more complex tree/graph-like reasoning background. To convert the extracted raw knowledge into textual prompt with corresponding logical reasoning structure, we designed three different prompt templates, including $F_t$,$F_s$ and $F_g$.
+
+
+To verify the effectiveness of prompt formats, we conducted a statistical analysis on the benchmark datasets in terms of question types and then separately calculated the accuracy of different prompt formats on specific types of questions. As shown in Table~\ref{tab:question_type}, we can observe that triple-based prompt performs best on simple questions while graph description-based prompt performs better than any other prompt formats on complex questions. This is because graph description-based prompt could provide LLMs with more detailed and structured information by highlighting the local structure of the central entity.
+\begin{table}[thp]
+\centering
+\vspace{-3mm}
+\caption{Accuracy of different prompt formats on specific types of questions on CommonsenseQA.}
+% \vspace{-3mm}
+\setlength\tabcolsep{10.3pt}
+% \resizebox{1.0\columnwidth}{!}{
+\begin{tabular}{cccc}
+\toprule
+  \textbf{Prompt Format}   &\textbf{Simple}  & \textbf{Multi-hop} & \textbf{Graph reasoning} \\ \midrule  
+   $\mathcal{F}_{t}$ & \textbf{94.12\%} &74.47\% &42.10\%\\
+   $\mathcal{F}_{s}$  & 88.23\% &\textbf{82.98\%} &47.39\%\\ 
+  $\mathcal{F}_{g}$  & 85.29\% &70.21\% &\textbf{78.95\%}\\ \bottomrule
+\end{tabular}
+% }
+\label{tab:question_type}
+\vspace{-5mm}
+\end{table}
+ 
+In this part, we conduct comprehensive experiments to investigate the effect of prompt format on different types of questions. Table~\ref{tab:question_type} presents the accuracy of different prompt formats on three types of questions. We observe that graph description-based prompt performs significantly better than any other prompt formats on complex questions. It is because graph description-based prompt could provide LLMs with more detailed and structured information by highlighting the local structure of the central entity. 
+
+
+
+\subsection{The Effect of two Knowledge Retrieval Methods}
+If the background knowledge graph is complete and high-quality, our proposed RL-based knowledge extraction can ideally handle all cases. But in pratical implementation, we found that there are a few long-tail entities in KGs which only have few neighbors. In such cases, RL-based knowledge extraction can hardly retrieve reachable or effective paths due to the incompletion and sparsity of the background graph. Instead, directly extracting the whole subgraph through rule-based subgraph extraction can provide more knowledge for reasoning. The RL-based retrieval method $\mathcal{P}_{RL}$ could make sure our model extracts more concise and informative knowledge in most cases, while the rule-based subgraph extraction $\mathcal{P}_{RL}$ could supplement the former especially when the reasoning background is sparse. Thus, in this paper, we adopt Multi-Armed Bandit (MAB) to automatically select the most suitable retrieval methods from these two candidates, i.e., $\mathcal{P}_{RL}$ and $\mathcal{P}_{sub}$. The ablation study on the knowledge retrieval method can be found in Table~\ref{tab:ablation1} of the main content. Specifically, we compare our model with  $\mathcal{P}_{RL}$, the heuristic sub-graph extraction $\mathcal{P}_{sub}$, and we also include ‘w/o KG’ as the baseline where the LLM is asked to independently answer the given question with no reasoning background provided. The results shown in Table 3 of our submission clearly indicate the vital role of our proposed knowledge extraction strategies.
+% \subsection{Case Study}
+
+% \subsection{Ablation Study}
+
+\subsection{Efficiency Analysis: API Cost and Model Efficiency }
+To investigate the efficiency of our model, we compare it on MedQA with six representative baselines from three different categories, including traditional KG-enhanced LMs, i.e., JointLK and GrapQA, zero-shot LLMs, i.e., ChatGPT and GPT-4, and the SOTA KG-prompting-based LLMs, i.e., CoK and Mindmap. Notably, zero-shot LLMs, like ChatGPT and GPT-4, do not require training while traditional KG-enhanced LM methods like JointLK and GrapeQA are based on lightweight LMs and do not require interaction with LLMs, thus they do not incur API cost. 
+
+
+From Table~\ref{tab:effi_analysis}, we can see that (i) Traditional KG-enhanced LM methods, like JointLK and GrapQA,  have the shortest inference time. This is because the other models need to send requests to the Black-box LLM via API, and the extra response time of the LLM leads to long inference times for these models. Despite the efficiency, they have the worst performance. (ii) Our model outperforms the other models with comparable training time and the most economical API cost compared to models in the same category, including CoK and Mindmap. That is because we are the only model that consider the conciseness of knowledge during retrieval and prompt design.
+\begin{table}[thp]
+\centering
+ \vspace{-3mm}
+    \caption{API cost and model efficiency analysis on MedQA.}  
+    \label{tab:effi_analysis} 
+    % \begin{adjustwidth}{-0. cm}{-0. cm}\centering  
+    % \scalebox{1.0}{  
+    \setlength\tabcolsep{5pt} % default value: 6pt  
+    \begin{tabular}{l c c c c cc}  
+    \toprule  
+    % \rowcolor{black!20!}
+     Model & Training time & Inference time&Avg tokens&Cost(\$)&Performance\\ \midrule
+JointLK     &4.02 h& 0.13 h& -& -& 40.3\%\\
+GrapeQA &4.49 h &0.15 h &- &- &39.5\%\\
+ChatGPT &- &0.24 h& 98& 1.87 &48.7\%\\
+GPT-4 &- &0.21 h& 98 &29.77& 76.3\%\\
+CoK &5.85 h &0.44 h& 1129& 21.54& 72.2\% \\
+Mindmap& 4.93 h &0.36 h& 761 &14.52 &75.1\%\\ \midrule
+KnowGPT &5.47 h& 0.33 h &348 &6.64 &78.1\%\\
+    
+   
+   % \rowcolor{yellow!20!} 
+   % \texttt{KnowGPT} & \textbf{81.8\%} & \textbf{92.4\%} &\textbf{78.1\%}\\
+   %  \textbf{LLM} & \textbf{+Few-shot Prompting} & \textbf{+ CoT 
+    \bottomrule  
+    \end{tabular}
+     \vspace{-5mm}
+\end{table}  
+
+\subsection{Stability Analysis}
+Due to page limits, we carefully described how we designed the reward function to ensure the RL model captures effective and informative knowledge in the main content of our submission. Actually, we have also employed the following techniques to stabilize the training process.
+
+{\bf Gradient clipping for policy network}. The policy network is updated using gradient-based optimization to maximize the expected cumulative reward. To stabilize the training of the policy network, we applied gradient clipping~\cite{fujita2018clipped} to prevent the gradients from becoming too large. This technique helps mitigate the problem of exploding gradients and ensures stable updates of the network parameters. To demonstrate the effectiveness of gradient clipping, we conducted additional experiments comparing the performance of our model with and without gradient clipping across five runs. The results are presented in the table below. As shown in Table~\ref{tab:sta1}, the model with gradient clipping consistently achieves better performance across all datasets, demonstrating the stability and robustness of our method.
+
+{\bf Exploration-exploitation balance for MAB.} In our designed MAB, we have introduced a penalty term, i.e., $\beta$, to encourage exploration on under-explored arms (i.e., prompt formats), otherwise, it will lead to a greedy selection based on $c\times\alpha_{(i)}$. Table~\ref{tab:sta2} shows the performance comparison between with and without this term.
+
+\begin{table}[ht]
+\begin{minipage}[b]{0.48\linewidth}\centering
+\caption{Stability study on gradient clipping.
+ %The overall performance is evaluated by directly prompting the extracted knowledge to parameter-agnostic LLMs, including GPT-3, GPT-3.5 and GPT-4. 
+ % \daochen{Can we not use notations in the table? Use text to describe[done]}
+ }
+	% \vspace{-3mm}
+	\label{tab:sta1}
+\resizebox{1.0\columnwidth}{!}{
+\begin{tabular}{cccc} 
+	\toprule
+  Model Variant & CSQA & OBQA & MedQA \\ \midrule
+
+ w. gradient clipping & 81.8 $\pm$ 0.51 & 92.4  $\pm$ 0.69 & 78.1 $\pm$ 0.66 \\
+ w/o gradient clipping & 78.9 $\pm$ 1.92 & 90.2 $\pm$ 1.25 & 75.5 $\pm$ 2.01 \\
+    
+	
+    \bottomrule
+	\end{tabular}	}
+\end{minipage}
+\hspace{0.5cm}
+\begin{minipage}[b]{0.48\linewidth}
+\centering
+\caption{ Stability analysis on penalty term.
+ % \daochen{Can we not use notations in the table? Use text to describe}
+ }
+	% \vspace{-3mm}
+ \label{tab:sta2}
+	
+\resizebox{1.0\columnwidth}{!}{
+	\begin{tabular}{cccc} 
+	\toprule
+	Model Variant & CSQA & OBQA & MedQA \\ \midrule
+ w. penalty term & 81.8 $\pm$ 0.51 & 92.4  $\pm$ 0.69 & 78.1 $\pm$ 0.66 \\
+ w/o penalty term & 79.5 $\pm$ 1.63 & 91.0 $\pm$ 1.45 & 76.4 $\pm$ 1.89 
+ \\
+    \bottomrule
+	\end{tabular}	}
+	
+\end{minipage}
+\end{table}
+
+\section{Broader Impacts}\label{sec:BI}
+We are dedicated to not only focusing on the specific NLP task, i.e., knowledge-based QA, but also inspiring and benefitting a wide range of NLP communities with a novel knowledge injection framework to fast adapt LLMs to specific domains. Specifically, we would like to declare the following two contributions for a wide range of NLP communities.
+
+{\bf Exploring Effective Knowledge Injection for LLMs}: Applying LLMs for various NLP-related tasks in different domains is gaining momentum. However, fine-tuning LLMs for domain knowledge-based QA is expensive. Our paper presents a remarkably strong framework that could (i) retrieve the reasoning background from domain knowledge graph and (ii) automatically find out the optimal prompt to inject the domain knowledge into the LLM.
+
+{\bf Providing Insights in Prompt Learning}: While hard prompt is still dominating prompt learning for the majority of LLM-based scenarios, we shed light on the community with a novel prompt learning method that is rather generalizable and effective. We propose an auto-selection algorithm that can determine the best prompt format for LLMs to maximally understand the reasoning background.
+
+
+\end{document}

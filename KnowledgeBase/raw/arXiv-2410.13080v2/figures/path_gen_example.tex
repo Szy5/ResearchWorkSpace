@@ -1,0 +1,25 @@
+\begin{figure}[]
+    \centering
+    % \vspace{-0.2cm}
+    \begin{minipage}{0.99\columnwidth}
+        \centering
+        \begin{tcolorbox}
+            \scriptsize
+            ============== Prompt Input ==============
+    
+            Please generate some reasoning paths in the KG starting from the topic entities to answer the question.
+    
+            \# Question: what is the name of justin bieber brother?
+    
+            \vspace{10pt}
+            ============== LLM Output ==============
+    
+            \# Reasoning Path: \texttt{<PATH>} Justin Bieber $\to$ people.person.parents $\to$ Jeremy Bieber $\to$ people.person.children $\to$ Jaxon Bieber \texttt{</PATH>}
+    
+            \# Answer: Jaxon Bieber
+        \end{tcolorbox}
+        \vspace{-0.4cm}
+    \end{minipage}
+    \caption{An example of the graph-constrained decoding. Detailed prompts can be found in \Cref{fig:path_gen_prompt}.}\label{fig:path_gen_example}
+    % \vspace{-0.4cm}
+\end{figure}

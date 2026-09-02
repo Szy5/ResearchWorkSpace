@@ -1,0 +1,22 @@
+% Compact method-property markers for Table 1.
+% The five pictograms follow the visual vocabulary of Graph-R1 Table 2.
+\newcommand{\PromptOnlyMarker}{%
+  \raisebox{-0.30ex}{\includegraphics[width=0.013\textwidth]{table_markers/prompt_only.png}}}
+\newcommand{\TrainedMarker}{%
+  \raisebox{-0.30ex}{\includegraphics[width=0.013\textwidth]{table_markers/trained.png}}}
+\newcommand{\NoKnowledgeMarker}{%
+  \raisebox{-0.30ex}{\includegraphics[width=0.013\textwidth]{table_markers/knowledge_none.png}}}
+\newcommand{\ChunkKnowledgeMarker}{%
+  \raisebox{-0.30ex}{\includegraphics[width=0.013\textwidth]{table_markers/knowledge_chunk.png}}}
+\newcommand{\GraphKnowledgeMarker}{%
+  \raisebox{-0.30ex}{\includegraphics[width=0.013\textwidth]{table_markers/knowledge_graph.png}}}
+
+% Hollow/filled lozenges distinguish programmatic (LLM-free) from
+% generative-LLM-based knowledge construction. A dash means not applicable.
+\newcommand{\LLMFreeMarker}{%
+  \raisebox{-0.08ex}{\ensuremath{\lozenge}}}
+\newcommand{\LLMBasedMarker}{%
+  \raisebox{-0.08ex}{\ensuremath{\blacklozenge}}}
+\newcommand{\NoConstructionMarker}{%
+  \makebox[0.75em][c]{\textcolor{gray}{\textendash}}}
+\newcommand{\MethodMarkers}[3]{\mbox{#1#2\kern0.06em#3}\kern0.28em}

@@ -1,0 +1,191 @@
+{
+  "figures": [
+    {
+      "id": "fig-overall-performance",
+      "label": "fig:overall_performance",
+      "caption": "Overall performance overview. Compared with powerful baseline methods, Seed achieves the strongest average performance across three representative agentic benchmarks.",
+      "source_path": "figures/overall_performance_comparison_3b.pdf",
+      "asset_path": "assets/figures/overall-performance.jpg",
+      "section_id": "sec-abstract",
+      "status": "rendered",
+      "source_sha256": "1ac4b336b9751ed6fb2937f4c8ae672deb0ac6f5ac0b54f60b46fbaab33deba3",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-overview",
+      "label": "fig:overview",
+      "caption": "",
+      "source_path": "figures/SEED_framework.pdf",
+      "asset_path": "assets/figures/overview.jpg",
+      "section_id": "sec-related-work",
+      "status": "rendered",
+      "source_sha256": "7f04ad133846e7758639e096cdbda68b1f6a6371ff1cb184526c3f4e80b1eb0a",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-training-dynamics",
+      "label": "fig:training_dynamics",
+      "caption": "Training dynamics on ALFWorld. We compare Seed and GRPO using Qwen2.5-3B-Instruct as the backbone. Translucent curves show raw measurements, while solid curves show 13-point centered moving averages.",
+      "source_path": "figures/training_dynamics.pdf",
+      "asset_path": "assets/figures/training-dynamics.jpg",
+      "section_id": "sec-main-results",
+      "status": "rendered",
+      "source_sha256": "25f04aa4f5af6c95013d7eef4a4bc486d34ac6fa15a8c6b572eb1603c4220ca2",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-sample-efficiency-line",
+      "label": "fig:sample_efficiency_line",
+      "caption": "Sample efficiency analysis. Seed consistently outperforms GRPO across different data fraction settings and surpasses full-data GRPO using only 60\\% of the training data.",
+      "source_path": "figures/sample_efficiency_line.pdf",
+      "asset_path": "assets/figures/sample-efficiency-line.jpg",
+      "section_id": "sec-cross-domain-generalization",
+      "status": "rendered",
+      "source_sha256": "cad65b38f7f0429acfb67ec916c411d7fefa19ad70285efef5173a5026891505",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-sample-efficiency-line-2",
+      "label": "fig:sample_efficiency_line",
+      "caption": "Sample efficiency analysis. Seed consistently outperforms GRPO across different data fraction settings and surpasses full-data GRPO using only 60\\% of the training data.",
+      "source_path": "figures/generalization_bar.pdf",
+      "asset_path": "assets/figures/sample-efficiency-line-2.jpg",
+      "section_id": "sec-cross-domain-generalization",
+      "status": "rendered",
+      "source_sha256": "572b7d7b10041d7ed3f5d80ad2fc8043dc4bba8493b4266e78826576ca34e641",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-comparison",
+      "label": "fig:case_comparison",
+      "caption": "Qualitative comparison on ALFWorld. For the task “put a candle in toilet,” the GRPO- trained agent searches the target receptacle before locating the candle, takes an irrelevant toilet-paper item, and then enters an off-task loop. In contrast, SEED systematically checks plausible shelves, finds the candle, and completes the required placement in five steps.",
+      "source_path": "figures/SEED_case.pdf",
+      "asset_path": "assets/figures/case-comparison.jpg",
+      "section_id": "sec-ablation-studies-and-analysis",
+      "status": "rendered",
+      "source_sha256": "b6d48e0d1e70cafb0136bdbb6f427377ba1a9ddfe526ec0899f1edc57f1456b2",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-sokoban-case",
+      "label": "fig:sokoban_case",
+      "caption": "A representative trajectory on Sokoban. The sequence shows six consecutive actions executed by the agent. Arrows indicate the temporal progression of the trajectory, and the action taken at each step is displayed below the corresponding observation.",
+      "source_path": "figures/sokoban_case.pdf",
+      "asset_path": "assets/figures/sokoban-case.jpg",
+      "section_id": "sec-multimodal-extension",
+      "status": "rendered",
+      "source_sha256": "ecd871a22291996fe3e0ca6fa7765984c2dfdac787e78ebc31bf491b37f2023c",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-success-rate-3x3",
+      "label": "fig:success_rate_3x3",
+      "caption": "Success rates across three backbones and three domains. Success rates increase over training in all nine settings, showing consistent learning across model scales and agentic tasks.",
+      "source_path": "figures/success_rate_3x3.pdf",
+      "asset_path": "assets/figures/success-rate-3x3.jpg",
+      "section_id": "sec-additional-training-dynamics",
+      "status": "rendered",
+      "source_sha256": "3552e6b285d11a2a6cda0a4e8f7361817ce999b5065b5214b6719544c86f1c27",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-opd-loss-3x3",
+      "label": "fig:opd_loss_3x3",
+      "caption": "OPD loss dynamics. The loss generally decreases and stabilizes during training, indicating that the policy progressively internalizes the behavioral guidance provided by hindsight skills.",
+      "source_path": "figures/opd_loss_3x3.pdf",
+      "asset_path": "assets/figures/opd-loss-3x3.jpg",
+      "section_id": "sec-additional-training-dynamics",
+      "status": "rendered",
+      "source_sha256": "c024c9f13ee7a13970c744ddfe47f35529429152e6d56b28f5770b4f4da04776",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-analyzer-prompt",
+      "label": "fig:analyzer_prompt",
+      "caption": "Prompt of analyzer.",
+      "source_path": "figures/analyzer_prompt.pdf",
+      "asset_path": "assets/figures/analyzer-prompt.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "7e6d94b7465d6b567425cc910a6d66f4484931d066ae89bd7e65897ba3a697ac",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-actor-prompt",
+      "label": "fig:actor_prompt",
+      "caption": "Prompt of actor (the policy model) in ALFWorld.",
+      "source_path": "figures/actor_prompt.pdf",
+      "asset_path": "assets/figures/actor-prompt.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "dc41a595fdbc5a566414a598a2b524a46447393034b7f6b5775e412ca971c11d",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-alfworld-case1",
+      "label": "fig:alfworld_case1",
+      "caption": "ALFWorld Example 1. Seed locates and cleans the ladle, opens the closed drawer, and completes the placement in seven steps, demonstrating task decomposition and correct precondition handling.",
+      "source_path": "figures/alfworld_case1.pdf",
+      "asset_path": "assets/figures/alfworld-case1.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "8e3b97088654a1e4f911bd07cd60f100b68e896fbea81d52b65bd323d3899eca",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-alfworld-case2",
+      "label": "fig:alfworld_case2",
+      "caption": "ALFWorld Example 2. Seed places two books through repeated trips between the desk and bed while retaining the completed first placement, demonstrating progress tracking over an extended trajectory.",
+      "source_path": "figures/alfworld_case2.pdf",
+      "asset_path": "assets/figures/alfworld-case2.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "501a7ccc69374245a5490c0f3c36c519c8816aa767b9e51b1db857a52f790d37",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-searchqa-case1",
+      "label": "fig:searchqa_case1",
+      "caption": "Search-based QA Example 1. A single query retrieves evidence that both people are mathematicians, allowing Seed to answer without unnecessary searches.",
+      "source_path": "figures/searchqa_case1.pdf",
+      "asset_path": "assets/figures/searchqa-case1.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "64d27ecb603e47061f2906d42d56a9392d9bcd0f0398690dcb1a77e32a6e14bd",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-searchqa-case2",
+      "label": "fig:searchqa_case2",
+      "caption": "Search-based QA Example 2. Seed first identifies Finding Neverland, then performs a targeted second search to verify that Marc Forster directed the film.",
+      "source_path": "figures/searchqa_case2.pdf",
+      "asset_path": "assets/figures/searchqa-case2.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "b882c93ad1e97bbcb3f3b49bed30119ae7e0cc29d561161cff8769ffaffb0720",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-webshop-case1",
+      "label": "fig:webshop_case1",
+      "caption": "WebShop Example 1. Seed identifies a green shower cap and hair turban set under \\ 40, verifies the selected variant, and completes the purchase in four steps.",
+      "source_path": "figures/webshop_case1.pdf",
+      "asset_path": "assets/figures/webshop-case1.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "190bd13778c7be2e48ec0e342f7353b818aec86700b3a1c2564a14d3c5bafe16",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-webshop-case2",
+      "label": "fig:webshop_case2",
+      "caption": "WebShop Example 2. Seed preserves the requested product constraints and selects mossy oak country and 5x-large big before purchasing a matching long-sleeve shirt under \\ 60.",
+      "source_path": "figures/webshop_case2.pdf",
+      "asset_path": "assets/figures/webshop-case2.jpg",
+      "section_id": "sec-additional-discussion",
+      "status": "rendered",
+      "source_sha256": "5665892964f4c4ff3ee59fd0117c629ca592887cf3897587a9f2f22174ed5df6",
+      "media_type": "pdf"
+    }
+  ]
+}

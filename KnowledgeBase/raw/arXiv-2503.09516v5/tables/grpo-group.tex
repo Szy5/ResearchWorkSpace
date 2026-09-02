@@ -1,0 +1,18 @@
+
+\begin{table}[h]
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{The group size study of \Ours (GRPO) on seven datasets. (LLM: Qwen2.5-7b-base)}\label{tab:apx:grpo-size}
+    \begin{tabular}{lcccccccc}
+        \toprule
+        \textbf{Method} & \textbf{NQ} & \textbf{TriviaQA} & \textbf{PopQA} & \textbf{HotpotQA} & \textbf{2wiki} & \textbf{Musique} & \textbf{Bamboogle} & \textbf{Avg.} \\
+        \midrule
+        % \multicolumn{8}{l}{\textbf{LLaMA3.2-3b-Base}} \\
+        size=1 & \textbf{0.463} & \textbf{0.605} & \textbf{0.449} & \textbf{0.392} & \textbf{0.413} & \textbf{0.163} & 0.384 & \textbf{0.410} \\
+        size=3 & 0.385 & 0.580 & 0.396 & 0.329 & 0.333 & 0.117 & \textbf{0.400} & 0.363 \\
+        size=5 & 0.395 & 0.560 & 0.388 & 0.326 & 0.297 & 0.125 & 0.360 & 0.350 \\
+        \bottomrule
+    \end{tabular}
+\end{table}

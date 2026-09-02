@@ -1,0 +1,18 @@
+\section{Preliminaries}\label{sec:prelim}
+
+
+\textbf{Knowledge Base.}
+A Knowledge Base (KB) is a structured knowledge graph $\mathcal{G}=(\mathcal{E},\mathcal{R},\mathcal{F})$, where $\mathcal{E}$ is the set of entities, $\mathcal{R}$ is the set of relations, and $\mathcal{F}$ is the set of factual triples. Each triple $f \in \mathcal{F}$ takes the form $(h,r,t)$, where $h, t \in \mathcal{E}$ are the head and tail entities, and $r \in \mathcal{R}$ is the relation.
+
+\textbf{KBQA.}
+Given a natural-language question $q$, the KB $\mathcal{G}$, and a set of topic entities $E_q\subseteq\mathcal{E}$ mentioned in $q$, the objective of the KBQA task is to find the answer set that maximizes the conditional probability $P(\mathcal{A}_q | q, E_q, \mathcal{G})$. 
+Notably, following prior work~\cite{luokbqao1}, we assume entity mentions in $q$ are linked to the knowledge graph $\mathcal{G}$ and given as an input.
+
+\textbf{Agentic Reasoning Paradigm for the KBQA Task.}
+In the agentic KBQA paradigm, the LLM is viewed as an agent learning a policy $\pi$ to interact with the environment. At each step $t$, the agent chooses an action $a_t \in \textsc{Action}$ based on the question $q$ and its historical reasoning trajectory $\tau_t = \{(c_1,a_1,o_1),\ldots,(c_{t},a_{t},o_{t})\}$, where $\textsc{Action}$ denotes the action space, $c_t$ denotes the explicit thinking process before the action, and $o_t$ is the observation from the environment. This interactive process continues until the agent finds the final answer set $\mathcal{A}_q$ or reaches the maximum number of steps.
+
+The objective is to learn an optimal policy $\pi^*$ that maximizes the probability of generating a trajectory $\tau$ that leads to the gold answer set $\mathcal{A}^*_q$. This can be expressed as maximizing the total probability of all successful trajectories:
+\begin{equation}
+\pi^* = \arg\max_{\pi} \sum_{\tau \in \mathcal{T}_{success}} P(\tau | q, E_q, \mathcal{G}; \pi),
+\end{equation}
+where $\mathcal{T}_{success}$ is the set of all trajectories that successfully yield the gold answers $\mathcal{A}^*_q$, and the trajectory probability $P(\tau | \dots; \pi)$ is determined by the policy $\pi$.

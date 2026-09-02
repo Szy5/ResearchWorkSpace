@@ -1,0 +1,240 @@
+\clearpage
+
+\appendix
+
+\section{Case Study}
+\label{app:case-study}
+
+Figure~\ref{fig:case-study} shows a concrete text-to-image pattern question produced by \modelname\ data pipeline. In this example, the \modelname\ agent first grounds the image clue, uses textual search and link summarization to resolve the target entity, and finally performs text-to-image search to verify the visual attribute required by the answer.
+
+\begin{figure*}[t]
+\centering
+\vspace{-15mm}
+\includegraphics[width=1.0\textwidth]{graphs/Modubrowse_case_process.pdf}
+\vspace{-15mm}
+\caption{A case study of \modelname\ on a multimodal browsing question.}
+\label{fig:case-study}
+\end{figure*}
+
+
+\section{Multimodal Pattern Expansion Details}
+\label{app:multimodal-expansion}
+
+This appendix supplements Section~\ref{sec:multimodal-expansion} with implementation details of the image retrieval, multimodal judging, and annotation steps for constructing $\mathcal{U}_{\mathrm{i2t}}(\mathcal{L}_0)$ and $\mathcal{U}_{\mathrm{t2i}}(a)$.
+
+\paragraph{Image-to-text image set.}
+For the image-to-text pattern, we follow the procedure of WebWatcher~\citep{geng2025webwatcher}. 
+Given the entities in the initial layer $\mathcal{L}_0$, we query Google Images with each entity name and its graph-provided aliases, retrieve the top-10 results, and retain the first image that is not a generic icon or logo unrelated to the entity. 
+The retained image becomes the sole candidate in $\mathcal{U}_{\mathrm{i2t}}(\mathcal{L}_0)$.
+
+\paragraph{Text-to-image candidate retrieval.}
+For each answer entity $a$ in the final layer $\mathcal{L}_L$, we construct a set of search queries by combining the entity name with contextual keywords from the layered subgraph (e.g., attributes of entities in intermediate layers $\mathcal{L}_1, \dots, \mathcal{L}_{L-1}$). 
+We issue these queries to Google Images and collect up to 20 candidate images per query, deduplicating near-duplicates via perceptual hashing. 
+All unique images form the initial candidate pool for $a$.
+
+\paragraph{Multimodal judge.}
+We use an MLLM (the same judge used for quality control in Section~\ref{sec:data-filtering}) to filter and annotate text-to-image candidates. 
+The judge receives the question context (the layered evidence structure of the subgraph together with the final answer $a$) together with a candidate image. 
+It is asked to answer three structured questions:
+\begin{enumerate}[leftmargin=*,nosep]
+    \item \textbf{Entity identifiability:} Is the target entity $a$ clearly depicted and distinguishable in the image? (yes/no)
+    \item \textbf{Visual attribute extraction:} What visually verifiable attribute of the entity can be observed in the image that is \emph{not} already stated in the layered textual evidence? If none, answer ``None''.
+    \item \textbf{Modality necessity:} If the image were removed, would the question still be answerable from text alone? (yes/no)
+\end{enumerate}
+A candidate image is retained only if the judge answers ``yes'' to question 1, provides a non-empty, specific attribute for question 2, and answers ``no'' to question 3. 
+The extracted attribute is then normalized to a short phrase (e.g., ``red roof'', ``golden statue'', ``three arches'').
+
+\paragraph{Final image set.}
+For each answer entity $a$, we keep the first three images that pass the judge filter to form $\mathcal{U}_{\mathrm{t2i}}(a)$. 
+If fewer than three images pass, we discard the entity from text-to-image expansion (it will only appear in text-only and, if applicable, image-to-text patterns). 
+All retained images are stored together with their verified visual attribute for use in the pattern expansion step.
+
+\subsection{Cold‑Start Supervised Fine‑Tuning}
+\label{sec:cold_start_sft}
+
+To obtain reliable teacher demonstrations, we prompt an open‑source multimodal teacher model (Kimi K2.5~\citep{team2026kimi}) with each validated task $x=(q,\mathcal{C}_p(s),a^*,p)$ and collect rollouts that reach the correct answer while respecting the tool protocol and pattern constraints. The resulting teacher trajectory $\tau^\star=(z_1,o_1,\dots,z_T,\hat{a})$, with $\hat{a}=a^*$, provides a step‑by‑step demonstration of correct tool use and evidence composition.
+
+The cold‑start SFT set is $\mathcal{D}_{\mathrm{cs}}=\{(x_i,\tau_i^\star)\}_{i=1}^{N_{\mathrm{cs}}}$, and we minimize the standard next‑token prediction loss:
+\begin{equation}
+\mathcal{L}_{\mathrm{cs}}(\theta)= -\sum_{(x,\tau^\star)\in\mathcal{D}_{\mathrm{cs}}} \sum_{z_t\in\tau^\star}\log \pi_\theta(z_t\mid S_t).
+\end{equation}
+We train for 3 epochs and use the final checkpoint. This stage establishes a stable action grammar and a pattern‑aware tool‑use prior, but it does not directly penalize inefficient exploration or reward recovery from mistakes.
+
+\subsection{Reinforcement Learning with Exploration‑Aware Data Selection}
+\label{sec:rl_training}
+
+Cold‑start SFT gives the model a basic browsing protocol, but robust deployment requires the ability to choose effective strategies and avoid degenerate loops. We therefore further optimize the policy through reinforcement learning. Crucially, RL is applied only to a subset of validated QA pairs selected via the exploration degree introduced in Section~\ref{sec:data-filtering}.
+
+For cold-start supervised fine-tuning, we do \emph{not} apply exploration-based filtering; we keep all teacher-generated trajectories that pass basic quality control to establish a stable action grammar and pattern‑aware prior. For reinforcement learning, where training resource consumption is greatest, we activate exploration-aware selection: from the pool of validated QA pairs, we retain only those instances whose exploration degree $\mathcal{E}(q)$ exceeds a top‑$k$ quantile threshold. This yields a compact set of exploration-rich problems that maximize policy improvement per training step and prevent wasted computation on low-signal trajectories. Each retained instance carries its set of key evidence steps $\pi$, recorded during construction from the layered evidence subgraph. Together with the QA pair, these form the RL training set $\mathcal{D}_{\mathrm{RL}}$, but $\pi$ is used only for data selection and analysis; the RL reward itself does not use $\pi$ directly. We train the policy for 150 steps using GRPO.
+
+\paragraph{Reward Design.}
+We use a composite reward combining answer correctness and format adherence:
+\begin{equation}
+R(x,\tau)=\lambda_{\mathrm{ans}}R_{\mathrm{ans}}(x,\tau)+\lambda_{\mathrm{fmt}}R_{\mathrm{fmt}}(\tau).
+\end{equation}
+$R_{\mathrm{ans}}$ employs an LLM‑as‑a‑judge to verify semantic equivalence between the extracted answer and $a^*$. $R_{\mathrm{fmt}}$ checks that the trajectory strictly follows the serialization protocol (correct tag usage, valid tool call structure, and exactly one final answer segment). This design preserves answer accuracy while discouraging format drift and redundant tool chains.
+
+\paragraph{Policy Optimization.}
+We adopt Group Relative Policy Optimization (GRPO)~\citep{shao2024deepseekmath}. For each task $x\in\mathcal{D}_{\mathrm{RL}}$, the current policy $\pi_\theta$ samples $K$ trajectories, and the advantage is computed from the reward distribution within the group. The objective is
+\begin{equation}
+\max_{\theta}\; \mathbb{E}_{x\sim\mathcal{D}_{\mathrm{RL}},\,\tau\sim\pi_\theta(\cdot|x)}\left[R(x,\tau)\right],
+\end{equation}
+optimized via the standard GRPO update. After RL training, the \modelname\ agent achieves robust multimodal browsing capabilities with improved trajectory efficiency and answer accuracy.
+
+
+\paragraph{Reward Design.}
+We use a composite reward combining answer correctness and format adherence:
+\begin{equation}
+R(x,\tau)=\lambda_{\mathrm{ans}}R_{\mathrm{ans}}(x,\tau)+\lambda_{\mathrm{fmt}}R_{\mathrm{fmt}}(\tau).
+\end{equation}
+$R_{\mathrm{ans}}$ employs an LLM‑as‑a‑judge to verify semantic equivalence between the extracted answer and $a^*$. $R_{\mathrm{fmt}}$ checks that the trajectory strictly follows the serialization protocol (correct tag usage, valid tool call structure, and exactly one final answer segment). This design preserves answer accuracy while discouraging format drift and redundant tool chains.
+
+\paragraph{Policy Optimization.}
+We adopt Group Relative Policy Optimization (GRPO)~\citep{shao2024deepseekmath}. For each task $x\in\mathcal{D}_{\mathrm{RL}}$, the current policy $\pi_\theta$ samples $K$ trajectories, and the advantage is computed from the reward distribution within the group. The objective is
+\begin{equation}
+\max_{\theta}\; \mathbb{E}_{x\sim\mathcal{D}_{\mathrm{RL}},\,\tau\sim\pi_\theta(\cdot|x)}\left[R(x,\tau)\right],
+\end{equation}
+optimized via the standard GRPO update. After RL training, the \modelname\ agent achieves robust multimodal browsing capabilities with improved trajectory efficiency and answer accuracy.
+
+
+
+
+\section{Web-Augmented Attribute Expansion}
+\label{app:web-attribute-expansion}
+
+This appendix provides additional implementation details for the web-augmented grounding step in Section~\ref{sec:text-skeleton}. The goal is to enrich each graph entity with attributes that are likely to appear in real web evidence, while avoiding one-off or unsupported claims. For an entity node $v$, \modelname\ searches the web for entity-related pages, extracts candidate attribute statements from each page, and retains only attributes that are repeatedly supported by independent pages.
+
+\begin{algorithm}[H]
+\caption{Web-Augmented Attribute Expansion for an Entity Node}
+\label{alg:web-attribute-expansion}
+\begin{algorithmic}[1]
+\Require Entity node $v$, search engine $\mathrm{Search}$, page summarizer $\mathrm{Summarize}$, LLM extractor $\mathrm{Extract}$, minimum page count $N_{\min}=5$, support threshold $\gamma=3$
+\Ensure Verified attribute set $\mathcal{A}(v)$
+\State Construct search queries $\mathcal{Q}(v)$ using the entity name, aliases, and graph-neighbor hints.
+\State Retrieve candidate webpages $\mathcal{P}(v)\leftarrow \mathrm{Search}(\mathcal{Q}(v))$.
+\State Initialize candidate multiset $\mathcal{M}\leftarrow \emptyset$.
+\ForAll{webpage $p\in \mathcal{P}(v)$}
+    \State Obtain a query-conditioned summary $d_p\leftarrow \mathrm{Summarize}(p,v)$.
+    \State Extract candidate attributes $\mathcal{C}_p\leftarrow \mathrm{Extract}(v,d_p)$ using the prompt in Figure~\ref{fig:web-attr-extract-prompt}.
+    \ForAll{candidate attribute $c\in \mathcal{C}_p$}
+        \If{$c$ is specific, entity-grounded, and not contradicted by $d_p$}
+            \State Normalize $c$ into a canonical attribute form and add $(c,p)$ to $\mathcal{M}$.
+        \EndIf
+    \EndFor
+\EndFor
+\State Group semantically equivalent candidates in $\mathcal{M}$ across webpages.
+\State Retain an attribute $c$ if it is supported by at least $\gamma$ distinct webpages and the total number of usable webpages is at least $N_{\min}$.
+\State \Return $\mathcal{A}(v)=\{c: \mathrm{support}(c)\geq \gamma\}$.
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Extraction and aggregation.}
+In practice, we use at least five usable webpages for each entity whenever available. Each webpage is first summarized with the target entity in mind; the extractor then proposes attributes that can be used as additional descriptors or constraints in question construction. We normalize near-duplicate attributes with an LLM judge, merge semantically equivalent claims, and keep only attributes that appear in at least three independent webpages. This threshold favors stable properties such as roles, affiliations, locations, creators, functions, awards, visible characteristics, or notable associated works, while discarding rare claims that are likely to be noisy, promotional, or context-specific.
+
+\clearpage
+\onecolumn
+\begin{figure}[H]
+\centering
+\begin{promptbox}[Per-Page Attribute Extraction Prompt]{promptgreen}
+You are helping construct reliable web-grounded attributes for a BrowseComp-style question.\\
+\textbf{Entity:} \{entity\_name\}\\
+\textbf{Known graph context:} \{neighbor\_entities\_and\_relations\}\\
+\textbf{Webpage summary:} \{page\_summary\}\\[2pt]
+Extract candidate attributes of the entity that are explicitly supported by the webpage. Each attribute should be useful as a clue, constraint, or descriptor in a multi-hop browsing question. Prefer stable and verifiable properties, such as affiliation, location, creator, time, award, function, material, visual feature, associated work, or role. Do not infer attributes that are not stated or strongly supported. Do not include generic descriptions such as ``famous'', ``important'', or ``well-known''.\\[2pt]
+Return a JSON list. Each item should contain:
+\texttt{attribute}, \texttt{attribute\_type}, \texttt{evidence\_span}, and \texttt{confidence}.
+\end{promptbox}
+\caption{Prompt used to extract candidate attributes from a single webpage summary.}
+\label{fig:web-attr-extract-prompt}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{promptbox}[Cross-Page Attribute Aggregation Prompt]{promptgreen}
+You are verifying candidate attributes extracted for the same entity from multiple webpages.\\
+\textbf{Entity:} \{entity\_name\}\\
+\textbf{Candidate attributes with sources:} \{attribute\_source\_list\}\\[2pt]
+Group semantically equivalent attributes, count the number of distinct webpages supporting each group, and keep only attributes supported by at least three independent webpages. Remove attributes that are vague, promotional, contradictory, or not specifically about the target entity. For each retained attribute, output a concise canonical statement, its attribute type, supporting source ids, and a short reason explaining why it is stable enough for question construction.\\[2pt]
+Return a JSON list with fields:
+\texttt{canonical\_attribute}, \texttt{attribute\_type}, \texttt{supporting\_sources}, and \texttt{verification\_reason}.
+\end{promptbox}
+\caption{Prompt used to aggregate and verify repeated attributes across webpages.}
+\label{fig:web-attr-aggregate-prompt}
+\end{figure}
+
+\clearpage
+
+
+\section{Illustration of Exploration Degree}
+\label{app:exploration-degree-example}
+
+This section illustrates the exploration degree $\mathcal{E}(q)$ introduced in Section~\ref{sec:data-filtering} with a concrete example. The question is a text-to-image BrowseComp problem: textual browsing narrows the target entity and visual search supplies the final answer.
+
+\paragraph{Question.}
+\textit{``The 2021 International Eco-Design Award shortlisted several urban furniture projects. One shortlisted project was designed by the studio that later created the wayfinding system for the Northbank Wetland Center. Find the official logo of that studio and answer: what animal silhouette appears in the logo?''}
+The ground-truth answer is \textbf{crane}.
+
+\paragraph{Key evidence steps $\pi$.}
+During construction, the pipeline derives a set of key evidence steps from the layered subgraph that underlies the question. These steps represent the core pieces of information that any successful trajectory should cover, but they are not a rigid chain: the subgraph structure may allow different browsing orders. For this question, the set $\pi$ is:
+\begin{enumerate}[leftmargin=*,nosep]
+    \item[$\rho_1$] Retrieve the shortlist of the 2021 International Eco-Design Award for urban furniture.
+    \item[$\rho_2$] Among the shortlisted projects, identify the project designed by the studio that also created the Northbank Wetland Center wayfinding system.
+    \item[$\rho_3$] Confirm the studio name as \textit{Marshline Design}.
+    \item[$\rho_4$] Search for the official logo of \textit{Marshline Design}.
+    \item[$\rho_5$] Inspect the logo and answer \textit{crane}.
+\end{enumerate}
+The set contains $|\pi|=5$ key steps. For a successful trajectory $\tau$, we measure its \emph{exploration length} $\ell(\tau,\pi)$ as the number of browsing actions (search / linksummary calls) it takes, normalized by $|\pi|$. Since $|\pi|$ is fixed per question, $\ell$ reflects how much browsing effort a successful route expends, regardless of the order in which the steps are covered.
+
+\paragraph{Rollout examples.}
+We present two successful rollouts obtained from the base agent. Both reach the correct answer and cover all five key evidence steps, but they differ substantially in how much browsing they require.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}c X c@{}}
+\toprule
+\textbf{Step} & \textbf{Trajectory A (direct route)} & \textbf{Matched $\rho$} \\
+\midrule
+1 & Search ``2021 International Eco-Design Award urban furniture shortlist.''          & $\rho_1$ \\
+2 & Extract the list of shortlisted projects and studios from the award page.        & $\rho_1$ \\
+3 & Search ``Northbank Wetland Center wayfinding system design studio.''              & $\rho_2$ \\
+4 & Identify that Marshline Design created the wayfinding system.                    & $\rho_2,\rho_3$ \\
+5 & Search ``Marshline Design official logo.''                                       & $\rho_4$ \\
+6 & Inspect the logo image; the silhouette is a crane.                               & $\rho_5$ \\
+\bottomrule
+\end{tabularx}
+\caption{Trajectory A: a compact browsing path with no dead ends. It takes $6$ browsing steps and covers all five key evidence steps, so $\ell = 6/5 = 1.2$.}
+\label{tab:traj-A}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}c X c@{}}
+\toprule
+\textbf{Step} & \textbf{Trajectory B (reformulation-heavy route)} & \textbf{Matched $\rho$} \\
+\midrule
+1  & Search ``2021 International Eco-Design Award urban furniture winner.''            & $\rho_1$ \\
+2  & Summarize the winner page; it does not list the shortlisted projects.            & $\rho_1$ \\
+3  & Reformulate: search ``\dots urban furniture shortlist''; extract the projects.   & $\rho_1$ \\
+4  & Search ``Northbank Wetland Center wayfinding system designer.''                  & $\rho_2$ \\
+5  & Summarize an ambiguous page mentioning several studios (dead end).               & $\rho_2$ \\
+6  & Reformulate: search ``\dots signage studio Marshline.''                          & $\rho_2$ \\
+7  & Confirm Marshline Design created the wayfinding system.                          & $\rho_3$ \\
+8  & Search ``Marshline Design official logo.''                                       & $\rho_4$ \\
+9  & Inspect the logo image; the silhouette is a crane.                               & $\rho_5$ \\
+10 & Emit the final answer: \textit{crane}.                                           & $\rho_5$ \\
+\bottomrule
+\end{tabularx}
+\caption{Trajectory B: the agent reaches the same answer through a longer, reformulation-heavy route with a dead-end source before recovering. It takes $10$ browsing steps and also covers all five key evidence steps, so $\ell = 10/5 = 2.0$.}
+\label{tab:traj-B}
+\end{table}
+
+Both trajectories reach the correct answer and cover the same key evidence steps, yet they differ substantially in exploration length ($\ell = 1.2$ for Trajectory~A versus $\ell = 2.0$ for Trajectory~B), reflecting genuinely different browsing behaviors.
+
+\paragraph{Exploration degree of the example.}
+Assume that for this question $q$ we sample $16$ rollouts and the subset of successful rollouts $\mathcal{Y}^{+}(q)$ contains trajectories with exploration lengths distributed similarly to the two examples above---some around $1.2$ (direct routes) and others around $2.0$ (reformulation-heavy routes). The exploration degree is the variance of $\ell$ across $\mathcal{Y}^{+}(q)$:
+\begin{equation}
+\mathcal{E}(q) = \mathrm{Var}_{\tau \in \mathcal{Y}^{+}(q)}\big[\ell(\tau,\pi)\big].
+\end{equation}
+A high $\mathcal{E}(q)$ indicates that successful trajectories vary substantially in browsing effort: some rollouts follow a compact direct route, while others reach the answer through longer reformulation-heavy or backtracking exploration. As discussed in Section~\ref{sec:data-filtering}, such instances are more likely to produce mixed-outcome groups (both successes and informative failures) during RL, providing rich contrastive signals for policy learning. In contrast, a problem where all correct trajectories require essentially the same browsing effort would yield near-zero variance, offering little behavioral contrast.

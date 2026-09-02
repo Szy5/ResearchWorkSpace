@@ -1,0 +1,25 @@
+
+% natural queries -> the semi-structure knowledge bases
+% the semi-structure knowledge bases -> retrieval
+% retrieval -> benchmark retrieval
+% Why in the world of llms we still need this benchmark 
+% Why challenging -> need to infer and reaon and combine - before 'finally'
+% Dif problem motivate better.
+% \hw{Note: Submission is single-blind. Contents about human queries are highlighted.}
+
+Answering real-world complex queries, such as complex product search, often requires accurate retrieval from semi-structured knowledge bases that involve blend of unstructured (\eg textual descriptions of products) and structured (\eg entity relations of products) information. 
+% Real-world queries often feature a sophisticated blend of unstructured (\eg textual descriptions) and structured (\eg entity relations \qian{database of products?}) information, which naturally involve semi-structured knowledge bases from specific domains. This highlights the essential need for retrieving knowledge from these semi-structured knowledge bases to accurately answer user queries.
+% \michi{We could be more clear and crisp. how about something like: "Answering real-world user queries, such as product search, often requires accurate retrieval of information from semi-structured knowledge bases or databases that involve
+% blend of unstructured (\eg textual descriptions of products) and structured (\eg entity relations of products) information"}
+However, many previous works studied textual and relational retrieval tasks as separate topics.
+To address the gap, we develop \benchmarkt, a large-scale \underline{S}emi-structure retrieval benchmark on \underline{T}extual \underline{a}nd \underline{R}elational \underline{K}nowledge Bases.
+Our benchmark covers three domains: product search, academic paper search, and queries in precision medicine.
+We design a novel pipeline to synthesize realistic user queries that integrate diverse relational information and complex textual properties, together with their ground-truth answers (items). 
+We conduct rigorous human evaluation to validate the quality of our synthesized queries. 
+\hw{We further enhance the benchmark with high-quality human-generated queries to provide an authentic reference.}
+\benchmarkh serves as a comprehensive testbed for evaluating the performance of retrieval systems driven by large language models (LLMs). Our experiments suggest that \benchmarkh presents significant challenges to the current retrieval and LLM systems, 
+%\michi{you mentioned LLM earlier in your abstract, so we should revisit it here}
+highlighting the need for more capable semi-structured retrieval systems. %  that can handle both textual and relational aspects
+% The benchmark data and code are available on \textcolor{gray}{\textcolor{cyan}{\url{https://github.com/snap-stanford/stark}}}.
+
+% \jure{can we post URLs? isnt' it double blind?}\shirley{The submission is single-blind by default "Reviewing is in principle single-blind, hence the paper should not be anonymized. In cases where the work can be reviewed equally well anonymously, anonymous submission is also allowed." \url{https://neurips.cc/Conferences/2024/CallForDatasetsBenchmarks}. Please let me know if we want to do double-blind instead}

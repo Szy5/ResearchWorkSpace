@@ -1,0 +1,385 @@
+\documentclass{article}
+
+
+
+
+
+
+\usepackage[preprint]{neurips_2024}
+
+
+
+
+
+
+\usepackage[utf8]{inputenc} %
+\usepackage[T1]{fontenc}    %
+\usepackage{hyperref}       %
+\usepackage{url}            %
+\usepackage{booktabs}       %
+\usepackage{amsfonts}       %
+\usepackage{nicefrac}       %
+\usepackage{microtype}      %
+\usepackage{xcolor}         %
+
+
+
+
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{xspace}
+\usepackage{pifont}
+\usepackage{threeparttable}
+\usepackage{tikz}
+\usepackage{graphicx} 
+\usepackage{pgfplots}
+\usepackage{multirow}
+\RequirePackage{algorithm}
+\RequirePackage{algorithmic}
+\usepackage{enumitem}
+\usepackage{amsthm}
+\usepackage{wrapfig}
+\usepackage{xcolor,colortbl}
+\usepackage{amssymb}
+\usepackage{subcaption}
+
+
+\newcommand{\grag}{\textsc{Gnn-Rag}\xspace}
+\newcommand{\gragx}{\textsc{Gnn-Rag}}
+\newcommand{\lmsr}{$\text{LM}_{\text{SR}}$\xspace}
+\newcommand{\lmsreq}{\text{LM}_{\text{SR}}\xspace}
+
+\input{math_commands}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{\grag: Graph Neural  Retrieval for Large Language Model Reasoning}
+
+
+
+
+\author{%
+  Costas Mavromatis \\
+  University of Minnesota\\
+  \texttt{mavro016@umn.edu} \\
+  \And
+  George Karypis \\
+  University of Minnesota\\
+  \texttt{karypis@umn.edu} \\
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+  Knowledge Graphs (KGs) represent human-crafted factual knowledge in the form of triplets \textit{(head, relation, tail)}, which collectively form a graph. Question Answering over KGs (KGQA) is the task  of answering natural questions grounding the reasoning to the information provided by the KG. Large Language Models (LLMs) are the state-of-the-art models for QA tasks due to their remarkable ability to understand natural language. On the other hand, Graph Neural Networks (GNNs) have been widely used for KGQA as they can handle the complex graph information stored in the KG. In this work, we introduce \textsc{Gnn-Rag}, a novel method for combining language understanding abilities of LLMs with the reasoning abilities of GNNs in a retrieval-augmented generation (RAG) style. First, a GNN reasons over a dense KG subgraph to retrieve answer candidates for a given question. Second, the shortest paths in the KG  that connect question entities and answer candidates are extracted to represent KG reasoning paths. The extracted paths are verbalized and given as input for LLM reasoning with RAG. In our \textsc{Gnn-Rag} framework, the GNN acts as a dense subgraph reasoner to extract useful graph information, while the LLM leverages its natural language processing ability for ultimate KGQA. Furthermore, we develop a retrieval augmentation (RA) technique to further boost KGQA performance with \grag. Experimental results show that \textsc{Gnn-Rag} achieves state-of-the-art performance in two widely used KGQA benchmarks (WebQSP and CWQ), outperforming or matching GPT-4 performance with a 7B tuned LLM. In addition, \textsc{Gnn-Rag} excels on multi-hop and multi-entity questions outperforming competing approaches by 8.9--15.5\% points at answer F1. 
+We provide the code and KGQA results at \url{https://github.com/cmavro/GNN-RAG}.
+  
+\end{abstract}
+
+\section{Introduction}
+
+
+
+Large Language Models (LLMs)~\citep{brown2020language,bommasani2021opportunities,chowdhery2023palm} are the state-of-the-art models in many NLP tasks due to their remarkable ability to understand natural language. LLM's power stems from pretraining on large corpora of textual data to obtain general human knowledge~\citep{kaplan2020scaling,hoffmann2022training}. However, because pretraining is costly and time-consuming~\citep{gururangan2020don}, LLMs cannot easily adapt to new or in-domain knowledge and are prone to hallucinations~\citep{zhang2023siren}. 
+
+
+
+Knowledge Graphs (KGs)~\citep{vrandevcic2014wikidata} are databases that store information in structured form that can be easily updated. KGs represent human-crafted factual knowledge in the form of triplets \textit{(head, relation, tail)}, e.g., \texttt{<Jamaica $\rightarrow$ language\_spoken $\rightarrow$ English>}, which collectively form a graph. In the case of KGs, the stored knowledge is updated by fact addition or removal. As KGs capture complex interactions between the stored entities, e.g., multi-hop relations, they are widely used for knowledge-intensive task, such as Question Answering (QA)~\citep{pan2024unifying}. 
+
+
+
+\begin{wrapfigure}{r}{\wd0} %
+    \centering
+    \vspace{-0.25in}
+    \input{figures/intro_results}
+    \caption{Retrieval effect on  \underline{multi-hop/entity} KGQA. Our \textbf{\grag} \textbf{outperforms} existing KG-RAG methods by 8.9--15.5\% points. }
+    \vspace{-0.15in}
+    \label{fig:intro}
+\end{wrapfigure}
+
+
+Retrieval-augmented generation (RAG) is a framework that alleviates LLM hallucinations by enriching the input context with up-to-date and accurate information~\citep{lewis2020retrieval}, e.g., obtained from the KG. In the KGQA task, the goal is to answer natural questions grounding the reasoning to the information provided by the KG. For instance, the input for RAG becomes ``\texttt{Knowledge: Jamaica $\rightarrow$ language\_spoken $\rightarrow$ English \textbackslash n Question: Which language do Jamaican people speak?}'', where the LLM has access to KG information for answering the question. 
+
+
+
+
+RAG's performance highly depends on the KG facts that are retrieved~\citep{wu2023retrieve}. The challenge is that KGs store complex graph information (they usually consist of millions of facts) and retrieving the right information requires effective graph processing, while retrieving irrelevant information may confuse the LLM during its KGQA reasoning~\citep{he2024gretriever}. Existing retrieval methods that rely on LLMs to retrieve relevant KG information (LLM-based retrieval) underperform on multi-hop KGQA as they cannot handle complex graph information~\citep{baek2023knowledge,luo2024rog} or they need the internal knowledge of very large LMs, e.g., GPT-4, to compensate for missing information during KG retrieval~\citep{sun2024tog}. 
+
+
+
+In this work, we introduce \grag, a novel method for improving RAG for KGQA. \grag relies on Graph Neural Networks (GNNs)~\citep{mavromatis2022rearev}, which  are powerful graph representation learners, to handle the complex graph information stored in the KG. Although GNNs cannot understand natural language the same way LLMs do, \grag repurposes their graph processing power for retrieval.  First, a GNN reasons over a dense KG subgraph to retrieve answer candidates for a given question. Second, the shortest paths in the KG  that connect question entities and GNN-based answers are extracted to represent useful KG reasoning paths. The extracted paths are verbalized and given as input for LLM reasoning with RAG. 
+Furthermore, we show that \grag can be augmented with LLM-based retrievers to further boost KGQA performance.
+Experimental results show \grag's superiority over competing RAG-based systems for KGQA by outperforming them by up to 15.5\% points at complex KGQA performance (\Figref{fig:intro}). 
+Our \textbf{contributions} are summarized below:
+\begin{itemize}
+    \item \textbf{Framework}: \grag repurposes GNNs for KGQA retrieval to enhance the reasoning abilities of LLMs. In our \textsc{Gnn-Rag} framework, the GNN acts as a dense subgraph reasoner to extract useful graph information, while the LLM leverages its natural language processing ability for ultimate KGQA.  Moreover, our retrieval analysis (\Secref{sec:analysis}) guides the design of a retrieval augmentation (RA) technique to boost \gragx's performance (\Secref{sec:ret_aug}). 
+    \item \textbf{Effectiveness \& Faithfulness}: \grag achieves state-of-the-art performance in two widely
+used KGQA benchmarks (WebQSP and CWQ). \grag retrieves multi-hop information that is necessary for faithful LLM reasoning on complex questions (8.9--15.5\% improvement; see \Figref{fig:intro}).
+    \item \textbf{Efficiency}: \grag improves vanilla LLMs on KGQA performance without incurring additional LLM calls as existing RAG systems for KGQA require. In addition, \grag outperforms or matches GPT-4 performance with a 7B tuned LLM.
+\end{itemize}
+
+
+\section{Related Work}
+
+\textbf{KGQA Methods}. KGQA methods fall into two categories~\citep{lan2022complex}: (A) Semantic Parsing (SP) methods and (B) Information Retrieval (IR) methods. SP methods~\citep{sun2020sparqa,lan-jiang-2020-query,ye-etal-2022-rng} learn to transform the given question into a query of logical form, e.g., SPARQL query. The transformed query is then executed over the KG to obtain the answers. However, SP methods require ground-truth logical queries for training, which are time-consuming to annotate in practice, and may lead non-executable queries due to syntactical or semantic errors~\citep{das2021case,yu2022decaf}. IR methods~\citep{sun-etal-2018-open,sun2019pullnet} focus on the weakly-supervised KGQA setting, where only question-answer pairs are given for training. IR methods retrieve  KG information, e.g., a KG subgraph~\citep{zhang2022subgraph}, which is used as input during KGQA reasoning. In Appendix~\ref{app:analysis}, we analyze the reasoning abilities of the prevailing models (GNNs \& LLMs) for KGQA, and in  \Secref{sec:gnn-rag}, we propose \grag which leverages the strengths of both of these models.
+
+\textbf{Graph-augmented LMs}. Combining LMs with graphs that store information in natural language is an emerging research area~\citep{jin2023large}. There are two main directions, (i) methods that enhance LMs with \emph{latent} graph information~\citep{zhang2022greaselm,tian2024graph,huang2024can}, e.g., obtained by GNNs, and (ii) methods that insert \emph{verbalized} graph information at the input~\citep{UnifiedSKG,jiang2023structgpt,jin2024graph-cot}, similar to RAG. The methods of the first direction are limited because of the modality mismatch between language and graph, which can lead to inferior performance for knowledge-intensive tasks~\citep{mavromatis2024sempool}. On the other hand, methods of the second direction may fetch noisy information when the underlying graph is large and such information can decrease the LM's reasoning ability~\citep{wu2023retrieve,he2024gretriever}. \grag employs GNNs for information retrieval and RAG for KGQA reasoning, achieving superior performance over existing approaches. 
+
+
+
+\begin{figure*}[tb]
+    \centering
+    \includegraphics[width=1\linewidth]{figures/kgqa.pdf}
+    \caption{The landscape of existing KGQA methods. GNN-based methods reason on dense subgraphs as they can handle complex and multi-hop graph information. LLM-based methods employ the same LLM for both retrieval and reasoning due to its ability to understand natural language.}
+    \label{fig:retrieval-reasoning}
+\end{figure*}
+
+\section{Problem Statement \& Background} \label{sec:problem}
+
+\textbf{KGQA}. We are given a KG $\gG$ that contains facts represented as $(v,r,v')$, where $v$ denotes the head entity, $v'$ denotes the tail entity, and $r$ is the corresponding relation between the two entities.
+Given $\gG$ and a natural language question $q$, the task of KGQA is to extract a set of entities $\{a\} \in \gG$ that correctly answer $q$. Following previous works~\citep{lan2022complex}, question-answer pairs are given for training, but not the ground-truth paths that lead to the answers. 
+
+\textbf{Retrieval \& Reasoning}. As KGs usually contain millions of facts and nodes, a smaller question-specific subgraph $\gG_q$ is retrieved for a question $q$, e.g., via entity linking and neighbor extraction~\citep{yih2015semantic}. Ideally, all correct answers for the question are contained in the retrieved subgraph,  $\{a\} \in \gG_q$.
+The retrieved subgraph $\gG_q$ along with the question $q$ are used as input to a reasoning model, which outputs the correct answer(s). The prevailing reasoning models for the KGQA setting studied are GNNs and LLMs. 
+
+\textbf{GNNs}. KGQA can be regarded as a node classification problem, where KG entities are classified as answers vs. non-answers for a given question. 
+GNNs~\cite{kipf2016semi,velivckovic2017graph,schlichtkrull2018modeling} are powerful graph representation learners suited for tasks such as node classification. 
+GNNs update the representation $\vh_v^{(l)}$ of node $v$ at layer $l$ by aggregating messages $\vm^{(l)}_{vv'}$ from each neighbor $v'$. During KGQA, the message passing is also conditioned to the given question $q$~\citep{he2021improving}. For readability purposes, we present the following GNN update for KGQA,
+\begin{equation}
+    \vh_v^{(l)}= \psi \Big(\vh_v^{(l-1)}, \sum_{v' \in \mathcal{N}_v } \omega(q, r) \cdot \vm_{vv'}^{(l)} \Big),
+    \label{eq:gnn-th}
+\end{equation}
+where function $\omega(\cdot)$ measures how relevant relation $r$ of fact $(v, r, v')$ is to question $q$. Neighbor messages $\vm_{vv'}^{(l)}$ are aggregated by a sum-operator $\sum$, which is typically employed in GNNs. Function $\psi(\cdot)$ combines representations from consecutive GNN layers.
+
+
+
+
+\textbf{LLMs}. LLMs for KGQA use KG information to perform retrieval-augmented generation (RAG) as follows. The retrieved subgraph is first converted into natural language so that it can be processed by the LLM. The input given to the LLM contains the KG factual information along with the  question and a prompt. For instance, the input becomes ``\texttt{Knowledge: Jamaica $\rightarrow$ language\_spoken $\rightarrow$ English \textbackslash n Question: Which language do Jamaican people speak?}'', where the LLM has access to KG information for answering the question. 
+
+\textbf{Landscape of KGQA methods}. \Figref{fig:retrieval-reasoning} presents the landscape of existing KGQA methods with respect to KG retrieval and reasoning. GNN-based methods, such as GraftNet~\citep{sun-etal-2018-open}, NSM~\citep{he2021improving}, and ReaRev~\citep{mavromatis2022rearev}, reason over a dense KG subgraph leveraging the GNN's ability to handle complex graph information. 
+Recent LLM-based methods leverage the LLM's power for both retrieval and reasoning. ToG~\citep{sun2024tog} uses the LLM to retrieve relevant facts hop-by-hop. RoG~\citep{luo2024rog} uses the LLM to generate plausible relation paths which are then mapped on the KG to retrieve the relevant information.
+
+\textbf{LLM-based Retriever}. We present an example of an LLM-based retriever (RoG; ~\citep{luo2024rog}). Given training question-answer pairs, RoG extracts the shortest paths to the answers starting from question entities for fine-tuning the retriever. Based on the extracted paths, an LLM (LLaMA2-Chat-7B~\citep{touvron2023llama}) is fine-tuned to generate reasoning paths given a question $q$ as 
+\begin{equation}
+    \text{LLM}(\text{prompt}, q) \Longrightarrow \{ r_1 \rightarrow \cdots \rightarrow  r_t \}_k,
+    \label{eq:rog}
+\end{equation}
+where the prompt is ``\texttt{Please generate a valid relation path that can be helpful for answering the following question: \{Question\}}''.
+Beam-search decoding is used to generate $k$ diverse sets of reasoning paths for better answer coverage, e.g., relations \texttt{\{<official\_language>, <language\_spoken>\}} for the question ``\texttt{Which language do Jamaican people speak?}''. The generated paths are mapped on the KG, starting from the question entities, in order to retrieve the intermediate entities for RAG, e.g.,  \texttt{<Jamaica $\rightarrow$ language\_spoken $\rightarrow$ English>}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{\grag} \label{sec:gnn-rag}
+
+We introduce \textsc{Gnn-Rag}, a novel method for combining language understanding abilities of LLMs with the reasoning abilities of GNNs in a retrieval-augmented generation (RAG) style. We provide the overall framework in \Figref{fig:gnn-rag}.  First, a GNN reasons over a dense KG subgraph to retrieve answer candidates for a given question. Second, the shortest paths in the KG  that connect question entities and GNN-based answers are extracted to represent useful KG reasoning paths. The extracted paths are verbalized and given as input for LLM reasoning with RAG. In our \textsc{Gnn-Rag} framework, the GNN acts as a dense subgraph reasoner to extract useful graph information, while the LLM leverages its natural language processing ability for ultimate KGQA.
+
+\begin{figure*}[tb]
+    \centering
+    \includegraphics[width=0.9\linewidth]{figures/GNN-RAG.pdf}
+    \caption{\grag: The GNN reasons over a dense subgraph to retrieve candidate answers, along with the corresponding reasoning paths (shortest paths from question entities to answers). The retrieved reasoning paths --optionally combined with retrieval augmentation (RA)-- are verbalized and given to the LLM for RAG.}
+    \label{fig:gnn-rag}
+\end{figure*}
+
+\subsection{GNN} \label{sec:gnn}
+
+In order to retrieve high-quality reasoning paths via \grag, we leverage state-of-the-art GNNs for KGQA. We prefer GNNs over other KGQA methods, e.g., embedding-based methods~\citep{saxena2020improving}, due to their ability to handle  complex graph interactions and answer multi-hop questions. GNNs mark themselves as good candidates for retrieval due to their architectural benefit of exploring diverse reasoning paths~\citep{mavromatis2022rearev,choi2024nutrea} that  result in high answer recall.
+
+
+
+
+
+
+
+When GNN reasoning is completed ($L$ GNN updates via \Eqref{eq:gnn-th}), all nodes in the subgraph are scored as answers vs. non-answers based on their final GNN representations $\vh_v^{(L)}$, followed by the $\softmax(\cdot)$ operation. The GNN parameters are optimized via node classification (answers vs. non-answers) using the training question-answer pairs. During inference, the nodes with the highest probability scores, e.g., above a probability threshold, are returned as candidate answers, along with the shortest paths connecting the question entities with the candidate answers (reasoning paths). The retrieved reasoning paths are used as input for LLM-based RAG. 
+
+Different GNNs may fetch different reasoning paths for RAG. As presented in ~\Eqref{eq:inst}, GNN reasoning depends on the question-relation matching operation $\omega(q,r)$. A common implementation of $\omega(q,r)$ is  $\phi(\vq^{(k)} \odot \vr)$~\citep{he2021improving},  where function $\phi$ is a  neural network, and $\odot$ is the element-wise multiplication.  Question representations $\vq{(k)}$ and KG relation representations $\vr$ are encoded via a shared pretrained LM~\citep{jiang2023unikgqa} as
+\begin{equation}
+    \vq^{(k)} = \gamma_k\big( \text{LM}(q)\big),  \; \; \vr = \gamma_c \big( \text{LM}(r) \big),
+    \label{eq:inst}
+\end{equation}
+where $\gamma_k$ are attention-based pooling neural networks so that different representations $\vq^{(k)}$ attend to different question tokens, and $\gamma_\text{c}$ is the \texttt{[CLS]} token pooling. 
+
+In Appendix~\ref{app:thm}, we develop a Theorem  that shows that the GNN's output depends on the question-relation matching operation $\omega(q,r)$ and as result, the choice of the LM in \Eqref{eq:inst} plays an important role regarding which answer nodes are retrieved. 
+Instead of trying different GNN architectures, we employ different LMs in \Eqref{eq:inst} that result into different output node representations. Specifically, we train two separate GNN models, one using pretrained LMs, such as  SBERT~\citep{reimers2019sentence}, and one using \lmsr, a pretrained LM for question-relation matching over the KG~\citep{zhang2022subgraph}. Our experimental results suggest that, although these GNNs retrieve different KG information, they both improve RAG-based KGQA.
+
+\subsection{LLM} \label{sec:llm}
+
+After obtaining the reasoning paths by \grag, we verbalize them and give them as input to a downstream LLM, such as ChatGPT or LLaMA. However, LLMs are sensitive to the input prompt template and the way that the graph information is verbalized.  
+
+To alleviate this issue, we opt to follow RAG prompt tuning~\citep{lin2023radit,zhang2024raft} for LLMs that have open weights and are feasible to train. A LLaMA2-Chat-7B model is fine-tuned based on the training question-answer pairs to generate a list of correct answers, given the prompt: \\
+``\texttt{Based on the reasoning paths, please answer the given question.\textbackslash n Reasoning Paths: \{Reasoning Paths\} \textbackslash n Question: \{Question\}}''. \\
+The reasoning paths are verbalised as  ``\texttt{\{question entity\} $\rightarrow$ \{relation\} $\rightarrow$ \{entity\} $\rightarrow$ $\cdots$ $\rightarrow$ \{relation\} $\rightarrow$ \{answer entity\} \textbackslash n}'' (see \Figref{fig:gnn-rag}). \\
+During training, the reasoning paths are the shortest paths from question entities to answer entities. During inference, the reasoning paths are obtained by \grag. 
+
+\subsection{Retrieval Analysis: Why GNNs \& Their Limitations} \label{sec:analysis}
+
+\input{tables/gnn_retrieval}
+GNNs leverage the graph structure to retrieve relevant parts of the KG that contain multi-hop information.  We provide experimental evidence on why GNNs are good retrievers for multi-hop KGQA. 
+We train two different GNNs, a deep one ($L=3$) and a shallow one ($L=1$), and measure their retrieval capabilities. We report the `Answer Coverage' metric, which evaluates whether the retriever is able to fetch at least one correct answer for RAG. Note that `Answer Coverage' does not measure downstream KGQA performance but whether the retriever fetches relevant KG information. `\#Input Tokens’ denotes the median number of the input tokens of the retrieved KG paths.
+Table~\ref{tab:analysis_retrieval} shows GNN retrieval results for single-hop and multi-hop questions of the WebQSP dataset compared to an LLM-based retriever (RoG; \Eqref{eq:rog}). The results indicate that deep GNNs ($L=3$) can handle the complex graph structure and retrieve useful \emph{multi-hop} information more effectively (\%Ans. Cov.) and efficiently (\#Input Tok.) than the LLM and the shallow GNN.
+
+On the other hand, the limitation of GNNs is for  simple (1-hop) questions, where accurate question-relation matching is more important than deep graph search (see our Theorem in Appendix~\ref{app:analysis} that states this GNN limitation). In such cases, the LLM retriever is better at selecting the right KG information due to its natural language understanding abilities (we provide an example later in \Figref{fig:faith-ra}).
+
+
+
+ 
+
+
+
+
+
+\subsection{Retrieval Augmentation (RA)} \label{sec:ret_aug}
+
+
+
+
+
+
+
+
+
+
+
+
+Retrieval augmentation (RA) combines the retrieved KG information from different approaches to increase diversity and answer recall. Motivated by the results in \Secref{sec:analysis}, we present a RA technique (\textbf{\gragx+RA}), which complements the GNN retriever with an LLM-based retriever to combine their strengths on multi-hop and single-hop questions, respectively. Specifically, we experiment with the RoG retrieval, which is described in \Eqref{eq:rog}.  During inference, we take the union of the reasoning paths retrieved by the two retrievers.
+
+A downside of LLM-based retrieval is that it requires multiple generations (beam-search decoding) to retrieve diverse paths, which trades efficiency for effectiveness (we provide a performance analysis in Appendix~\ref{app:analysis}). A cheaper alternative is to perform RA by combining the outputs of different GNNs, which are equipped with different LMs in \Eqref{eq:inst}. Our \textbf{\gragx+Ensemble} takes the union of the retrieved paths of the two different GNNs (GNN+SBERT \& GNN+\lmsr) as input for RAG. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Experimental Setup}
+
+\textbf{KGQA Datasets}.
+We experiment with two widely used KGQA benchmarks: WebQuestionsSP (WebQSP)~\citep{yih2015semantic}, 
+Complex WebQuestions 1.1 (CWQ)~\citep{talmor2018web}.
+\textbf{WebQSP} contains 4,737 natural language questions that are answerable using a subset Freebase KG~\citep{bollacker2008freebase}. The questions require up to 2-hop reasoning within this KG. \textbf{CWQ} contains 34,699 total complex questions that require up to 4-hops of reasoning over the KG. We provide the detailed dataset statistics in Appendix~\ref{app:exp}.
+
+\textbf{Implementation \& Evaluation}. 
+For subgraph retrieval, we use the linked entities and the pagerank algorithm to extract dense graph information~\citep{he2021improving}. We employ ReaRev~\citep{mavromatis2022rearev}, which is a GNN targeting at \emph{deep} KG reasoning (\Secref{sec:analysis}), for \grag.  The default implementation is to combine ReaRev with SBERT as the LM in \Eqref{eq:inst}. In addition, we combine ReaRev with \lmsr, which is obtained by following the implementation of SR~\citep{zhang2022subgraph}.  We employ RoG~\citep{luo2024rog} for RAG-based prompt tuning (\Secref{sec:llm}).
+For evaluation, we adopt Hit, Hits@1 (H@1), and F1 metrics. \underline{Hit} measures if \underline{any} of the true answers is found in the generated response, which is typically employed when evaluating LLMs. \underline{H@1} is the accuracy of the \underline{top/first} predicted answer. \underline{F1} takes into account the \underline{recall} (number of true answers found) and the \underline{precision} (number of false answers found) of the generated answers. 
+Further experimental setup details are provided in Appendix~\ref{app:exp}.
+
+
+\input{tables/main_results}
+
+
+\textbf{Competing Methods}.  We compare with SOTA GNN and LLM methods for KGQA~\citep{mavromatis2022rearev,li2023binder}. We also include earlier embedding-based methods~\citep{saxena2020improving} as well as zero-shot/few-shot LLMs~\citep{alpaca2023}. We do not compare with semantic parsing methods~\citep{yu2022decaf} as they use additional training data (SPARQL annotations), which are difficult  to obtain in practice. Furthermore, we compare \grag with LLM-based retrieval approaches~\citep{luo2024rog,sun2024tog} in terms of efficiency and effectiveness. 
+
+
+\section{Results}
+
+
+
+\textbf{Main Results}.
+Table~\ref{tab:main_results} presents performance results of different KGQA methods. \grag is the method that performs overall the best, achieving state-of-the-art results on the two KGQA benchmarks in almost all metrics. The results show that equipping LLMs with GNN-based retrieval boosts their reasoning ability significantly (GNN+LLM vs. KG+LLM). Specifically, \gragx+RA outperforms RoG by 5.0--6.1\% points at Hit, while it outperforms or matches ToG+GPT-4 performance, using an LLM with only 7B parameters and much fewer LLM calls -- we estimate ToG+GPT-4 has an overall cost above \$800, while \grag can be deployed on a single 24GB GPU. \gragx+RA outperforms ToG+ChatGPT by up to 14.5\% points at Hit and the best performing GNN by 5.3--9.5\% points at Hits@1 and by 0.7--10.7\% points at F1. 
+
+
+\input{tables/multi}
+
+\textbf{Multi-Hop \& Multi-Entity KGQA}. Table~\ref{tab:multi} compares performance results on multi-hop questions, where answers are more than one hop away from the question entities, and multi-entity questions, which have more than one question entities. \grag leverages GNNs to handle complex graph information and outperforms RoG (LLM-based retrieval) by 6.5--17.2\% points at F1 on WebQSP and by 8.5--8.9\% points at F1 on CWQ. In addition, \gragx+RA offers an additional improvement by up to 6.5\% points at F1. The results show that \grag is an effective retrieval method when deep graph search is important for successful KGQA. 
+
+
+\input{tables/retrieval} 
+
+
+
+\textbf{Retrieval Augmentation}. Table~\ref{tab:retrieval} compares different retrieval augmentations for \grag. The primary metric is F1, while the other metrics assess how well the methods retrieve relevant information from the KG. Based on the results, we make the following conclusions: 
+\begin{enumerate}
+    \item  GNN-based retrieval is more efficient (\#LLM Calls, \#Input Tokens) and effective (F1) than LLM-based retrieval, especially for complex questions (CWQ); see rows (e-f)  vs. row (d). 
+    \item Retrieval augmentation works the best (F1) when combining GNN-induced reasoning paths with LLM-induced reasoning paths as they fetch non-overlapping KG information (increased \#Input Tokens) that improves retrieval for KGQA; see rows (h) \& (i).
+    \item Augmenting all retrieval approaches does not necessarily cause improved performance (F1) as the long input (\#Input Tokens) may confuse the LLM; see rows (g/j) vs. rows (e/h).
+    \item Although the two GNNs perform differently at KGQA (F1), they both improve RAG with LLMs; see rows (a-b) vs. rows (e-f). \textit{We note though that weak GNNs are not effective retrievers (see Appendix~\ref{app:gnn-model})}.
+\end{enumerate}
+
+\input{tables/llms}
+In addition, \grag improves the vanilla LLM by up to 176\% at F1 without incurring additional LLM calls; see row (c) vs. row (e). Overall,  retrieval augmentation of GNN-induced and LLM-induced paths combines their strengths and achieves the best KGQA performance. 
+
+
+
+
+
+
+
+
+
+\textbf{Retrieval Effect on LLMs}. 
+Table~\ref{tab:llms} presents performance results of various LLMs using \grag or LLM-based retrievers (RoG and ToG). We report the Hit metric as it is difficult to extract the number of answers from LLM’s output. \grag (+RA) is the retrieval approach that achieves the  largest improvements for RAG. For instance, \gragx+RA improves ChatGPT by up to 6.5\% points at Hit over RoG and ToG. Moreover, \grag substantially improves the KGQA performance of weaker LLMs, such as Alpaca-7B and Flan-T5-xl. The improvement over RoG is up to 13.2\% points at Hit, while \grag outperforms LLaMA2-Chat-70B+ToG using a lightweight 7B LLaMA2 model. The results demonstrate that \grag can be integrated with other LLMs to improve their KGQA reasoning without retraining.
+
+
+
+
+\textbf{Case Studies on Faithfulness}. \Figref{fig:faith} illustrates two case studies from the CWQ dataset, showing how \grag improves LLM's faithfulness, i.e., how well the LLM follows the question's instructions and uses the right information from the KG. In both cases, \grag retrieves multi-hop information, which is necessary for answering the questions correctly. In the first case, \grag retrieves both crucial facts \texttt{<Gilfoyle $\rightarrow$ characters\_that\_have\_lived\_here $\rightarrow$ Toronto>} and  \texttt{<Toronto $\rightarrow$ province.capital $\rightarrow$ Ontario>} that are required to answer the question, unlike the KG-RAG baseline (RoG) that fetches only the first fact. In the second case, the KG-RAG baseline incorrectly retrieves  information about \texttt{<Erin Brockovich $\rightarrow$ person>} and not \texttt{<Erin Brockovich $\rightarrow$ film\_character>} that the question refers to. \grag uses GNNs to explore how \texttt{<Erin Brockovich>} and \texttt{<Michael Renault Mageau>} entities are related in the KG, resulting into retrieving facts about \texttt{<Erin Brockovich $\rightarrow$ film\_character>}. The retrieved facts include important information \texttt{<films\_with\_this\_crew\_job $\rightarrow$ Consultant>}.
+
+\Figref{fig:faith-ra} illustrates one case study from the WebQSP dataset, showing how RA (\Secref{sec:ret_aug}) improves \grag.  Initially, the GNN does not retrieve helpful information due to its limitation to understand natural language, i.e., that  \texttt{<jurisdiction.bodies>} usually ``\texttt{make the laws}''. \gragx+RA retrieves the right information, helping the LLM answer the question correctly.
+
+
+Further ablation studies are provided in Appendix~\ref{app:exp-res}. Limitations are discussed in Appendix~\ref{app:limit}.
+
+\begin{figure*}[tb]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/gnnrag-faith.pdf}
+    \caption{Two case studies that illustrate how \grag improves the LLM's faithfulness. In both cases, \grag retrieves \emph{multi-hop} information that is necessary for answering  the complex questions.}
+    \label{fig:faith}
+\end{figure*}
+
+
+
+\begin{figure*}[tb]
+    \centering
+    \includegraphics[width=0.95\linewidth]{figures/faith-ra.pdf}
+    \caption{One case study that illustrates the benefit of retrieval augmentation (RA). RA uses LLMs to fetch semantically relevant KG information, which may have been missed by the GNN.}
+    \label{fig:faith-ra}
+\end{figure*}
+
+\section{Conclusion}
+
+We introduce \grag, a novel method for combining the reasoning abilities of LLMs and
+GNNs for RAG-based KGQA. Our \textbf{contributions} are the following. (1) \textbf{Framework}: \grag repurposes GNNs for KGQA retrieval to enhance the reasoning
+abilities of LLMs. Moreover, our retrieval analysis guides the design of a
+retrieval augmentation technique to boost \grag performance. (2) \textbf{Effectiveness \& Faithfulness}: \grag achieves state-of-the-art performance in two
+widely used KGQA benchmarks (WebQSP and CWQ). Furthermore, \grag is shown to retrieve multi-hop information that is necessary for faithful LLM reasoning on complex questions. (3) \textbf{Efficiency}: \grag improves vanilla LLMs on KGQA performance without incurring additional LLM calls as existing RAG systems for KGQA require. In addition, \grag outperforms or matches GPT-4 performance with a 7B tuned LLM.
+
+\newpage
+
+\bibliography{GNN-RAG}
+\bibliographystyle{plainnat}
+
+\input{appendix}
+
+\end{document}

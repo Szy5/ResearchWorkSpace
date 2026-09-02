@@ -1,0 +1,56 @@
+\definecolor{LightCyan}{rgb}{0.9,0.95,1}
+\newcolumntype{b}{>{\columncolor{LightCyan}}c}
+
+
+\begin{table*}[tb]
+	\centering
+	\caption{Performance comparison (F1 at KGQA) of different retrieval augmentations (\Secref{sec:ret_aug}). `\#LLM Calls' are controlled by the hyperparameter $k$ (number of beams) during beam-search decoding for LLM-based retrievers,  `\#Input Tokens' denotes the median number of tokens.}
+	\label{tab:retrieval}%
+	\resizebox{0.9\columnwidth}{!}{
+	\begin{threeparttable}
+		\begin{tabular}{@{}ll|cc|b@{}}
+			\toprule
+			 \multirow{3}{*}{\textit{\textcolor{olive}{Retriever}}} & \multirow{3}{*}{\textit{\textcolor{blue}{KGQA Model}}} & \multicolumn{2}{c|}{\textcolor{olive}{\textit{Input/Graph Statistics}}} & \multicolumn{1}{c}{\textit{\textcolor{blue}{\textbf{KGQA Performance}}}} \\
+        & & \#LLM Calls & \#Input Tokens &   \textbf{F1} (\%)\\ 
+        & & & WebQSP / CWQ & WebQSP / CWQ  \\
+            \midrule
+            a) Dense Subgraph & \textcolor{teal}{(i)} \;GNN + SBERT (Eq.~\ref{eq:inst}) & 0 & \multirow{2}{*}{--}  & 70.9 / 47.8\\
+             b) Dense Subgraph & \textcolor{violet}{(ii)} GNN + \lmsr (Eq.~\ref{eq:inst}) & 0 & &  72.8 / 49.1\\
+             
+            \midrule
+            c) None & \multirow{4}{*}{LLaMA2-Chat-7B (tuned)} & 0 & 59 / 70 & 49.7 / 33.8\\
+             d) \textcolor{brown}{(iii)} RoG (LLM-based; Eq.~\ref{eq:rog}) &  & 3 & 202 / 325  & 70.8 / 56.2\\
+             
+             e) \grag (\textit{default}): \textcolor{teal}{(i)} &  & 0 & 144 / 207  & 71.3 / 59.4 \\ 
+             f) \gragx: \textcolor{violet}{(ii)} & & 0 & 124 / 206  & 71.5 / 58.9 \\
+             \midrule
+             g) \gragx+Ensemble: \textcolor{teal}{(i)} + \textcolor{violet}{(ii)} & \multirow{4}{*}{LLaMA2-Chat-7B (tuned)} & 0 &  156 / 281 &  71.7 / 57.5\\
+             h) \gragx+RA (\textit{default}): \textcolor{teal}{(i)} + \textcolor{brown}{(iii)} & & 3 & 299 / 540  & \textbf{73.5} / 60.4\\
+            i) \gragx+RA: \textcolor{violet}{(ii)} + \textcolor{brown}{(iii)} &  & 3 & 267 / 532  & 73.4 / \textbf{61.0} \\
+            j) \gragx+All: \textcolor{teal}{(i)} + \textcolor{violet}{(ii)} + \textcolor{brown}{(iii)} &  & 3 & 330 / 668  & 72.3 / 59.1 \\
+            
+			
+			\bottomrule
+		\end{tabular}%
+        
+		\begin{tablenotes}
+        \item For other experiments, we use the \textit{default} \grag  and \gragx+RA  implementations. The GNN used is ReaRev.
+        \end{tablenotes}
+		\end{threeparttable}
+}
+
+
+\end{table*}%
+
+
+
+\definecolor{LightCyan}{rgb}{0.9,0.95,1}
+\newcolumntype{b}{>{\columncolor{LightCyan}}c}
+
+
+             
+             
+            
+			
+
+

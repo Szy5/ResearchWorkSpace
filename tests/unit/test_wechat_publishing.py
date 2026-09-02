@@ -170,6 +170,43 @@ def test_publish_artifact_html_to_wechat_uses_env_settings_and_creates_draft(tmp
     assert "https://mmbiz.example/demo.jpg" in str(client.drafts[0]["content"])
 
 
+def test_publish_auto_generates_title_cover_when_missing(tmp_path: Path) -> None:
+    artifact_dir = tmp_path / "artifacts" / "GraphWalker"
+    artifact_dir.mkdir(parents=True)
+    (artifact_dir / "article.html").write_text("<section>正文</section>", encoding="utf-8")
+    client = FakeWeChatClient()
+
+    result = publish_artifact_html_to_wechat(
+        FakeSettings(tmp_path),
+        WeChatDraftOptions(
+            slug="GraphWalker",
+            html_path="article.html",
+            title="GraphWalker：自动封面",
+        ),
+        client=client,  # type: ignore[arg-type]
+    )
+
+    assert result.title == "GraphWalker：自动封面"
+    assert result.thumb_media_id == "cover-media-id"
+    assert len(client.cover_paths) == 1
+    cover = client.cover_paths[0]
+    assert cover.name == "article_wechat_cover.jpg"
+    assert cover.exists()
+    assert cover.stat().st_size > 1000
+    assert client.drafts[0]["title"] == "GraphWalker：自动封面"
+
+
+def test_default_wechat_title_truncates() -> None:
+    from paper_wiki.publishing.cover_generator import default_wechat_title
+
+    assert default_wechat_title("  hello  world  ") == "hello world"
+    assert default_wechat_title(None, fallback="fallback") == "fallback"
+    long_title = "测" * 80
+    capped = default_wechat_title(long_title)
+    assert len(capped) <= 64
+    assert capped.endswith("…")
+
+
 def test_wechat_create_draft_sends_utf8_json_without_ascii_escaping() -> None:
     session = RecordingSession()
     client = WeChatClient("appid", "secret", session=session)  # type: ignore[arg-type]

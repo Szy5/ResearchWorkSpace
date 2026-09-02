@@ -1,0 +1,101 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2402.11163",
+  "created_at": "2026-07-14T15:20:28.897794+00:00",
+  "updated_at": "2026-07-15T08:36:12.715045+00:00",
+  "paper": {
+    "title": "KG-Agent: An Efficient Autonomous Agent Framework for Complex Reasoning over Knowledge Graph",
+    "authors": [
+      "Jinhao Jiang",
+      "Kun Zhou",
+      "Wayne Xin Zhao",
+      "Yang Song",
+      "Chen Zhu",
+      "Hengshu Zhu",
+      "Ji-Rong Wen"
+    ],
+    "abstract": "In this paper, we aim to improve the reasoning ability of large language models~(LLMs) over knowledge graphs~(KGs) to answer complex questions. Inspired by existing methods that design the interaction strategy between LLMs and KG, we propose an autonomous LLM-based agent framework, called KG-Agent, which enables a small LLM to actively make decisions until finishing the reasoning process over KGs. In KG-Agent, we integrate the LLM, multifunctional toolbox, KG-based executor, and knowledge memory, and develop an iteration mechanism that autonomously selects the tool then updates the memory for reasoning over KG. To guarantee the effectiveness, we leverage program language to formulate the multi-hop reasoning process over the KG, and synthesize a code-based instruction dataset to fine-tune the base LLM. Extensive experiments demonstrate that only using 10K samples for tuning LLaMA-7B can outperform state-of-the-art methods using larger LLMs or more data, on both in-domain and out-domain datasets. Our code and data will be publicly released.",
+    "year": 2025,
+    "venue": "Acl ",
+    "arxiv_id": "2402.11163",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-14",
+    "blog_html_path": "summary_排版_摸鱼绿(moyu-green).html",
+    "blog_html_generated_at": "2026-07-15T08:36:12.714905+00:00"
+  },
+  "source": {
+    "raw_dir": "raw/2402.11163",
+    "entry_file": "emnlp2023.tex",
+    "source_files": [
+      {
+        "path": "emnlp2023.tex",
+        "sha256": "e9e796cffe030646607ac365cc400d8b456dd5d70f94738054b18fbd7fd66b8c",
+        "bytes": 16882
+      },
+      {
+        "path": "sec-intro.tex",
+        "sha256": "24c69684a540444f8b222da83af8b6c466c039c8de877f04c70b6381509a9848",
+        "bytes": 4144
+      },
+      {
+        "path": "sec-related_work.tex",
+        "sha256": "945291e190b275fde30cfce56a88af719546156e1e5ca26010e2fcb2f1d42bb1",
+        "bytes": 2743
+      },
+      {
+        "path": "sec-preliminary.tex",
+        "sha256": "4f67579eb88d72c018aec3d12d4008418c98510dfce39d0fe1b80eab9da7cf08",
+        "bytes": 1845
+      },
+      {
+        "path": "sec-approach.tex",
+        "sha256": "fce166f5eaa24863454d8dc276faeb85f40bcfa701bee3e193e6d19e774cfa0f",
+        "bytes": 17859
+      },
+      {
+        "path": "sec-experiment.tex",
+        "sha256": "51ce7cb4f0da08b609a4bcfdf88a968b4e7be8acbc85bea916dbfe2b1087279d",
+        "bytes": 9813
+      },
+      {
+        "path": "sec-conclusion.tex",
+        "sha256": "1e4b38b212575d15b97e936056f4c56cb9ad8cdca04890120d435212e3145fb7",
+        "bytes": 1394
+      },
+      {
+        "path": "sec-limitation.tex",
+        "sha256": "da07e467a478dc936ad7c7d25acf82d0abf1655928ee13b59031a525fedb9bb2",
+        "bytes": 1185
+      },
+      {
+        "path": "sec-appendix.tex",
+        "sha256": "f761acf0fc5c1343860233cfaa85d60ef835a006b52e0d311125ddb83c15e39c",
+        "bytes": 16532
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 21,
+    "figures": 3,
+    "references": 119
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 41, column 1):\nunexpected Tok (line 41, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 41, column 1):\nunexpected Tok (line 41, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

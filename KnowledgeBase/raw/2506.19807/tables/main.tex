@@ -1,0 +1,37 @@
+\begin{table*}[t]
+    \centering
+    \footnotesize 
+    \setlength{\tabcolsep}{3.0pt} 
+    \begin{tabular}{l|cc|cc@{\hskip 10pt}cc|cc@{\hskip 10pt}cc|cc}
+    \toprule
+    \multirow{3}{*}{\makecell[c]{\textbf{Methods}}} & \multicolumn{10}{c|}{\textbf{Hallucination}} & \multicolumn{2}{c}{\textbf{Reasoning}} \\
+    \cmidrule(lr){2-11} \cmidrule(lr){12-13}
+    & \multicolumn{2}{c|}{\textbf{TruthfulQA}} & \multicolumn{4}{c|}{\textbf{SimpleQA}} & \multicolumn{4}{c|}{\textbf{ChineseSimpleQA}} & \multirow{2}{*}{\makecell[c]{\small\textbf{GPQA}\\\small\textbf{Diamond}}} & \multirow{2}{*}{\small\textbf{AIME}}\\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-7} \cmidrule(lr){8-11}
+    & \small\textbf{Rouge} & \small\textbf{Bleu} & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & & \\
+    \midrule
+    \rowcolor{lightgray} \multicolumn{13}{c}{\textit{\textbf{Skywork-OR1-7B-Preview}}} \\
+    \midrule
+    \text{Zero-shot}    & 56.67 & \textbf{55.33} & 2.97 & 76.33 & 21.33 & 2.61 & 11.84 & 67.00 & 24.00 & 10.23 & 37.37 & 26.67  \\
+    \text{Self-Refine}   & \underline{58.00} & 54.00 & 3.90 & \perf{74.00}{-2.33} & 23.00 & 3.90 & 9.82 & \perf{67.33}{+0.33} & 25.33 & 8.40 & 46.67 & 36.67 \\
+    \text{FactTune-FS}       & \textbf{58.33} & 50.33 & 0.76 & \perf{43.33}{-33.0} & \textbf{56.33} & 0.46 & 8.52 & \perf{68.00}{+1.00} & \underline{25.67} & 7.26 & 40.91 & 26.67  \\
+    \text{DPO}                 & 52.67 & 49.33 & \underline{4.81} & \perf{85.66}{+9.33} & 10.00 & \underline{4.56} & \underline{12.64} & \perf{78.33}{+11.3} & 10.33 & \underline{11.95} & 34.85 & 30.00 \\
+    \text{SFT}                 & 57.67 & 51.67 & \textbf{11.45} & \perf{77.33}{+1.00} & 12.67& \textbf{10.68} & \textbf{19.70}&\perf{70.67}{+3.67}& 12.00& \textbf{18.44}& 34.85 & 23.33  \\
+     \text{TruthRL}              & 57.33 & 50.60 & 3.78 & \perf{56.00}{-20.3} & \underline{41.67} & 2.95 & 10.58 & \perf{62.00}{-5.00} & 30.67 & 8.66 & 39.39 & 26.67 \\
+    \text{KnowRL}                & 57.67 & \underline{54.33} & 3.21 & \perf{60.33}{-16.0} & 37.67 & 2.46 & 12.29 & \perf{52.33}{-14.7} & \textbf{40.33} & 9.19 & 42.42 $\uparrow$ & 36.67 $\uparrow$ \\[3pt]
+    \midrule
+    \rowcolor{lightgray} \multicolumn{13}{c}{\textit{\textbf{DeepSeek-R1-Distill-Qwen-7B}}} \\
+    \midrule
+    \text{Zero-shot}    & 53.33 & 51.00 & 2.09 & 78.00 & 20.33 & 1.86 & 8.07 & 68.33 & 25.67 & 6.88 & 40.91 & 30.00  \\
+    \text{Self-Refine}         & 55.00 & 50.33 & 2.52 & \perf{77.33}{-0.67} & 20.67 & 2.23 & 8.11 & \perf{68.00}{-0.33} & \underline{26.00} & 6.90 & 45.45 & 33.33  \\
+    \text{FactTune-FS}         & 54.00 & 50.00 & 2.72 & \perf{59.67}{-18.3} & \underline{38.67} & 2.07 & 10.24 & \perf{76.00}{+7.67} & 15.33 & 9.39 & 38.89 & 30.00  \\
+    \text{DPO}                 & 54.00 & 51.00 & \underline{4.35} & \perf{88.00}{+10.0} & 8.00 & \underline{4.16} & \underline{13.14} & \perf{79.33}{+11.0} & 8.67 & \underline{12.54} & 37.37 & 30.00 \\
+    \text{SFT}                 & \textbf{57.67} & \underline{52.00} & \textbf{8.42} & \perf{83.33}{+5.33}& 9.00 & \textbf{8.03} & \textbf{19.58} & \perf{76.67}{+8.34}& 4.67& \textbf{19.11} & 36.36 & 26.67  \\
+    \text{TruthRL}              & \textbf{57.67} & \textbf{54.67} & 2.14 & \perf{61.00}{-17.0} & 37.67 & 1.64 & 5.76 & \perf{60.00}{-8.33} & \textbf{36.33} & 4.48 & 39.39 & 26.67 \\
+    \text{KnowRL}                & \underline{57.33} & 51.60 & 2.81 & \perf{57.67}{-20.3} & \textbf{40.67} & 2.09 & 10.26 & \perf{58.33}{-10.0} & 35.00 & 8.08 & 36.87 $\downarrow$ &  33.33 $\uparrow$ \\
+    \bottomrule
+    \end{tabular}
+    \caption{\textbf{Main Experimental Results.} Performance of KnowRL compared against baselines on the Skywork-OR1-7B-Preview and DeepSeek-R1-Distill-Qwen-7B models. Zero-shot refers to the original model performance. The best results are marked in \textbf{bold}.}
+    \vspace{-3ex}
+    \label{main-exp}
+\end{table*}

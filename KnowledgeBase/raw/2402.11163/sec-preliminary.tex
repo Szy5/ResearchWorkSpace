@@ -1,0 +1,16 @@
+\section{Preliminary}
+\label{preliminary}
+
+In this section, we first formally define knowledge graph~(KG), and then formalize the complex knowledge reasoning task based on KG.
+
+\paratitle{Knowledge Graph~(KG).} 
+A knowledge graph typically consists of a large number of fact triples, expressed as $\mathcal{G} = \{\langle e,r,e' \rangle| e,e' \in \mathcal{E}, r \in \mathcal{R}\}$, where $\mathcal{E}$ and $\mathcal{R}$ denote the entity set and relation set, respectively.
+A triple $\langle e,r,e' \rangle$ describes a factual knowledge that a relation $r$ exists between the head entity $e$ and tail entity $e'$. 
+Each entity $e$ is assigned a unique entity ID (or string value), and belongs to one entity type $t$ such as \emph{Country} and \emph{Person}.  
+Furthermore, we introduce \emph{neighboring relations} to denote both the incoming and outgoing relations for a set of entities $\{e\}$, denoted as $\mathcal{R}_{\{e\}} = \{r | \langle e, r, e' \rangle \in \mathcal{G}\} \cup \{r | \langle e', r, e \rangle \in \mathcal{G} \}$.
+
+\paratitle{Problem Formulation.} 
+In this work, we assume that a KG is available and contains the answer entities for the given natural language question.
+Our objective is to develop a LLM-based agent that can autonomously infer the answer to the question based on the given KG. 
+As it has been shown that domain-specific interface is helpful for LLMs to manipulate the structured data~\cite{Jiang-2023-arxiv-StructGPT}, we further assume that a toolbox can be provided to facilitate the access to the information of KG. 
+Formally, given a natural language question $q$, and a toolbox $\mathcal{T}$ and a KG $\mathcal{G}$, we aim to develop a capable agent to deduce the final answers $A_q=\{e\}$ for the question $q$ by leveraging the tools in $\mathcal{T}$ and the knowledge information in $\mathcal{G}$.

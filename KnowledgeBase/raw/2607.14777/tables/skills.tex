@@ -1,0 +1,138 @@
+% Requires:
+% \usepackage{booktabs,tabularx,array}
+% \usepackage[table]{xcolor}
+
+\begin{table*}[ht!]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\caption{\textbf{Episode-level skills extracted by the trajectory analyzer.}
+For each dataset, we present one successful and one failed trajectory.
+Skills derived from successful episodes capture reusable workflows, whereas
+those derived from failed episodes distill actionable failure-avoidance rules.}
+\label{tab:episode_level_skills}
+\vspace{0.1in}
+
+\begin{tabularx}{\textwidth}{
+  >{\raggedright\arraybackslash}p{0.10\linewidth}
+  >{\raggedright\arraybackslash}p{0.31\linewidth}
+  >{\raggedright\arraybackslash}X
+}
+\toprule
+% Outcome & Task & Episode-level skill \\
+\multicolumn{1}{c}{\textbf{Outcome}} &
+\multicolumn{1}{c}{\textbf{Task}} &
+\multicolumn{1}{c}{\textbf{Episode-level skill}} \\
+\midrule
+
+\rowcolor{gray!15}
+\multicolumn{3}{l}{\textbf{ALFWorld}} \\
+
+Success &
+clean some spatula and put it in diningtable. &
+Workflow: When tasked to clean and place an object, first locate the target
+object, take it to a cleaning station, clean it, and finally move it to the
+target location. \\
+
+Failure &
+put a clean spatula in drawer. &
+Avoid moving an object to the target location before verifying both inventory
+and required object state. Confirm the object is held and already satisfies
+required conditions such as cleanliness; avoid repeatedly moving objects
+without checking state or placement success. \\
+
+\addlinespace
+\rowcolor{gray!15}
+\multicolumn{3}{l}{\textbf{WebShop}} \\
+
+Success &
+Find me women's jumpsuits, rompers \& overalls with button closure, quality
+polyester, polyester spandex, long sleeve for daily wear with color: hot pink,
+and size: x-large, and price lower than \$40.00 dollars. &
+Workflow: Use a structured search query covering all required attributes,
+choose a result matching the core product category, then verify and select
+required options such as color and size before clicking Buy Now. \\
+
+Failure &
+Find me machine wash men's dress shirts with polyester heathers, heathers
+cotton, cotton heather, needle sleeve, classic fit with color: navy, and fit
+type: youth, and size: 3x-large, and price lower than \$50.00 dollars. &
+Avoid clicking irrelevant search results or purchasing partial matches. If
+results do not match the target product type, reformulate the query; on the
+product page, select each required attribute once and verify material, color,
+size, fit, and price before Buy Now. \\
+
+\addlinespace
+\rowcolor{gray!15}
+\multicolumn{3}{l}{\textbf{Search}} \\
+
+Success &
+Tie a Yellow Ribbon is the third album by American popular music group Dawn
+(Michael Anthony Orlando Cassavitas, Telma Hopkins \& Joyce Vincent Wilson)
+released in which year? &
+Workflow: For a specific factual query, search the exact query, then extract
+and verify the answer directly from the search results before responding. \\
+
+Failure &
+Le Juge is a comic whose story is inspired by a man who called himself what? &
+Avoid prematurely inferring an answer from search results that do not directly
+address the core query. First verify the relevant entity/relation, then extract
+the requested attribute. \\
+
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+
+% % Requires: \usepackage{booktabs,tabularx,array}
+% \begin{table*}[ht!]
+% \centering
+% \small
+% \setlength{\tabcolsep}{4pt}
+% \renewcommand{\arraystretch}{1.15}
+% \caption{\textbf{Episode-level skills extracted by the trajectory analyzer.} For each dataset, we present one successful and one failed trajectory. Skills derived from successful episodes capture reusable workflows, whereas those derived from failed episodes distill actionable failure-avoidance rules.}
+% \label{tab:episode_level_skills}
+% \begin{tabularx}{\textwidth}{
+%   >{\raggedright\arraybackslash}p{0.10\linewidth}
+%   >{\raggedright\arraybackslash}p{0.10\linewidth}
+%   >{\raggedright\arraybackslash}p{0.30\linewidth}
+%   >{\raggedright\arraybackslash}X
+% }
+% \toprule
+% Dataset & Outcome & Task & Episode-level skill \\
+% \midrule
+
+% ALFWorld & Success &
+% clean some spatula and put it in diningtable. &
+% Workflow: When tasked to clean and place an object, first locate the target object, take it to a cleaning station, clean it, and finally move it to the target location. \\
+
+% ALFWorld & Failure &
+% put a clean spatula in drawer. &
+% Avoid moving an object to the target location before verifying both inventory and required object state. Confirm the object is held and already satisfies required conditions such as cleanliness; avoid repeatedly moving objects without checking state or placement success. \\
+
+% \midrule
+
+% WebShop & Success &
+% Find me women's jumpsuits, rompers \& overalls with button closure, quality polyester, polyester spandex, long sleeve for daily wear with color: hot pink, and size: x-large, and price lower than \$40.00 dollars. &
+% Workflow: Use a structured search query covering all required attributes, choose a result matching the core product category, then verify and select required options such as color and size before clicking Buy Now. \\
+
+% WebShop & Failure &
+% Find me machine wash men's dress shirts with polyester heathers, heathers cotton, cotton heather, needle sleeve, classic fit with color: navy, and fit type: youth, and size: 3x-large, and price lower than \$50.00 dollars. &
+% Avoid clicking irrelevant search results or purchasing partial matches. If results do not match the target product type, reformulate the query; on the product page, select each required attribute once and verify material, color, size, fit, and price before Buy Now. \\
+
+% \midrule
+
+% Search & Success &
+% Tie a Yellow Ribbon is the third album by American popular music group Dawn (Michael Anthony Orlando Cassavitas, Telma Hopkins \& Joyce Vincent Wilson) released in which year? &
+% Workflow: For a specific factual query, search the exact query, then extract and verify the answer directly from the search results before responding. \\
+
+% Search & Failure &
+% Le Juge is a comic whose story is inspired by a man who called himself what? &
+% Avoid prematurely inferring an answer from search results that do not directly address the core query. First verify the relevant entity/relation, then extract the requested attribute. \\
+
+% \bottomrule
+% \end{tabularx}
+% \end{table*}
+
+

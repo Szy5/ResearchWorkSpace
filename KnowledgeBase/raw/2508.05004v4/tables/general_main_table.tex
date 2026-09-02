@@ -1,0 +1,42 @@
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3mm}{
+\caption{Results on general-domain reasoning benchmarks. The table compares the Base Model, a \method{} (\raisebox{-0.2ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger) baseline, and our  \method{}. The peak performance is highlighted in \textbf{bold}.}
+\label{tab:general_domain_results}
+% \vspace{-0.1in}
+\scalebox{0.92}{
+\begin{tabular}{@{}l>{\columncolor{gray!15}}cccc@{}}
+\toprule
+\textbf{Model Name} & \textbf{Overall Avg.} &  \textbf{SuperGPQA} & \textbf{MMLU-Pro} & \textbf{BBEH} \\
+\midrule
+\multicolumn{5}{@{}l}{\textit{Qwen3-4B-Base}} \\
+\quad Base Model (w/o training) & 26.34 & 20.88 & 50.58 & 7.57 \\
+\quad Absolute Zero & 29.33 & 27.10 & 52.60 & 8.30 \\
+
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger) & 28.52 & 24.77 & 54.20 & 6.59 \\
+\textbf{\quad \method{} (our method)} & \textbf{31.15} & \textbf{27.55} & \textbf{55.47} & \textbf{10.42} \\
+\midrule[0.5pt]
+\multicolumn{5}{@{}l}{\textit{Qwen3-8B-Base}} \\
+\quad Base Model (w/o training) & 31.98 & 28.33 & 58.97 & 8.63 \\
+\quad Absolute Zero & 34.40 & 31.89 & 60.50 & 10.80 \\
+
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger) & 31.29       &  30.12       & 54.14       & 9.60       \\
+
+\textbf{\quad \method{} (our method)} & \textbf{34.50} & \textbf{31.38} & \textbf{61.53} & \textbf{10.60} \\
+\midrule\midrule
+\multicolumn{5}{@{}l}{\textit{OctoThinker-3B}} \\
+\quad Base Model (w/o training) & 7.47 & 10.09 & 10.87 & 1.46 \\
+\quad Absolute Zero & 16.03 & 17.70 & 24.30 & 6.10 \\
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger) & 10.04   & 11.19       & 14.53       & \textbf{4.40}       \\
+\textbf{\quad \method{} (our method)} & \textbf{11.12}  & \textbf{12.44} & \textbf{16.71} & 4.20 \\
+\midrule[0.5pt]
+\multicolumn{5}{@{}l}{\textit{OctoThinker-8B}} \\
+\quad Base Model (w/o training) & 11.70 & 13.26 & 20.21 & 1.64 \\
+\quad Absolute Zero & 18.40 & 18.80 & 31.40 & 5.00 \\
+\quad \method{} (\raisebox{-0.3ex}{\includegraphics[width=0.02\textwidth]{figures/snowflake.png}} challenger) & 21.30  & 16.99 & \textbf{41.46} & 5.46 \\
+\textbf{\quad \method{} (our method)} & \textbf{23.00} & \textbf{19.82} & 40.92 & \textbf{8.25} \\
+\bottomrule
+\end{tabular}}}
+\end{table*}

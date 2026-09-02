@@ -1,0 +1,21 @@
+
+
+\section{Conclusion}
+We present \techfull (\tech), a first step toward training superintelligent software agents through self-play.
+Operating on minimal data assumptions by requiring only sandboxed environments with source code and dependencies, \tech enables agents to autonomously generate and solve increasingly complex bugs without relying on human-curated issue descriptions or test suites.
+Our evaluation on \sbv and \sbp benchmarks demonstrates that self-play enables steady self-improvement during training and outperforms human-data baselines over the course of training. Our results, albeit early, suggest a path where agents autonomously gather extensive learning experiences from real-world software repositories, ultimately enabling superintelligent systems that exceed human capabilities in understanding how systems are constructed, solving novel challenges, and autonomously creating new software from scratch.
+
+\section*{Acknowledgement}
+
+We thank Taco Cohen, Ori Yoran, Zijian Wang, John Yang, Chen Zhu, Quentin Carbonneaux, Kunhao Zheng, Jannik Kossen, Dmitrii Pedchenko, Sten Sootla, Jordi Armengol Estape, and Zacharias Fisches for their valuable discussions and infra assistance;
+Don Landrum and Eslam Elnikety for their timely support in resolving container infrastructure issues; Josh Song and Elisa Cascardi for their prompt feedback in the paper review process.
+
+We also appreciate the valuable feedback from the reviewers that help us improve the paper. This work was partially supported by NSF grant CCF-2131943.
+
+\section*{Impact Statement}
+This work studies self-play reinforcement learning as a way to improve software engineering agents without relying on human-curated issue descriptions or test suites. By enabling agents to autonomously generate and solve bugs in real-world codebases, this approach may reduce data collection costs and improve scalability of training for software engineering tasks. It could support more effective automated debugging and maintenance, particularly in settings where labeled data is scarce or outdated.
+
+However, the ability to intentionally generate bugs and weaken tests also introduces risks, such as misuse for producing vulnerable or misleading code artifacts. Careful sandboxing, responsible deployment, and adherence to ethical guidelines are therefore necessary to ensure this technique is used safely and constructively.
+
+
+

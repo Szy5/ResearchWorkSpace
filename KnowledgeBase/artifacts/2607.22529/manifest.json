@@ -1,0 +1,127 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2607.22529",
+  "created_at": "2026-07-29T04:45:36.540890+00:00",
+  "updated_at": "2026-08-06T04:36:23.294389+00:00",
+  "paper": {
+    "title": "Skill Self-Play: Pushing the Frontier of LLM Capability with Co-Evolving Skills",
+    "authors": [
+      "Siyuan Huang",
+      "Pengyu Cheng",
+      "Haotian Liu",
+      "Tao Chen",
+      "Yihao Liu",
+      "Jingwei Ni",
+      "Shijie Zhou",
+      "Ziyi Yang",
+      "Gangwei Jiang",
+      "Mengyu Zhou",
+      "Yu Cheng",
+      "Xiaoxi Jiang",
+      "Guanjun Jiang"
+    ],
+    "abstract": "LLM training is shifting from manual design and annotation to interaction-driven self-evolution. However, existing self-evolutionary methods face a fundamental dilemma between task diversity and verification reliability: environment-bound methods obtain precise feedback but confine learning to narrow domains, while open-ended self-generation broadens the task space but lacks reliable verification, allowing misleading rewards to pollute the training loop. We identify agent skills as a powerful middle ground to reconcile this tension: each skill ensures deep, verifiable execution in a specific scenario, while dynamic routing across skills maintains open-ended task variety. Leveraging this insight, we introduce Skill Self-Play (Skill-SP), a co-evolutionary framework comprising a proposer, a solver, and a dynamic skill controller. Orchestrated via a reinforcement learning loop, these components co-evolve in a continuous self-play loop: the proposer generates challenging tasks conditioned on dynamically sampled skills; the solver explores candidate solutions to push its capability boundaries; and the skill controller collects execution feedback to update and expand the skill library. This interactive co-evolution effectively bridges the gap between structured verification and open-ended exploration. Empirical evaluations on tool-use and reasoning benchmarks demonstrate that Skill-SP, serving as a robust evolution engine, consistently pushes the performance ceiling of competent backbones while catalyzing striking turnarounds for initially misaligned models. Our code is available at https://github.com/Qwen-Applications/skill-self-play.",
+    "year": 2027,
+    "venue": "",
+    "arxiv_id": "2607.22529",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-29",
+    "blog_html_path": "summary_排版_摸鱼绿(moyu-green).html",
+    "blog_html_generated_at": "2026-07-29T04:59:09.106474+00:00"
+  },
+  "source": {
+    "raw_dir": "raw/2607.22529",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "dcd1d0c513b231e5d1146fa400b12203c4a9a54ef872d46fdae4c893700b37bb",
+        "bytes": 8439
+      },
+      {
+        "path": "math_commands.tex",
+        "sha256": "73fc081116307e60a3e9b54564ffd512ffff2730c3ad60dd42c8a0fa44c4f096",
+        "bytes": 12477
+      },
+      {
+        "path": "Sections/0_Abstract.tex",
+        "sha256": "22d2454a26b4f7854ef453c888a108041b53e999fc1f515afdb50c9cda889377",
+        "bytes": 1694
+      },
+      {
+        "path": "Sections/1_Introduction.tex",
+        "sha256": "fb847e331d842d645de9de1cd1fc80498f2045a2046fe8afaf5cdaaa58b18c28",
+        "bytes": 7389
+      },
+      {
+        "path": "Sections/5_Related_Work.tex",
+        "sha256": "87e8bf664e9c7fe0a042788aa8fe12bc32e3a1fddf18f4d404860e4ada39c176",
+        "bytes": 3219
+      },
+      {
+        "path": "Sections/3_Methodology.tex",
+        "sha256": "ac91d888388dabfbf449b864b8020130809f8b68799f72a4eb27ea90523eff9b",
+        "bytes": 15039
+      },
+      {
+        "path": "Sections/4_Experiments.tex",
+        "sha256": "4f2dcf53be77339007bea5a5578d93f90dc24d3ab998a66b30861a8cc6671a62",
+        "bytes": 12181
+      },
+      {
+        "path": "tables/tool_call_main.tex",
+        "sha256": "15beca193b9ab880c915d6cbdf1667f8e719ad52e58b6a609ae866e3eb72e183",
+        "bytes": 5440
+      },
+      {
+        "path": "tables/logical_main.tex",
+        "sha256": "0439e01f968d6e1f30205c9ec1b89f0b6b35affac31fac42a828fec6f2086663",
+        "bytes": 3082
+      },
+      {
+        "path": "tables/ablation.tex",
+        "sha256": "ec52a6ee4579ab235071986d6b58abc46f24d2c98b865f60191247d1d11aee13",
+        "bytes": 2487
+      },
+      {
+        "path": "tables/ablation_frozen_components.tex",
+        "sha256": "88f6456749573505922e6caff7643eb065db96c4e6a299695bf66362a876fd27",
+        "bytes": 2273
+      },
+      {
+        "path": "Sections/6_Conclusion.tex",
+        "sha256": "2cb1d3cd0d1331a32c3421bc4f8ad669188e2fb875a6613401145fad6dcb49ff",
+        "bytes": 1153
+      },
+      {
+        "path": "Sections/X_Appendix.tex",
+        "sha256": "ae6ed70f0505487a86c45cfa6591b3ec8b7b07b7bb862d05eb83964ae03ea79a",
+        "bytes": 63168
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 25,
+    "figures": 19,
+    "references": 100
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 42, column 1):\nunexpected Tok (line 42, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 42, column 1):\nunexpected Tok (line 42, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

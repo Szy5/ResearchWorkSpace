@@ -1,0 +1,99 @@
+# 2607.24800
+
+> **核心主张**：在一个保持图数据、检索工具与评分器不变的严格对照下，把显式的“思考前态（profile）”和“观测轨迹提示（trace）”加入到自适应知识图检索控制器，会提高可检视性但在未校准的动作策略下反而降低检索质量；这种退化可归因于重复调用、零结果调用和错误分配的探索预算，而不是单纯的提示格式问题。
+
+## 1. 问题背景
+
+### 1.1 现有方法的局限
+- 传统的检索增强生成（retrieval-augmented generation）通常把检索视为一次性（one-shot）或固定策略的子过程，无法在检索过程中基于中间证据调整后续动作。  
+- 最近的交互式/自适应检索（adaptive retrieval）和工具化代理（tool-using agents）通过在检索-推理循环中加入中间推理痕迹等机制，期望实现“边看边取证”，但这些工作大多：
+  - 面向文档集合而非“文本丰富的知识图”（text-rich knowledge graphs），图结构对合法路径与发现策略有显著约束；
+  - 假定观测反馈能改善下一步动作，但未严格分离“提示格式的变化”与“动作选择策略（action policy）”本身的影响；
+  - 缺少将轨迹级别（trajectory）过程计数与最终排名指标配对以进行因果性诊断的系统化协议。
+- 具体失败案例（在本文所做的严格对照下）是：当把预检索的简明查询画像（profile）与轨迹级别的失败提示（trace hints）加到控制器 prompt 中时，检索器的最终排名指标（例如 $R@1, R@5, R@20, \text{MRR}$）反而下降，尽管过程更易检视。
+
+### 1.2 本文瞄准的缺口
+- 需要一个轻量、可复现的干预与仪表化协议，能够：
+  - 在不改变图数据、工具、黄金答案或评价脚本的前提下，单独考察“将前置状态/轨迹提示加入控制器”这一变更对检索行为与结果的影响；
+  - 将每次检索轨迹转换为可量化的计数器（例如重复调用数、零结果调用数、轨迹长度等），并与最终排名变化做配对分析，以定位性能变化的机制原因；
+  - 验证“思考前”（think-before-retrieval）作为提示式改进是否足以提升检索，还是必须配套学习/校准的动作策略。
+
+## 2. 贡献
+**类型**：机制解释型
+
+列出核心贡献：
+- 提供了一个可复现的、轻量的**profile/trace 干预与仪表化协议**（记作本论文中的 ），用于在 `ARK` 风格的图检索路径上仅改变控制器输入与日志记录，而保持图、工具、标注与评价不变，从而严格隔离控制器行为的影响。
+  - 解决了"如何在严格对照下测量前置状态与轨迹提示影响"的问题；做法是把查询画像在检索前注入控制器，并在轨迹出现特定症状时注入短提示，同时记录一组轨迹计数器。
+- 系统性地发现与诊断了一个常见但容易被忽视的失败模式：**profile/trace 条件化增加了可检视性但在未校准动作策略下降低检索质量**。
+  - 解决了"为什么带有思考提示的控制器有时反而更差"的疑问；做法是使用共享 ID 的配对（paired）分析，将每个查询的指标差值与轨迹计数器做关联。
+- 局部机制解释：将性能退化归因于三个可观测的轨迹行为——重复调用（repeated calls）、零结果调用（zero-result calls）、以及探索预算的错误分配；同时证明单纯收紧交互预算能缩短轨迹但不能恢复准确率，表明需要不同的动作选择策略而非仅改变预算或提示格式。
+
+## 3. 方法
+
+### 3.1 核心思路
+直觉上，向控制器提供一个“查询画像（profile）”和在运行时的“轨迹提示（trace hints）”应当帮助控制器更有针对性地选择下一步检索动作，从而提升检索效率与质量。但如果控制器的动作选择策略本身没有相应校准（即它不知道在何种情形下应利用这些信号去改变动作），那么这些额外提示可能仅改变轨迹（例如促成更多重复探索或把预算浪费在无结果的工具调用上），从而降低最终的排名性能。因而需要一个协议来只改变提示/日志而不改变其他变量，进而通过轨迹计数器诊断性能变化的机制。
+
+### 3.2 方法细节
+- 干预定义：
+  - 在检索开始前，向控制器展示一个**紧凑的查询画像**（profile），该画像是从查询派生的摘要信号（论文在实验里用查询源生的画像，而非真实用户画像）。
+  - 在轨迹执行过程中，当检测到特定失败症状（如重复调用同一工具、多次返回空结果、或接近预算上限）时，向控制器发出**短的 trace hints**（提示词条），旨在让控制器调整后续动作。
+- 仪表化（Instrumentation）：
+  - 每条轨迹 $T$ 被记录为动作-观测序列：
+    $$
+    T = (a_1, o_1, a_2, o_2, \dots, a_n, o_n)
+    $$
+  - 从 $T$ 派生一组计数器（示例形式）：
+    $$
+    c_{\text{repeat}} \quad\text{（重复调用次数）},\quad
+    c_{\text{zero}} \quad\text{（零结果调用次数）},\quad
+    c_{\text{steps}} = n \quad\text{（步骤/交互数）},\quad
+    c_{\text{neigh\_calls}} \quad\text{（邻域调用次数）}
+    $$
+  - 对于每个查询 $i$，计算配对指标差值（paired delta）：
+    $$
+    \Delta_i = m_i^{\text{cond}} - m_i^{\text{uncond}}
+    $$
+    其中 $m$ 是某个检索指标（例如 $R@1$ 或 $\text{MRR}$）。
+- 保持不变：
+  - 图数据库、搜索工具实现、黄金答案与排名脚本均保持不变，使得任何性能差异只能归因于控制器输入（profile/trace）或其对动作选择的影响。
+- 实验变体：
+  - `Unconditioned`：原始 `ARK` 风格控制器（无 profile/trace）。
+  - `Profile-only` / `Trace-only`：单项消融。
+  - ``（Combined）：同时加入 profile 与 trace，并开日志。
+  - 交互预算作为可控变量：常规预算（例如最大 12 或 16 步）以及“受限预算探针”（constrained-budget probe），用于区分是“思考太久”还是“策略错误”。
+
+## 4. 实验与结果
+
+- 评测设置：
+  - 数据集：**PRIME**（生物医学/产品类）、**MAG**（学术论文）和 **Amazon**（产品图），覆盖半结构化文本+关系知识图场景。
+  - 指标：$R@1$, $R@5$, $R@20$, $\text{MRR}$。
+  - 控制器：开放权重模型 `Qwen3-14B`（验证消融）与 `Qwen3-30B-A3B`（held-out 与预算实验），通过 vLLM 本地服务。
+  - 比较方法：总体聚合结果与共享 ID 的配对分析（paired shared-ID deltas），后者更保守并能直接把差异归因到同一查询上。
+- 主要结论（每条 claim 对应的实证依据）：
+  - Claim RQ1（提示是否提高标准检索指标？）：在严格对照下，**加入 profile/trace 提示在多数设置中降低了检索质量**（在 Qwen3-14B 验证消融、Qwen3-30B held-out 子集以及 PRIME/MAG/Amazon 的配对比较中均有一致的降级趋势）。证据是配对 $\Delta$ 的负均值与显著性（论文以共享 ID 的 delta 表示降低）。
+  - Claim RQ2（能否用轨迹计数器解释方向？）：是的。配对轨迹分析显示：
+    - 查询伴随 $c_{\text{repeat}}$ 较高或 $c_{\text{zero}}$ 较多时，对应的 $\Delta_i$ 显著更负（即更大的性能下降）。
+    - 因此退化不是随机噪声，而是与可观测的过程失败模式相关联。
+  - Claim RQ3（更严的交互预算能否修复？）：收紧预算能有效缩短轨迹（降低 $c_{\text{steps}}$），但**并不能恢复检索准确度到未条件化控制器的水平**，说明问题根源在于动作选择策略没有被重新校准，而非单纯的过长推理轨迹。
+- 其他实验细节：
+  - 消融（profile-only / trace-only）与 combined 的对照帮助排除了单一组件导致全部问题的可能性（论文指出 combined 导致可检视性增加但整体性能下降）。
+  - 所有结果在实现上保持了 prompt 与工具接口一致，因此结论可归因为“将这些信号无条件加入控制器 prompt 会改变动作选择分布且往往是负面”的普适性。
+
+## 5. 局限与边界
+- 论文的结论在以下条件下成立或被限制：
+  - 使用的是**开放权重控制器**（`Qwen3` 家族）；论文并未评估闭源或经过专门微调以利用 profile/trace 的模型，因此无法断言所有模型都会出现相同退化。
+  - 干预所用的“画像”是**查询派生的合成画像**，并非真实用户个人画像；因此对个性化检索的直接结论是方法论层面的（提示注入的风险），而非对真实个性化策略的最终否定。
+  - 论文刻意不改变训练或动作策略（no policy learning）；因此证明的是“无校准地把状态信号加入 prompt 会产生问题”，但并未探索联合学习/微调控制策略以修复该问题——也就是作者承认需要进一步工作来开发合适的动作选择策略。
+  - 仪表化计数器能解释许多失败，但并不覆盖所有可能的机制（例如提示语义如何被模型内部解释、或模型内部的置信度估计如何影响动作选择），这些更细粒度的机制尚未探究。
+
+---
+
+## 科学发现范式
+
+- 主要范式：P01 Gap-Driven Reframing
+- 次要范式：P05 Data & Evaluation Engineering, P12 Mechanistic Decomposition & Causal Localization
+- 分类理由：论文"2607.24800"从一个实证差距出发：向检索控制器注入前检索配置与轨迹提示非但未提升而是降低了检索性能，作者因此把“在检索前思考”重新表述为一个动作选择/控制问题而非简单的提示格式改动，契合Gap-Driven Reframing (P01)。同时论文提供了一个轻量的诊断协议并固定图数据与度量（在"PRIME"、"MAG"、"Amazon"上测试，使用开源控制器如"Qwen3-14B"、"Qwen3-30B-A3B"），属于Data & Evaluation Engineering (P05)；并通过成对轨迹分析将退化归因于重复调用、零结果调用和探索预算分配等可干预机制，体现Mechanistic Decomposition & Causal Localization (P12)。
+
+## 先前工作分析
+
+Several recent contributions collectively supply the technical building blocks and the empirical lens used by the paper. The ARK lineage supplies the concrete controller-and-tool architecture (a controller that trades off global lexical search and one-hop neighborhood exploration), and the "STARK" benchmark contributes the text-rich graph collections (PRIME, MAG, Amazon) and standard ranking metrics that the study deliberately holds fixed. Work on agents that interleave reasoning and action, notably "ReAct", motivates emitting traces and using intermediate observations as inputs to a controller, while "Reflexion" highlights both the potential and boundary conditions of iterative feedback—showing that observation feedback can help only when it meaningfully changes action selection. "Think-on-Graph" provides concrete graph-traversal primitives and traversal semantics for LM-driven exploration, and "Personalize Before Retrieve (PBR)" frames the idea of compact pre-retrieval state that should influence retrieval decisions. Finally, "AgentBench" supplies the instrumentation-first evaluation philosophy and trajectory counters that ground process-level attributions. Taken together, these works expose a natural but under-explored gap: adding pre-retrieval profiles or observation traces changes the controller's action distribution and can therefore harm ranked output unless the action policy is re-calibrated. That gap motivates the paper's lightweight profile/trace diagnostic protocol: overlay an ARK-style controller on fixed "STARK" graphs, emit compact pre-retrieval profiles and short trace hints, log paired trajectory counters, and use shared-ID paired deltas to localize failures (repeated calls, zero-result calls, budget misallocation) — thereby treating "thinking before retrieval" as a control problem over actions rather than merely a prompt-format change.

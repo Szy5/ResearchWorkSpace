@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\caption{
+\texttt{Pass@k} evaluation of ARMOR compared to baselines. 
+The checkpoints used for evaluation are consistent with Table~\ref{tab:main}. 
+ARMOR maintains or improves \texttt{pass@16} despite extended training horizons, indicating robust intrinsic reasoning improvements.
+}
+\label{tab:passk}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{@{}ccccc@{}}
+\toprule
+\textbf{} & \textbf{AIME24} & \textbf{AIME25} & \textbf{AMC} & \textbf{Average} \\ \midrule
+7B-DAPO & 55.75 & 34.96 & 90.82 & 60.51 \\
+\textbf{+ARMOR} & 56.52 & 39.44 & 90.89 & \textbf{62.28} \\ \midrule
+7B-QAE & 51.21 & 30.71 & 88.52 & 56.81 \\
+\textbf{+ARMOR} & 50.33 & 34.08 & 86.12 & \textbf{56.84} \\ \midrule
+8B-DAPO & 70.65 & 50.88 & 90.24 & 70.59 \\
+\textbf{+ARMOR} & 74.60 & 51.42 & 90.66 & \textbf{72.23} \\ \bottomrule
+\end{tabular}
+}
+\end{table}

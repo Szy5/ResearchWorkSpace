@@ -1,0 +1,26 @@
+\captionsetup{width=\columnwidth}
+\begin{table}[h]
+	\centering
+	\caption{Performance results based on different training data.}
+	\label{tab:training}%
+	\resizebox{\columnwidth}{!}{
+		\begin{tabular}{@{}l|ccc|ccc@{}}
+			\toprule
+            \multirow{2}{*}{Method} & \multicolumn{3}{c|}{\textbf{WebQSP}} & \multicolumn{3}{c}{\textbf{CWQ}} \\ \cmidrule(l){2-4 } \cmidrule(l){5-7 } 
+			 & Training Data (Retriever) & Training Data (KGQA Model) & Hit & Training Data (Retriever) & Training Data (KGQA Model) & Hit \\
+            \midrule
+            UniKGQA & WebQSP & WebQSP & 77.2 & CWQ & CWQ & 51.2 \\
+            \midrule
+            \multirow{3}{*}{RoG} & WebQSP & WebQSP & 81.5 & CWQ & CWQ & 59.1 \\
+            & WebQSP+CWQ & None & 84.8 & WebQSP+CWQ & None & 56.4 \\
+             & WebQSP+CWQ & WebQSP+CWQ & 85.7 & WebQSP+CWQ & WebQSP+CWQ & 62.6 \\
+             
+            
+			\midrule
+            \multirow{2}{*}{\grag} & WebQSP & None & \underline{86.8} & CWQ & None & \underline{62.9} \\
+            & WebQSP & WebQSP+CWQ & \textbf{87.2} & CWQ & WebQSP+CWQ & \textbf{66.8} \\
+            
+			\bottomrule
+		\end{tabular}%
+		}
+\end{table}%

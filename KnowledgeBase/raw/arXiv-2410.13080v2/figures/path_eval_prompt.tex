@@ -1,0 +1,42 @@
+\begin{figure}[htb]
+    \centering
+    \begin{minipage}{0.99\columnwidth}
+        \centering
+        \begin{tcolorbox}[title=Path Evaluation Prompt]
+            \small
+            \begin{lstlisting}
+============================= Prompt Input ================================
+    
+As an advanced reasoning evaluator, your task is to analyze whether the following reasoning path presents a **logically coherent connection from the question (subject entity) to the answer (target entity)**. You will assess whether each step in the path is valid and necessary, and whether the overall reasoning supports the final answer in a grounded and justified manner.
+
+### Instructions:
+1. Focus on whether the reasoning path makes logical sense from the question to the answer.
+2. Check whether each relation contributes meaningfully and validly to reaching the final answer.
+3. Penalize paths that make unjustified jumps, overly general connections, or weak associations.
+
+### Rating Scale:
+5 - Excellent: Every step is logically valid and contributes clearly toward the answer.  
+4 - Good: Mostly coherent with minor assumptions or weak steps.  
+3 - Moderate: Some steps are unclear, general, or weak, but the general direction is acceptable.  
+2 - Poor: Contains major logical leaps or unclear connections.  
+1 - Very Poor: Illogical or invalid path from question to answer.
+
+### Output:
+- Score: [1 to 5]  
+- Explanation: [Brief explanation of the logical quality of the path from question to answer]
+
+### Question:
+<Question>
+### Answer:
+<Answer>
+### Path:
+<Path>
+============================= LLM Output ================================
+<Score>
+            \end{lstlisting}
+        \end{tcolorbox}
+        \vspace{1mm}
+    \end{minipage}
+    \caption{The prompt template for path evaluation.}
+    \label{fig:path_eval_prompt}
+\end{figure}

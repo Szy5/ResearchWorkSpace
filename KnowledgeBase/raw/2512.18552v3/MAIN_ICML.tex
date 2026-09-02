@@ -1,0 +1,117 @@
+
+\documentclass{article}
+\usepackage{microtype}
+
+
+\usepackage{xurl}
+\PassOptionsToPackage{hyperfootnotes=false}{hyperref}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=violet,
+    citecolor=violet,
+    urlcolor=blue
+}
+
+\usepackage{amsmath}
+\usepackage[capitalize,noabbrev,nameinlink]{cleveref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{enumitem} %
+\setlist[itemize]{leftmargin=*}
+\setlist[enumerate]{leftmargin=*}
+\renewcommand\textsf\textrm
+\renewcommand\sffamily\rmfamily
+
+\usepackage[accepted]{icml2026}
+\makeatletter
+\makeatother
+\input{macro}
+
+
+
+
+
+
+\makeatletter
+\renewcommand{\@pa}[1]{%
+  \ifcsname the@affil#1\endcsname
+  \else
+    \ifcsname @icmlsymbol#1\endcsname
+    \else
+      \stepcounter{@affiliationcounter}%
+      \newcounter{@affil#1}%
+      \setcounter{@affil#1}{\value{@affiliationcounter}}%
+    \fi
+  \fi%
+  \ifcsname @icmlsymbol#1\endcsname
+    \textsuperscript{\csname @icmlsymbol#1\endcsname}%
+  \else
+    \textsuperscript{\arabic{@affil#1}}%
+  \fi
+}
+\makeatother
+
+
+
+\icmltitlerunning{Toward Training Superintelligent Software Agents through Self-Play SWE-RL}
+\usepackage{natbib}
+
+
+\begin{document}
+\raggedbottom
+
+
+
+
+\twocolumn[
+  \icmltitle{Toward Training Superintelligent Software Agents
+through Self-Play SWE-RL}
+
+
+
+  \begin{icmlauthorlist}
+    \icmlauthor{Yuxiang Wei}{meta-fair,uiuc}
+    \icmlauthor{Zhiqing Sun}{meta-tbd}
+    \icmlauthor{Emily McMilin}{meta-fair}
+    \icmlauthor{Jonas Gehring}{meta-fair}
+    \icmlauthor{David Zhang}{meta-fair}
+    \icmlauthor{Gabriel Synnaeve}{meta-fair}
+    \icmlauthor{Daniel Fried}{meta-fair,cmu}
+    \icmlauthor{Lingming Zhang}{uiuc}
+    \icmlauthor{Sida Wang}{meta-fair}
+  \end{icmlauthorlist}
+
+  \icmlaffiliation{meta-fair}{Meta FAIR}
+  \icmlaffiliation{uiuc}{University of Illinois Urbana-Champaign}
+  \icmlaffiliation{meta-tbd}{Meta TBD Lab}
+  \icmlaffiliation{cmu}{Carnegie Mellon University}
+
+  \icmlcorrespondingauthor{Yuxiang Wei}{ywei40@illinois.edu}
+
+  \icmlkeywords{Machine Learning, ICML}
+
+  \vskip 0.3in
+]
+
+
+
+\printAffiliationsAndNotice{}
+
+\input{content/abstract}
+\input{content/introduction}
+\input{content/approach}
+\input{content/evaluation}
+\input{content/related-work}
+\input{content/conclusion}
+
+
+\bibliography{paper}
+\bibliographystyle{icml2026}
+
+\newpage
+\appendix
+\onecolumn
+\input{content/appendix}
+
+\end{document}

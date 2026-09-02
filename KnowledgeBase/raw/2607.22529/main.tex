@@ -1,0 +1,244 @@
+% \documentclass{article} % For LaTeX2e
+
+% ========================================
+% 单栏/双栏切换：注释其中一行即可
+% ========================================
+% 单栏布局（撰写编辑推荐）
+\documentclass[10pt, a4paper, logo]{googledeepmind}
+% 双栏布局（会议投稿推荐）
+% \documentclass[10pt, a4paper, twocolumn, logo]{googledeepmind}
+% ========================================
+
+\usepackage{times}
+
+
+\usepackage{hyperref}
+\usepackage[leftcaption]{sidecap} % caption 在右边
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage[most]{tcolorbox}
+\usepackage[table]{xcolor}
+\tcbuselibrary{breakable} % 加载分页支持库
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{colortbl}
+
+\usepackage{microtype}
+\usepackage{color}
+\usepackage{wrapfig}
+\usepackage{natbib}
+\usepackage{colortbl}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs} % for professional tables
+\usepackage{array}
+%\usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
+\usepackage{textcomp}
+\usepackage{stfloats}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage[ruled, linesnumbered, lined]{algorithm2e}
+% \usepackage{minitoc}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\usepackage{xcolor}
+
+
+% 定义颜色 (可以自定义你喜欢的颜色)
+\definecolor{BestColor}{HTML}{C8E6C9}  % 一个柔和的绿色
+\definecolor{SecondBestColor}{HTML}{FFF9C4} % 一个非常淡的黄色
+
+% 定义快捷命令，使表格代码更整洁
+% \best{} 用于标记最佳结果 (绿色背景 + 粗体)
+% \secondbest{} 用于标记次佳结果 (黄色背景)
+\newcommand{\best}[1]{\cellcolor{BestColor}\textbf{#1}}
+\newcommand{\secondbest}[1]{\cellcolor{SecondBestColor}#1}
+\usepackage{tcolorbox}
+\usepackage{amsmath,amsfonts}
+\def\rre{\textcolor{red}}
+\definecolor{ggg}{RGB}{26,179,0}
+\definecolor{rrr}{RGB}{179,0,0}
+\definecolor{oodc}{RGB}{31,73,121}
+\definecolor{idc}{RGB}{68,142,68}
+\def\rr{\textcolor{red}}
+\def\bb{\textcolor{blue}}
+\definecolor{mygray}{gray}{0.9}
+
+\newcommand{\Tmat}[0]{\ensuremath{{\bf T}} }
+\newcommand{\Cmat}[0]{\ensuremath{{\bf C}} }
+\newcommand{\Dmat}[0]{\ensuremath{{\bf D}} }
+
+\newcommand{\xv}[0]{\ensuremath{\boldsymbol{x}} }
+\newcommand{\pengyu}[1]{{\color{red}{[\bf\sf Pengyu: #1]}}}
+
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+%\def\Pref{{\text{Pref}}}
+
+%\newcommand{\Pref}[1]{{\text{Pref}\langle #1 \rangle}}
+%\newcommand{\Pref}[1]{{\text{Pref}\langle #1 \rangle}}
+\def\Pref#1#2{\bm{1}_{{#1} \succ {#2}}}
+%\def\Bias#1#2{\bm{b}_{{#1}, {#2}}}
+\def\Bias#1#2{\bm{b}}
+%\newcommand{\Bias}[1]{{\text{Bias}\langle #1 \rangle}}
+
+\def\MI#1#2{{I}\left(#1;#2\right)}
+
+
+% 定义一种新的 tcolorbox 样式
+\newtcolorbox{examplebox}[2][]{ % 允许传入可选参数 [#1] 和必选标题参数 {#2}
+    breakable, % 关键：允许跨页分割
+    enhanced, % 增强模式（可选，支持更多样式）
+    colback=white, % 框体内背景色
+    colframe=cyan, % 边框颜色
+    coltitle=white, % 标题文字颜色
+    fonttitle=\bfseries, % 标题字体加粗
+    title=#2, % 框体标题（第二个必选参数）
+    % 以下为跨页分割线的样式设置（可选）
+    overlay middle={\draw[cyan, line width=1pt](frame.south west)--(frame.south east);}, % 分割处添加横线
+    overlay last={\draw[cyan, line width=1pt](frame.south west)--(frame.south east);}, % 最后一页底部横线
+    #1 % 允许在调用时传入其他可选参数以覆盖默认样式
+}
+
+\newcommand{\think}[1]{\textcolor{blue}{\texttt{<think}} #1 \textcolor{blue}{\texttt{</think}}}
+\newcommand{\search}[1]{\textcolor{cyan}{\texttt{<search>}} #1 \textcolor{cyan}{\texttt{</search>}}}
+\newcommand{\info}[1]{\textcolor{brown}{\texttt{<information>}} #1 \textcolor{brown}{\texttt{</information>}}}
+\newcommand{\answer}[1]{\textcolor{purple}{\texttt{<answer>}} #1 \textcolor{purple}{\texttt{</answer>}}}
+\newcommand{\question}[1]{\textcolor{orange}{\texttt{<question>}} #1 \textcolor{orange}{\texttt{</question>}}}
+\newcommand{\observation}[1]{\textcolor{brown}{\texttt{<observation>}} #1 \textcolor{brown}{\texttt{</observation>}}}
+\newcommand{\evidence}[1]{\textcolor{teal}{\texttt{<original\_evidence>}} #1 \textcolor{teal}{\texttt{</original\_evidence>}}}
+\newcommand{\lthink}{\textcolor{blue}{\texttt{<think}}}
+\newcommand{\rthink}{\textcolor{blue}{\texttt{</think}}}
+
+
+% --- 必要的宏包 ---
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}      % 用于漂亮的表格线 (toprule, midrule, etc.)
+\usepackage{graphicx}      % 用于 \resizebox
+\usepackage[table]{xcolor} % 用于颜色
+\usepackage{siunitx}       % 用于 S 列，实现小数点对齐
+\usepackage{etoolbox}      % 用于 \ifstrequal，实现条件判断
+\usepackage[normalem]{ulem}     % 用于更灵活的下划线 \uline
+
+\usepackage{nicematrix}
+
+% --- 命令定义 ---
+
+% 1. 定义颜色
+\definecolor{impcolor}{HTML}{2E8B57} % 提升使用的海绿色 (SeaGreen)
+
+% 2. 辅助命令：定义上标的统一格式
+\newcommand{\improvementstyle}[1]{$^{\textcolor{impcolor}{\tiny #1}}$}
+
+\newcommand{\scoreimp}[2]{%
+  \textbf{#1}%
+  \ifstrequal{#2}{+0.0}{}{%
+    \ifstrequal{#2}{0.0}{}{%
+      \makebox[0pt][l]{\improvementstyle{#2}}%
+    }%
+  }%
+}
+
+% 4. 用于没有提升的基础分数
+\newcommand{\scorebase}[1]{#1}
+
+% \newcommand{\best}[1]{\underline{#1}}
+% \definecolor{bestcolor}{HTML}{4169E1}  % ★ NEW: 最佳值使用的宝蓝色 (RoyalBlue)
+% \newcommand{\best}[1]{{\color{bestcolor}\uline{#1}}}
+% \newcommand{\best}[1]{{\color{bestcolor}{#1}}}
+% \newcommand{\pengyu}[1]{{\color{blue}{[\bf\sf Pengyu: #1]}}}
+
+
+
+\title{Skill Self-Play: Proactive Curricula for Self-Evolving Agents}
+
+\title{Skill Self-Play: Pushing the Frontier of LLM Capability with Co-Evolving Skills}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+% --- AUTHORS AND AFFILIATIONS ---
+% Equal Contribution: 第一和第二作者同等贡献
+% \author[1]{First Author\textsuperscript{$\S$,*}}
+% \author[1]{Second Author\textsuperscript{$\S$,$\dag$}}
+% \author[1]{Third Author}
+% \affil[1]{Qwen Large Model Application Team, Alibaba}
+% \affil[2]{xxx University}
+% \footnotetext{\textsuperscript{$\S$}Equal contribution.}  % 同等贡献脚注
+
+\author[1,2]{Siyuan Huang\textsuperscript{$\dag$}}
+\author[1]{Pengyu Cheng\textsuperscript{$\S$}}
+\author[1,3]{Haotian Liu\textsuperscript{$\dag$}}
+\author[1,4]{Tao Chen\textsuperscript{$\dag$}}
+\author[1,5]{Yihao Liu\textsuperscript{$\dag$}}
+\author[1,6,7]{Jingwei Ni\textsuperscript{$\dag$}}
+\author[1,8]{Shijie~Zhou\textsuperscript{$\dag$}}
+\author[1]{Ziyi Yang}
+\author[1]{Gangwei Jiang}
+\author[1]{Mengyu Zhou}
+\author[2]{Yu Cheng\textsuperscript{$\S$}}
+\author[1]{Xiaoxi Jiang}
+\author[1]{Guanjun Jiang}
+\affil[1]{Qwen Large Model Application Team, Alibaba}
+\affil[2]{The Chinese University of Hong Kong}
+\affil[3]{Renmin~University~of~China}
+\affil[4]{Sun~Yat-sen~University}
+\affil[5]{Peking~University}
+\affil[6]{ETH~Zürich}
+\affil[7]{University~of~Zurich}
+\affil[8]{University~at~Buffalo}
+
+
+
+% \footnotetext{\textsuperscript{$\S$}Equal contribution.}  % 同等贡献脚注
+
+% Corresponding author email (shown in footer)
+% \correspondingauthor{zhoumengyu.zmy@alibaba-inc.com}
+
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+% --- Abstract ---
+\input{Sections/0_Abstract}
+
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+
+
+
+\begin{document}
+\maketitle
+
+\input{Sections/1_Introduction}
+% \input{Sections/2_Preliminary}
+\input{Sections/5_Related_Work}
+\input{Sections/3_Methodology}
+\input{Sections/4_Experiments}
+\input{Sections/6_Conclusion}
+
+
+
+\bibliography{conference}
+\bibliographystyle{conference}
+
+\appendix
+\clearpage
+
+\input{Sections/X_Appendix}
+
+\end{document}

@@ -1,0 +1,444 @@
+<section style="max-width:677px;margin:0 auto;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;color:#374151;line-height:1.75;letter-spacing:0.5px;overflow-x:hidden;">
+
+<section style="margin:0 20px 32px;">
+  <section style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <p style="font-size:10px;color:#9CA3AF;margin:0;text-transform:uppercase;letter-spacing:2px;font-weight:600;">
+      <span leaf="">📦 3 Parts + Conclusion</span>
+    </p>
+    <p style="font-size:10px;color:#9CA3AF;margin:0;">
+      <span leaf="">👉 滑动</span>
+    </p>
+  </section>
+  <section style="overflow-x:scroll;-webkit-overflow-scrolling:touch;white-space:nowrap;padding-bottom:8px;">
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:linear-gradient(135deg,#059669,#10B981);border-radius:12px;padding:12px;margin-right:8px;">
+      <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 01</span></p>
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">问题诊断</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.7);margin:0;"><span leaf="">检索坍缩</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 02</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">方法核心</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">图 + SNC</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART 03</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">实验验证</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">F1 提升</span></p>
+    </section>
+    <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+      <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;"><span leaf="">PART ///</span></p>
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">写在最后</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;"><span leaf="">接口即杠杆</span></p>
+    </section>
+  </section>
+</section>
+
+<section style="background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;margin:0 20px 24px;text-align:center;">
+  <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;"><span leaf="">核心主张 · Harness-G</span></p>
+  <p style="margin:0;line-height:1.6;">
+    <span style="font-size:15px;color:#059669;font-weight:bold;border-bottom:3px solid #FDE68A;padding-bottom:2px;"><span leaf="">自由查询制造假探索；图上菜单 + SNC 才能恢复有效检索对比。</span></span>
+  </p>
+</section>
+<section style="padding:0 20px;">
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">近年 RL 搜索代理把检索写成</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">自由格式自然语言查询</span></span><span leaf="">，表面很热闹，但组内对比常常学不到东西。本文指出真正的病灶是</span><strong style="color:#059669;"><span leaf="">retrieval-equivalence collapse</span></strong><span leaf="">——并给出从动作接口入手的修复方案。</span></p>
+</section>
+
+<section style="margin-top:16px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">01</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">问题背景</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">BACKGROUND · 检索等价性坍缩</span>
+      </p>
+    </section>
+  </section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:0px;margin-bottom:16px;">
+  <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">现有方法的局限</span></span>
+</p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">近年 RL 搜索代理（如 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Search-R1</span></span><span leaf="">）把检索表述为自由格式自然语言查询：策略直接生成查询字符串，再以最终答案回报优化整段多回合交互。</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">但训练中出现了量化得很清楚的病症：策略会生成大量表面不同的查询（</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">高 query-form diversity</span></span><span leaf="">），轨迹累积到的证据集合却高度重叠（</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">低 retrieval-outcome diversity</span></span><span leaf="">）。在 Search-R1 中，一开始约 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">86%</span></span><span leaf=""> 的 rollout 组跨越多个检索等价类，到训练步 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">30</span></span><span leaf=""> 时降到不到 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">10%</span></span><span leaf="">——所谓「探索」多半只是语表层花样。</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">这直接伤害基于组比较的优化（如 GRPO），典型有两类：</span></p>
+<section style="margin-bottom:24px;">
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">1</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><strong style="color:#059669;"><span leaf="">消失的优势</span></strong><span leaf="">：不同轨迹检索到相同证据时，最终回报几乎一样，组内优势趋近于零，学不到有区分力的信号。</span></p>
+  </section>
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">2</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><strong style="color:#059669;"><span leaf="">棘手的检索归因</span></strong><span leaf="">：检索结果相同但答案不同时，回报差更多来自下游推理噪声，把回报归因到检索动作会产生误导性梯度。</span></p>
+  </section>
+</section>
+<section style="background:#F0FDF4;padding:12px 16px;border-radius:8px;border:1px solid #BBF7D0;margin-bottom:20px;">
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;text-align:justify;"><span leaf="">作者将这一现象命名为 </span><strong style="color:#059669;"><span leaf="">retrieval-equivalence collapse</span></strong><span leaf="">（检索等价性坍缩）。它并非单纯靠更细粒度回报（process rewards、信息增益）就能修好——病灶在</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">动作—环境接口的多对一映射</span></span><span leaf="">：多个查询字符串映射到相同检索结果。</span></p>
+</section>
+<section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin-bottom:8px;">
+  <section style="margin:0;border-radius:8px;overflow:hidden;">
+    <span leaf=""><img src="assets/figures/diagnosis.jpg" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span>
+  </section>
+</section>
+<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">
+  <span leaf="">— 检索等价性坍缩示意：查询形式多样性高，检索结果多样性坍缩，产生虚假探索信号。</span>
+</p>
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:32px;margin-bottom:16px;">
+  <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">本文瞄准的缺口</span></span>
+</p>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">缺口</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">现有工作多在奖励或信用分配层加密度，却很少追问策略看到的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">动作空间</span></span><span leaf="">是否恰当——同一决策状态里，策略能否面对明确、可比较的可行替代项。自由生成查询带来语义别名，破坏组内对比学习的基础。</span></p></section>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">目标</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">把检索动作从自由文字生成重构为「</span><strong style="color:#059669;"><span leaf="">有限、可验证且可预览</span></strong><span leaf="">」的离散选择（句子／实体／回答）——</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">改接口而非只改奖励</span></span><span leaf="">，恢复同状态下对比，并据此设计结构化非短视信用分配 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">SNC</span></span><span leaf="">。</span></p></section>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">02</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">贡献</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">CONTRIBUTIONS · 方法改进型</span>
+      </p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">论文类型：</span><strong style="color:#059669;"><span leaf="">方法改进型</span></strong><span leaf="">。核心贡献三条：</span></p>
+<section style="margin-bottom:24px;">
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">1</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><strong style="color:#059669;"><span leaf="">提出并量化 retrieval-equivalence collapse</span></strong><span leaf="">：对比 query-form diversity 与 retrieval-outcome diversity，展示自由查询如何制造虚假表面探索，削弱组相对优化；用累积证据重叠定义检索等价类，给出组跨类比例从 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">86%</span></span><span leaf=""> 降到 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">&lt;10%</span></span><span leaf=""> 的实证。</span></p>
+  </section>
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">2</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><strong style="color:#059669;"><span leaf="">设计 Harness-G</span></strong><span leaf="">：在程序化构建的段落—句子—实体图上做有限动作选择（</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Select</span></span><span leaf="">／</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Lookup</span></span><span leaf="">／</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Answer</span></span><span leaf="">），由环境确定性构建查询与更新状态，消除字符串→检索的多对一别名。</span></p>
+  </section>
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">3</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><strong style="color:#059669;"><span leaf="">提出 Structured Non-myopic Credit（SNC）</span></strong><span leaf="">：在 frontier 上用冻结答案评分器 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">g</span></span><span leaf=""> 做同态比较（frontier-relative credit），并沿 provenance edges 把下游增益回溯给早期使能动作（enablement credit）。</span></p>
+  </section>
+</section>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">03</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">方法</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">METHOD · Harness-G + SNC</span>
+      </p>
+    </section>
+  </section>
+
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:0px;margin-bottom:16px;">
+  <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">核心思路</span></span>
+</p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">自由生成查询带来大量语言层噪声：轨迹看似分叉，检索结果却常重合。若每一步只能从当前状态的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">有限菜单</span></span><span leaf="">里选一个显式项，不同选择就会更直接对应不同检索结果，组比较 RL 才能真正区分好坏动作。</span></p>
+<section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:28px;">
+  <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+    <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">显式菜单</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;"><span leaf="">减少语言别名，同一意图不再被不同字符串掩盖</span></p>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">可预览</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">选前评估替代项贡献，支持同态比较</span></p>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #A7F3D0;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#059669;margin:0 0 3px;"><span leaf="">确定性执行</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">去重保证响应一致，压低无关方差</span></p>
+    </section>
+  </section>
+</section>
+<p style="font-size:15px;font-weight:900;color:#111827;margin-top:32px;margin-bottom:16px;">
+  <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">方法细节</span></span>
+</p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">环境与图结构：</span></p>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">离线图</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">离线构建 </span><strong style="color:#059669;"><span leaf="">段落—句子—实体图</span></strong><span leaf="">：节点对应段落、句子与抽取实体，边表示来源／引用／实体出现关系。</span></p></section>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">在线菜单</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">环境维护检索状态 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">s_t</span></span><span leaf="">，据此构造去重、有界动作菜单 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">A_t</span></span><span leaf="">。动作三类：</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Select</span></span><span leaf="">（采纳证据句）、</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Lookup</span></span><span leaf="">（跟踪实体展开证据）、</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Answer</span></span><span leaf="">（终止并作答）。每条可返回只读 preview，供 SNC 评分。</span></p></section>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">策略与执行：策略 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">π_θ(a_t | s_t)</span></span><span leaf=""> 从有限集合采样；环境验证并</span><strong style="color:#059669;"><span leaf="">确定性地</span></strong><span leaf="">执行（含重复过滤），返回下一状态与答案。</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">如何构造检索查询交给环境</span></span><span leaf="">，策略只做语义决策。</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">Structured Non-myopic Credit（SNC）：</span></p>
+<section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:24px;">
+  <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+    <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">冻结评分器 g</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;"><span leaf="">评估候选动作的潜在答案质量</span></p>
+    </section>
+    <section style="display:flex;align-items:center;color:#D1D5DB;font-size:14px;padding:0 4px;">
+      <span leaf="">→</span>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">Frontier credit</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">同菜单内局部优势估计</span></p>
+    </section>
+    <section style="display:flex;align-items:center;color:#D1D5DB;font-size:14px;padding:0 4px;">
+      <span leaf="">→</span>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #A7F3D0;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#059669;margin:0 0 3px;"><span leaf="">Enablement</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">沿 provenance 回溯早期动作</span></p>
+    </section>
+  </section>
+  <p style="font-size:12px;color:#9CA3AF;text-align:center;margin:12px 0 0;letter-spacing:0.5px;"><span leaf="">即时区分信号 + 延迟桥接信用</span></p>
+</section>
+<section style="margin:0 0 20px;border-radius:8px;overflow:hidden;background:#1E293B;box-shadow:0 4px 16px -8px rgba(15,23,42,0.4);">
+  <section style="display:flex;align-items:center;padding:9px 14px;background:#0F172A;">
+    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#FF5F56;margin-right:7px;font-size:0;line-height:0;overflow:hidden;">.</span>
+    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#FFBD2E;margin-right:7px;font-size:0;line-height:0;overflow:hidden;">.</span>
+    <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#27C93F;font-size:0;line-height:0;overflow:hidden;">.</span>
+    <span style="margin-left:12px;font-size:12px;color:#64748B;font-family:Consolas,Monaco,monospace;letter-spacing:1px;"><span leaf="">math</span></span>
+  </section>
+  <section style="padding:11px 14px;">
+    <p style="margin:0;font-family:'SF Mono',Consolas,Monaco,monospace;font-size:13px;line-height:1.6;color:#E2E8F0;"><span leaf="">A_t^frontier(a_t) ≈ g(s_t, a_t) − max_{a'≠a_t} g(s_t, a')</span></p>
+    <p style="margin:0;font-family:'SF Mono',Consolas,Monaco,monospace;font-size:13px;line-height:1.6;color:#E2E8F0;"><span leaf="">A_t = A^outcome_t + λ · A_t^step</span></p>
+  </section>
+</section>
+<section style="background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:8px;padding:12px 16px;margin-bottom:24px;text-align:justify;">
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.6;"><span leaf="">设计要点：环境确定性与去重是关键；菜单大小受限以保证可学习性；</span><strong style="color:#059669;"><span leaf="">g 必须冻结</span></strong><span leaf="">，避免循环自增强；enablement 靠图上 provenance 追溯，而非简单时间折扣。</span></p>
+</section>
+<section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin-bottom:8px;">
+  <section style="margin:0;border-radius:8px;overflow:hidden;">
+    <span leaf=""><img src="assets/figures/framework.jpg" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span>
+  </section>
+</section>
+<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">
+  <span leaf="">— Harness-G 整体流程：离线构图；在线菜单暴露动作；SNC 用预览与冻结答案器评分并沿依赖回溯信用。</span>
+</p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">04</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">实验与结果</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">EXPERIMENTS · 六个基准</span>
+      </p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">评测设置：</span></p>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">数据与基线</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">六个多跳／开放域 QA 基准；对比保留图结构但仍用自由查询的 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Graph-R1</span></span><span leaf="">，以及 IGPO、StepSearch、Tree-GRPO 等；门控对比隔离菜单接口与 SNC。</span></p></section>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">模型规模</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">在 1.5B 与 3B 上评估，控制模型族与 RL 算法（主要 GRPO 或其变体）。</span></p></section>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">主要结论：</span></p>
+<section style="background:#F0FDF4;padding:12px 16px;border-radius:8px;border:1px solid #BBF7D0;margin-bottom:20px;">
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;text-align:justify;"><strong style="color:#059669;"><span leaf="">Harness-G 在六个基准上的平均 F1 最高</span></strong><span leaf="">。相对最强基线 Graph-R1：1.5B 平均 F1 </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">+10.74</span></span><span leaf=""> 点，3B </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">+3.98</span></span><span leaf=""> 点——接口重构带来的对比信号改善，能转化为显著最终表现提升。</span></p>
+</section>
+<section style="margin-bottom:24px;">
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">1</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><span leaf="">消融：固定环境与转移，仅改菜单选择 vs 自由查询到同一目标——菜单更能保留检索区分性，证明</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">接口本身就能防止坍缩</span></span><span leaf="">。</span></p>
+  </section>
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">2</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><span leaf="">仅菜单或菜单+传统最终回报都有收益，但</span><strong style="color:#059669;"><span leaf="">菜单 + SNC</span></strong><span leaf="">最好，frontier-relative 与 enablement 提供了额外可学习信号。</span></p>
+  </section>
+  <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">3</span></span>
+    <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;"><span leaf="">跨数据集与 RL 算法表现稳健，交互效率更高；O.O.D. 设置下迁移也更强。</span></p>
+  </section>
+</section>
+<p style="font-size:14px;margin-bottom:20px;text-align:center;color:#059669;font-weight:700;letter-spacing:1px;border-top:1px solid #F3F4F6;border-bottom:1px solid #F3F4F6;padding:12px 0;">
+  <span leaf="">菜单恢复 within-group advantages；SNC 补齐即时与延迟信用 → F1 上升</span>
+</p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">05</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">局限与边界</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">LIMITATIONS · 仍待拓展</span>
+      </p>
+    </section>
+  </section>
+
+<section style="padding:6px 0 4px;margin-bottom:16px;">
+  <p style="margin-bottom:6px;font-size:12px;font-weight:700;color:#9CA3AF;letter-spacing:1px;">
+    <span style="color:rgb(255,76,0);"><span leaf="">！文本唯一路径 🕳</span></span>
+  </p>
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;">
+    <span style="color:rgb(136,136,136);font-weight:bold;"><span leaf="">当前图结构与 SNC 仅在文本证据上实现，尚未扩展到图像、视频等多模态证据。</span></span>
+  </p>
+</section>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">图构建质量</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">离线构图的覆盖率与准确性直接影响菜单质量；实体抽取不充分时性能可能下降。</span></p></section>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">冻结评分器偏差</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">SNC 依赖 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">g</span></span><span leaf=""> 做 frontier 比较；</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">g</span></span><span leaf=""> 偏差大会引入系统性引导误差。冻结避免循环偏移，也限制了评分器自适应。</span></p></section>
+<section style="margin-bottom:14px;">
+  <p style="margin:0 0 6px;">
+    <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">菜单规模与成本</span></span>
+  </p><p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;"><span leaf="">超大语料或低延迟在线场景下，构建与预览全部候选项仍有实用成本。</span></p></section>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">可见拓展：将结构化动作与 SNC 扩展至多模态证据空间，改进图构建与评分器适配，降低对离线资源与评分器质量的依赖。</span></p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">06</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">科学发现范式</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">SCI PATTERN · Gap-Driven Reframing</span>
+      </p>
+    </section>
+  </section>
+
+<section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:28px;">
+  <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+    <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;"><span leaf="">主范式</span></p>
+      <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;"><span leaf="">P01 Gap-Driven Reframing</span></p>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;"><span leaf="">次范式</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">P03 Representation Shift</span></p>
+    </section>
+    <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #A7F3D0;border-radius:8px;">
+      <p style="font-size:13px;font-weight:800;color:#059669;margin:0 0 3px;"><span leaf="">关键动作</span></p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;"><span leaf="">改接口而非只改奖励</span></p>
+    </section>
+  </section>
+</section>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">论文从实证缺口出发——发现并量化「</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">检索等价崩溃</span></span><span leaf="">」，不是单纯加厚奖励，而是重构策略—环境接口：把自由文本查询重述为图上有限动作选择（Harness-G），并设计 SNC。这符合 P01：把观察到的限制转化为新的问题表述与约束。</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">次要匹配 P03：实质改变检索核心原语——自由查询重铸为图上离散选择，使问题几何与计算性更易处理；并与 Graph-R1、Search-R1 基线对照，在六个问答基准上验证。</span></p>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">07</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">PART</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">先前工作分析</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">PRIOR WORK · Three Threads</span>
+      </p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">Prior work established three complementary technical threads. First, free-query RL search agents such as </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Search-R1</span></span><span leaf=""> and interactive graph-based agents like </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Graph-R1</span></span><span leaf=""> operationalized training LLMs to generate natural-language queries and optimize multi-turn retrieval with outcome rewards, thereby defining the default policy–environment interface and the many-to-one query→retrieval mapping.</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">Second, methods for finer credit (e.g., </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Tree-GRPO</span></span><span leaf="">) and group-relative optimization (</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">GRPO</span></span><span leaf="">) developed trajectory grouping and step-contrast machinery to combat sparse final rewards, highlighting algorithmic credit techniques but still operating on the same aliased query actions.</span></p>
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">Third, discrete navigation and graph retrieval work—exemplified by </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">MINERVA</span></span><span leaf=""> for KG path navigation and corpus-graph systems like </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">GraphRAG</span></span><span leaf="">—showed that finite, verifiable action sets and programmatic evidence graphs enable transparent state transitions and provenance wiring for downstream credit.</span></p>
+<section style="background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:8px;padding:12px 16px;margin-bottom:24px;text-align:justify;">
+  <p style="font-size:13px;color:#374151;margin:0;line-height:1.6;"><span leaf="">Taken together, denser credit alone cannot fix structural aliasing in the action interface. Harness-G synthesizes graph-based evidence with discrete-action inspiration and GRPO-style grouping, replacing aliased queries with finite </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Select</span></span><span leaf="">／</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Lookup</span></span><span leaf="">／</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">Answer</span></span><span leaf=""> choices and introducing SNC—making </span><strong style="color:#059669;"><span leaf="">interface design itself</span></strong><span leaf=""> a lever for more effective retrieval credit assignment.</span></p>
+</section>
+</section>
+
+<section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+  <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+    <section style="text-align:center;flex-shrink:0;">
+      <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+        <span leaf="">///</span>
+      </p>
+      <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+        <span leaf="">LAST</span>
+      </p>
+    </section>
+    <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+    <section>
+      <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+        <span leaf="">写在最后</span>
+      </p>
+      <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+        <span leaf="">CLOSING · 接口与奖励同等重要</span>
+      </p>
+    </section>
+  </section>
+
+<p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;"><span leaf="">总体而言，论文通过识别并量化检索别名带来的训练陷阱，提出了从动作接口入手的修复方案（</span><strong style="color:#059669;"><span leaf="">Harness-G</span></strong><span leaf="">）与配套信用分配机制（</span><strong style="color:#059669;"><span leaf="">SNC</span></strong><span leaf="">），并在多基准上展示了实质性性能提升——</span></p>
+<section style="background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;margin:0 0 24px;text-align:center;">
+  <p style="margin:0;line-height:1.6;">
+    <span style="font-size:15px;color:#059669;font-weight:bold;border-bottom:3px solid #FDE68A;padding-bottom:2px;"><span leaf="">动作空间设计与奖励设计同等重要。</span></span>
+  </p>
+</section>
+</section>
+
+</section>

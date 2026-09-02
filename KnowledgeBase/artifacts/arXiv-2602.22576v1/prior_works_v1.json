@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Search-R1: Training LLMs for Adaptive Search",
+      "authors": "Jin et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "Search-R1 是本文直接比较并改进的强化学习式 agentic RAG 基线——它使用基于最终答案的二元 outcome reward，揭示了稀疏回报与样本低效问题，本文正针对这些不足提出 path-centric reward 进行替代和扩展。"
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Yao et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "ReAct 首次将推理（reasoning）与动作（action）插值为可观察的轨迹格式，奠定了 agentic RAG 中‘交错轨迹’的问题形式与评估单元，從而支持本文把轨迹 p/r/a/o 结构化为可评分的路径。"
+    },
+    {
+      "title": "Self-Consistency Improves Chain of Thought Reasoning",
+      "authors": "Wang et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "Self-Consistency 提出通过对多个推理解答路径进行采样与多数投票来提升准确率，这一“多路径投票/对齐”思想直接启发了本文中用 LLM 投票生成参考 planner 与 dual-track 的自洽轨迹评估。"
+    },
+    {
+      "title": "Potential-Based Reward Shaping",
+      "authors": "Ng, Harada, Russell",
+      "year": 1999,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "潜在函数（potential-based）奖励塑形理论说明了如何在不改变最优策略的前提下添加额外的稠密奖励，这为本文提出的“path-centric reward shaping”在提供密集信号同时保留最终目标一致性提供了理论依据。"
+    },
+    {
+      "title": "Process-level Rewards and RAG (e.g., HiPRAG / process-reward studies)",
+      "authors": "Wu et al. / Zhang et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "多篇近期工作（如 HiPRAG / 相关 process-reward 探索）尝试在 RAG 中引入过程级信号，但仍主要依赖二元最终回报或手工信号，暴露出对轨迹结构化、顺序无关覆盖与部分正确样本利用的不足，正是本文要弥补的缺口。"
+    },
+    {
+      "title": "Least-to-Most Prompting: Decomposing Problems into Subproblems",
+      "authors": "Zhou et al.",
+      "year": 2022,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "Least-to-Most 提出显式分解与按子问题顺序求解的规划思路，為本文将隐式 planning 明确为前置 planner p 并用参考子步骤（reference planner）进行覆盖评价提供了方法论上的启发。"
+    }
+  ],
+  "synthesis_narrative": "相关前作在技术细节上形成了本文设计的直接支撑。Search-R1 是当前 RL 型 agentic RAG 的代表基线，其以最终答案的二元 outcome reward 为训练信号，直接暴露了回报稀疏、失败样本无学习价值和收敛慢的问题；ReAct 首次把推理與动作交错成可观察轨迹，为把轨迹结构化为 p/r/a/o 单元并在路径级别评分提供了问题定义基础；Self-Consistency 提供了通过多路径采样与投票实现自洽性的具体操作，直接被借用于离线生成参考 planner 与 self-consistency 评分；Least-to-Most 的分解与显式规划思想促成了把隐式计划显式化为 reference steps 以便进行覆盖匹配；潜在函数型 reward shaping (Ng et al.) 为在不扭曲最优策略前提下加入稠密辅助奖励提供理论依据；而近期若干引入过程级信号的 RAG 工作（如 HiPRAG 等）则暴露了现有 process-reward 仍依赖二元反馈或手工规则的缺陷。将这些工作放在一起，自然浮现出一条路线：把 ReAct/least-to-most 的轨迹与子步骤显式化，利用 self-consistency 的多样性与投票构建参考 planner，再基于潜在函数式奖励塑形原理在 RL 训练中加入稠密、顺序无关的路径覆盖与软化的 outcome 得分，从而直接填补 Search-R1 及现有 process-reward 方法在奖励稀疏性、样本低效和部分正确样本无用性上的空白——这正是本文提出 path-centric reward shaping 和 dual-track path scoring 的自然下一步。"
+}

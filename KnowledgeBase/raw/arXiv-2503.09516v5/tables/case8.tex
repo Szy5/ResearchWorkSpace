@@ -1,0 +1,31 @@
+
+
+
+\begin{table}[h]
+    \centering
+    \footnotesize
+    \caption{\Ours case study 8 (successful): \Ours can write query to search for insufficient information.}\label{tab:case}
+    \begin{tabular}{p{13.5cm}}
+        \hline
+        \textbf{Question}: Who was a pianist, Maro Ajemian or Richard C. Sarafian? \\
+        \hline
+        \textbf{Ground Truth}: Maro Ajemian \\
+        \hline
+        \textbf{\Ours}: \\
+        % \hline
+        \think{I need to determine if Maro Ajemian or Richard C. Sarafian was a pianist. I'll search for it.} \\
+\search{who was a pianist, Maro Ajemian or Richard C. Sarafian} \\
+\info{Doc 1(Title: "Maro Ajemian") Maro Ajemian Maro Ajemian (July 9, 1921 – September 18, 1978) was an American pianist. Ajemian's career in contemporary music grew from her Armenian heritage. She became known as a contemporary pianist after performing the U.S. premiere of Aram Khachaturian's Piano Concerto, which she chose to play based on their shared Armenian heritage. Ajemian studied at the Juilliard School of Music. On March 14, 1942, she gave the American premiere of Aram Khachaturian's Piano Concerto in D flat with the Juilliard Graduate Orchestra under Albert Stoessel. She later performed the piece on a cross-country tour. Following her performances of the ...
+} \\
+\hdashline
+\think{I found out that Maro Ajemian was a pianist. Now I need to check if Richard C. Sarafian was a pianist or not.} \\
+\search{who was Richard C. Sarafian} \\
+\info{Doc 1(Title: "Richard C. Sarafian") Richard C. Sarafian Richard Caspar Sarafian (April 28, 1930 – September 18, 2013) was an American television and film director and actor. He compiled a versatile career that spanned over five decades as a director, actor, and writer. Sarafian is best known as the director of the 1971 film ""Vanishing Point"". Sarafian was born in New York City on April 28, 1930, to Armenian immigrants. He studied pre-law and pre-med at New York University and was a poor student, but changed over to studying film, at which he excelled. He left college to join the United States Army, in which ...
+} \\
+\hdashline
+\think{I found out that Richard C. Sarafian was a television and film director and actor. Now I can compare it to Maro Ajemian, who was a pianist.} \\
+\answer{Maro Ajemian}\\
+        \hline
+    \end{tabular}
+\end{table}
+

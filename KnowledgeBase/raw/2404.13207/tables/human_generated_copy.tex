@@ -1,0 +1,63 @@
+
+% \begin{table}[h]
+%     \centering
+%     \vspace{-15pt}
+%     \caption{Testing results on \benchmarkt-Human(-Generated).}
+%     \resizebox{0.85\textwidth}{!}{
+%     \begin{tabular}{l|lcccc}
+%         \toprule
+%         & & \textbf{\small VSS} & \textbf{\small MultiVSS} & \textbf{\small Claude3} & \textbf{\small GPT4} \\
+%         & & {\small \texttt{(ada-002)}}&{\small \texttt{(ada-002)}}& \textbf{\small Reranker} & \textbf{\small Reranker}\\
+%         \midrule
+%         \multirow{3}{*}{\textbf{\small \amazont}}
+%         &Hit@1    & 0.3950 & 0.4691 & \textbf{0.5602} & 0.5432 \\
+%         &Hit@5    & 0.6419 & \textbf{0.7284} & \textbf{0.7284} & \textbf{0.7284}\\
+%         &Recall@20    & 0.3546 & \textbf{0.4022} & 0.3546 & 0.3546 \\\
+%         &MRR      & 0.5265 & 0.5874 & \textbf{0.6439} & 0.6274\\
+%         \midrule
+%         \multirow{3}{*}{\textbf{\small\magt}}
+%         &Hit@1    & 0.2857 & 0.2381 & \textbf{0.3810} & 0.3690 \\
+%         &Hit@5    & 0.4167 & 0.4167 & \textbf{0.4643} & 0.4523\\
+%         % &Recall@20& & & & \\
+%         &Recall@20    & 0.3595 & \textbf{0.3985} & 0.3595 & 0.3595\\
+%         &MRR      & 0.3581 & 0.3143 & \textbf{0.4243} & 0.4031\\
+%         \midrule
+%         \multirow{3}{*}{\textbf{\small\primekgt}} 
+%         &Hit@1    & 0.2120 & 0.2567 & \textbf{0.2844} & \textbf{0.2844}\\
+%         &Hit@5    & 0.4037 & 0.4037 & 0.4771 & \textbf{0.4863} \\
+%         &Recall@20    & 0.4383 & \textbf{0.4979} & 0.4383  & 0.4383 \\
+%         % &Recall@20 & & & & \\
+%         &MRR      & 0.2984 & 0.3377 & \textbf{0.3623} & 0.3617 \\
+%         \bottomrule
+%     \end{tabular}
+%     }
+%     \label{tab:results-human}
+% \end{table}
+
+\begin{table}[t]
+    \centering
+    \vspace{-5pt}
+    \caption{Testing results on \benchmarkt-Human(-Generated).}
+    \resizebox{1.0\textwidth}{!}{
+    \begin{tabular}{r|rrrr|rrrr|rrrr}
+        \toprule
+        & \multicolumn{4}{c|}{\textbf{\amazont}} & \multicolumn{4}{c|}{\textbf{\magt}} & \multicolumn{4}{c}{\textbf{\primekgt}} \\
+        Method & Hit@1 & Hit@5 & R@20 & MRR & Hit@1 & Hit@5 & R@20 & MRR & Hit@1 & Hit@5 & R@20 & MRR \\
+        \midrule
+        BM25 & 27.16 & 51.85 & 29.23 & 18.79 & 32.14 & 41.67 & 32.46 & 37.42 & 23.85 & 43.12 & 43.56 & 31.63 \\
+        DPR (roberta) & 16.05 & 39.51 & 15.23 & 27.21 & 4.72 & 9.52 & 25.00 & 7.90 & 1.84 & 9.17 & 10.98 & 6.52 \\
+        ANCE (roberta) &25.93 & 54.32 & 23.69 & 37.12 & 25.00 & 30.95 & 27.24 & 27.98 & 7.34 & 14.68 & 16.04 & 10.74 \\
+        QAGNN (roberta) & 22.22 & 49.38 & 21.54 & 31.33 & 20.24 & 26.19 & 28.76 & 25.53 & 6.42 & 13.76 & 17.84 & 9.91 \\
+        ada-002 & 39.50 & 64.19 & 35.46 & 52.65 & 28.57 & 41.67 & 35.95 & 35.81 & 21.20 & 40.37 & 43.83 & 29.84 \\
+        LLM2Vec & 29.63 & 46.91 & 21.21 & 38.61 & 16.67 & 28.57 & 21.74 & 21.59 & 9.17 & 22.02 & 28.66 & 15.75 \\
+        GritLM & 40.74 & 71.60 & 36.30 & 53.21 & 34.52 & 44.04 & 34.57 & 38.72 & 26.61 & 43.12 & \textbf{50.12} & 35.62 \\
+        multi-ada-002 & 46.91 & 72.84 & \textbf{40.22} & 58.74 & 23.81 & 41.67 & 39.85 & 31.43 & 25.67 & 40.37 & 49.79 & 33.77 \\
+        ColBERTv2 & 33.33 & 55.56 & 29.03 & 43.77 & 33.33 & 36.90 & 30.50 & 35.97 & 17.43 & 27.52 & 28.49 & 21.65 \\
+        Claude3 Reranker & \textbf{56.02} & \textbf{72.84} & 35.46 & \textbf{64.39} & \textbf{38.10} & \textbf{46.43} & \textbf{35.95} & \textbf{42.43} & \textbf{28.44} & 47.71 & 43.83 & \textbf{36.23} \\
+        GPT4 Reranker & 54.32 & 72.84 & 35.46 & 62.74 & 36.90 & 45.23 & \textbf{35.95} & 40.31 & \textbf{28.44} & \textbf{48.63} & 43.83 & 36.17 \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:results-human}
+\end{table}
+

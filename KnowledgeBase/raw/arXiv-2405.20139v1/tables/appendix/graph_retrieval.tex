@@ -1,0 +1,24 @@
+\begin{table*}[h]
+	\centering
+	\caption{Performance comparison on different subgraphs.}
+	\label{tab:subgraph}%
+	\resizebox{\columnwidth}{!}{
+	\begin{threeparttable}
+		\begin{tabular}{@{}ll|cccccc@{}}
+			\toprule
+			 \multirow{2}{*}{\textbf{\textcolor{olive}{Retriever}}} & \multirow{2}{*}{\textbf{\textcolor{blue}{KGQA Model}}} &  \multicolumn{3}{c}{\textbf{WebQSP}} & \multicolumn{3}{c}{\textbf{CWQ}} \\  \cmidrule(l){3-5} \cmidrule(l){6-8} 
+		      & & Hit$^\ast$ & H@1 & F1 & Hit$^\ast$ & H@1 & F1 \\
+            \midrule
+            a) Dense Subgraph & \textcolor{teal}{(A)} ReaRev + \lmsr  & -- & 77.5 & 72.8 & -- & 52.7 & 49.1  \\
+             b) Sparse Subgraph~\citep{zhang2022subgraph}& \textcolor{violet}{(B)} ReaRev + \lmsr &  -- & 74.2 & 69.8 & -- & 53.3 & 49.7   \\
+            \midrule
+             c) \grag: \textcolor{teal}{(A)} & \multirow{2}{*}{LLaMA2-Chat-7B (tuned)}  &85.0 & 80.3 & 71.5 & 66.2 & 61.3 & 58.9 \\
+             d) \grag: \textcolor{violet}{(B)} &  &83.4 & 78.9 & 69.8 & 60.6 & 55.6 & 53.3  \\
+			\bottomrule
+		\end{tabular}%
+        
+		\end{threeparttable}
+}
+
+
+\end{table*}%

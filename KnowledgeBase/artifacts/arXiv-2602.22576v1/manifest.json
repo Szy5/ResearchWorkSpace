@@ -1,0 +1,59 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "arXiv-2602.22576v1",
+  "created_at": "2026-07-14T05:04:29.221369+00:00",
+  "updated_at": "2026-07-15T04:56:46.829536+00:00",
+  "paper": {
+    "title": "Search-P1: Path-Centric Reward Shaping for Stable and Efficient Agentic RAG Training",
+    "authors": [
+      "Tianle Xia",
+      "Ming Xu",
+      "Lingxiang Hu",
+      "Yiding Sun",
+      "Wenwei Li",
+      "Linfang Shang",
+      "Liqun Liu",
+      "Peng Shu",
+      "Huan Yu",
+      "Jie Jiang"
+    ],
+    "abstract": "Retrieval-Augmented Generation (RAG) enhances large language models (LLMs) by incorporating external knowledge, yet traditional single-round retrieval struggles with complex multi-step reasoning. Agentic RAG addresses this by enabling LLMs to dynamically decide when and what to retrieve, but current RL-based training methods suffer from sparse outcome rewards that discard intermediate signals and low sample efficiency where failed samples contribute nothing. We propose , a framework that introduces path-centric reward shaping for agentic RAG training, comprising two key components: (1) Path-Centric Reward, which evaluates the structural quality of reasoning trajectories through order-agnostic step coverage and soft scoring that extracts learning signals even from failed samples, and (2) Dual-Track Path Scoring with offline-generated reference planners that assesses paths from both self-consistency and reference-alignment perspectives. Experiments on multiple QA benchmarks demonstrate that achieves significant improvements over Search-R1 and other strong baselines, with an average accuracy gain of 7.7 points.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "2602.22576",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-14"
+  },
+  "source": {
+    "raw_dir": "raw/arXiv-2602.22576v1",
+    "entry_file": "acl_latex.tex",
+    "source_files": [
+      {
+        "path": "acl_latex.tex",
+        "sha256": "47a471df2f6e1220f9e962c4b6abc589448dd411f1f055af40b034d6afcae664",
+        "bytes": 60741
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 40,
+    "figures": 6,
+    "references": 39
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": []
+}

@@ -1,0 +1,779 @@
+%%
+%% This is file `sample-sigconf.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `all,proceedings,bibtex,sigconf')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-sigconf.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%%
+%% The first command in your LaTeX source must be the \documentclass
+%% command.
+%%
+%% For submission and review of your manuscript please change the
+%% command to \documentclass[manuscript, screen, review]{acmart}.
+%%
+%% When submitting camera ready or to TAPS, please change the command
+%% to \documentclass[sigconf]{acmart} or whichever template is required
+%% for your publication.
+%%
+%%
+% \documentclass[sigconf, anonymous, review]{acmart}
+\documentclass[sigconf]{acmart}
+
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+% \copyrightyear{2025}
+% \acmYear{2025}
+% \setcopyright{acmlicensed}\acmConference[WWW '25]{Proceedings of the ACM Web Conference 2025}{April 28-May 2, 2025}{Sydney, NSW, Australia}
+% \acmBooktitle{Proceedings of the ACM Web Conference 2025 (WWW '25), April 28-May 2, 2025, Sydney, NSW, Australia}
+% \acmDOI{10.1145/3696410.3714768}
+% \acmISBN{979-8-4007-1274-6/25/04}
+
+\settopmatter{printacmref=true}
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+
+
+%%
+%% end of the preamble, start of the body of the document source.
+\usepackage{dsfont}
+\usepackage{fontawesome5}
+\usepackage{multirow}
+\usepackage{bbding}
+\usepackage{ulem}
+\usepackage{algorithm}
+\usepackage{balance}
+\usepackage{algorithmic}
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{SymAgent: A Neural-Symbolic Self-Learning Agent Framework for Complex Reasoning over Knowledge Graphs}
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+% \author{Ben Trovato}
+% \authornote{Both authors contributed equally to this research.}
+% \email{trovato@corporation.com}
+% \orcid{1234-5678-9012}
+% \author{G.K.M. Tobin}
+% \authornotemark[1]
+% \email{webmaster@marysville-ohio.com}
+% \affiliation{%
+%   \institution{Institute for Clarity in Documentation}
+%   \city{Dublin}
+%   \state{Ohio}
+%   \country{USA}
+% }
+
+% \author{Lars Th{\o}rv{\"a}ld}
+% \affiliation{%
+%   \institution{The Th{\o}rv{\"a}ld Group}
+%   \city{Hekla}
+%   \country{Iceland}}
+% \email{larst@affiliation.org}
+
+% \author{Valerie B\'eranger}
+% \affiliation{%
+%   \institution{Inria Paris-Rocquencourt}
+%   \city{Rocquencourt}
+%   \country{France}
+% }
+
+% \author{Aparna Patel}
+% \affiliation{%
+%  \institution{Rajiv Gandhi University}
+%  \city{Doimukh}
+%  \state{Arunachal Pradesh}
+%  \country{India}}
+
+% \author{Huifen Chan}
+% \affiliation{%
+%   \institution{Tsinghua University}
+%   \city{Haidian Qu}
+%   \state{Beijing Shi}
+%   \country{China}}
+
+% \author{Charles Palmer}
+% \affiliation{%
+%   \institution{Palmer Research Laboratories}
+%   \city{San Antonio}
+%   \state{Texas}
+%   \country{USA}}
+% \email{cpalmer@prl.com}
+
+% \author{John Smith}
+% \affiliation{%
+%   \institution{The Th{\o}rv{\"a}ld Group}
+%   \city{Hekla}
+%   \country{Iceland}}
+% \email{jsmith@affiliation.org}
+
+% \author{Julius P. Kumquat}
+% \affiliation{%
+%   \institution{The Kumquat Consortium}
+%   \city{New York}
+%   \country{USA}}
+% \email{jpkumquat@consortium.net}
+
+\author{Ben Liu}
+\authornote{Equal contribution.}
+% \authornote{This work is conducted during an internship at Alibaba Group.}
+\affiliation{%
+  \department{School of Computer Science,}
+  \institution{Wuhan University,}
+  \city{Wuhan}
+  \country{China}
+}
+\email{liuben123@whu.edu.cn}
+
+\author{Jihai Zhang}
+\authornotemark[1]
+\affiliation{%
+  \department{DAMO Academy,}
+  \institution{Alibaba Group,}
+  \city{Hangzhou}
+  \country{China}
+}
+\email{jihai.zjh@alibaba-inc.com}
+
+\author{Fangquan Lin}
+\affiliation{%
+  \department{DAMO Academy,}
+  \institution{Alibaba Group,}
+  \city{Hangzhou}
+  \country{China}
+}
+\email{fangquan.linfq@alibaba-inc.com}
+
+\author{Cheng Yang}
+\affiliation{%
+  \department{DAMO Academy,}
+  \institution{Alibaba Group,}
+  \city{Hangzhou}
+  \country{China}
+}
+\email{charis.yangc@alibaba-inc.com}
+
+\author{Min Peng}
+\authornote{Corresponding Author.}
+\affiliation{%
+  \department{School of Computer Science,}
+  \institution{Wuhan University,}
+  \city{Wuhan}
+  \country{China}
+}
+\email{pengm@whu.edu.cn}
+
+\author{Wotao Yin}
+\affiliation{%
+  \department{DAMO Academy,}
+  \institution{Alibaba Group US,}
+  \city{Bellevue}
+  \state{WA}
+  \country{USA}
+}
+\email{wotao.yin@alibaba-inc.com}
+
+
+
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+\renewcommand{\shortauthors}{Ben Liu et al.}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+Recent advancements have highlighted that Large Language Models (LLMs) are prone to hallucinations when solving complex reasoning problems, leading to erroneous results. To tackle this issue, researchers incorporate Knowledge Graphs (KGs) to improve the reasoning ability of LLMs. However, existing methods face two limitations: 1) they typically assume that all answers to the questions are contained in KGs, neglecting the incompleteness issue of KGs, and 2) they treat the KG as a static repository and overlook the implicit logical reasoning structures inherent in KGs. In this paper, we introduce SymAgent, an innovative neural-symbolic agent framework that achieves collaborative augmentation between KGs and LLMs. We conceptualize KGs as dynamic environments and transform complex reasoning tasks into a multi-step interactive process, enabling KGs to participate deeply in the reasoning process. SymAgent consists of two modules: Agent-Planner and Agent-Executor. The Agent-Planner leverages LLM's inductive reasoning capability to extract symbolic rules from KGs, guiding efficient question decomposition. The Agent-Executor autonomously invokes predefined action tools to integrate information from KGs and external documents, addressing the issues of KG incompleteness. Furthermore, we design a self-learning framework comprising online exploration and offline iterative policy updating phases, enabling the agent to automatically synthesize reasoning trajectories and improve performance. Experimental results demonstrate that SymAgent with weak LLM backbones (i.e., 7B series) yields better or comparable performance compared to various strong baselines. Further analysis reveals that our agent can identify missing triples, facilitating automatic KG updates.
+
+
+%%%
+
+
+%  and fail to effectively address the limited coverage of KGs. This study introduces SymAgent, an innovative neural-symbolic agent framework that achieves synergistic enhancement between LLMs and KGs, with significant implications for Web-based knowledge systems.
+
+% This paper introduces an innovative neural-symbolic agent framework designed to achieve deep synergy between LLMs and Web knowledge graphs. We conceptualize Web KGs as dynamic environments, transforming complex Web reasoning tasks into interactive processes. Our framework comprises two core components: (1) a planner that extracts symbolic rules from KG connection patterns for high-level problem decomposition, and (2) an executor that leverages predefined action tools to flexibly integrate KG and Web document information to answer complex queries.
+
+% To address the challenge of limited step-by-step annotated Web reasoning data, we propose a self-learning framework consisting of online exploration and iterative optimization phases. Experimental results demonstrate that our method significantly improves the performance of medium-scale language models (7B parameter range) on Web reasoning tasks. Crucially, through continuous interaction with the Web environment, our agent can identify and complete missing knowledge in KGs, enabling automatic KG update and expansion.
+
+% This research not only presents a novel approach to LLM and Web KG collaboration but also provides innovative solutions for complex Web reasoning tasks and dynamic knowledge acquisition. It has significant implications for enhancing the reasoning capabilities and knowledge representation of semantic Web technologies, laying the groundwork for next-generation intelligent Web applications.
+
+\end{abstract}
+
+%%
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+%% Please copy and paste the code instead of the example below.
+%%
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10010147.10010178.10010187.10010188</concept_id>
+<concept_desc>Computing methodologies~Semantic networks</concept_desc>
+<concept_significance>300</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[300]{Computing methodologies~Semantic networks}
+% \ccsdesc{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+% \ccsdesc[100]{Do Not Use This Code~Generate the Correct Terms for Your Paper}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{Large Language Model Agent; Knowledge Graph; Self-Learning}
+%% A "teaser" image appears between the author and affiliation
+%% information and the body of the document, and typically spans the
+%% page.
+% \begin{teaserfigure}
+%   \includegraphics[width=\textwidth]{sampleteaser}
+%   \caption{Seattle Mariners at Spring Training, 2010.}
+%   \Description{Enjoying the baseball game from the third-base
+%   seats. Ichiro Suzuki preparing to bat.}
+%   \label{fig:teaser}
+% \end{teaserfigure}
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+\section{INTRODUCTION}
+Knowledge Graphs (KGs) store massive factual triples in a graph-structured format, providing critical supportive information to various semantic web technologies~\cite{web,web2,web3,web4}. Recently, Large Language Models (LLMs) have demonstrated impressive capabilities in language understanding and information integration across diverse domains~\cite{llm}. However, they are limited by the lack of precise knowledge and are prone to hallucinations in their responses~\cite{hall}. Given that KGs encapsulate the essence of data interconnectivity, providing explicit and explainable knowledge, integrating LLMs and KGs has garnered significant research interest. This integration facilitates a wide range of web-based applications, including search engine recommendation~\cite{kgandllm,recom}, fake news detection~\cite{fakenews}, and social networks~\cite{social}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{symagent_intro_v2.pdf}
+    \caption{Comparison between SymAgent and existing methods. Armed with an action tool library, the SymAgent, consisting of a planner and an executor, autonomously interacts with the KG environment to conduct reasoning.}
+    \label{intro}
+\end{figure}
+
+
+Existing work mainly adopts retrieval-augmented~\cite{retrieval,retrieve,retrieve2,Rog} or semantic-parsing~\cite{spareser2,chatkbqa,beamqa} methods to enhance the complex reasoning performance of LLMs with KG data. The former approaches rely on vector embeddings to retrieve and serialize the relevant subgraph as input prompt for LLMs, while the latter employs LLMs to perform a structured search on KGs (e.g., SPARQL) to obtain answers. Despite their success, these methods share significant limitations. \textbf{Firstly}, they treat KGs merely as static knowledge repositories, overlooking the inherent reasoning patterns embedded in the symbolic structure of KGs. These patterns could substantially aid LLMs in decomposing complex problems and aligning the semantic granularity between natural language questions and KG elements. For instance, in Figure~\ref{intro}, given the question \textit{Where was the person who recorded "I'm Gonna Get Drunk and Play Hank Williams" born?}, the symbolic rule $featured\_artist.recordings(e_1, e_2)\land person.place$ $\_of\_birth(e_2, e_3)$ derived from the KG serves as an abstract representation of the question, revealing the intrinsic connection between question decomposition and KG structural patterns. In contrast, retrieval-based methods often suffer from superficial correlations, retrieving semantically similar but irrelevant information and even harmful disturbance, leading to degraded model performance. \textbf{Moreover}, both methods typically assume that all factual triples required for each question are entirely covered by the KG, which is unrealistic for manually curated KGs. When KGs fail to cover the necessary information, parser-based methods struggle to execute SPARQL queries effectively, limiting their ability to provide accurate answers or engage in complex reasoning tasks.
+
+In light of these limitations, we delve into the exploration of the effective fusion of KGs and LLMs, enabling their collective augmentation in complex reasoning tasks. Fundamentally, realizing this integration poses several significant challenges: (i) \textbf{Semantic Gap}. Enabling the KG to participate deeply in the reasoning process of LLM requires aligning the symbolic structure of KGs with the neural representations of LLMs. (ii) \textbf{Incompleteness of KG}. When encountering insufficient information, it is necessary to retrieve relevant unstructured documents and identify missing triples consistent with the KG's semantic granularity during the reasoning process. (iii) \textbf{Learning with Limited Supervision}. The complexity of tasks and the current limitation of having only natural language input-output pairs make it difficult to unlock the full reasoning potential of LLMs.
+
+
+% This approach enhances both task performance and interpretability compared to previous methods that generate answers at once. 
+To address these challenges, we propose SymAgent, a novel framework designed to autonomously and effectively integrate the capabilities of both LLM and KG. By treating the KG as a dynamic environment,  we transform complex reasoning tasks into multi-step interactive processes, enabling in-depth analysis and proper decomposition of complex questions. Specifically, SymAgent comprises two key components: a planning module and an execution module. The planning module leverages LLM's inductive reasoning to derive symbolic rules from the KG, creating high-level plans for aligning natural language questions with the KG structure and employing it as a navigational tool. In the execution module, we extend the agent's capacity by curating a multi-functional toolbox, enabling the manipulation of both structured data and unstructured documents. By engaging in a thought-action-observation loop, the agent continuously reflects on the derived plan, action execution results, and past interactions to autonomously orchestrate action tools. This process not only allows for the collection of the necessary information to answer the question but also simultaneously identifies missing factual triples to complete the KG, addressing the challenge of KG incompleteness. Given the lack of well-annotated expert trajectories, we introduce a self-learning framework, which includes online exploration and offline iterative policy updates. Through continuous interaction with the KG environment, the agent can self-synthesize and refine trajectory data without human annotation, empowering performance improvement.
+% This comprehensive approach not only addresses the challenges of semantic gap, KG incompleteness, and limited supervision but also paves the way for more advanced, autonomous, and interpretable complex reasoning systems.
+
+In summary, our main contributions are as follows:
+\begin{itemize}
+    \item We propose SymAgent, a novel neural-symbolic driven LLM-based agent framework for complex reasoning over knowledge graphs, effectively integrating the strengths of both LLMs and KGs. SymAgent transforms natural language questions into multi-step interaction processes through the automatic invocation of pre-defined action tools, achieving mutual enhancement of KGs and LLMs.
+
+    \item We develop an innovative self-learning framework involving iterative training of LLMs through interactions with the dynamic KG environment. The proposed framework eliminates the need for human annotation or a stronger teacher model, enabling autonomous self-improvement.
+
+    \item Experimental results on several widely used complex reasoning datasets demonstrate that SymAgent with weak LLM backbones (i.e., 7B series) achieves better or comparable performance compared to strong baselines. Comprehensive empirical analyses validate the effectiveness of SymAgent in multiple aspects, including complex question decomposition, missing factual triples identification, and self-learning strategy.
+\end{itemize}
+
+\section{RELATED WORKS}
+\noindent \textbf{Complex Reasoning over Knowledge Graph.} Complex Reasoning over Knowledge graph aims to provide answers to multi-hop natural language questions using knowledge graphs as their primary source of information~\cite{beamqa,chatkbqa,kgandllm}. Existing methods can be broadly categorized into semantic-parsing and retrieval-augmented methods. Semantic-parsing methods parse questions into the executable formal language (e.g., SPARQL) and perform precise queries on KGs to obtain answers~\cite{chatkbqa,spareser2}. Initial works~\cite{step,step2} utilize strategies of step-wise query graph generation and search for parsing. Subsequent works~\cite{beamqa} employ Seq2Seq models (e.g., T5~\cite{T5}) to generate SARSQL-expressions directly, which take advantage of the ability of pre-trained language models to enhance the semantic parsing process. More recently, ChatKBQA~\cite{chatkbqa} further fine-tunes large language models (e.g., LLaMA~\cite{llama}) to improve the accuracy of formal language generation. Despite these advancements, semantic-parsing methods heavily rely on the quality of generated queries, and no answers can be obtained if the query is not executable.
+
+Retrieval-augmented methods~\cite{UniKGQA,Structgpt,Rog} retrieve the relevant factual triples from the KG and then feed them to the LLM to help generate the final answers. Some methods~\cite{Structgpt} develop specialized interfaces for gathering pertinent evidence from structured data, while others~\cite{UniKGQA,retrieval} retrieve facts by assessing semantic similarities between the question and associated facts. Meanwhile, certain approaches~\cite{chatrule,decom} utilize the LLM to decompose the question and then retrieve corresponding triples for generation, enhancing the precision of the retrieval process. Notably, ToG~\cite{ToG} adopts an explore-and-exploit strategy, allowing the LLM to traverse the KG for information gathering, achieving state-of-the-art performance. GoG~\cite{gog} further proposes the think-search-generate paradigm to address the incompleteness issue of KG. However, most of these approaches rely on capable closed-source LLM APIs (e.g., GPT4~\cite{gpt4}), resulting in significant performance degradation when using weak LLMs as backbones. 
+
+% Furthermore, they all assume that KGs comprehensively contain the answers, overlooking the issue of KG incompleteness in real-world scenarios.
+
+
+%With the surprising long-horizon planning and reasoning capabilities shown in LLMs~\cite{}, researchers have explored building LLM-based agent systems~\cite{} to unlock the door of Artificial General Intelligence. The most representative LLM agent, ReAct~\cite{}, proposes a prompting method to enable LLMs to interact with external environments and receive feedback. Subsequent works further focus on agent planning~\cite{}, function call~\cite{}, and code generation~\cite{}, improving the ability of LLMs on various complicated tasks. Recently, there has been an increasing focus on endowing open-source LLMs with agent capabilities through fine-tuning~\cite{} on expert data distilled from teacher models. However, these approaches heavily rely on prompts for customization, which makes it difficult to tailor the behavior. In this paper, we introduce a self-learning framework, enabling weak LLMs to iteratively improve by interacting with the environment.
+\noindent\textbf{Large Language Model based Agents.}
+With the surprising long-horizon planning and reasoning capabilities shown in LLMs \cite{plan}, researchers have explored building LLM-based agent systems \cite{Aglite} to unlock the door of Artificial General Intelligence. The most representative LLM agent, ReAct~\cite{react}, proposes a prompting method to enable LLMs to interact with external environments and receive feedback. Subsequent works further focus on agent planning~\cite{reflection}, function call~\cite{toolformer}, and code generation~\cite{pot}, improving the ability of LLMs on various complicated tasks. Recently, there has been an increasing focus on endowing open-source LLMs with agent capabilities through fine-tuning~\cite{ditill} on expert data distilled from teacher models. However, methods like AutoAct~\cite{autoact} and AgentGym~\cite{agentgym} propose self-interactive trajectory synthesis, demonstrating superior performance over distillation and showcasing significant potential. Furthermore, recent research emphasizes the significance of incorporating reinforcement learning techniques with LLMs to enhance decision-making in dynamic scenarios. Notably, studies like~\cite{rl} highlight how RL frameworks can enable LLMs to continuously adapt their strategies with meticulously designed prompts, thus significantly improving their performance in practical applications. 
+
+% However, these approaches heavily rely on prompts for customization, which makes it difficult to tailor the behavior. In this paper, we introduce a self-learning framework, enabling weak LLMs to improve iteratively by interacting with the environment.
+
+%引文[cite1]：
+% @inproceedings{du2023guiding,
+%   title={Guiding pretraining in reinforcement learning with large language models},
+%   author={Du, Yuqing and Watkins, Olivia and Wang, Zihan and Colas, C{\'e}dric and Darrell, Trevor and Abbeel, Pieter and Gupta, Abhishek and Andreas, Jacob},
+%   booktitle={International Conference on Machine Learning},
+%   pages={8657--8677},
+%   year={2023},
+%   organization={PMLR}
+% }
+
+
+
+
+
+% struggle to deliver precise and reliable factual knowledge in responsese (i.e., hallucination issues)~\cite{}. 
+
+
+
+ % kg subgraph contian many error information, we can selectively utilize these information. learning from the kg and perform retrieval. directy rerieval informaiton for complex reasoning is not good.
+
+ \begin{figure*}[ht]
+    \centering
+    \includegraphics[width=0.98\textwidth]{symagent_framework.pdf}
+    \caption{The overview of our proposed SymAgent. (a) the planner in SymAgent, which derives the symbolic rules from the KG to guide the reasoning; (b) the executor in SymAgent, which conducts the automatic action invocation to obtain the answer; (c) the self-learning framework to enhance the agent iteratively; and (d) an example of the synthesized action invoking trajectory.}
+    \label{framework}
+\end{figure*}
+
+\section{PRELIMINARIES}
+\subsection{Symbolic Rules}
+A knowledge graph is a collection of factual triples, denoted as $\mathcal{G} = \{(e, r, e^\prime) \vert e, e^\prime \in \mathcal{E}, r \in \mathcal{R}\}$, where $\mathcal{E}$ and $\mathcal{R}$ represent the sets of entities and relations, respectively. Symbolic rules in KGs are typically expressed as first-order logic formulae:
+\begin{equation}\label{rule}
+    r_h(x, y) \leftarrow r_1(x, z_1) \land r_2(z_1, z_2) \land \ldots \land r_n(z_{n-1}, y),
+\end{equation}
+where the left-hand side denotes the rule head with relation $r_h$ that can be induced by $(\leftarrow)$ the right-hand rule body, the rule body forms a \textit{closed chain}, with successive relations sharing intermediate variables (e.g., $z_i$), represented by the conjunction $(\land)$ of body relations. A KG can be regarded as \textit{groundings} of symbolic rules by substituting all variables $x, y, z$ with specific entities. For example, given the triples \textit{(Sam, workFor, OpenAI), (OpenAI locatedIn SF)}, and \textit{(Sam liveIn, SF)}, a grounding of the length-2 symbolic rule is $liveIn(Sam, SF) \leftarrow workFor(Sam, OpenAI) \land locatedIn(OpenAI, SF)$.
+
+\subsection{Task Formulation}
+In this paper, we transform the reasoning task on KG into an LLM-based agent task, where the KG serves as an environment providing execution feedback rather than merely acting as a knowledge base. The reasoning process can thus be viewed as a multi-step interaction with partial observations from the KG. This interactive process can be formalized as a Partially Observable Markov Decision Process (POMDP): $(\mathcal{Q}, \mathcal{S}, \mathcal{A}, \mathcal{O}, \mathcal{T})$ with question space $\mathcal{Q}$, state space $\mathcal{S}$, action space $\mathcal{A}$, observation space $\mathcal{O}$, and state transition function $\mathcal{T}: \mathcal{S} \times \mathcal{A} \rightarrow \mathcal{S}$. Note that in our language agent scenario, $\mathcal{Q}$, $\mathcal{A}$, and $\mathcal{O}$ are subspaces of the natural language space, and the transition function $\mathcal{T}$ is determined by the environment.
+
+Given a question $q \in \mathcal{Q}$ and the KG $\mathcal{G}$, the LLM agent generates the action $a_0 \sim \pi_\theta(\cdot \vert q, \mathcal{G}) \in \mathcal{A}$ based on its policy $\pi_\theta$. This action leads to a state transition, and the agent receives execution feedback as observation $o_0 \in \mathcal{O}$. The agent then continues to explore the environment until an appropriate answer is found or another stop condition is met. The historical trajectory $\mathcal{H}_n$ at step $n$, consisting of a sequence of actions and observations, can be represented as:
+\begin{equation}\label{history}
+\begin{split}
+    &\mathcal{H}_n = (q, \mathcal{G}, a_0, o_o, \ldots, a_{n-1},  o_{n-1}) \sim \pi_\theta(\mathcal{H}_n \vert q, \mathcal{G}),\\
+    &\pi_\theta(\mathcal{H}_n \vert q, \mathcal{G}) = \prod_{j=1}^n\pi_\theta(a_j\vert q, \mathcal{G}, a_0, o_0, \ldots, o_{j-1}),
+\end{split}
+\end{equation}
+where $n$ is the total interaction steps. Finally, the final reward $r(q, \mathcal{H}_n) \in [0, 1]$ is computed, with 1 indicating a correct answer.
+
+% This multi-step reasoning approach effectively converts the QA task into an iterative exploration process, enhancing the agent's ability to derive accurate answers through continuous interaction with the KG environment.
+
+
+
+\section{METHODOLOGY}
+% In this section, we present the proposed SymAgent, which effectively synergizes the cognitive potential inherent in knowledge graphs (KGs) with the reasoning and information integration capabilities of LLMs to autonomously tackle complex reasoning tasks over KGs. SymAgent consists of an Agent-Planner and an Agent-Executor. The Agent-Planner derives symbolic rules embedded within the KG to decompose the question and orchestrate the reasoning steps (Section~\ref{planner}). Building upon these symbolic rules, the Agent-Executor invokes actions to answer the question by synthesizing insights derived from agent reflection and observed environment feedback (Section~\ref{executor}). Given the lack of well-annotated step-by-step reasoning data, we further introduce a self-learning framework that facilitates SymAgent and the KG to augment collaboratively through autonomous interaction with the environment (Section~\ref{self-learning}). The overall architecture of SymAgent is illustrated in Figure~\ref{framework}.
+In this section, we present SymAgent, a framework that combines knowledge graphs (KGs) with LLMs to autonomously solve complex reasoning tasks. SymAgent includes an Agent-Planner, which extracts symbolic rules from the KG to decompose questions and plan reasoning steps (Section~\ref{planner}), and an Agent-Executor, which synthesizes insights from reflection and environment feedback to answer questions (Section~\ref{executor}). To address the lack of annotated reasoning data, we introduce a self-learning framework for collaborative improvement through autonomous interaction (Section~\ref{self-learning}). The overall architecture is shown in Figure~\ref{framework}.
+
+\subsection{Agent-Planner Module}\label{planner}
+The Agent-Planner functions as a high-level planner, leveraging LLM's reasoning capability to decompose questions into executable reasoning chains. However, we observed that merely prompting the LLM to plan the entire reasoning workflow does not yield satisfactory performance. Current LLMs struggle to align complex questions with the semantics and connectivity patterns of the KG, resulting in coarse-grained reasoning chains that are ineffective for precise information retrieval and integration. 
+
+To address this limitation, we employ the LLM to identify potential symbolic rules within the KG that could answer the question rather than generating detailed step-by-step plans. On the one hand, LLMs have been demonstrated to be effective inductive reasoners but poor deductive reasoners~\cite{ind}. On the other hand, symbolic rules inherently reflect the reasoning patterns of KG, serving as implicit information to aid in decomposing complex questions. In this way, the Agent-Planner establishes a bridge between natural language questions and structural information of KG, enhancing both the accuracy and generalizability of the reasoning process. 
+
+
+
+Specifically, given a question $q$, we employ BM25~\cite{BM25} to retrieve a set of seed questions $\{q_{seed_i}\}_{i=1}^k$ from the training set, where each $q_{seed_i}$ shares similar question structure with $q$, potentially requiring analogous solution strategies. For each $q_{seed_i}$, we adopt breadth-first-search (BFS) to sample a set of closed paths $P_i=\{p_{i_1}, p_{i_2}, \ldots, p_{i_m} \}$ from the query entity $e_q$ to the answer entity $e_a$ within the KG $\mathcal{G}$, where $p_{i_j} = r_1 (e_q, e_1) \land r_2(e_1, e_2) \ldots \land r_L(e_{L-1}, e_a)$ is a sequence of relations. These closed paths can be considered as groundings of symbolic rules that answer the question. We then generalize these closed paths by replacing specific entities with variables, transforming them into rule bodies shown in Equation~\ref{rule}. This process constructs few-shot demonstrations $\mathcal{M}=\{(q_{seed_i}, P_i)\}_{i=1}^k$ to prompt our SymAgent to generate appropriate rule bodies for $q$:
+\begin{equation}\label{rule_gene}
+    p \sim \pi_\theta(\cdot\vert \rho_{Plan}, q, \mathcal{M}),
+\end{equation}
+where $\rho_{Plan}$ stands for the prompt to instruct the rule bodies generation. The generated KG-aligned symbolic rules $p$ serve to guide SymAgent's global planning and prevent it from falling into blind trial-and-error during the reasoning process.
+
+
+
+% Our hypothesis validation experimental results in Figure~\ref{} further corroborate this, showing that even with sparse KG, LLM exhibits a notable ability to abstract symbolic rules from factual triples within the KG.
+
+% The Module consist of symbolics rules sampling
+% Plan generations.
+
+% planner
+% executer
+% As described in above secton, we define the executera according to MDP. 
+
+% self-learning process.
+% self-exploreing/self-synthesis self-refinement self-evolving.
+
+\subsection{Agent-Executor Module}\label{executor}
+Building upon the generated symbolic rules from KG $\mathcal{G}$, the Agent-Executor engages in a cyclical paradigm of \textit{observation}, \textit{thought}, and \textit{action} to navigate the autonomous reasoning process. In contrast to existing methods that retrieve information from the KG, potentially introducing large amounts of irrelevant data, the Agent-Executor leverages expert feedback from the KG structure to dynamically adjust the reasoning process. This approach enables KGs, which store a wealth of informative and symbolic facts, to deeply participate in the reasoning process together with LLMs rather than being merely treated as a static repository of information. 
+
+\subsubsection{Action Space}
+Given that LLMs cannot directly process the structured data in KGs, and considering the need to rely on external unstructured documents during the reasoning process to address the issue of incomplete information in KGs, we define the agent's action space as a set of functional tools. By leveraging the function call capabilities of LLMs, our SymAgent not only overcomes the limitations of LLMs in handling structured data but also provides a flexible mechanism for integrating diverse information sources, thereby enhancing the agent's reasoning capabilities and adaptability. The action space consists of the following functional tools:
+\begin{itemize}
+    \item $getReasoningPath(sub\_question)$: receives the sub\_question as input and returns potential symbolic rules. As depicted in Equation~\ref{rule_gene}, this action leverages the inductive reasoning capability of LLMs to generate KG-aligned symbolic rules that decompose the sub\_question, effectively guiding the reasoning process. 
+      
+    \item $wikiSearch(ent, rel)$: retrieves relevant documents from the Wikipedia or internet when KG information is insufficient. This action bridges structured KG data with unstructured text, enhancing reasoning with incomplete information.
+
+    \item $extractTriples(ent, rel, doc)$: extracts triples related to the current query's entity and relation from retrieved documents. Notably, this action is not explicitly invoked by the agent but automatically triggered after $wikiSearch$ is called. The extracted triples are aligned with the KG's semantic granularity and can be integrated into the KG, facilitating its expansion.
+    
+    \item $searchNeighbor(ent, rel)$: is a graph exploration function. It returns neighbors of a particular entity under a given relation in the KG, enabling efficient traversal and discovery of related entities.
+    
+    \item $finish(e_1, e_2, \ldots, e_n)$ returns a list of answer entities, indicating that the final answers have been obtained and the reasoning process has concluded.
+
+\end{itemize}
+
+\subsubsection{Interactive Process}\label{explore}
+Treating the KG as the environment and the results of action executions as observations, the entire reasoning process becomes a sequence of agent action calls and corresponding observations. We adopt a react-style approach~\cite{react}, which generates a chain-of-thought rationale before taking actions, reflecting on the current state of the environment. Formally, we extend the Equation~\ref{history}, and the interaction trajectory at step $n$ can be further represented as:
+\begin{equation}
+    \mathcal{H}_n = (q, \mathcal{G}, p, \tau_0, a_0, o_0, \ldots, \tau_{n-1}, a_{n-1}, o_{n-1}),
+\end{equation}
+where $\tau$ is the internal thought of the agent by reflecting on the historical trajectory, $a$ is an action selected from the tool set defined above, and $o$ is the observation determined by executing an action. Based on this historical trajectory, the process for generating the subsequent thought $\tau_n$ and action $a_n$ can be formulated as:
+\begin{equation}
+    \begin{split}
+    \pi_\theta(\tau_n\vert \mathcal{H}_n) &= \prod_{i=1}^{\lvert \tau_n\rvert}\pi_\theta(\tau_n^i\vert \mathcal{H}_n, \tau_n^{<i}),\\
+    \pi_\theta(a_n\vert \mathcal{H}_n, \tau_n) &= \prod_{j=1}^{\lvert a_n \rvert}\pi_\theta(a_n^j \vert \mathcal{H}_n, \tau_n, a_n^{<j}),
+\end{split}
+\end{equation}
+where $\tau_n^i$ and $|\tau_n|$ represent the $i$-th token and the total length of $\tau_n$, $a_n^j$ and $|a_n|$ represent the $j$-th token and the total length of $a_n$. The agent loop continues until either the $finish()$ action is invoked or it reaches the predefined maximum iterative steps.
+
+\subsection{Self-learning}\label{self-learning}
+Given that the initial dataset comprises only question-answer pairs without well-annotated step-by-step interaction data, we propose a self-learning framework. Rather than distilling reasoning chains from more capable models (e.g., GPT-4~\cite{gpt4}), our approach enables weak policy LLM $\pi_\theta$ to interact with the environment adequately, thereby improving through self-training. The self-learning process consists of two primary phases: online exploration and offline iterative policy updating.
+
+\subsubsection{Online Exploration} In this phase, the base agent $\pi_{\theta_0}$ interacts with the environment autonomously through a thought-action-observation loop according to Section~\ref{explore}, synthesizing a set of initial trajectories $\mathcal{U}_0 = \{\mu_1, \mu_2, \ldots, \mu_N\}$. For each trajectory $\mu_i$, we employ an outcome-based reward mechanism, defining the reward as the final answer's recall value:
+\begin{equation}
+    r(\mu_i)=\text{Recall}(A_{\mu_i}, A_{gt}) = \frac{|A_{\mu_i} \cap A_{gt}|}{|A_{gt}|},
+\end{equation}
+where $A_{\mu_i}$ is the set of answer entities extracted from the final action of trajectory $\mu_i$, and $A_{gt}$ is the set of ground truth answer entities. This process yields a collection of self-explored trajectories $\mathcal{D}_0 = \{(\mu_i, r(\mu_i))\}_{i=1}^N$.
+
+To address the potential errors in agent action invocation (e.g., incorrect tool invocation formats) that may impair exploration effectiveness, we leverage the LLM's self-reflection capability to refine the trajectories. Using $\mathcal{D}_0$ as reference, the policy LLM $\pi_{\theta_0}$ regenerate new refined trajectories, formulated as $\{\hat{\mu_i}\}_{i=1}^N \sim \pi_{\theta_0}(\cdot|\mu_i, r(\mu_i))$. After applying the same reward mechanism, we can get a refined trajectory collection $\widehat{\mathcal{D}_0} = \{(\hat{\mu_i}, r(\hat{\mu_i}))\}_{i=1}^N$.
+
+After self-exploration and self-reflection, we obtain two trajectory collections of equal size: $\mathcal{D}_0$ and $\widehat{\mathcal{D}_0}$. To enhance the quality of candidate trajectories, we employ a heuristic method to merge these two collections, resulting in an optimized trajectory set. Following the principle of final answer consistency, we obtain the merged trajectory collection $\mathcal{D}_0^\ast = \{(\mu_i^\ast, r(\mu_i^\ast))\}_{i=1}^N$:
+\begin{equation}
+\mathcal{D}_0^\ast (i)=
+\begin{cases}
+(\mu_i, r(\mu_i)), & \text{if } r(\mu_i) > r(\hat{\mu_i}), \\
+(\hat{\mu_i}, r(\hat{\mu_i})), & \text{if } r(\mu_i) < r(\hat{\mu_i}), \\
+(t, r(t)), & \text{if } r(\mu_i) = r(\hat{\mu_i}) > 0, \\
+\text{filtered}, & \text{if } r(\mu_i) = r(\hat{\mu_i}) = 0.
+\end{cases}
+\end{equation}
+In this equation,  $t = \arg\min_{s \in \{\mu_i, \hat{\mu_i}\}}|s|$ denotes that we select the trajectory with the shorter length when the rewards are equal and non-zero.
+
+\subsubsection{Offline Iterative Policy Updating}
+Given the merged trajectories $\mathcal{D}_0^\ast$, an intuitive way to improve the performance of the agent is fine-tuning with these trajectories. Under an auto-regressive manner, the loss of the agent model can be formulated as:
+\begin{equation}
+    \begin{split}
+        \mathcal{L}_{SFT} =& -\mathbb{E}_{\mu \sim \mathcal{D^\ast}}[\pi_\theta(\mu \vert q)], \\
+        \pi_\theta(\mu \vert q) =& -\sum_{j=1}^{\vert \mathcal{X} \vert}(\mathds{1}(x_j \in \mathcal{A}) \times \log \pi_\theta(x_j\vert q, x_{<j})),
+    \end{split}
+\end{equation}
+where $\mathds{1}(x_j\in\mathcal{A})$ is the indicator function about whether $x_j$ is a token belonging to thoughts or actions generated by the agent.
+
+After updating the policy model parameters , we employ an iterative optimization approach to continuously improve the performance of agent. The updated model undergoes repeated cycles of self-exploration, self-reflection, and trajectory merging on the initial dataset, generating new trajectory data for further fine-tuning. This iterative process continues until the improvement in performance on the validation set becomes negligible, at which point we terminate the iteration. 
+
+
+\section{EXPERIMENTS}
+In this section, we evaluate SymAgent on widely used datasets. We conduct extensive experiments to show the effectiveness of our method by answering the following research questions:
+\begin{itemize}
+    \item \textbf{RQ1:} How does SymAgent perform compared to state-of-the-art (SOTA) baselines across various complex reasoning datasets?
+    \item \textbf{RQ2:} What is the contribution of each key module in our SymAgent framework to the overall performance?
+    \item \textbf{RQ3:} How effective is the proposed self-learning framework compared to distillation from teacher models?
+    \item \textbf{RQ4:} To what extent can SymAgent enhance KGs by identifying missing triples and facilitating automatic KG completion?
+\end{itemize}
+
+\subsection{Experimental Setup}
+We adopt three popular knowledge graph question answer datasets: WebQuestionSP (WebQSP)~\cite{webqsp}, Complex Web Questions (CWQ)~\cite{cwq}, and MetaQA-3hop~\cite{metaqa} for evaluation. WebQSP and CWQ datasets are constructed from commonsense KG Freebase~\cite{freebase}, which contain up to 4-hop questions. MetaQA-3hop is based on a domain-specific movie KG, and we specifically select this dataset to evaluate the zero-shot reasoning performance of our model in a specific domain scenario. This means we only train on CWQ and WebQSP and then perform in-context reasoning on MetaQA-3hop to assess the model's generalization capabilities to specific domain. To further simulate incomplete KGs, we adopt a breadth-first search method to extract paths from the question entity to the answer entity and then randomly remove some triples following the setting of~\cite{gog}. In this scenario, semantic parsing methods fail to obtain the correct answers due to unexecutable formal expressions. The detailed construction process can refer to Appendix~\ref{datset_con}. To better evaluate model performance on complex reasoning tasks, we sample a subset from the test sets that specifically require multi-hop reasoning to solve the questions. The statistics of the resulting datasets are presented in Table~\ref{dataset}. For the baselines and implementation detail can refer to Appendix~\ref{baseline} and Appendix~\ref{implementation}.
+\begin{table}[h]
+    \centering
+    \caption{Statistics of the datasets. $|\mathcal{G}|$ denotes the number of triples in the background KG for each dataset.}
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{c|ccccc}
+        \toprule
+       \textbf{Dataset}  &  \textbf{Train} & \textbf{Valid} & \textbf{Test} & \textbf{Max Hop} & $\vert\mathcal{G}\vert$\\
+       \midrule
+       WebQSP & 2,826 & 120 & 247 & 2 & 8,309,195 \\
+       CWQ & 1,635 & 120 & 316 & 4 & 8,309,195 \\
+       MetaQA-3hop & - & - & 200 & 3 & 133,582 \\ 
+       \bottomrule
+    \end{tabular}}
+    \label{dataset}
+\end{table}
+
+% \subsubsection{Baselines} 
+% We evaluate the performance of SymAgent with three different LLM backbones: (i) Mistral-7B~\cite{mistral} (Mistral-7B-Instruct-v0.2 version), (ii) LLaMA2-7B~\cite{llama} (Meta-LLaMA-2-7B-Chat version), and (iii) Qwen2-7B~\cite{qwen} (Qwen2-7B-Instruct version). Our method is compared against two prompt-based baselines: CoT~\cite{cot} and ReAct~\cite{react}. Additionally, we include two strong baselines, ToG~\cite{ToG} and RoG~\cite{Rog}. ToG employs an explore-and-exploit strategy, while RoG adopts a retrieval-augmented approach, effectively coupling KG and LLM to achieve state-of-the-art performance. Notably, we have not included semantic parsing methods in our comparisons. This is because, in the incomplete KG scenario, the formal expressions generated by these methods are often unexecutable, rendering them ineffective for this task. To provide a comprehensive evaluation, we also incorporate comparisons with GPT-4 (gpt-4-32K-0613) using document retrieval augmentation. All prompt-based baselines are tested under one-shot settings, while the fine-tuning-based baselines are trained using LoRA~\cite{lora}. For detailed prompts used in our experiments, please refer to Appendix~\ref{prompt}. Following the previous setting, we adopt Accuracy, Hits@1, and F1 scores as metrics. The implementation detail can refer to Appendix~\ref{implementation}.
+
+
+\subsection{Performance Comparison with SOTA (RQ1)}
+\begin{table*}[t]
+    \caption{Results (\%) of SymAgent. The best results are marked in \textbf{bold}, and the second-best results are marked with \uline{underline}.  \faToggleOff \ denotes the prompt-based, while  \faToggleOn \ denotes the fine-tuned methods. $*$ denotes the unseen dataset (i.e., zero-shot setting).}
+    \begin{tabular}{l|l|ccc|ccc|ccc}
+    \toprule
+    \multirow{2}{*}{\textbf{Backbone}} & \multirow{2}{*}{\textbf{Method}} & \multicolumn{3}{c|}{\textbf{WebQSP}} & \multicolumn{3}{c|}{\textbf{CWQ}} & \multicolumn{3}{c}{\textbf{MetaQA-3hop}$^*$}\\\cmidrule(){3-5}\cmidrule{6-8}\cmidrule(){9-11}
+    &  & Hits@1& Accuracy & F1 & Hits@1& Accuracy  & F1  & Hits@1 & Accuracy& F1 \\
+    \midrule
+    \multirow{2}{*}{\textbf{GPT-4}} &  \faToggleOff \ CoT~\cite{cot} & \uline{56.68} & \uline{46.97} & \uline{39.98} & \uline{41.46} & \uline{37.05} & \uline{35.74} & \uline{43.50} & \textbf{26.48} & \uline{22.86}  \\
+    &  \faToggleOff \ w.t. Retrieval & 53.03 & 43.57 & 38.95 & 38.92 & 36.23 & 33.77 & 32.00 & 11.29 & 12.61 \\
+    \midrule
+    \multirow{5}{*}{\textbf{LLaMA2-7B}} &  \faToggleOff \ CoT~\cite{cot} & 38.87 & 29.95 & 25.02 & 13.29 & 12.02 & 11.45 & 2.00 & 0.81 & 0.85\\
+    & \faToggleOff \ ReAct~\cite{react} & 30.36 & 19.86 & 18.91 & 12.66 & 11.12 & 10.57 & 15.00 & 5.98 & 6.65\\
+    & \faToggleOff \ ToG~\cite{ToG} & 29.15 & 20.51 & 19.39 & 15.19 & 13.96 & 13.24 & 14.00 & 4.75 & 5.13 \\
+    & \faToggleOn \ RoG~\cite{Rog} & 47.77 & 30.07 & 31.39 & 27.53 & 25.28 & 24.68 & 21.00 & 8.73 & 8.27\\\cmidrule(){2-11}
+    & \faToggleOn \ \textbf{SymAgent (Ours)} & \textbf{55.47} & \textbf{39.73} & \textbf{41.27} & \textbf{35.13} & \textbf{30.45} & \textbf{31.15} & \textbf{37.00} & \textbf{15.47} & \textbf{16.87}\\
+    \midrule
+    \multirow{5}{*}{\textbf{Mistral-7B}} &   \faToggleOff \ CoT~\cite{cot} & 34.82 & 26.96 & 23.41 & 26.90 & 24.20 & 22.81 & 9.00 & 2.07 & 2.63 \\
+    & \faToggleOff \ ReAct~\cite{react} & 29.55 & 20.61 & 20.34 & 19.94 & 16.82 & 15.88 & 16.00 & 8.42 & 7.65 \\ 
+    & \faToggleOff \ ToG~\cite{ToG} & 31.98 & 21.69 & 22.11 & 20.57 & 18.19 & 16.65  & 16.50 & 8.29 & 7.77\\
+    & \faToggleOn \ RoG~\cite{Rog} & 50.61 & 32.91 & 34.22 & 28.16 & 25.92 & 25.31 & 29.50 & 12.13 & 12.92 \\\cmidrule(){2-11}
+    & \faToggleOn \ \textbf{SymAgent (Ours)} & \textbf{61.94} & \textbf{45.02} & \textbf{47.08} & \textbf{37.66} & \textbf{33.51} & \textbf{34.05} & \textbf{38.50} & \textbf{14.82} & \textbf{16.12}\\
+    \midrule
+    \multirow{5}{*}{\textbf{Qwen2-7B}} &  \faToggleOff \ CoT~\cite{cot} & 27.13 & 20.19 & 19.15 & 29.11 & 24.90 & 24.68 & 6.50 & 2.78 & 3.41  \\
+    & \faToggleOff \ ReAct~\cite{react} & 40.49 & 29.10 & 28.90 & 25.32 & 22.36 & 22.12 & 20.50 & 7.98 & 7.72\\
+    & \faToggleOff \ ToG~\cite{ToG} & 54.25 & 38.16 & 39.28 & 30.70 & 27.09  & 26.76 & 26.50 & 10.09 & 9.73\\
+    & \faToggleOn \ RoG~\cite{Rog} & 51.82 & 34.12 & 35.44 & 29.11 & 26.87 & 26.26 & 25.00 & 11.86 & 11.92\\\cmidrule(){2-11}
+    &  \faToggleOn \ \textbf{SymAgent (Ours)} & \textbf{78.54} & \textbf{57.48} & \textbf{57.05} & \textbf{58.86} & \textbf{50.19} & \textbf{48.30} & \textbf{57.00} & \uline{24.68} & \textbf{25.76}\\
+    \bottomrule
+    \end{tabular} 
+    \label{main_results}
+\end{table*}
+
+The experimental results are presented in Table~\ref{main_results}. The overall results demonstrate that SymAgent consistently achieves superior performance across all datasets, validating the effectiveness of our approach. First, SymAgent demonstrates consistent improvement across all LLM backbones compared to both prompt-based and fine-tuned methods, which underscores SymAgent's adaptability and robustness. In particular, SymAgent, with Qwen2-7B backbone, achieves the best performance, outperforming GPT-4 across all three datasets with average improvements of 37.19\% in Hits@1, 16.87\% in Accuracy, and 30.17\% in F1 score. The superior performance can be attributed to the better function-calling capabilities of Qwen2 compared to the other two backbones, which often encounter action tool calling errors (e.g., extra arguments). This demonstrates that our method can effectively leverage the strengths of more advanced LLM, enhancing the overall performance in complex reasoning tasks.
+
+Moreover, GPT-4 performance between CoT and retrieval reveals that direct document retrieval for complex questions can harm performance, especially in domain-specific tasks. For instance, in MetaQA-3hop, the F1 score degrades by 10.25 (from 22.86 to 12.61) when using retrieval augmentation. The potential reason is that shallow vector retrieval introduces semantically similar but irrelevant noisy information~\cite{noise}. A similar trend is observed with weaker LLMs. Interestingly, when the base model has adequate instruction-following capabilities (e.g., Qwen2-7B), ToG outperforms the fine-tuned RoG. The reason is that the explore-and-exploit strategy can leverage the LLM's inherent knowledge to address the incompleteness issue of KG, whereas RoG relies heavily on path retrieval and struggles in such a scenario. In contrast, our SymAgent can fully utilize the advantages of both KG and LLM, effectively decomposing problems and achieving excellent performance.
+
+Finally, by comparing the performance of SymAgent across different datasets, we observe that SymAgent shows a larger improvement ratio on the more challenging CWQ dataset, demonstrating its capability to handle complex reasoning. Furthermore, from the results on MetaQA-3hop, we can observe that LLMs lacking domain knowledge perform worse, while our SymAgent can significantly enhance the backbone's capabilities. This improvement is particularly notable in the zero-shot setting, where SymAgent achieves a remarkable $6\times$ increase in F1 score compared to the base LLM, highlighting its ability to generalize and reason effectively in specific domain. In the following ablation and further analysis experiments, unless otherwise specified, we adopt Qwen2-7B as the backbone of SymAgent due to its superior performance.
+
+\subsection{Ablation Study (RQ2)}
+\begin{table}[h]
+    \centering
+    \caption{Ablation study for the SymAgent with Qwen2-7B.}
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{c|ccc|cc|cc}
+    \toprule
+    & \multirow{2}{*}{\textbf{PM}}  & \multirow{2}{*}{\textbf{EM}} & \multirow{2}{*}{\textbf{SL}} & \multicolumn{2}{c|}{\textbf{WebQSP}} & \multicolumn{2}{c}{\textbf{CWQ}} \\\cmidrule(){5-6} \cmidrule(){7-8}
+    & & & & Hits@1 & F1 & Hits@1 & F1 \\
+    \midrule
+    \textbf{Variants} & \CheckmarkBold & - & -  & 50.61 & 34.22 & 29.43 & 26.34 \\
+     & - & \CheckmarkBold & - & 55.06 & 40.58  & 33.54 & 28.95 \\
+     & \CheckmarkBold & \CheckmarkBold & - & \uline{64.37} & \uline{47.48} & 37.66 & \uline{32.65}\\
+     & - & \CheckmarkBold & \CheckmarkBold & 56.68 & 41.73 & \uline{38.92} & 32.63\\
+    \midrule
+    \textbf{SymAgent} & \CheckmarkBold & \CheckmarkBold & \CheckmarkBold & \textbf{78.54} & \textbf{57.05} & \textbf{58.86} & \textbf{48.30} \\\bottomrule
+    \end{tabular}}
+    \label{ablation}
+\end{table}
+
+In this section, we conduct a series of ablation experiments to analyze the contribution of each component in SymAgent. To validate the planner module (PM), executor module (EM), and self-learning framework (SL), we systematically remove these components to create variants for comparison. Ablation results in Table~\ref{ablation} reveal that all components are essential because their absence has a detrimental effect on performance. Specifically, we argue that deriving symbolic rules from the KG is vital, which can be demonstrated by comparing the experimental results between SymAgent and EM $+$ SL, as well as PM $+$ EM and EM-only. Similarly, by comparing PM-only and PM$+$EM, we can find that arming the model with action tools to access unstructured documents and structured KGs achieves notable improvement. Moreover, by comparing the results between EM-only and EM$+$SL, we can find self-learning makes minor improvements, the potential low quality of the self-synthesized trajectories without a planner module. Overall, these findings demonstrate that each component contributes uniquely to SymAgent in handling complex reasoning tasks.
+
+\subsection{Analysis on Self-learning Framework (RQ3)}
+\noindent \textit{\textbf{The Number of Iterations.}} Figure~\ref{iteration_times} presents a comparative analysis of the effects of the number of iterations during the self-learning phase. In the initial stages of iterative training, we observe a rapid improvement in model performance, validating the effectiveness of our self-refine and heuristic merge methods in acquiring substantial trajectory data. This iterative approach enables the model to thoroughly explore the environment, thereby enhancing its performance. Consistent with previous work~\cite{weak}, these findings corroborate the efficacy of iterative training under rejection sampling in bolstering the model's comprehension of the training data. However, as the number of iterations increases, we notice fluctuations in model performance. This phenomenon can be attributed to our use of outcome-based rewards. In practice, the model may produce correct final results despite errors in intermediate steps. Continued iteration with these trajectories can lead to the model fitting these spurious correlations. This observation highlights the need for more nuanced evaluation metrics and reward mechanisms in future iterations of the self-learning framework.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{iter.pdf}
+    \caption{The impact of the iteration numbers in the self-learning phase on model performance.}
+    \label{iteration_times}
+\end{figure}
+
+
+
+\noindent \textit{\textbf{Roles of Self-refinement \& Heuristic Merging.}} To further explore the roles of self-refinement and heuristic merging within our self-learning framework, we designed two variant training recipes: 1) $-self\text{-}refine$, which solely employs rejection sampling for trajectory data acquisition, and 2) $-merge$, which directly utilizes refined trajectories as the training set without merging. The experimental results, as presented in Table~\ref{self-learning-analysis}, demonstrate that the removal of either component adversely affects the model's performance. The full self-learning model consistently outperforms its variants across all metrics on both WebQSP and CWQ datasets. On WebQSP, removing self-refinement decreases Hits@1 by 2.43 percentage points, while removing merging leads to a 1.62 percentage point drop. Similar trends are observed for Accuracy and F1 scores, as well as on the CWQ dataset. These findings highlight the synergistic effect of self-refinement and heuristic merging in our framework. Self-refinement likely increases trajectory quantity, while merging further enhances quality.
+\begin{table}[h]
+    \centering
+    \caption{The impact of different training recipes on model performance. And the comparison between distilling from the teacher model and the self-learning framework.}
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{c|ccc|ccc}
+    \toprule
+    & \multicolumn{3}{c|}{\textbf{WebQSP}} & \multicolumn{3}{c}{\textbf{CWQ}} \\\cmidrule(){2-4} \cmidrule(){5-7}
+    & Hits@1 & Accuracy & F1 & Hits@1 & Accuracy & F1  \\\midrule
+    \textbf{Self Learning} & \textbf{78.54} & \textbf{57.48} & \textbf{57.05} & \textbf{58.86} & \textbf{50.19} & \textbf{48.30} \\
+    $- self\text{-}refine $ & 76.11$_{\downarrow 2.43}$ & 56.22$_{\downarrow 1.26}$ & 56.50$_{\downarrow 0.55}$ & 56.33$_{\downarrow2.53}$ & 48.75$_{\downarrow1.44}$ & 46.08$_{\downarrow2.22}$ \\
+    $- merge$ & 76.92$_{\downarrow 1.62}$ & 55.7$_{\downarrow 1.78}$ & 55.62$_{\downarrow 1.43}$ & 57.28$_{\downarrow 1.58}$ & 48.83$_{\downarrow 1.36}$ & 46.04$_{\downarrow 2.26}$ \\\midrule
+    \textbf{Distilling} & 77.32$_{\downarrow 1.22}$ & 55.17$_{\downarrow 2.31}$ & 56.78$_{\downarrow 0.27}$ & 54.43$_{\downarrow 4.43}$ & 46.18$_{\downarrow 4.01}$ & 42.98$_{\downarrow 5.32}$\\
+    \bottomrule
+    \end{tabular}}
+    \label{self-learning-analysis}
+\end{table}
+
+\noindent \textit{\textbf{Distilled Trajectories v.s. Self-synthesized Trajectories.}} We adopt a conventional data synthesis approach to generate trajectory data from a capable teacher model (GPT-4) and use these data to fine-tune our model. The experimental results are presented in the 4-$th$ row of Table~\ref{self-learning-analysis}. We observe that while the distilling approach shows competitive performance, it consistently underperforms our self-learning framework across all datasets. The performance gap is more pronounced on the CWQ dataset, with decreases of 4.43, 4.01, and 5.32 percentage points in Hits@1, Accuracy, and F1 scores, respectively. This is because responses from a similar model are \textit{easier-to-fit} than those from a more capable model, resulting in reduced memorization~\cite{weak}. Considering the extremely high costs and cumbersome prompt optimizations, this training approach is far from sustainable compared to a self-learning framework.
+
+\subsection{Quality of Extracted Triples \& Error Type Analysis (RQ4)}
+
+\noindent \textit{\textbf{Quality of Extracted Triples.}} Armed with a comprehensive action tool set, our SymAgent addresses KG incompleteness by leveraging both structured and unstructured data. The WikiSearch action triggers an extract action to identify missing triples from retrieved texts, effectively aligning and enriching the KG with external information. To validate this approach, we augment the KG with SymAgent-identified triples and test a retrieval-augmented generation model RoG on this enhanced KG. As shown in Figure~\ref{missing_triples}, the results demonstrated a significant improvement in the performance of RoG, providing empirical evidence that the quality of triples identified by our method is sufficient for integration into existing KGs. This finding not only validates our approach but also suggests a potential synergistic enhancement between LLM and KG through our SymAgent.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{w2s.pdf}
+    \caption{Performance of RoG on KG augmented with triples extracted by our model.}
+    \label{missing_triples}
+\end{figure}
+
+\noindent \textbf{Error Analysis.} To gain deeper insights into our model's performance, we conducted an error analysis by categorizing the failure cases into four types: 1) Invalid Action (IA), where the model invokes an action not defined in the action tool set, 2) Error in Arguments (EA), where insufficient or excessive arguments are provided, 3) Exceeding Maximum Steps (EMS), where the reasoning steps exceed the predefined maximum number of steps, and 4) Reasoning Error (RE), where the final answer is incorrect despite valid actions and steps. Table~\ref{error} presents the distribution of these error types across WebQSP, CWQ, and MetaQA-3hop datasets. WebQSP errors are predominantly RE (94.34\%), while CWQ and MetaQA-3hop show more diverse distributions with significant EMS errors, indicating potential areas for targeted improvements in the future.
+\begin{table}[h]
+    \centering
+    \caption{Proportions (\%) of different error types.}
+    \begin{tabular}{c|cccc}
+    \toprule
+    \textbf{Dataset} & \textbf{IA} & \textbf{EA} & \textbf{EMS} & \textbf{RE} \\
+    \midrule
+    WebQSP & 3.77 & 0.0 & 1.89 & 94.34\\
+      CWQ  & 2.31 & 10.00 & 23.08 & 64.61 \\
+      MetaQA-3hop & 3.49 & 12.79 & 39.53 & 44.19 \\\bottomrule
+    \end{tabular}
+    \label{error}
+\end{table}
+
+\section{CONCLUSION}
+In this paper, we introduce SymAgent, an automatic agent framework that synergizes LLM with structured knowledge to conduct complex reasoning over KG. Our method involves utilizing symbolic rules in KG to guide question decomposition, automatically invoking action tools to address the incompleteness issue of KG, and employing a self-learning framework for trajectory synthesis and continuous improvement. This multifaceted approach not only enhances the planning abilities of the agent but also proves effective in complex reasoning scenarios. Extensive experiments demonstrate the superiority of SymAgent, showcasing the potential to foster mutual enhancement between KG and LLM. 
+
+\begin{acks}
+We would like to thank all the anonymous reviewers and area chairs for their comments. This work is supported by DAMO Academy through DAMO Academy Research Intern Program. This research is supported by the National Natural Science Foundation of China (U23A20316) and funded by the Joint\&Laboratory on Credit Technology.
+\end{acks}
+
+
+
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{sample-base}
+
+
+%%
+%% If your work has an appendix, this is the place to put it.
+\appendix
+\section{APPENDIX}
+\subsection{Construction Process of Dataset}\label{datset_con}
+To construct datasets that simulate real-world incomplete KGs, we extract query entity-centric subgraphs from existing datasets and strategically remove certain triples that connect query entities to their corresponding answer entities. This process allows us to create realistic scenarios of missing information in KGs. As shown in Algorithm~\ref{al}, we demonstrate the detailed process of identifying and selecting potential triples associated with each question to construct our training datasets. Specifically, we employ Breadth-First Search (BFS) to discover reasoning paths within the KG and randomly remove selected triples to simulate the incomplete scenario.
+
+\begin{algorithm}
+\caption{The detailed process of dataset construction.}
+\label{al}
+\begin{algorithmic}[1]
+\REQUIRE Question $q$, Question entity $q\_ent$, Answer entity list $a\_ent\_list$, Knowledge Graph $\mathcal{G}$
+\ENSURE Final graph $\mathcal{G'}$
+\STATE Initialize $L \gets []$, $\mathcal{G'} \gets \mathcal{G}$;
+\FOR{each $a\_ent$ in $a\_ent\_list$}
+    \STATE $path \gets BFS\_find\_shortest\_path(\mathcal{G}, q\_ent, a\_ent)$;
+    \STATE $L.extend(path)$;
+\ENDFOR
+\STATE $selected\_triples \gets random\_select(L)$;
+\FOR{each $t$ in $selected\_triples$}
+    \STATE $\mathcal{G'}.remove(t)$;
+\ENDFOR
+\RETURN $\mathcal{G'}$;
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Baselines}\label{baseline}
+ We evaluate the performance of SymAgent with three different LLM backbones: (i) Mistral-7B~\cite{mistral} (Mistral-7B-Instruct-v0.2 version), (ii) LLaMA2-7B~\cite{llama} (Meta-LLaMA-2-7B-Chat version), and (iii) Qwen2-7B~\cite{qwen} (Qwen2-7B-Instruct version). Our method is compared against two prompt-based baselines: CoT~\cite{cot} and ReAct~\cite{react}. Additionally, we include two strong baselines, ToG~\cite{ToG} and RoG~\cite{Rog}. ToG employs an explore-and-exploit strategy, while RoG adopts a retrieval-augmented approach, effectively coupling KG and LLM to achieve state-of-the-art performance. Notably, we have not included semantic parsing methods in our comparisons. This is because, in the incomplete KG scenario, the formal expressions generated by these methods are often unexecutable, rendering them ineffective for this task. To provide a comprehensive evaluation, we also incorporate comparisons with GPT-4 (gpt-4-32K-0613) using document retrieval augmentation. All prompt-based baselines are tested under one-shot settings, while the fine-tuning-based baselines are trained using LoRA~\cite{lora}. For detailed prompts used in our experiments, please refer to Appendix~\ref{prompt}. Following the previous setting, we adopt Accuracy, Hits@1, and F1 scores as metrics.
+
+
+
+\subsection{Implementation Details}\label{implementation}
+We fine-tune the proposed approach with LoRA. The initial learning rate is $2e-5$, and the sequence is 4096 for all the backbone models. The training epoch is 3, and the batch size is 4. We adopt the AdamW optimizer~\cite{adam} with a cosine learning scheduler. During the inference, we adopt vLLM~\cite{vllm} to accelerate the reasoning process. All the training and inference experiments are conducted on 4 NVIDIA A800 80G GPUs. Detailed hyperparameters used in our experiments are displayed in Table~\ref{hyper}.
+\begin{table}[bh]
+    \centering
+    \caption{Detail hyperparameters used in our method.}
+    \resizebox{\linewidth}{!}{
+    \begin{tabular}{c|c}
+    \toprule
+       \textbf{Hyperparameters}  &  \textbf{Value} \\
+       \midrule
+       \multicolumn{2}{l}{\textit{Training}} \\
+       \midrule
+       lora\_r  &  32 \\
+       lora\_alpha & 32 \\
+       lora\_dropout & 0.05 \\
+       lora\_target\_modules & \{q, k, v, o, down, up, gate\}\_proj \\
+       per\_device\_batch\_size & 2 \\
+       gradient\_accumulation\_steps & 2 \\
+       warmup\_ratio & 0.05 \\
+       self-learning iterations & 2 \\
+       \midrule
+       \multicolumn{2}{l}{\textit{Inference}} \\
+       \midrule
+       temperature & 0.1 \\
+       top\_p & 0.9 \\
+       top\_k & 600 \\
+       max\_new\_tokens & 512 \\
+       max\_infer\_step & 10 \\
+    \bottomrule
+    \end{tabular}}
+    \label{hyper}
+\end{table}
+
+\subsection{Prompt for SymAgent}\label{prompt}
+In this section, we present the prompt template and detail how SymAgent handles various scenarios during its operation. The prompt consists of core components that guide the agent's reasoning and interaction process with the knowledge graph. As shown in Figure~\ref{sym_prompt}, our agent functions as a specialized knowledge graph question-answering system that follows a structured interaction format using interleaved Thought, Action, and Observation steps. To facilitate complex reasoning, SymAgent first invokes getReasoningPath to obtain KG-aligned symbolic rules generated by SymAgent-Planner, which helps decompose the original question into manageable sub-problems. Subsequently, through a well-defined set of tools, the agent interacts with both the knowledge graph and external documents to perform multi-step reasoning and ultimately arrive at the answer. This systematic approach enables SymAgent to handle complex queries by combining structured knowledge from the KG with supplementary information from external sources when necessary.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{prompt_temp_sym.pdf}
+    \caption{Prompt template of our SymAgent.}
+    \label{sym_prompt}
+\end{figure}
+
+In our SymAgent, whenever wikiSearch is invoked, the agent automatically triggers the extractTriples function, which analyzes the interaction history and extracts relevant triples from retrieved documents based on the current query's entity and relation. Notably, this extraction process is not explicitly invoked by the agent but serves as an automatic follow-up to the wikiSearch operation. The extracted triples are carefully aligned with the knowledge graph's semantic granularity, enabling seamless integration into the existing KG and facilitating its dynamic expansion. The specific prompt template for extractTriple is demonstrated in Figure~\ref{action_prompt}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\linewidth]{action_extract.pdf}
+    \caption{The extraction prompt for extraction action.}
+    \label{action_prompt}
+\end{figure}
+
+\subsection{Case Study}
+To illustrate how SymAgent operates in practice, we present a detailed case study demonstrating its reasoning process when handling complex queries. As shown in Figure~\ref{case}, the example showcases how SymAgent systematically processes a question about a movie character, utilizing both knowledge graph information and external resources. Through this case, we can observe how the agent effectively employs its various components - from initial reasoning path planning, through knowledge graph querying, to external information retrieval when necessary. The example demonstrates SymAgent's ability to handle incomplete knowledge scenarios and successfully integrate information from multiple sources to arrive at accurate answers.
+
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.95\linewidth]{promt_react.pdf}
+%     \caption{Caption}
+%     \label{react_prompt}
+% \end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{case.pdf}
+    \caption{A representative trajectory of SymAgent during complex reasoning.}
+    \label{case}
+\end{figure}
+\end{document}
+\endinput
+%%
+%% End of file `sample-sigconf.tex'.

@@ -1,0 +1,127 @@
+%In this section, we introduce notations used in  and problem formulation of
+
+\subsection{KG-based RAG}
+%The knowledge graph (KG) \cite{hogan2021knowledge} has become a popular graph knowledge base to enhance LLM reasoning using retrieval augmented generation (RAG).
+We denote a knowledge graph (KG) as $\mathcal{G}=\{\mathbb{V},\mathbb{E}\}$ where $\mathbb{V}$ and $\mathbb{E}$ are the sets of nodes and edges. %\footnote{Previous work also represents a KG as a set of triplets, we follow the notation of KG in \cite{deng2024graphvis}.} 
+The node $V_{i}$ is associated with a short text description of an entity (e.g. $V_{i}=\text{`Alice'}$).
+And the edge $e_{ij}$ denotes the relationship between node $V_{i}$ and $V_{j}$. For example, $e_{ij}=\text{`daughter'}$ represents the relationship between $V_{i}=\text{`Alice'}$ and $V_{j}=\text{`Bob'}$.
+
+
+\xhdr{Retrieval-based Approach} 
+For an input query $\mathcal{Q}$, the retrieval-based method \cite{he2024g, liretrieval, dong2024advanced,luo2025gfm,yasunaga2021qa,chen2024kg} first encodes the texts in nodes and edges into embeddings using a pretrained LM \cite{reimers2019sentence}. 
+Then, a retriever $\mathrm{Ret}(\cdot)$ is employed to retrieve a subgraph $\mathcal{G}_{\text{sub}}$ from $\mathcal{G}$ \cite{yugraph} that can support answering $\mathcal{Q}$:
+\begin{equation}
+    \begin{aligned}        \max_{G_{\text{sub}}}P(\mathcal{A}|\mathcal{Q},G_{\text{sub}}), \quad G_{\text{sub}}=\mathrm{Ret}(\mathcal{G}).
+    \end{aligned}
+    \label{obj:maxize_1}
+\end{equation}
+Here $\mathcal{A}$ is the answer to the input query.
+Some works employ non-parametric retrievers, such as dense retriever with vector similarity \cite{abaho2024select} and Prize-Collecting Steiner Tree (PCST) algorithm \cite{he2024g} to retrieve from KGs.
+Other works train parameterized retriever models based on Multi-layer Perceptron (MLP) and Graph Neural Network (GNN) \cite{yu2022improving} to retrieve from KGs. 
+
+\xhdr{Agent-based Approach}
+Recent work formulates retrieval on KGs as a multi-step decision process \cite{sunthink,luoreasoning,li2025automating} and employs LLM agents to search on KGs due to their superior capability in planning.
+For an input query $\mathcal{Q}$, the agent $\mathrm{LLM}(\cdot)$ starts from an initial node $V_{0}$ and searches $T$ steps incrementally in a KG to produce a retrieval trajectory
+$\tau=V_{0}\rightarrow\cdots\rightarrow V_{T-1}\rightarrow V_{T}$ to support $\mathcal{Q}$:
+\begin{equation}
+    \begin{aligned}
+    \max_{\tau\in\mathcal{T}} P(\mathcal{A}|\mathcal{Q},\tau), \quad \tau=\mathrm{LLM}(\mathcal{G}).
+    \end{aligned}
+    \label{obj:maxize_2}
+\end{equation}
+The inital node $V_{0}$ can be identified using
+Entity name recognition (ENR) \cite{guo2024knowledgenavigator} or vector similarity matching \cite{sanmartin2024kg}.
+At step $t$, the searching agent expands the trajectory conditioned on the input query $\mathcal{Q}$, the partial trajectory at $t$ step  $\tau_{\leq t}=V_{0}\rightarrow\cdots\rightarrow V_{t-1}\rightarrow V_{t}$:
+\begin{equation}
+    \begin{aligned}
+    V_{t+1}\sim P_{\text{LLM}}(V_{t+1}|\mathcal{Q},\tau_{\leq t}),\quad V_{t+1}\in\mathcal{N}(V_{t}).
+    \end{aligned}
+\end{equation}
+Here $P_{\text{LLM}}$ is the policy instantiated by an LLM, and $\mathcal{N}(V_{t})$ is the neighborhood node set of $V_{t}$.
+
+% \cite{dong2025understand} \cite{dong2025toward}
+\subsection{Process Reward Models}
+% Process Reward Models (PRMs) have become a promising framework for aligning LLMs with human preference.
+% For a multi-step decision task with state $s\in\mathcal{S}$ and action $a\in\mathcal{A}$, training a PRM requires a preference dataset $\mathcal{D}=\{(a^{+}_{i},a^{-}_{i},s_{i})|i=1,\cdots,N\}$ where $a^{+}_{i}$ and $a^{-}_{i}$ are the positive and negative actions at state $s_{i}$.
+% The preference dataset is labeled with human supervision \cite{lightman2023let}, rule-based methods \cite{murule}, and LLMs \cite{xiong2025rag}.
+% The goal of PRM is to learn a scoring function $r_{\theta}(a,s): \mathcal{A}\times\mathcal{S}\rightarrow \mathbb{R}$ that outputs a real-valued score for any action and state pairs.
+Process Reward Models (PRMs) have emerged as a promising framework for aligning large language models (LLMs) with human preferences \cite{zeng2025versaprm,wang2025visualprm,lightman2023let}. 
+For a multi-step decision problem, denote $s \in \mathcal{S}$ as the state and $a \in \mathcal{A}$ as the action.
+Training a PRM requires a preference dataset $\mathcal{D} = \{(a^{+}_{i}, a^{-}_{i}, s_{i}) \mid i = 1, \cdots, N\}$, where $a^{+}_{i}$ and $a^{-}_{i}$ are positive and negative actions at state $s_{i}$, respectively. 
+Such datasets can be constructed through human supervision \cite{lightman2023let}, rule-based heuristics \cite{murule}, or LLM-generated annotations \cite{xiong2025rag}. 
+The goal of PRM is to learn a scoring function $r_{\theta}(a, s): \mathcal{A} \times \mathcal{S} \rightarrow \mathbb{R}$ that assigns real-valued preference scores to action–state pairs by minimizing the following objective:
+\begin{equation}
+\begin{aligned}
+\mathcal{L}_{\mathrm{PRM}}=-\mathrm{E}_{(a^{+}_{i},a^{-}_{i},s_{i})\sim\mathcal{D}} \log[\sigma (r_{\theta}(a^{+}_{i}, s_{i})-r_{\theta}(a^{-}_{i}, s_{i}))],
+\end{aligned}
+\end{equation}
+where $\sigma(\cdot)$ denotes the sigmoid function. 
+Once trained, the PRM can be used to provide step-wise preference signals for LLM alignment \cite{lightman2023let,wang2025visualprm}. 
+Additionally, it can directly guide the multi-step decision with a soft policy $P(s_{t+1}|s_{t})\propto e^{r_{\theta}(s_{t},a_{t})}$ \cite{cui2025process,wang2025visualprm,xiong2025rag,zhu2025retrieval}.
+
+
+
+% Recent work optimize the LLM-based retriever on RAG framework with process supervision.
+% Denote the knowledge base used for RAG as a set of $n$ documents $\mathbb{D}=\{d_{i}|i=1,2,\cdots,n\}$. 
+% At the retrieval step $t$, the state $s_{t}=(\mathcal{Q},\mathcal{T}_{\leq t})$ consists of  the question $\mathcal{Q}$ and retrieval trajectory of visited documents $\mathcal{T}_{\leq t}=d_{t}\leftarrow\cdots\leftarrow d_{0}$.
+% The initial state is set with no document $s_{t}=(\mathcal{Q},\phi)$.
+% The action $a_{t}$ is to retrieve the most promising document or stop the retrieval process.
+% Recent work construct the preference dataset $\mathcal{D}=\{(a^{+}_{i},a^{-}_{i},s_{i})|i=1,\cdots,N\}$ where $a^{+}_{i}$ and $a^{-}_{i}$ are the positive and negative actions at state $s_{i}$.
+% Here, $a^{+}_{i}$ and $a^{-}_{i}$ are labeled with human supervision, rule-based method, and LLMs \cite{xiong2025rag}.
+% We introduce two approaches that leverage the preference dataset to optimize the LLM-based retriever.
+
+% \xhdr{Supervised Finetuning (SFT)} The supervised finetuning maximizes the probability of the positive action produced by the policy of LLM retrievers with the following objective:
+% \begin{equation}
+%     \begin{aligned}
+% \mathcal{L}_{\mathrm{SFT}}=\mathrm{E}_{(a^{+}_{i},s_{i})\sim\mathcal{D}}-\log(\pi_{\mathrm{LLMRet}}(a^{+}_{i}|s_{i})).
+%     \end{aligned}
+% \end{equation}
+
+% \xhdr{Process Reward Model (PRM)} 
+% The process reward model employs an LLM to learn the reward of the state and action pairs from the preference dataset:
+% \begin{equation}
+%     \begin{aligned}
+% \mathcal{L}_{\mathrm{PRM}}=-\mathrm{E}_{(a^{+}_{i},a^{-}_{i},s_{i})\sim\mathcal{D}} \log[\sigma (r_{\theta}(a^{+}_{i}, s_{i})-r_{\theta}(a^{-}_{i}, s_{i}))],
+%     \end{aligned}
+% \end{equation}
+% where $r_{\theta}(a,s)$ is the reward of the state $s$ and action $a$ parameterized by an LLM. $\sigma(\cdot)$ is the sigmoid function. 
+% PRM guides the LLM retriever by evaluating the candidate actions in the intermediate state and taking the most promising action \cite{xiong2025rag}. 
+% Thus, the policy of the LLM retriever is:
+% \begin{equation}
+%     \begin{aligned}
+%         \pi_{\mathrm{LLMRet}}=\frac{r_{\theta}(s,a)}{\sum_{a\in\mathcal{A}} r_{\theta}(s,a)}.
+%     \end{aligned}
+% \end{equation}
+
+
+%\cite{gao2021condenser}
+
+
+% \subsection{Retrieval on Text-rich Graphs}
+% We consider retrieving from a text-rich graph $\mathcal{G}=\{\mathbb{V},\mathbb{E},\mathbb{D}\}$ where $\mathbb{V}$, $\mathbb{E}$, and $\mathbb{T}$ are the sets of nodes, edges, and text descriptions.
+% The retrieval task on text-rich graph is to identify a set of nodes that has relevant text descriptions to the input question $\mathcal{Q}$.
+% Different from the relational reasoning questions in KGs, the input question is open-ended and corresponds to multiple nodes in $\mathcal{G}$, leading to diverse retrieval targets.
+% Moreover, the retriever models need to leverage both rich text descriptions and relational information for accurate retrieval.
+
+% \xhdr{Dense Retrieval}
+% A straightforward approach is to encode the text documents and input questions into vectors and employ dense retrieval to retrieve the documents with top-K similarity:
+% \begin{equation}
+%     \begin{aligned}
+%     \mathcal{V}^{*}=\mathrm{TopK}(\mathcal{Q},\mathbb{D}).
+%     \end{aligned}
+% \end{equation}
+% Here $\mathcal{V}^{*}$ contains $K$ nodes with top-K relevant text descriptions to the input question.
+% However, this approach only considers text descriptions but ignore the relational information in graphs.
+
+% \xhdr{Hybrid Retrieval}
+% We can further 
+
+
+% Compared with the 
+
+% This task is more challenging than retrieval from KGs since the retriever models need to leverage both rich text descriptions and structure information.
+% Since each node $n_{i}$ in text-rich graphs is associated with long text description $d_{i}$, the retriever should also understand the text description instead of only leverage relationship between nodes for efficient navigation in graphs.
+% Process reward model (PRM) has shown great promise in guiding the reasoning process of LLMs by providing step-wise supervision.
+% Thus, it is straightforward to guide the graph retrieval with PRM. 
+% The graph retrieval can be formulated as a Markov Decision Process (MDP) where 
+

@@ -1,0 +1,113 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2607.24800",
+  "created_at": "2026-08-02T04:42:39.750614+00:00",
+  "updated_at": "2026-08-02T04:42:39.750614+00:00",
+  "paper": {
+    "title": "2607.24800",
+    "authors": [],
+    "abstract": "Adaptive retrieval promises to make knowledge-graph question answering more robust by letting a controller search, inspect neighborhoods, revise actions, and stop when evidence is sufficient. We study this premise by introducing , a lightweight profile- and trace-conditioned diagnostic protocol for an ARK-style retriever on text-rich knowledge graphs. exposes a compact query profile before retrieval, issues short trace hints after observable failure symptoms, and logs trajectory counters, while keeping graph data, tools, gold labels, and ranking metrics fixed. Across validation and held-out subsets, the added conditioning improves inspectability but consistently reduces retrieval quality under open-weight controllers. Paired trajectory analysis localizes the degradation to repeated calls, zero-result calls, and misallocated exploration budget, while stricter interaction budgets shorten trajectories without repairing the policy. The result diagnoses the common failure mode in that ``thinking before retrieval'' must be evaluated as a control problem over action selection, not as a prompt-format change.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-08-02",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "raw/2607.24800",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "b367a2b2c0a1357095f427a61b430243cd4ae5d1e533c2973daadbb4a1cff1b6",
+        "bytes": 3203
+      },
+      {
+        "path": "sections/00_abstract.tex",
+        "sha256": "921914f8ddd89d3f92b5038fce7ca44c93b0bc0a4464975aba298c2194e36499",
+        "bytes": 1172
+      },
+      {
+        "path": "sections/01_introduction.tex",
+        "sha256": "9c281faf80ce1c42a68a1a47c8f82b20fa1736717704a321c5555df8120205b6",
+        "bytes": 3836
+      },
+      {
+        "path": "sections/02_related_work.tex",
+        "sha256": "6a6c38b325c6688ce44813c05ece4f92fa204703533a1c2a0b88d3ba08a3189f",
+        "bytes": 3830
+      },
+      {
+        "path": "sections/03_methodology.tex",
+        "sha256": "01d5a410d05872f3909b905c1eccce00c6789d21a5f5ef938078112ef8b34f4a",
+        "bytes": 6899
+      },
+      {
+        "path": "sections/04_experimental_setup.tex",
+        "sha256": "9a419b79bcdeae5e41e2ec0edb9c58713c1274a7ff95c1e04dd932628470b538",
+        "bytes": 3481
+      },
+      {
+        "path": "sections/05_results.tex",
+        "sha256": "c7203b177f9744436fd87e174d1f12516ed693f6a72d4d583b02a955dde819ad",
+        "bytes": 5679
+      },
+      {
+        "path": "figures/validation_mrr.tex",
+        "sha256": "52d2dbb2d00f8de922f802b2b4623c54dc5666f1f46c19cb9786fdd9405512af",
+        "bytes": 1412
+      },
+      {
+        "path": "figures/heldout_metrics.tex",
+        "sha256": "840b5d4cdc8df2556d972d723a420d0a7e11a4ddcc8286c8c779aaceb2cf113f",
+        "bytes": 1469
+      },
+      {
+        "path": "sections/06_discussion.tex",
+        "sha256": "88f99287ac8966acab966bdb4d8f6b925def191c97dbdd3920551a9397a90836",
+        "bytes": 6292
+      },
+      {
+        "path": "figures/repeat_mrr.tex",
+        "sha256": "0b86bbb03a1d3233ff41899b740a3e5fef07d118add3d93e55514716db4acf8d",
+        "bytes": 1464
+      },
+      {
+        "path": "sections/08_conclusion.tex",
+        "sha256": "66de99ef1eb521fbda174ccedd3b0a3d3116bcbe70e2477086539c609207d3f5",
+        "bytes": 3074
+      },
+      {
+        "path": "sections/Appendix.tex",
+        "sha256": "85828554dc4dadc1c46b50ea02a5663f3f15fa3df517b7c7e57218a52856c65c",
+        "bytes": 10995
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 35,
+    "figures": 1,
+    "references": 19
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 6, column 1):\nunexpected Tok (line 6, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 6, column 1):\nunexpected Tok (line 6, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

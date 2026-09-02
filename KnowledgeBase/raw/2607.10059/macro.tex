@@ -1,0 +1,127 @@
+\usepackage{titletoc}
+\makeatletter
+\def\ttl@gobblecontents#1#2#3#4{\ignorespaces}
+\makeatother
+\usepackage{float}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\newcommand{\xun}[1]{}
+\newcommand{\vira}[1]{}
+\newcommand{\parisa}[1]{}
+\newcommand{\evie}[1]{}
+\newcommand{\pardis}[1]{}
+\newcommand{\tianyu}[1]{}
+\newcommand{\varun}[1]{}
+\newcommand{\ali}[1]{}
+\newcommand{\claude}[1]{}
+
+\newcommand{\pipeline}{\textsc{AbstainGen}}
+\newcommand{\benchmark}{\textsc{AgentAbstain}}
+\newcommand{\TL}{\tau}
+
+\providecommand{\cmark}{\ding{51}}
+\providecommand{\xmark}{\ding{55}}
+
+
+\newcounter{finding}
+
+\newtcolorbox{findingbox}{%
+  enhanced,
+  breakable,
+  colback=blue!4,
+  colframe=blue!25!black,
+  boxrule=0.1pt,
+  arc=0pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  before skip=6pt, after skip=6pt,
+  borderline west={2.2pt}{0pt}{black!75},
+}
+
+\newcommand{\Finding}[2][]{%
+  \refstepcounter{finding}%
+  \begin{findingbox}
+    \textbf{Finding \thefinding}%
+    \ifstrempty{#1}{}{ \textbf{(#1)}}%
+    .\ %
+    #2
+  \end{findingbox}%
+}
+
+
+\tcbuselibrary{listings,skins,breakable}
+\definecolor{sysframe}{HTML}{5d2828}
+\definecolor{userframe}{HTML}{283f5d}
+\definecolor{promptback}{HTML}{F7F7F7}
+
+
+
+\lstset{
+  basicstyle=\ttfamily,          
+  frame=none,
+  showstringspaces=false,        
+  columns=fullflexible           
+}
+
+\newtcblisting{sysprompt}[1]{
+  listing only,           %
+  breakable,               %
+  segmentation style={line width=0pt},
+  colback=promptback,
+  colframe=sysframe,
+  boxrule=2pt,
+  arc=1mm,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  title={System Message of #1},
+  fonttitle=\bfseries,
+  listing options={
+    basicstyle={\ttfamily\small},
+    breaklines=true,
+    tabsize=2
+  }
+}
+\newtcblisting{prompt}[1]{
+  listing only,           %
+  breakable,               %
+  colback=promptback,
+  colframe=userframe,
+  boxrule=2pt,
+  arc=1mm,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  title={#1},
+  fonttitle=\bfseries,
+  listing options={
+    basicstyle={\ttfamily\small},
+    breaklines=true,
+    tabsize=2
+  }
+}
+
+
+
+
+
+\newenvironment{squishitemize}
+{\begin{list}{\textbullet}{%
+			\setlength{\itemsep}{0pt}%
+			\setlength{\parsep}{0pt}%
+			\setlength{\topsep}{0pt}%
+			\setlength{\parskip}{0pt} %
+			\setlength{\labelwidth}{.5in}%
+			\setlength{\labelsep}{0.05in} %
+			\setlength{\leftmargin}{.15in} %
+			\renewcommand{\labelitemi}{\textbullet}}}
+		{\end{list}}
+
+\newenvironment{squishenumerate}
+{\begin{list}{\arabic{enumi}.}{%
+			\usecounter{enumi}%
+			\setlength{\itemsep}{0pt}%
+			\setlength{\parsep}{0pt}%
+			\setlength{\topsep}{0pt}%
+			\setlength{\parskip}{0pt}%
+			\setlength{\labelwidth}{.5in}%
+			\setlength{\labelsep}{0.05in}%
+			\setlength{\leftmargin}{.2in}}}
+		{\end{list}}

@@ -1,0 +1,51 @@
+
+\section{Related Work}
+\paragraph{Hallucination Mitigation.} 
+% The hallucination in LLMs has attracted significant attention from both academic and industry researchers. 
+% Hallucination emerge for a variety of reasons, including noise in the training data, the model's intrinsic creative tendencies, and misjudgment of its own knowledge boundaries \citep{zhang2023user,tonmoy2024comprehensive,liang2024learning}. 
+% Existing hallucination mitigation methods are diverse. 
+% Prompt engineering approaches, for instance, guide models towards factual content using specific prompts or self-reflection for error correction \citep{sinha2023mathematical,zhang2024self}. 
+% Other methods include fine-tuning to enhance facticity on specific tasks \citep{tian2023fine}, Retrieval Augmented Generation (RAG) which utilizes external knowledge bases for verifiable information \citep{tonmoy2024comprehensive}, and decoding strategies that penalize unrealistic generative paths \citep{zhang2023alleviating}.
+% While these approaches mitigate the hallucination to a certain degree, they have less direct impact on the reasoning process within the model.
+
+% However, the increased reasoning ability of LLMs is often accompanied by increased hallucination, and the LLMs give seemingly correct but actually fabricated content in many cases \citep{yao2023llm}. 
+% Existing studies have found that hallucinations in language models come from several sources. 
+% The pre-training data in the pre-training stage may contain noisy data or untruthful information \citep{mundler2023self}. 
+% During the RL from Human Feedback \citep[RLHF;][]{ouyang2022training} stage, human preferences might not perfectly align with factual accuracy, leading to hallucinations in the main model. 
+% And the uncertainty in the decoding strategy \citep{kuhn2023semantic} can lead to the output of LLMs with misinformation. 
+% From a knowledge perspective, the root cause of hallucination in LLMs is that they do not learn knowledge boundaries correctly. 
+% In other words, LLMs confidently fabricate an incorrect answer when confronted with knowledge they have not seen before, when LLMs should have outputted a refusal answer \citep{manakul2023selfcheckgpt,kadavath2022language}. 
+% The hallucination tendency \citep{ji2023survey,huang2025survey} is even more serious for slow thinking models, in which a small error in the reasoning process is likely to be infinitely amplified in the subsequent reasoning process, i.e., the “snowball effect” \citep{zhang2023language}.
+
+
+
+
+% Increased LLM reasoning ability often accompanies more severe hallucinations, where models present fabricated content as fact \citep{yao2023llm}. 
+% Hallucinations arise from diverse factors such as noise in training data, the model's intrinsic creative tendencies, and misjudgment of its own knowledge boundaries \citep{zhang2023user, tonmoy2024comprehensive, liang2024learning}. 
+% Further research explores hallucination causes, including reinforcement learning side effects \citep{song2025hallucination} and knowledge "overshadowing" \citep{zhang2024knowledge, zhang2025law}, and potential solutions like knowledge-aware optimization \citep{chen2022knowprompt, chen2023large} and alignment for honesty \citep{yang2024alignment}. 
+% More specifically, causes include noisy or untruthful pre-training data \citep{mundler2023self}, human preferences during Reinforcement Learning from Human Feedback (RLHF) that may not perfectly align with factual accuracy \citep{ouyang2022training}, and uncertainty in decoding strategies leading to misinformation \citep{kuhn2023semantic}. 
+% Fundamentally, these issues often result in LLMs incorrectly learning their knowledge boundaries, thereby confidently fabricating incorrect answers to unfamiliar topics rather than expressing uncertainty \citep{manakul2023selfcheckgpt, kadavath2022language}. 
+% This hallucination tendency is especially problematic in slow-thinking models, where initial small reasoning errors can be infinitely amplified in a “snowball effect” \citep{ji2023survey, huang2025survey, zhang2023language}. 
+% Indeed, a significant body of research explores this dual nature of slow-thinking models, where the capacity for complex reasoning is often intertwined with a higher propensity for hallucination \citep{cheng2025think, yao2025reasoning, zheng2025enhancing, zhang2025scaling}.
+
+% An increasing number of studies focus on aligning large language models to reduce hallucinations and harmful content in their outputs \citep{cheng2025inverse, kang2025unfamiliar, wen2025policy, xu2024rejection, lireasoning, lin2024flame, sun2025detection, liang2024learning, ding2024sail, xu2025doubly, tang2024understanding, han2024value, xu2024dpo, yin2025reasoning, yuan2023rrhf}.
+% There is also no shortage of alternative approaches \citep{chen2024honest} to reducing hallucinations, such as RAG and other knowledge-grounded methods.
+% This tendency is especially problematic in ``slow-thinking'' models, where a capacity for complex reasoning is intertwined with a higher tendency for factual errors that can amplify in a ``snowball effect'' \citep{ji2023survey, huang2025survey, zhang2023language, cheng2025think, yao2025reasoning, zheng2025enhancing, zhang2025scaling}.
+
+% The causes for these hallucinations are diverse, including noise in training data \citep{mundler2023self}, unintended consequences of reinforcement learning \citep{song2025hallucination, ouyang2022training}, conflicts where internal knowledge "overshadows" factual context \citep{zhang2024knowledge, zhang2025law}, and decoding uncertainties \citep{kuhn2023semantic}. Fundamentally, these issues stem from a core failure of LLMs to recognize their own knowledge boundaries \citep{zhang2023user, tonmoy2024comprehensive, liang2024learning, manakul2023selfcheckgpt, kadavath2022language}, which has spurred research into solutions like knowledge-aware optimization \citep{chen2022knowprompt, chen2023large} and alignment for honesty \citep{yang2024alignment}.
+
+Extensive research focuses on mitigating hallucinations in LLMs through alignment strategies and knowledge-grounded methods \citep{cheng2025inverse, kang2025unfamiliar, wen2025policy, xu2024rejection, lireasoning, lin2024flame, sun2025detection, liang2024learning, ding2024sail, xu2025doubly, tang2024understanding, han2024value, xu2024dpo, yin2025reasoning, yuan2023rrhf, chen2024honest, zhang2024truthx, dhuliawala2024chain, feng2024don, liu2025know3, martino2023knowledge}. This challenge is particularly acute in slow-thinking models, where complex reasoning can amplify factual errors into a snowball effect \citep{ji2023survey, huang2025survey, zhang2023language, cheng2025think, yao2025reasoning, zheng2025enhancing, zhang2025scaling}.
+
+Hallucinations stem from diverse factors, including data noise, RL side-effects, knowledge conflicts, and decoding uncertainties \citep{mundler2023self, song2025hallucination, ouyang2022training, zhang2024knowledge, zhang2025law, kuhn2023semantic, zhao2024awecita}.
+Fundamentally, these issues reflect the model's failure to recognize its own knowledge boundaries \citep{zhang2023user, tonmoy2024comprehensive, liang2024learning, manakul2023selfcheckgpt, kadavath2022language}, motivating research into knowledge-aware optimization and honesty alignment \citep{chen2022knowprompt, chen2023large, yang2024alignment}.
+
+\paragraph{RL for Reasoning}
+
+
+RL enhances LLM reasoning, enabling complex strategies like reflection and verification \citep{xie2025logic,yeo2025demystifying, mei20252, he2025beyond}. 
+To achieve more reliable reasoning, recent work increasingly focuses on improving RL algorithms \citep{hu2025reinforce++, nan2025ngrpo, chen2025lspo, chen2025spectral, ichihara2025auto, ding2025multi, cai2025training, mroueh2025revisiting, pang2025theory, zhang2025edge, li2025mixgrpo, li2025branchgrpo, zheng2025group, wang2025grpo, li2025disco, xi2025bapo} and integrating RL with other components of the training and inference pipeline \citep{dong2024rlhf, cen2024value, xie2024exploratory, li2025towards, li2025provably, zhu2024iterative, chen2025scaling, jin2025search, jin2025empirical, song2025r1, zhao2025genprm}.
+Fine-grained guidance methods, such as step-level value preference optimization~\citep{chen2024step}, tree search~\citep{feng2023alphazero}, and entropy-based preference clarification~\citep{zhu2025clarifying}, are proving valuable for enhancing model reliability.
+
+
+
+

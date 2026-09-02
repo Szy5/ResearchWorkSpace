@@ -1,0 +1,123 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Evaluation Setup}
+
+We score 8,000 turns from the 1,000-session public test split against all 47,071
+tracks using nDCG@20, R@20, and R@100. Blind-A and Blind-B contain 80 truncated
+sessions each and are used only for final external checks. Response ablations
+fix track IDs. In Table~\ref{tab:response}, Judge is the score returned by the
+organizers' undisclosed LLM judge, and Composite is the official aggregate
+score.
+
+\begin{table*}[!t]
+  \begin{minipage}[t]{0.49\textwidth}
+    \caption{Public-test retrieval results; 0.6B is not task-adapted.}
+    \label{tab:retrieval}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{@{}lccc@{}}
+      \toprule
+      Configuration & nDCG & R@20 & R@100 \\
+      \midrule
+      Enriched BM25 ensemble & .1599 & .3321 & .4793 \\
+      Untrained 0.6B dense & .1210 & .2385 & .3531 \\
+      Hybrid lexical--dense & .1550 & .3170 & .4639 \\
+      8B five-fold RRF & .2165 & .4363 & .6619 \\
+      Full cross-pool RRF & .2198 & \textbf{.4406} & \textbf{.6630} \\
+      + LightGBM & \textbf{.2208} & .4400 & \textbf{.6630} \\
+      \bottomrule
+    \end{tabular}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.47\textwidth}
+    \caption{Blind-A response check on fixed track IDs.}
+    \label{tab:response}
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{3pt}
+    \begin{tabular}{@{}lccc@{}}
+      \toprule
+      Generator & Demos & Judge & Composite \\
+      \midrule
+      GLM-5.2 PAS & 3 & 4.80 & .6556 \\
+      Gemini-3.1-Flash-Lite PAS & 3 & 4.75 & .6518 \\
+      GLM-5.2 PAS & 1 & \textbf{4.90} & \textbf{.6631} \\
+      \bottomrule
+    \end{tabular}
+  \end{minipage}
+  \vspace{-5mm}
+\end{table*}
+
+\subsection{Results and Controlled Ablations}
+
+Table~\ref{tab:retrieval} summarizes public-test retrieval results. Individual 8B folds
+range from .2018 to .2138 in nDCG@20, .4100 to .4298 in R@20, and .6369 to
+.6435 in R@100. Five-fold RRF provides the largest ranking gain. It improves
+over the mean individual fold by .00763 nDCG@20 and raises R@100 from .6409 to
+.6619.
+
+The pools recover different targets. Either pool places the target in the top
+20 on 3,838 turns. Both succeed on 2,188; the conversational pool alone
+succeeds on 1,302, and the hybrid pool alone succeeds on 348. Their top-20
+candidate sets have a mean Jaccard overlap of .231. This complementarity makes
+fusion useful: cross-pool RRF raises nDCG@20 from .2165 to .2198. LightGBM
+further raises it to .2208, while R@20 changes from .4406 to .4400 and R@100
+remains .6630. These mixed changes support interpreting LightGBM as
+candidate-order calibration rather than as a broad retrieval gain.
+
+With tracks fixed, Table~\ref{tab:response} isolates response generation. Among
+GLM-5.2 runs, one routed demonstration outperforms three. On Blind-B, PAS raises the
+official composite from .55 to .58. This supports the routed one-shot choice
+under the automatic judge but does not support a claim about human preference.
+
+\subsection{Pool Behavior by Request and Turn}
+
+Table~\ref{tab:pool-category} tests whether fusion helps uniformly. For each
+subset, $\Delta_{\mathrm{best}}$ is $100(\mathrm{Fusion}/\mathrm{best}-1)$, where
+best is the strongest of BM25, 0.6B, and 8B. $\Delta_{\mathrm{crawl}}$ is
+$100(\mathrm{BM25}/\mathrm{BM25}_{\mathrm{no\ crawl}}-1)$. Early, Mid., and
+Late report $\Delta_{\mathrm{best}}$ for turns 1--2, 3--5, and 6--8; $N$ is
+the number of sessions.
+
+\begin{table}[!h]
+  \caption{Category nDCG@20 and relative gains (\%) by retrieval pool and
+  dialogue stage. Bold marks the best retrieval result in each category.}
+  \label{tab:pool-category}
+  \centering
+  \fontsize{6}{6.9}\selectfont
+  \setlength{\tabcolsep}{1.7pt}
+  \begin{tabular}{@{}lrrrrrrrrr@{}}
+    \toprule
+    Category (N) & BM25 & 0.6B & Adapt. 8B & Fusion & $\Delta_{\mathrm{crawl}}$ & $\Delta_{\mathrm{best}}$ & Early & Mid. & Late \\
+    \midrule
+    Sound traits (61) & .161 & .147 & \textbf{.219} & .216 & $+5.5$ & $-1.7$ & $-7.2$ & $-0.4$ & $+0.8$ \\
+    Lyrics (142) & .178 & .126 & .224 & \textbf{.229} & $+6.3$ & $+2.5$ & $+5.5$ & $+4.7$ & $-1.8$ \\
+    Artwork (58) & .139 & .109 & .174 & \textbf{.176} & $+2.7$ & $+0.8$ & $-0.8$ & $-3.2$ & $+7.5$ \\
+    Activity fit (86) & .152 & .119 & .200 & \textbf{.205} & $+2.9$ & $+2.3$ & $+3.8$ & $-2.4$ & $+7.2$ \\
+    Discovery (95) & .173 & .127 & .214 & \textbf{.217} & $+4.9$ & $+1.1$ & $-0.6$ & $-1.0$ & $+5.0$ \\
+    Memory (95) & .193 & .153 & .275 & \textbf{.281} & $+3.2$ & $+2.1$ & $+4.0$ & $+2.3$ & $+0.2$ \\
+    Mood (77) & .156 & .098 & .197 & \textbf{.201} & $+7.7$ & $+1.7$ & $-2.3$ & $+1.4$ & $+5.2$ \\
+    Artist (135) & .177 & .150 & .242 & \textbf{.245} & $+2.4$ & $+1.2$ & $+2.2$ & $-3.1$ & $+5.2$ \\
+    Exact hit (18) & .118 & .070 & .164 & \textbf{.180} & $+24.4$ & $+10.1$ & $+9.3$ & $+14.7$ & $+6.5$ \\
+    Trends (77) & .136 & .095 & .211 & \textbf{.217} & $+2.9$ & $+3.2$ & $-1.6$ & $+1.1$ & $+11.6$ \\
+    Era (156) & .132 & .094 & \textbf{.196} & .195 & $+7.9$ & $-0.1$ & $-3.0$ & $+1.5$ & $+1.2$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Bold values in Table~\ref{tab:pool-category} identify each category's best
+result. The adapted 8B pool is the strongest individual pool in all eleven
+categories; fusion is best in nine. Its benefit appears
+more often later in the dialogue: fusion improves over the best individual pool
+in five categories during early turns, six during middle turns, and ten during
+late turns.
+Sound-focused and era-focused requests are the two aggregate exceptions.
+
+Crawl-derived fields raise enriched BM25 from .1524 to .1599 nDCG@20, a 5.0\%
+relative gain across all eleven categories. The untrained 0.6B
+dense component does not improve BM25 on the public test split; adding it
+lowers the hybrid result from .1599 to .1550. Replacing BM25's music-only query
+with the full dialogue further lowers hybrid nDCG@20 to .1527. The released
+BM25 interface therefore retains prior track metadata and the current request
+but excludes earlier user and assistant text.

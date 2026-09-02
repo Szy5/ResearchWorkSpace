@@ -1,0 +1,21 @@
+
+\begin{table}[t]
+    \centering
+    \caption{Latency (s) of the retrieval systems on \benchmarkt. }
+    \resizebox{0.9\textwidth}{!}{
+    \begin{tabular}{l|cccccc}
+        \toprule
+        &\textbf{\small DPR} & \textbf{\small QAGNN } & 
+        \textbf{\small ada-002} & \textbf{\small multi-ada-002} & \textbf{\small Claude3 Reranker} & \textbf{\small GPT4 Reranker} \\
+        \midrule
+        \textbf{\amazont} & 2.34 & 2.32 &5.71 &4.87 & 27.24&24.76 \\
+        \textbf{\magt} & 0.94 &1.35 &2.25 &3.14 &22.60 & 23.43 \\
+        \textbf{\primekgt} & 0.92 & 1.29 &0.54 &0.90 &29.14 &26.97 \\
+        \midrule 
+        \textbf{Average} & 1.40  & 1.65 &2.83 &2.97 &26.33 &25.05 \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:latency}
+    \vspace{-10pt}
+\end{table}

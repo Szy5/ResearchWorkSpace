@@ -1,0 +1,24 @@
+
+\begin{algorithm}[t]
+\caption{Search Self-play training process.}
+\label{alg:ssp_revised_v2}
+\begin{algorithmic}[1]
+\REQUIRE LLM policy $\pi_\theta$; ground-truth answer set $\gD$; proposer and solver prompts $(\vx_\text{propose}, \vx_\text{solve})$.
+\FOR{ each parameter-updating step}
+    \STATE Sample a batch of ground-truth answers $\{\va^*_i\}_{i=1}^B \sim \gD$ with batch size $B$.
+    \STATE Proposer generates candidate questions $\mathbb{Q} = \{ \gQ(\vtau_i) \}_{i=1}^B$ with each $\vtau_i \sim \pi_\theta(\cdot| \vx_\text{propose}, \va^*_i)$.
+    \STATE Filter out valid questions as $\mathbb{Q}^*$ with format rules and the RAG constraint: \begin{equation*}\textstyle
+        r(\gA(\vsigma_i),\va^*_i)=1, \text{ for } \vsigma_i \sim \pi_\theta(\vx_\text{solve}, \gQ(\vtau_i)). 
+        \vspace{-4mm}
+    \end{equation*}
+    \FOR{each question $\vq_i \in \mathbb{Q}^*$}
+        \STATE Solver explores $n$ trajectories for solution: $\vrho^j_i \sim \pi_\theta(\cdot|\vx_\text{solve}, \vq_i), j=1,2,\dots,n$
+        \STATE Compute solver's reward of each trajectory: $r_{\text{solve},i}^j = r(\gA(\vrho_i^j), \va^*_i)$
+        \STATE Compute proposer's reward in expectation: $\bar{r}_{\text{propose},i} = 1 - \frac{1}{n} \sum_{j=1}^n r_{\text{solve},i}^j$
+    \ENDFOR 
+    %\STATE \textbf{// Step 4: Model updates for both roles}
+    \STATE Update $\pi_\theta$ with solver's trajectories and outcomes $\{(\vrho_i^j, r_{\text{solve},i}^j)\}$ via GRPO.
+     \STATE Update $\pi_\theta$ with proposer's trajectories and outcomes $\{(\vtau_i, \bar{r}_{\text{propose},i})\}$ via REINFORCE.
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}

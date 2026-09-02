@@ -1,0 +1,1100 @@
+{
+  "references": [
+    {
+      "key": "Guo_2025",
+      "title": "DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning",
+      "authors": [
+        "Guo, Daya",
+        "Yang, Dejian",
+        "Zhang, Haowei",
+        "Song, Junxiao",
+        "Wang, Peiyi",
+        "Zhu, Qihao",
+        "Xu"
+      ],
+      "year": 2025,
+      "venue": "Nature",
+      "doi": "10.1038/s41586-025-09422-z",
+      "arxiv_id": "",
+      "url": "http://dx.doi.org/10.1038/s41586-025-09422-z",
+      "raw_bibtex": "@article{Guo_2025,\n   title={DeepSeek-R1 incentivizes reasoning in LLMs through reinforcement learning},\n   volume={645},\n   ISSN={1476-4687},\n   url={http://dx.doi.org/10.1038/s41586-025-09422-z},\n   DOI={10.1038/s41586-025-09422-z},\n   number={8081},\n   journal={Nature},\n   publisher={Springer Science and Business Media LLC},\n   author={Guo, Daya and Yang, Dejian and Zhang, Haowei and Song, Junxiao and Wang, Peiyi and Zhu, Qihao and Xu},\n   year={2025},\n   month=sep, pages={633–638} \n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-graphwalker-training",
+          "text": "We adopt a two-stage SFT cold start followed by RL training. The first stage equips the agent with general exploration skills, the second cultivates reflection and error recovery, and RL subsequently aligns long-horizon decision making. We parameterize the agent policy as an autoregressive language"
+        }
+      ]
+    },
+    {
+      "key": "Luo_2024",
+      "title": "ChatKBQA: A Generate-then-Retrieve Framework for Knowledge Base Question Answering with Fine-tuned Large Language Models",
+      "authors": [
+        "Luo, Haoran",
+        "E, Haihong",
+        "Tang, Zichen",
+        "Peng, Shiyao",
+        "Guo, Yikai",
+        "Zhang, Wentai",
+        "Ma, Chenghao",
+        "Dong, Guanting",
+        "Song, Meina",
+        "Lin, Wei",
+        "Zhu, Yifan",
+        "Luu, Anh Tuan"
+      ],
+      "year": 2024,
+      "venue": "Findings of the Association for Computational Linguistics ACL 2024",
+      "doi": "10.18653/v1/2024.findings-acl.122",
+      "arxiv_id": "",
+      "url": "http://dx.doi.org/10.18653/v1/2024.findings-acl.122",
+      "raw_bibtex": "@inproceedings{Luo_2024,\n    author = {Luo, Haoran and E, Haihong and Tang, Zichen and Peng, Shiyao and Guo, Yikai and Zhang, Wentai and Ma, Chenghao and Dong, Guanting and Song, Meina and Lin, Wei and Zhu, Yifan and Luu, Anh Tuan},\n    booktitle = {Findings of the Association for Computational Linguistics ACL 2024},\n    doi = {10.18653/v1/2024.findings-acl.122},\n    pages = {2039–2056},\n    publisher = {Association for Computational Linguistics},\n    title = {ChatKBQA: A Generate-then-Retrieve Framework for Knowledge Base Question Answering with Fine-tuned Large Language Models},\n    url = {http://dx.doi.org/10.18653/v1/2024.findings-acl.122},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "Xiong_2024",
+      "title": "Interactive-KBQA: Multi-Turn Interactions for Knowledge Base Question Answering with Large Language Models",
+      "authors": [
+        "Xiong, Guanming",
+        "Bao, Junwei",
+        "Zhao, Wen"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "10.18653/v1/2024.acl-long.569",
+      "arxiv_id": "",
+      "url": "http://dx.doi.org/10.18653/v1/2024.acl-long.569",
+      "raw_bibtex": "@inproceedings{Xiong_2024,\n    author = {Xiong, Guanming and Bao, Junwei and Zhao, Wen},\n    booktitle = {Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n    doi = {10.18653/v1/2024.acl-long.569},\n    pages = {10561–10582},\n    publisher = {Association for Computational Linguistics},\n    title = {Interactive-KBQA: Multi-Turn Interactions for Knowledge Base Question Answering with Large Language Models},\n    url = {http://dx.doi.org/10.18653/v1/2024.acl-long.569},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-preliminaries",
+          "text": "**Knowledge graph.** A knowledge graph (KG) $\\mathcal{G} = (\\mathcal{E}, \\mathcal{R}, \\mathcal{T})$ consists of a set of entities $\\mathcal{E}$, a set of relations $\\mathcal{R}$, and a triple set $\\mathcal{T} \\subseteq \\mathcal{E} \\times \\mathcal{R} \\times \\mathcal{E}$, where each triple $\\langle"
+        }
+      ]
+    },
+    {
+      "key": "Yih2016TheVO",
+      "title": "The Value of Semantic Parse Labeling for Knowledge Base Question Answering",
+      "authors": [
+        "Yih, Wen-tau",
+        "Richardson, Matthew",
+        "Meek, Chris",
+        "Chang, Ming-Wei",
+        "Suh, Jina"
+      ],
+      "year": 2016,
+      "venue": "Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)",
+      "doi": "10.18653/v1/P16-2033",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/P16-2033",
+      "raw_bibtex": "@inproceedings{Yih2016TheVO,\n    address = {Berlin, Germany},\n    author = {Yih, Wen-tau  and\nRichardson, Matthew  and\nMeek, Chris  and\nChang, Ming-Wei  and\nSuh, Jina},\n    booktitle = {Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)},\n    doi = {10.18653/v1/P16-2033},\n    editor = {Erk, Katrin  and\nSmith, Noah A.},\n    pages = {201--206},\n    publisher = {Association for Computational Linguistics},\n    title = {The Value of Semantic Parse Labeling for Knowledge Base Question Answering},\n    url = {https://aclanthology.org/P16-2033},\n    year = {2016}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "**Datasets and Metrics.** Following previous research [sun2023think, luo2023reasoning], we evaluate GraphWalker on two widely used KGQA benchmarks: CWQ [talmor2018webknowledgebaseansweringcomplex] and WebQSP [Yih2016TheVO]. To ensure a fair comparison, we utilize the gold topic entities provided by"
+        }
+      ]
+    },
+    {
+      "key": "Zhang_2022",
+      "title": "Subgraph Retrieval Enhanced Model for Multi-hop Knowledge Base Question Answering",
+      "authors": [
+        "Zhang, Jing",
+        "Zhang, Xiaokang",
+        "Yu, Jifan",
+        "Tang, Jian",
+        "Tang, Jie",
+        "Li, Cuiping",
+        "Chen, Hong"
+      ],
+      "year": 2022,
+      "venue": "Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "10.18653/v1/2022.acl-long.396",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2022.acl-long.396",
+      "raw_bibtex": "@inproceedings{Zhang_2022,\n    address = {Dublin, Ireland},\n    author = {Zhang, Jing  and\nZhang, Xiaokang  and\nYu, Jifan  and\nTang, Jian  and\nTang, Jie  and\nLi, Cuiping  and\nChen, Hong},\n    booktitle = {Proceedings of the 60th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n    doi = {10.18653/v1/2022.acl-long.396},\n    editor = {Muresan, Smaranda  and\nNakov, Preslav  and\nVillavicencio, Aline},\n    pages = {5773--5784},\n    publisher = {Association for Computational Linguistics},\n    title = {Subgraph Retrieval Enhanced Model for Multi-hop Knowledge Base Question Answering},\n    url = {https://aclanthology.org/2022.acl-long.396},\n    year = {2022}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "Zhao2024KGCoTCP",
+      "title": "KG-CoT: Chain-of-Thought Prompting of Large Language Models over Knowledge Graphs for Knowledge-Aware Question Answering",
+      "authors": [
+        "Ruilin Zhao",
+        "Feng Zhao",
+        "Long Wang",
+        "Xianzhi Wang",
+        "Guandong Xu"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence, {IJCAI} 2024, Jeju, South Korea, August 3-9, 2024",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://www.ijcai.org/proceedings/2024/734",
+      "raw_bibtex": "@inproceedings{Zhao2024KGCoTCP,\n    author = {Ruilin Zhao and\nFeng Zhao and\nLong Wang and\nXianzhi Wang and\nGuandong Xu},\n    bibsource = {dblp computer science bibliography, https://dblp.org},\n    biburl = {https://dblp.org/rec/conf/ijcai/Zhao0W0024.bib},\n    booktitle = {Proceedings of the Thirty-Third International Joint Conference on\nArtificial Intelligence, {IJCAI} 2024, Jeju, South Korea, August 3-9,\n2024},\n    pages = {6642--6650},\n    publisher = {ijcai.org},\n    timestamp = {Fri, 18 Oct 2024 01:00:00 +0200},\n    title = {KG-CoT: Chain-of-Thought Prompting of Large Language Models over Knowledge\nGraphs for Knowledge-Aware Question Answering},\n    url = {https://www.ijcai.org/proceedings/2024/734},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "auer2007dbpedia",
+      "title": "DBpedia: A nucleus for a web of open data",
+      "authors": [
+        "Auer, S \\\"o ren",
+        "Bizer, Christian",
+        "Kobilarov, Georgi",
+        "Lehmann, Jens",
+        "Cyganiak, Richard",
+        "Ives, Zachary"
+      ],
+      "year": 2007,
+      "venue": "Proceedings of ISWC",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{auer2007dbpedia,\n    author = {Auer, S{\\\"o}ren and Bizer, Christian and Kobilarov, Georgi and Lehmann, Jens and Cyganiak, Richard and Ives, Zachary},\n    booktitle = {Proceedings of ISWC},\n    title = {DBpedia: A nucleus for a web of open data},\n    year = {2007}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "baek2023knowledgeaugmentedlanguagemodelverification",
+      "title": "Knowledge-Augmented Language Model Verification",
+      "authors": [
+        "Baek, Jinheon",
+        "Jeong, Soyeong",
+        "Kang, Minki",
+        "Park, Jong",
+        "Hwang, Sung"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "10.18653/v1/2023.emnlp-main.107",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2023.emnlp-main.107",
+      "raw_bibtex": "@inproceedings{baek2023knowledgeaugmentedlanguagemodelverification,\n    address = {Singapore},\n    author = {Baek, Jinheon  and\nJeong, Soyeong  and\nKang, Minki  and\nPark, Jong  and\nHwang, Sung},\n    booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},\n    doi = {10.18653/v1/2023.emnlp-main.107},\n    editor = {Bouamor, Houda  and\nPino, Juan  and\nBali, Kalika},\n    pages = {1720--1736},\n    publisher = {Association for Computational Linguistics},\n    title = {Knowledge-Augmented Language Model Verification},\n    url = {https://aclanthology.org/2023.emnlp-main.107},\n    year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "berant2013semantic",
+      "title": "Semantic Parsing on F reebase from Question-Answer Pairs",
+      "authors": [
+        "Berant, Jonathan",
+        "Chou, Andrew",
+        "Frostig, Roy",
+        "Liang, Percy"
+      ],
+      "year": 2013,
+      "venue": "Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/D13-1160",
+      "raw_bibtex": "@inproceedings{berant2013semantic,\n    address = {Seattle, Washington, USA},\n    author = {Berant, Jonathan  and\nChou, Andrew  and\nFrostig, Roy  and\nLiang, Percy},\n    booktitle = {Proceedings of the 2013 Conference on Empirical Methods in Natural Language Processing},\n    editor = {Yarowsky, David  and\nBaldwin, Timothy  and\nKorhonen, Anna  and\nLivescu, Karen  and\nBethard, Steven},\n    pages = {1533--1544},\n    publisher = {Association for Computational Linguistics},\n    title = {Semantic Parsing on {F}reebase from Question-Answer Pairs},\n    url = {https://aclanthology.org/D13-1160},\n    year = {2013}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "bm25",
+      "title": "The Probabilistic Relevance Framework: BM25 and Beyond",
+      "authors": [
+        "Robertson, Stephen",
+        "Zaragoza, Hugo"
+      ],
+      "year": 2009,
+      "venue": "Foundations and Trends in Information Retrieval",
+      "doi": "10.1561/1500000019",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{bm25,\n    author = {Robertson, Stephen and Zaragoza, Hugo},\n    doi = {10.1561/1500000019},\n    journal = {Foundations and Trends in Information Retrieval},\n    pages = {333-389},\n    title = {The Probabilistic Relevance Framework: BM25 and Beyond},\n    volume = {3},\n    year = {2009}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-data-construction",
+          "text": "In this section, we describe the construction of two complementary training corpora, **GraphSynth-15k** and **GraphRoll-6k**. GraphSynth-15k focuses on broad structural coverage for exploration, while GraphRoll-6k emphasizes reflection and error recovery. {GraphSynth: Diverse Trajectory Synthesis}"
+        }
+      ]
+    },
+    {
+      "key": "bollacker2008freebase",
+      "title": "Freebase: A collaboratively created graph database for structuring human knowledge",
+      "authors": [
+        "Bollacker, Kurt",
+        "Evans, Colin",
+        "Paritosh, Praveen",
+        "Sturge, Tim",
+        "Taylor, Jamie"
+      ],
+      "year": 2008,
+      "venue": "Proceedings of SIGMOD",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{bollacker2008freebase,\n    author = {Bollacker, Kurt and Evans, Colin and Paritosh, Praveen and Sturge, Tim and Taylor, Jamie},\n    booktitle = {Proceedings of SIGMOD},\n    title = {Freebase: A collaboratively created graph database for structuring human knowledge},\n    year = {2008}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "brown2020language",
+      "title": "Language Models are Few-Shot Learners",
+      "authors": [
+        "Tom B. Brown",
+        "Benjamin Mann",
+        "Nick Ryder",
+        "Melanie Subbiah",
+        "Jared Kaplan",
+        "Prafulla Dhariwal",
+        "Arvind Neelakantan",
+        "Pranav Shyam",
+        "Girish Sastry",
+        "Amanda Askell",
+        "Sandhini Agarwal"
+      ],
+      "year": 2020,
+      "venue": "Advances in Neural Information Processing Systems 33: Annual Conference on Neural Information Processing Systems 2020, NeurIPS 2020, December 6-12, 2020, virtual",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://proceedings.neurips.cc/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html",
+      "raw_bibtex": "@inproceedings{brown2020language,\n    author = {Tom B. Brown and\nBenjamin Mann and\nNick Ryder and\nMelanie Subbiah and\nJared Kaplan and\nPrafulla Dhariwal and\nArvind Neelakantan and\nPranav Shyam and\nGirish Sastry and\nAmanda Askell and\nSandhini Agarwal},\n    bibsource = {dblp computer science bibliography, https://dblp.org},\n    biburl = {https://dblp.org/rec/conf/nips/BrownMRSKDNSSAA20.bib},\n    booktitle = {Advances in Neural Information Processing Systems 33: Annual Conference\non Neural Information Processing Systems 2020, NeurIPS 2020, December\n6-12, 2020, virtual},\n    editor = {Hugo Larochelle and\nMarc'Aurelio Ranzato and\nRaia Hadsell and\nMaria{-}Florina Balcan and\nHsuan{-}Tien Lin},\n    timestamp = {Tue, 19 Jan 2021 00:00:00 +0100},\n    title = {Language Models are Few-Shot Learners},\n    url = {https://proceedings.neurips.cc/paper/2020/hash/1457c0d6bfcb4967418bfb8ac142f64a-Abstract.html},\n    year = {2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "chen2024m3",
+      "title": "M3-embedding: Multi-linguality, multi-functionality, multi-granularity text embeddings through self-knowledge distillation",
+      "authors": [
+        "Chen, Jianlyu",
+        "Xiao, Shitao",
+        "Zhang, Peitian",
+        "Luo, Kun",
+        "Lian, Defu",
+        "Liu, Zheng"
+      ],
+      "year": 2024,
+      "venue": "Findings of the association for computational linguistics: ACL 2024",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{chen2024m3,\n    author = {Chen, Jianlyu and Xiao, Shitao and Zhang, Peitian and Luo, Kun and Lian, Defu and Liu, Zheng},\n    booktitle = {Findings of the association for computational linguistics: ACL 2024},\n    pages = {2318--2335},\n    title = {M3-embedding: Multi-linguality, multi-functionality, multi-granularity text embeddings through self-knowledge distillation},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-semantic-contamination-analysis",
+          "text": "To preclude knowledge leakage in GraphSynth-15k, we compute the maximum cosine similarity between each synthetic question and all test questions across WebQSP, CWQ, and GrailQA using BGE-M3 [chen2024m3]. At a strict threshold of 0.85, only 2.57\\% of GraphSynth questions exhibit high semantic"
+        }
+      ]
+    },
+    {
+      "key": "comanici2025gemini25pushingfrontier",
+      "title": "Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities",
+      "authors": [
+        "Gheorghe Comanici",
+        "Eric Bieber",
+        "Mike Schaekermann",
+        "Ice Pasupat",
+        "Noveen Sachdeva",
+        "Inderjit Dhillon",
+        "Marcel Blistein",
+        "Ori Ram",
+        "Dan Zhang",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2507.06261",
+      "raw_bibtex": "@misc{comanici2025gemini25pushingfrontier,\n    author = {Gheorghe Comanici and Eric Bieber and Mike Schaekermann and Ice Pasupat and Noveen Sachdeva and Inderjit Dhillon and Marcel Blistein and Ori Ram and Dan Zhang and others},\n    journal = {ArXiv preprint},\n    title = {Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities},\n    url = {https://arxiv.org/abs/2507.06261},\n    volume = {abs/2507.06261},\n    year = {2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-data-construction",
+          "text": "In this section, we describe the construction of two complementary training corpora, **GraphSynth-15k** and **GraphRoll-6k**. GraphSynth-15k focuses on broad structural coverage for exploration, while GraphRoll-6k emphasizes reflection and error recovery. {GraphSynth: Diverse Trajectory Synthesis}"
+        }
+      ]
+    },
+    {
+      "key": "dong2023bridgingkbtextgapleveraging",
+      "title": "Bridging the KB-Text Gap: Leveraging Structured Knowledge-aware Pre-training for KBQA",
+      "authors": [
+        "Guanting Dong",
+        "Rumei Li",
+        "Sirui Wang",
+        "Yupeng Zhang",
+        "Yunsen Xian",
+        "Weiran Xu"
+      ],
+      "year": 2023,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2308.14436",
+      "raw_bibtex": "@misc{dong2023bridgingkbtextgapleveraging,\n    author = {Guanting Dong and Rumei Li and Sirui Wang and Yupeng Zhang and Yunsen Xian and Weiran Xu},\n    journal = {ArXiv preprint},\n    title = {Bridging the KB-Text Gap: Leveraging Structured Knowledge-aware Pre-training for KBQA},\n    url = {https://arxiv.org/abs/2308.14436},\n    volume = {abs/2308.14436},\n    year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "dubey2024llama",
+      "title": "The Llama 3 Herd of Models",
+      "authors": [
+        "Dubey, Abhimanyu",
+        "others"
+      ],
+      "year": 2024,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2407.21783",
+      "raw_bibtex": "@article{dubey2024llama,\n    author = {Dubey, Abhimanyu and others},\n    journal = {ArXiv preprint},\n    title = {The Llama 3 Herd of Models},\n    url = {https://arxiv.org/abs/2407.21783},\n    volume = {abs/2407.21783},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "**Datasets and Metrics.** Following previous research [sun2023think, luo2023reasoning], we evaluate GraphWalker on two widely used KGQA benchmarks: CWQ [talmor2018webknowledgebaseansweringcomplex] and WebQSP [Yih2016TheVO]. To ensure a fair comparison, we utilize the gold topic entities provided by"
+        }
+      ]
+    },
+    {
+      "key": "hurst2024gpt",
+      "title": "Gpt-4o system card",
+      "authors": [
+        "Hurst, Aaron",
+        "Lerer, Adam",
+        "Goucher, Adam P",
+        "Perelman, Adam",
+        "Ramesh, Aditya",
+        "Clark, Aidan",
+        "Ostrow, AJ",
+        "Welihinda, Akila",
+        "Hayes, Alan",
+        "Radford, Alec",
+        "others"
+      ],
+      "year": 2024,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2410.21276",
+      "raw_bibtex": "@article{hurst2024gpt,\n    author = {Hurst, Aaron and Lerer, Adam and Goucher, Adam P and Perelman, Adam and Ramesh, Aditya and Clark, Aidan and Ostrow, AJ and Welihinda, Akila and Hayes, Alan and Radford, Alec and others},\n    journal = {ArXiv preprint},\n    title = {Gpt-4o system card},\n    url = {https://arxiv.org/abs/2410.21276},\n    volume = {abs/2410.21276},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-data-construction",
+          "text": "In this section, we describe the construction of two complementary training corpora, **GraphSynth-15k** and **GraphRoll-6k**. GraphSynth-15k focuses on broad structural coverage for exploration, while GraphRoll-6k emphasizes reflection and error recovery. {GraphSynth: Diverse Trajectory Synthesis}"
+        }
+      ]
+    },
+    {
+      "key": "jang2017kbqa",
+      "title": "KBQA: Constructing structured query graph from keyword query for semantic search",
+      "authors": [
+        "Jang, Heewon",
+        "Oh, Yeongtaek",
+        "Jin, Seunghee",
+        "Jung, Haemin",
+        "Kong, Hyesoo",
+        "Lee, Dokyung",
+        "Jeon, Dongkyu",
+        "Kim, Wooju"
+      ],
+      "year": 2017,
+      "venue": "Proceedings of the International Conference on Electronic Commerce",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{jang2017kbqa,\n    author = {Jang, Heewon and Oh, Yeongtaek and Jin, Seunghee and Jung, Haemin and Kong, Hyesoo and Lee, Dokyung and Jeon, Dongkyu and Kim, Wooju},\n    booktitle = {Proceedings of the International Conference on Electronic Commerce},\n    pages = {1--8},\n    title = {KBQA: Constructing structured query graph from keyword query for semantic search},\n    year = {2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "jiang2023structgpt",
+      "title": "S truct GPT : A General Framework for Large Language Model to Reason over Structured Data",
+      "authors": [
+        "Jiang, Jinhao",
+        "Zhou, Kun",
+        "Dong, Zican",
+        "Ye, Keming",
+        "Zhao, Xin",
+        "Wen, Ji-Rong"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "10.18653/v1/2023.emnlp-main.574",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2023.emnlp-main.574",
+      "raw_bibtex": "@inproceedings{jiang2023structgpt,\n    address = {Singapore},\n    author = {Jiang, Jinhao  and\nZhou, Kun  and\nDong, Zican  and\nYe, Keming  and\nZhao, Xin  and\nWen, Ji-Rong},\n    booktitle = {Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing},\n    doi = {10.18653/v1/2023.emnlp-main.574},\n    editor = {Bouamor, Houda  and\nPino, Juan  and\nBali, Kalika},\n    pages = {9237--9251},\n    publisher = {Association for Computational Linguistics},\n    title = {{S}truct{GPT}: A General Framework for Large Language Model to Reason over Structured Data},\n    url = {https://aclanthology.org/2023.emnlp-main.574},\n    year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-preliminaries",
+          "text": "**Knowledge graph.** A knowledge graph (KG) $\\mathcal{G} = (\\mathcal{E}, \\mathcal{R}, \\mathcal{T})$ consists of a set of entities $\\mathcal{E}$, a set of relations $\\mathcal{R}$, and a triple set $\\mathcal{T} \\subseteq \\mathcal{E} \\times \\mathcal{R} \\times \\mathcal{E}$, where each triple $\\langle"
+        }
+      ]
+    },
+    {
+      "key": "jiang2025kg",
+      "title": "Kg-agent: An efficient autonomous agent framework for complex reasoning over knowledge graph",
+      "authors": [
+        "Jiang, Jinhao",
+        "Zhou, Kun",
+        "Zhao, Wayne Xin",
+        "Song, Yang",
+        "Zhu, Chen",
+        "Zhu, Hengshu",
+        "Wen, Ji-Rong"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{jiang2025kg,\n    author = {Jiang, Jinhao and Zhou, Kun and Zhao, Wayne Xin and Song, Yang and Zhu, Chen and Zhu, Hengshu and Wen, Ji-Rong},\n    booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n    pages = {9505--9523},\n    title = {Kg-agent: An efficient autonomous agent framework for complex reasoning over knowledge graph},\n    year = {2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-preliminaries",
+          "text": "**Knowledge graph.** A knowledge graph (KG) $\\mathcal{G} = (\\mathcal{E}, \\mathcal{R}, \\mathcal{T})$ consists of a set of entities $\\mathcal{E}$, a set of relations $\\mathcal{R}$, and a triple set $\\mathcal{T} \\subseteq \\mathcal{E} \\times \\mathcal{R} \\times \\mathcal{E}$, where each triple $\\langle"
+        },
+        {
+          "section_id": "sec-agentic-initialization",
+          "text": "**Environment.** Following prior agentic KGQA systems [sun2023think, jiang2025kg], we formalize the KG as an executable environment backed by a *SPARQL* endpoint. Unlike approaches that operate on pre-defined subgraphs, the agent interacts directly with the global KG in real time during both"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "li2023fewshotincontextlearningknowledge",
+      "title": "Few-shot In-context Learning for Knowledge Base Question Answering",
+      "authors": [
+        "Tianle Li",
+        "Xueguang Ma",
+        "Alex Zhuang",
+        "Yu Gu",
+        "Yu Su",
+        "Wenhu Chen"
+      ],
+      "year": 2023,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2305.01750",
+      "raw_bibtex": "@misc{li2023fewshotincontextlearningknowledge,\n    author = {Tianle Li and Xueguang Ma and Alex Zhuang and Yu Gu and Yu Su and Wenhu Chen},\n    journal = {ArXiv preprint},\n    title = {Few-shot In-context Learning for Knowledge Base Question Answering},\n    url = {https://arxiv.org/abs/2305.01750},\n    volume = {abs/2305.01750},\n    year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "li2024chainofknowledgegroundinglargelanguage",
+      "title": "Chain-of-Knowledge: Grounding Large Language Models via Dynamic Knowledge Adapting over Heterogeneous Sources",
+      "authors": [
+        "Xingxuan Li",
+        "Ruochen Zhao",
+        "Yew Ken Chia",
+        "Bosheng Ding",
+        "Shafiq Joty",
+        "Soujanya Poria",
+        "Lidong Bing"
+      ],
+      "year": 2024,
+      "venue": "The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://openreview.net/forum?id=cPgh4gWZlz",
+      "raw_bibtex": "@inproceedings{li2024chainofknowledgegroundinglargelanguage,\n    author = {Xingxuan Li and\nRuochen Zhao and\nYew Ken Chia and\nBosheng Ding and\nShafiq Joty and\nSoujanya Poria and\nLidong Bing},\n    bibsource = {dblp computer science bibliography, https://dblp.org},\n    biburl = {https://dblp.org/rec/conf/iclr/LiZCDJPB24.bib},\n    booktitle = {The Twelfth International Conference on Learning Representations,\n{ICLR} 2024, Vienna, Austria, May 7-11, 2024},\n    publisher = {OpenReview.net},\n    timestamp = {Wed, 07 Aug 2024 01:00:00 +0200},\n    title = {Chain-of-Knowledge: Grounding Large Language Models via Dynamic Knowledge\nAdapting over Heterogeneous Sources},\n    url = {https://openreview.net/forum?id=cPgh4gWZlz},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "luo2023reasoning",
+      "title": "Reasoning on Graphs: Faithful and Interpretable Large Language Model Reasoning",
+      "authors": [
+        "Linhao Luo",
+        "Yuan - Fang Li",
+        "Gholamreza Haffari",
+        "Shirui Pan"
+      ],
+      "year": 2024,
+      "venue": "The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://openreview.net/forum?id=ZGNWW7xZ6Q",
+      "raw_bibtex": "@inproceedings{luo2023reasoning,\n    author = {Linhao Luo and\nYuan{-}Fang Li and\nGholamreza Haffari and\nShirui Pan},\n    bibsource = {dblp computer science bibliography, https://dblp.org},\n    biburl = {https://dblp.org/rec/conf/iclr/LuoLHP24.bib},\n    booktitle = {The Twelfth International Conference on Learning Representations,\n{ICLR} 2024, Vienna, Austria, May 7-11, 2024},\n    publisher = {OpenReview.net},\n    timestamp = {Tue, 24 Sep 2024 01:00:00 +0200},\n    title = {Reasoning on Graphs: Faithful and Interpretable Large Language Model\nReasoning},\n    url = {https://openreview.net/forum?id=ZGNWW7xZ6Q},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "**Datasets and Metrics.** Following previous research [sun2023think, luo2023reasoning], we evaluate GraphWalker on two widely used KGQA benchmarks: CWQ [talmor2018webknowledgebaseansweringcomplex] and WebQSP [Yih2016TheVO]. To ensure a fair comparison, we utilize the gold topic entities provided by"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "luo2025kbqa",
+      "title": "Kbqa-o1: Agentic knowledge base question answering with monte carlo tree search",
+      "authors": [
+        "Luo, Haoran",
+        "Guo, Yikai",
+        "Lin, Qika",
+        "Wu, Xiaobao",
+        "Mu, Xinyu",
+        "Liu, Wenhao",
+        "Song, Meina",
+        "Zhu, Yifan",
+        "Tuan, Luu Anh",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2501.18922",
+      "raw_bibtex": "@article{luo2025kbqa,\n    author = {Luo, Haoran and Guo, Yikai and Lin, Qika and Wu, Xiaobao and Mu, Xinyu and Liu, Wenhao and Song, Meina and Zhu, Yifan and Tuan, Luu Anh and others},\n    journal = {ArXiv preprint},\n    title = {Kbqa-o1: Agentic knowledge base question answering with monte carlo tree search},\n    url = {https://arxiv.org/abs/2501.18922},\n    volume = {abs/2501.18922},\n    year = {2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "ma2025thinkongraph20deepfaithful",
+      "title": "Think-on-Graph 2.0: Deep and Faithful Large Language Model Reasoning with Knowledge-guided Retrieval Augmented Generation",
+      "authors": [
+        "Shengjie Ma",
+        "Chengjin Xu",
+        "Xuhui Jiang",
+        "Muzhi Li",
+        "Huaren Qu",
+        "Cehao Yang",
+        "Jiaxin Mao",
+        "Jian Guo"
+      ],
+      "year": 2024,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2407.10805",
+      "raw_bibtex": "@misc{ma2025thinkongraph20deepfaithful,\n    author = {Shengjie Ma and Chengjin Xu and Xuhui Jiang and Muzhi Li and Huaren Qu and Cehao Yang and Jiaxin Mao and Jian Guo},\n    journal = {ArXiv preprint},\n    title = {Think-on-Graph 2.0: Deep and Faithful Large Language Model Reasoning with Knowledge-guided Retrieval Augmented Generation},\n    url = {https://arxiv.org/abs/2407.10805},\n    volume = {abs/2407.10805},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "petroni2019language",
+      "title": "Language Models as Knowledge Bases?",
+      "authors": [
+        "Petroni, Fabio",
+        "Rockt \\\"a schel, Tim",
+        "Riedel, Sebastian",
+        "Lewis, Patrick",
+        "Bakhtin, Anton",
+        "Wu, Yuxiang",
+        "Miller, Alexander"
+      ],
+      "year": 2019,
+      "venue": "Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)",
+      "doi": "10.18653/v1/D19-1250",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/D19-1250",
+      "raw_bibtex": "@inproceedings{petroni2019language,\n    address = {Hong Kong, China},\n    author = {Petroni, Fabio  and\nRockt{\\\"a}schel, Tim  and\nRiedel, Sebastian  and\nLewis, Patrick  and\nBakhtin, Anton  and\nWu, Yuxiang  and\nMiller, Alexander},\n    booktitle = {Proceedings of the 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing (EMNLP-IJCNLP)},\n    doi = {10.18653/v1/D19-1250},\n    editor = {Inui, Kentaro  and\nJiang, Jing  and\nNg, Vincent  and\nWan, Xiaojun},\n    pages = {2463--2473},\n    publisher = {Association for Computational Linguistics},\n    title = {Language Models as Knowledge Bases?},\n    url = {https://aclanthology.org/D19-1250},\n    year = {2019}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "qwen2025qwen25technicalreport",
+      "title": "Qwen2.5 Technical Report",
+      "authors": [
+        "Qwen",
+        ":",
+        "An Yang",
+        "Baosong Yang",
+        "Beichen Zhang",
+        "Binyuan Hui",
+        "Bo Zheng",
+        "Bowen Yu",
+        "Chengyuan Li",
+        "Dayiheng Liu",
+        "others"
+      ],
+      "year": 2024,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2412.15115",
+      "raw_bibtex": "@misc{qwen2025qwen25technicalreport,\n    author = {Qwen and : and An Yang and Baosong Yang and Beichen Zhang and Binyuan Hui and Bo Zheng and Bowen Yu and Chengyuan Li and Dayiheng Liu and others},\n    journal = {ArXiv preprint},\n    title = {Qwen2.5 Technical Report},\n    url = {https://arxiv.org/abs/2412.15115},\n    volume = {abs/2412.15115},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "**Datasets and Metrics.** Following previous research [sun2023think, luo2023reasoning], we evaluate GraphWalker on two widely used KGQA benchmarks: CWQ [talmor2018webknowledgebaseansweringcomplex] and WebQSP [Yih2016TheVO]. To ensure a fair comparison, we utilize the gold topic entities provided by"
+        }
+      ]
+    },
+    {
+      "key": "song2025efficient",
+      "title": "Efficient and transferable agentic knowledge graph rag via reinforcement learning",
+      "authors": [
+        "Song, Jinyeop",
+        "Wang, Song",
+        "Shun, Julian",
+        "Zhu, Yada"
+      ],
+      "year": 2025,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2509.26383",
+      "raw_bibtex": "@article{song2025efficient,\n    author = {Song, Jinyeop and Wang, Song and Shun, Julian and Zhu, Yada},\n    journal = {ArXiv preprint},\n    title = {Efficient and transferable agentic knowledge graph rag via reinforcement learning},\n    url = {https://arxiv.org/abs/2509.26383},\n    volume = {abs/2509.26383},\n    year = {2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "sun2023think",
+      "title": "Think-on-Graph: Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+      "authors": [
+        "Jiashuo Sun",
+        "Chengjin Xu",
+        "Lumingyuan Tang",
+        "Saizhuo Wang",
+        "Chen Lin",
+        "Yeyun Gong",
+        "Lionel M. Ni",
+        "Heung - Yeung Shum",
+        "Jian Guo"
+      ],
+      "year": 2024,
+      "venue": "The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://openreview.net/forum?id=nnVO1PvbTv",
+      "raw_bibtex": "@inproceedings{sun2023think,\n    author = {Jiashuo Sun and\nChengjin Xu and\nLumingyuan Tang and\nSaizhuo Wang and\nChen Lin and\nYeyun Gong and\nLionel M. Ni and\nHeung{-}Yeung Shum and\nJian Guo},\n    bibsource = {dblp computer science bibliography, https://dblp.org},\n    biburl = {https://dblp.org/rec/conf/iclr/SunXTW0GNSG24.bib},\n    booktitle = {The Twelfth International Conference on Learning Representations,\n{ICLR} 2024, Vienna, Austria, May 7-11, 2024},\n    publisher = {OpenReview.net},\n    timestamp = {Wed, 07 Aug 2024 01:00:00 +0200},\n    title = {Think-on-Graph: Deep and Responsible Reasoning of Large Language Model\non Knowledge Graph},\n    url = {https://openreview.net/forum?id=nnVO1PvbTv},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-agentic-initialization",
+          "text": "**Environment.** Following prior agentic KGQA systems [sun2023think, jiang2025kg], we formalize the KG as an executable environment backed by a *SPARQL* endpoint. Unlike approaches that operate on pre-defined subgraphs, the agent interacts directly with the global KG in real time during both"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "**Datasets and Metrics.** Following previous research [sun2023think, luo2023reasoning], we evaluate GraphWalker on two widely used KGQA benchmarks: CWQ [talmor2018webknowledgebaseansweringcomplex] and WebQSP [Yih2016TheVO]. To ensure a fair comparison, we utilize the gold topic entities provided by"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "talmor2018webknowledgebaseansweringcomplex",
+      "title": "The Web as a Knowledge-Base for Answering Complex Questions",
+      "authors": [
+        "Talmor, Alon",
+        "Berant, Jonathan"
+      ],
+      "year": 2018,
+      "venue": "Proceedings of the 2018 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)",
+      "doi": "10.18653/v1/N18-1059",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/N18-1059",
+      "raw_bibtex": "@inproceedings{talmor2018webknowledgebaseansweringcomplex,\n    address = {New Orleans, Louisiana},\n    author = {Talmor, Alon  and\nBerant, Jonathan},\n    booktitle = {Proceedings of the 2018 Conference of the North {A}merican Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long Papers)},\n    doi = {10.18653/v1/N18-1059},\n    editor = {Walker, Marilyn  and\nJi, Heng  and\nStent, Amanda},\n    pages = {641--651},\n    publisher = {Association for Computational Linguistics},\n    title = {The Web as a Knowledge-Base for Answering Complex Questions},\n    url = {https://aclanthology.org/N18-1059},\n    year = {2018}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "**Datasets and Metrics.** Following previous research [sun2023think, luo2023reasoning], we evaluate GraphWalker on two widely used KGQA benchmarks: CWQ [talmor2018webknowledgebaseansweringcomplex] and WebQSP [Yih2016TheVO]. To ensure a fair comparison, we utilize the gold topic entities provided by"
+        }
+      ]
+    },
+    {
+      "key": "vrandecic2014wikidata",
+      "title": "Wikidata: A free collaborative knowledge base",
+      "authors": [
+        "Vrande c i \\'c"
+      ],
+      "year": 2014,
+      "venue": "Proceedings of WWW",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{vrandecic2014wikidata,\n    author = {Vrande{\\v{c}}i{\\'c}, Denny and Kr{\\\"o}tzsch, Markus},\n    booktitle = {Proceedings of WWW},\n    title = {Wikidata: A free collaborative knowledge base},\n    year = {2014}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "wu2025cotkrchainofthoughtenhancedknowledge",
+      "title": "CoTKR: Chain-of-Thought Enhanced Knowledge Rewriting for Complex Knowledge Graph Question Answering",
+      "authors": [
+        "Yike Wu",
+        "Yi Huang",
+        "Nan Hu",
+        "Yuncheng Hua",
+        "Guilin Qi",
+        "Jiaoyan Chen",
+        "Jeff Z. Pan"
+      ],
+      "year": 2024,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2409.19753",
+      "raw_bibtex": "@misc{wu2025cotkrchainofthoughtenhancedknowledge,\n    author = {Yike Wu and Yi Huang and Nan Hu and Yuncheng Hua and Guilin Qi and Jiaoyan Chen and Jeff Z. Pan},\n    journal = {ArXiv preprint},\n    title = {CoTKR: Chain-of-Thought Enhanced Knowledge Rewriting for Complex Knowledge Graph Question Answering},\n    url = {https://arxiv.org/abs/2409.19753},\n    volume = {abs/2409.19753},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "xiong2025deliberate",
+      "title": "Deliberate reasoning in language models as structure-aware planning with an accurate world model",
+      "authors": [
+        "Xiong, Siheng",
+        "Payani, Ali",
+        "Yang, Yu’an",
+        "Fekri, Faramarz"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{xiong2025deliberate,\n  title={Deliberate reasoning in language models as structure-aware planning with an accurate world model},\n  author={Xiong, Siheng and Payani, Ali and Yang, Yu’an and Fekri, Faramarz},\n  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n  pages={31900--31931},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "xiong2026scaling",
+      "title": "Scaling Search-Augmented LLM Reasoning via Adaptive Information Control",
+      "authors": [
+        "Xiong, Siheng",
+        "Gungordu, Oguzhan",
+        "Johnson, Blair",
+        "Kerce, James C",
+        "Fekri, Faramarz"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2602.01672",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{xiong2026scaling,\n  title={Scaling Search-Augmented LLM Reasoning via Adaptive Information Control},\n  author={Xiong, Siheng and Gungordu, Oguzhan and Johnson, Blair and Kerce, James C and Fekri, Faramarz},\n  journal={arXiv preprint arXiv:2602.01672},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "xiongenhancing",
+      "title": "Enhancing Language Model Reasoning with Structured Multi-Level Modeling",
+      "authors": [
+        "Xiong, Siheng",
+        "Payani, Ali",
+        "Fekri, Faramarz"
+      ],
+      "year": 2026,
+      "venue": "The Fourteenth International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{xiongenhancing,\n  title={Enhancing Language Model Reasoning with Structured Multi-Level Modeling},\n  author={Xiong, Siheng and Payani, Ali and Fekri, Faramarz},\n  booktitle={The Fourteenth International Conference on Learning Representations},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "xu2024generate",
+      "title": "Generate-on-graph: Treat LLM as both agent and KG for incomplete knowledge graph question answering",
+      "authors": [
+        "Xu, Yao",
+        "He, Shizhu",
+        "Chen, Jiabei",
+        "Wang, Zihao",
+        "Song, Yangqiu",
+        "Tong, Hanghang",
+        "Liu, Guang",
+        "Zhao, Jun",
+        "Liu, Kang"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 2024 conference on empirical methods in natural language processing",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{xu2024generate,\n    author = {Xu, Yao and He, Shizhu and Chen, Jiabei and Wang, Zihao and Song, Yangqiu and Tong, Hanghang and Liu, Guang and Zhao, Jun and Liu, Kang},\n    booktitle = {Proceedings of the 2024 conference on empirical methods in natural language processing},\n    pages = {18410--18430},\n    title = {Generate-on-graph: Treat LLM as both agent and KG for incomplete knowledge graph question answering},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare GraphWalker with a comprehensive set of baselines. Following previous work, the Freebase dump is acquired from https://developers.google.com/freebase?hl=en. We deploy Freebase with Virtuoso. All the baselines are evaluated on Freebase database. **IO-Prompt.** IO-Prompt evaluates the"
+        }
+      ]
+    },
+    {
+      "key": "xu2025knowledgeinfusedpromptingassessingadvancing",
+      "title": "Knowledge-Infused Prompting: Assessing and Advancing Clinical Text Data Generation with Large Language Models",
+      "authors": [
+        "Ran Xu",
+        "Hejie Cui",
+        "Yue Yu",
+        "Xuan Kan",
+        "Wenqi Shi",
+        "Yuchen Zhuang",
+        "Wei Jin",
+        "Joyce Ho",
+        "Carl Yang"
+      ],
+      "year": 2023,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2311.00287",
+      "raw_bibtex": "@misc{xu2025knowledgeinfusedpromptingassessingadvancing,\n    author = {Ran Xu and Hejie Cui and Yue Yu and Xuan Kan and Wenqi Shi and Yuchen Zhuang and Wei Jin and Joyce Ho and Carl Yang},\n    journal = {ArXiv preprint},\n    title = {Knowledge-Infused Prompting: Assessing and Advancing Clinical Text Data Generation with Large Language Models},\n    url = {https://arxiv.org/abs/2311.00287},\n    volume = {abs/2311.00287},\n    year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "yao2023reactsynergizingreasoningacting",
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": [
+        "Shunyu Yao",
+        "Jeffrey Zhao",
+        "Dian Yu",
+        "Nan Du",
+        "Izhak Shafran",
+        "Karthik R. Narasimhan",
+        "Yuan Cao"
+      ],
+      "year": 2023,
+      "venue": "The Eleventh International Conference on Learning Representations, {ICLR} 2023, Kigali, Rwanda, May 1-5, 2023",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://openreview.net/pdf?id=WE\\_vluYUL-X",
+      "raw_bibtex": "@inproceedings{yao2023reactsynergizingreasoningacting,\n    author = {Shunyu Yao and\nJeffrey Zhao and\nDian Yu and\nNan Du and\nIzhak Shafran and\nKarthik R. Narasimhan and\nYuan Cao},\n    bibsource = {dblp computer science bibliography, https://dblp.org},\n    biburl = {https://dblp.org/rec/conf/iclr/YaoZYDSN023.bib},\n    booktitle = {The Eleventh International Conference on Learning Representations,\n{ICLR} 2023, Kigali, Rwanda, May 1-5, 2023},\n    publisher = {OpenReview.net},\n    timestamp = {Wed, 16 Aug 2023 01:00:00 +0200},\n    title = {ReAct: Synergizing Reasoning and Acting in Language Models},\n    url = {https://openreview.net/pdf?id=WE\\_vluYUL-X},\n    year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-preliminaries",
+          "text": "**Knowledge graph.** A knowledge graph (KG) $\\mathcal{G} = (\\mathcal{E}, \\mathcal{R}, \\mathcal{T})$ consists of a set of entities $\\mathcal{E}$, a set of relations $\\mathcal{R}$, and a triple set $\\mathcal{T} \\subseteq \\mathcal{E} \\times \\mathcal{R} \\times \\mathcal{E}$, where each triple $\\langle"
+        }
+      ]
+    },
+    {
+      "key": "yih2015semantic",
+      "title": "Semantic Parsing via Staged Query Graph Generation",
+      "authors": [
+        "Yih, Wen-tau",
+        "Chang, Ming-Wei",
+        "He, Xiaodong",
+        "Gao, Jianfeng"
+      ],
+      "year": 2015,
+      "venue": "Proceedings of ACL",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{yih2015semantic,\n    author = {Yih, Wen-tau and Chang, Ming-Wei and He, Xiaodong and Gao, Jianfeng},\n    booktitle = {Proceedings of ACL},\n    title = {Semantic Parsing via Staged Query Graph Generation},\n    year = {2015}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "**Knowledge Graph Question Answering (KGQA).** To address the limitations of unstructured text retrieval and LLM hallucination, KGs have been widely adopted in question answering tasks for their ability to provide structured world knowledge [baek2023knowledgeaugmentedlanguagemodelverification,"
+        }
+      ]
+    },
+    {
+      "key": "zhang2026asteragenticscalingtoolintegrated",
+      "title": "ASTER: Agentic Scaling with Tool-integrated Extended Reasoning",
+      "authors": [
+        "Xuqin Zhang",
+        "Quan He",
+        "Zhenrui Zheng",
+        "Zongzhang Zhang",
+        "Xu He",
+        "Dong Li"
+      ],
+      "year": 2026,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2602.01204",
+      "raw_bibtex": "@misc{zhang2026asteragenticscalingtoolintegrated,\n    author = {Xuqin Zhang and Quan He and Zhenrui Zheng and Zongzhang Zhang and Xu He and Dong Li},\n    journal = {ArXiv preprint},\n    title = {ASTER: Agentic Scaling with Tool-integrated Extended Reasoning},\n    url = {https://arxiv.org/abs/2602.01204},\n    volume = {abs/2602.01204},\n    year = {2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Knowledge graph question answering (KGQA) aims to answer natural language questions by reasoning over large-scale structured Knowledge Graphs (KGs) [jang2017kbqa], where world knowledge is encoded as (subject, predicate, object) triples. Answering complex questions over KGs demands multi-hop"
+        }
+      ]
+    },
+    {
+      "key": "zheng2024llamafactoryunifiedefficientfinetuning",
+      "title": "LlamaFactory: Unified Efficient Fine-Tuning of 100+ Language Models",
+      "authors": [
+        "Yaowei Zheng",
+        "Richong Zhang",
+        "Junhao Zhang",
+        "Yanhan Ye",
+        "Zheyan Luo",
+        "Zhangchi Feng",
+        "Yongqiang Ma"
+      ],
+      "year": 2024,
+      "venue": "ArXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2403.13372",
+      "raw_bibtex": "@misc{zheng2024llamafactoryunifiedefficientfinetuning,\n    author = {Yaowei Zheng and Richong Zhang and Junhao Zhang and Yanhan Ye and Zheyan Luo and Zhangchi Feng and Yongqiang Ma},\n    journal = {ArXiv preprint},\n    title = {LlamaFactory: Unified Efficient Fine-Tuning of 100+ Language Models},\n    url = {https://arxiv.org/abs/2403.13372},\n    volume = {abs/2403.13372},\n    year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-training-implementation-details",
+          "text": "For the SFT stage, our implementation is based on the LlamaFactory framework [zheng2024llamafactoryunifiedefficientfinetuning]; we use a cosine learning rate schedule with an initial learning rate of 1e-5, a batch size of 32, and a maximum sequence length of 4096. We fine-tune the model for 2"
+        }
+      ]
+    }
+  ]
+}

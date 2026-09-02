@@ -1,0 +1,44 @@
+
+
+\begin{table}[t]
+    \centering
+    \scriptsize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.2}
+    \caption{Main results. The best performance is set in bold. $^\dagger/^\star$ represents in-domain/out-domain datasets.}\label{tab:main}
+    \begin{tabular}{lcccccccc}
+        \toprule
+        \textbf{Methods} & \multicolumn{3}{c}{\textbf{General QA}} & \multicolumn{4}{c}{\textbf{Multi-Hop QA}} \\
+        \cmidrule{2-9}
+         & \textbf{NQ$^\dagger$} & \textbf{TriviaQA$^\star$} & \textbf{PopQA$^\star$} & \textbf{HotpotQA$^\dagger$} & \textbf{2wiki$^\star$} & \textbf{Musique$^\star$} & \textbf{Bamboogle$^\star$} & \textbf{Avg.} \\
+        \midrule
+        \multicolumn{8}{l}{\textbf{Qwen2.5-7b-Base/Instruct}} \\
+        Direct Inference & 0.134 & 0.408 & 0.140 & 0.183 & 0.250 & 0.031 & 0.120 & 0.181 \\
+        CoT & 0.048 & 0.185 & 0.054 & 0.092 & 0.111 & 0.022 & 0.232 & 0.106 \\
+        IRCoT & 0.224 & 0.478 & 0.301 & 0.133 & 0.149 & 0.072 & 0.224 & 0.239 \\
+        Search-o1 & 0.151 & 0.443 & 0.131 & 0.187 & 0.176 & 0.058 & 0.296 & 0.206 \\
+        RAG & 0.349 & 0.585 & 0.392 & 0.299 & 0.235 & 0.058 & 0.208 & 0.304 \\
+        SFT & 0.318 & 0.354 & 0.121 & 0.217 & 0.259 & 0.066 & 0.112 & 0.207  \\
+        R1-base & 0.297 & 0.539 & 0.202 & 0.242 & 0.273 & 0.083 & 0.296 & 0.276  \\
+        R1-instruct & 0.270 & 0.537 & 0.199 & 0.237 & 0.292 & 0.072 & 0.293 & 0.271  \\
+        Rejection Sampling & 0.360 & 0.592 & 0.380 & 0.331 & 0.296 & 0.123 & 0.355 & 0.348 \\
+        \hdashline
+        Search-R1-base & \textbf{0.480} & \textbf{0.638} & \textbf{0.457} & \textbf{0.433} & 0.382 & \textbf{0.196} & \textbf{0.432} & \textbf{0.431}  \\
+        Search-R1-instruct & 0.393 & 0.610 & 0.397 & 0.370 & \textbf{0.414} & 0.146 & 0.368 & 0.385 \\
+        \midrule
+        \multicolumn{8}{l}{\textbf{Qwen2.5-3b-Base/Instruct}} \\
+        Direct Inference & 0.106 & 0.288 & 0.108 & 0.149 & 0.244 & 0.020 & 0.024 & 0.134 \\
+        CoT & 0.023 & 0.032 & 0.005 & 0.021 & 0.021 & 0.002 & 0.000 & 0.015 \\
+        IRCoT & 0.111 & 0.312 & 0.200 & 0.164 & 0.171 & 0.067 & 0.240 & 0.181 \\
+        Search-o1 & 0.238 & 0.472 & 0.262 & 0.221 & 0.218 & 0.054 & \textbf{0.320} & 0.255 \\
+        RAG & 0.348 & 0.544 & 0.387 & 0.255 & 0.226 & 0.047 & 0.080 & 0.270  \\
+        SFT & 0.249 & 0.292 & 0.104 & 0.186 & 0.248 & 0.044 & 0.112 & 0.176  \\
+        R1-base & 0.226 & 0.455 & 0.173 & 0.201 & 0.268 & 0.055 & 0.224 & 0.229  \\
+        R1-instruct & 0.210 & 0.449 & 0.171 & 0.208 & 0.275 & 0.060 & 0.192 & 0.224  \\
+        Rejection Sampling & 0.294 & 0.488 & 0.332 & 0.240 & 0.233 & 0.059 & 0.210 & 0.265 \\
+        \hdashline
+        Search-R1-base & \textbf{0.406} & \textbf{0.587} & \textbf{0.435} & 0.284 & 0.273 & 0.049 & 0.088 & 0.303  \\
+        Search-R1-instruct & 0.341 & 0.545 & 0.378 & \textbf{0.324} & \textbf{0.319} & \textbf{0.103} & 0.264 & \textbf{0.325}  \\
+        \bottomrule
+    \end{tabular}
+\end{table}

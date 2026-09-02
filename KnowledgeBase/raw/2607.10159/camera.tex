@@ -1,0 +1,862 @@
+%%
+%% This is file `sample-sigconf.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% samples.dtx  (with options: `all,proceedings,bibtex,sigconf')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from sample-sigconf.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file samples.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+%%
+%% Commands for TeXCount
+%TC:macro \cite [option:text,text]
+%TC:macro \citep [option:text,text]
+%TC:macro \citet [option:text,text]
+%TC:envir table 0 1
+%TC:envir table* 0 1
+%TC:envir tabular [ignore] word
+%TC:envir displaymath 0 word
+%TC:envir math 0 word
+%TC:envir comment 0 0
+%%
+%% The first command in your LaTeX source must be the \documentclass
+%% command.
+%%
+%% For submission and review of your manuscript please change the
+%% command to \documentclass[manuscript, screen, review]{acmart}.
+%%
+%% When submitting camera ready or to TAPS, please change the command
+%% to \documentclass[sigconf]{acmart} or whichever template is required
+%% for your publication.
+%%
+%%
+\documentclass[sigconf]{acmart}
+%%
+%% \BibTeX command to typeset BibTeX logo in the docs
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+%% Rights management information.  This information is sent to you
+%% when you complete the rights form.  These commands have SAMPLE
+%% values in them; it is your responsibility as an author to replace
+%% the commands and values with those provided to you when you
+%% complete the rights form.
+\setcopyright{acmlicensed}
+\copyrightyear{2026}
+\acmYear{2026}
+\acmDOI{XXXXXXX.XXXXXXX}
+%% These commands are for a PROCEEDINGS abstract or paper.
+\acmConference[Conference ACM MM'26]{Proceedings of the 34rd ACM International Conference on Multimedia}{November 10-14, 2026}{Rio de Janeiro, Brazil}
+\acmBooktitle{Proceedings of the 34rd ACM International Conference on Multimedia (MM '26), November 10-14, 2026, Rio de Janeiro, Brazil}
+%%
+%%  Uncomment \acmBooktitle if the title of the proceedings is different
+%%  from ``Proceedings of ...''!
+%%
+%%\acmBooktitle{Woodstock '18: ACM Symposium on Neural Gaze Detection,
+%%  June 03--05, 2018, Woodstock, NY}
+\acmISBN{978-1-4503-XXXX-X/2018/06}
+
+
+\usepackage{multirow}
+%%
+%% Submission ID.
+%% Use this when submitting an article to a sponsored event. You'll
+%% receive a unique submission ID from the organizers
+%% of the event, and this ID should be used as the parameter to this command.
+%%\acmSubmissionID{123-A56-BU3}
+
+%%
+%% For managing citations, it is recommended to use bibliography
+%% files in BibTeX format.
+%%
+%% You can then either use BibTeX with the ACM-Reference-Format style,
+%% or BibLaTeX with the acmnumeric or acmauthoryear sytles, that include
+%% support for advanced citation of software artefact from the
+%% biblatex-software package, also separately available on CTAN.
+%%
+%% Look at the sample-*-biblatex.tex files for templates showcasing
+%% the biblatex styles.
+%%
+
+%%
+%% The majority of ACM publications use numbered citations and
+%% references.  The command \citestyle{authoryear} switches to the
+%% "author year" style.
+%%
+%% If you are preparing content for an event
+%% sponsored by ACM SIGGRAPH, you must use the "author year" style of
+%% citations and references.
+%% Uncommenting
+%% the next command will enable that style.
+%%\citestyle{acmauthoryear}
+
+
+%%
+%% end of the preamble, start of the body of the document source.
+\begin{document}
+
+%%
+%% The "title" command has an optional parameter,
+%% allowing the author to define a "short title" to be used in page headers.
+\title{UNIT: Unleash Large Language Models Potential for Graph Continual Learning}
+
+\author{Tairan Huang}
+\email{tairanhuang@csu.edu.cn}
+\affiliation{%
+  \institution{Central South University}
+  \city{Changsha}
+  \country{China}}
+
+\author{Yili Wang}
+\email{yili.wang@connect.hkust-gz.edu.cn}
+\affiliation{%
+  \institution{Hongkong University of Science and Technology (Guangzhou)}
+  \city{Guangzhou}
+  \country{China}}
+
+
+\author{Beibei Hu}
+\email{mindyhbb@gmail.com}
+\affiliation{%
+  \institution{Hunan Institute of Engineering}
+  \city{Changsha}
+  \country{Hunan}}
+
+  
+\author{Yiting Shi}
+\email{shiyiting@csu.edu.cn}
+\affiliation{%
+  \institution{Central South University}
+  \city{Changsha}
+  \country{China}}
+
+\author{Qiutong Li}
+\email{qiutonglee@csu.edu.cn}
+\affiliation{%
+  \institution{Central South University}
+  \city{Changsha}
+  \country{China}}
+  
+\author{Changlong He}
+\email{frankemail@csu.edu.cn}
+\affiliation{%
+  \institution{Central South University}
+  \city{Changsha}
+  \country{China}}
+
+\author{Jianliang Gao}
+\authornote{Corresponding author.}
+\email{gaojianliang@csu.edu.cn}
+\affiliation{%
+  \institution{Central South University}
+  \city{Changsha}
+  \country{China}}
+\renewcommand{\shortauthors}{Tairan Huang, Yili Wang, Beibei Hu, Yiting Shi, Qiutong Li, Changlong He, and Jianliang Gao}
+
+%%
+%% The "author" command and its associated commands are used to define
+%% the authors and their affiliations.
+%% Of note is the shared affiliation of the first two authors, and the
+%% "authornote" and "authornotemark" commands
+%% used to denote shared contribution to the research.
+
+% \authornote{Both authors contributed equally to this research.}
+% \email{trovato@corporation.com}
+% \orcid{1234-5678-9012}
+% \author{G.K.M. Tobin}
+% \authornotemark[1]
+% \email{webmaster@marysville-ohio.com}
+% \affiliation{%
+%   \institution{Institute for Clarity in Documentation}
+%   \city{Dublin}
+%   \state{Ohio}
+%   \country{USA}
+% }
+
+% \author{Lars Th{\o}rv{\"a}ld}
+% \affiliation{%
+%   \institution{The Th{\o}rv{\"a}ld Group}
+%   \city{Hekla}
+%   \country{Iceland}}
+% \email{larst@affiliation.org}
+
+% \author{Valerie B\'eranger}
+% \affiliation{%
+%   \institution{Inria Paris-Rocquencourt}
+%   \city{Rocquencourt}
+%   \country{France}
+% }
+
+% \author{Aparna Patel}
+% \affiliation{%
+%  \institution{Rajiv Gandhi University}
+%  \city{Doimukh}
+%  \state{Arunachal Pradesh}
+%  \country{India}}
+
+% \author{Huifen Chan}
+% \affiliation{%
+%   \institution{Tsinghua University}
+%   \city{Haidian Qu}
+%   \state{Beijing Shi}
+%   \country{China}}
+
+% \author{Charles Palmer}
+% \affiliation{%
+%   \institution{Palmer Research Laboratories}
+%   \city{San Antonio}
+%   \state{Texas}
+%   \country{USA}}
+% \email{cpalmer@prl.com}
+
+% \author{John Smith}
+% \affiliation{%
+%   \institution{The Th{\o}rv{\"a}ld Group}
+%   \city{Hekla}
+%   \country{Iceland}}
+% \email{jsmith@affiliation.org}
+
+% \author{Julius P. Kumquat}
+% \affiliation{%
+%   \institution{The Kumquat Consortium}
+%   \city{New York}
+%   \country{USA}}
+% \email{jpkumquat@consortium.net}
+
+%%
+%% By default, the full list of authors will be used in the page
+%% headers. Often, this list is too long, and will overlap
+%% other information printed in the page headers. This command allows
+%% the author to define a more concise list
+%% of authors' names for this purpose.
+% \renewcommand{\shortauthors}{Anonymous Author(s) et al.}
+
+%%
+%% The abstract is a short summary of the work to be presented in the
+%% article.
+\begin{abstract}
+In real-world multimodal web scenarios, graph-structured data often arrives in a streaming manner, making graph continual learning a crucial paradigm for continuously modeling such evolving structures.
+However, existing graph continual learning methods still face two fundamental challenges.
+1) semantic-structural separation, where the graph-based methods excel at modeling topological relationships but neglect deep semantics.
+2) imbalanced knowledge transfer, where existing models fail to effectively leverage general knowledge gained from early tasks to benefit subsequent new tasks.
+To address above issues, we propose a novel framework, \textbf{UN}leash Large Language Models Potent\textbf{I}al for Graph Con\textbf{T}inual Learning (UNIT). 
+By fine-tuning large language model only on the first task, we bridge the distributional gap between the pre-trained LLM corpus and the target task dataset to enhance the adaptability of LLMs for graph-structured tasks.
+Meanwhile, we propose an uncertain-aware anchor generation mechanism to effectively preserve representative knowledge across tasks, avoiding the neglect of universal knowledge learned from previous tasks.
+Additionally, we introduce structural confluence modeling to explicitly integrates graph topology information into semantic information, enhancing the collaborative capabilities between semantic understanding and structural modeling.
+Extensive experiments demonstrate that our proposed method achieves state-of-the-art performance in the graph continual learning task.
+\end{abstract}
+
+%%
+%% The code below is generated by the tool at http://dl.acm.org/ccs.cfm.
+%% Please copy and paste the code instead of the example below.
+%%
+\begin{CCSXML}
+<ccs2012>
+<concept>
+<concept_id>10010147.10010257</concept_id>
+<concept_desc>Computing methodologies~Machine learning</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10002951.10003260.10003282.10003292</concept_id>
+<concept_desc>Information systems~Social networks</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+<concept>
+<concept_id>10002951.10003227.10003351</concept_id>
+<concept_desc>Information systems~Data mining</concept_desc>
+<concept_significance>500</concept_significance>
+</concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Computing methodologies~Machine learning}
+\ccsdesc[500]{Information systems~Social networks}
+\ccsdesc[500]{Information systems~Data mining}
+
+%%
+%% Keywords. The author(s) should pick words that accurately describe
+%% the work being presented. Separate the keywords with commas.
+\keywords{Multimodal Fusion; Continual Learning; Large Language Models; Text-attributed Graphs}
+%% A "teaser" image appears between the author and affiliation
+%% information and the body of the document, and typically spans the
+%% page.
+
+
+% \received{20 February 2007}
+% \received[revised]{12 March 2009}
+% \received[accepted]{5 June 2009}
+
+%%
+%% This command processes the author and affiliation and title
+%% information and builds the first part of the formatted document.
+\maketitle
+
+
+
+\section{Introduction}
+% Graph Continual Learning (GCL) has become a crucial paradigm for modeling evolving web data to analyze continuously changing structures in domains such as social networks \cite{social,social_2}, financial networks \cite{Financial,Financial_2}, and recommendation systems \cite{Recommend,Recommend_2}.
+% With the strong capability to capture various graph structures and node attributes, Graph Neural Networks (GNNs) have emerged as the dominant backbone for GCL tasks \cite{GCL}.
+% Although existing efforts can preserve a portion of historical knowledge by regularization or empirical replay, they typically require retraining from scratch for each new task \cite{SimGCL}, as shown in Figure \ref{motivation} (a).
+% As a result, the model remains prone to overwriting old knowledge when adapting to new data, leading to catastrophic forgetting.
+% Therefore, the emphasis on effective strategies to prevent catastrophic forgetting remains the crucial challenge for graph continual learning tasks.
+Graph Continual Learning (GCL) has become a crucial paradigm for modeling evolving multimodal data to analyze continuously changing structures in domains such as multimedia social networks \cite{social,social_2}, multimodal knowledge graphs \cite{Financial}, and multimedia recommendation systems \cite{Recommend}. 
+With the strong capability to capture complex graph topologies alongside rich multimodal node attributes—such as text, images, and video—Graph Neural Networks (GNNs) have emerged as the dominant backbone for GCL tasks \cite{GCL}. 
+Although existing efforts can preserve a portion of historical knowledge by regularization or empirical replay, they typically require retraining from scratch for each new task involving dynamic multimedia content \cite{SimGCL}, as shown in Figure \ref{motivation} (a). 
+As a result, the model remains prone to overwriting previously learned cross-modal alignments and structural knowledge when adapting to new data streams, leading to catastrophic forgetting. 
+Therefore, the emphasis on effective strategies to prevent catastrophic forgetting in dynamic multimedia environments remains the crucial challenge for graph continual learning tasks.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%motivation%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[th]
+	\centering
+    \includegraphics[width=\linewidth]{motivation.pdf}
+	\caption{Workflow comparison. The existing graph continual learning methods need to train GNN models from scratch for each task.
+    In contrast, our proposed framework only fine-tunes the LLM on the first task, while subsequent tasks update the classifier based on the frozen-parameter LLM.}
+	\label{motivation}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The existing graph continual learning approaches are broadly categorized into three paradigms based on their technical foundations.
+The regularization-based methods \cite{Re,Re_2} achieve parameter regularization through explicit constraints via topological weighting or knowledge distillation.
+The task-critical parameter isolation approaches \cite{is,is_2} achieve parameter isolation by extending parameters to accommodate new knowledge.
+The replay-based approaches \cite{rh,rh_2} by replaying representative historical data, including key nodes, sparse computational subgraphs, and streamlined task-specific graphs, etc.
+However, although existing graph continual learning methods alleviate catastrophic forgetting to some extent, they remain limited in effectively leveraging historical knowledge.
+Specifically, replay-based methods face practical constraints, as privacy concerns and storage limitations often restrict access to historical task data, thereby undermining their applicability.
+Therefore, several studies attempt to design different paradigms to mitigate catastrophic forgetting in graph continual learning tasks.
+
+
+
+Recently, with the rapid advancement of large language models (LLMs), research interest in leveraging LLMs to model graph structures in conjunction with textual information has significantly increased, called Graph Language Models (GLMs) \cite{Roberta,SimpleCIL}.
+The GLM methods typically leverage LLMs to retrieve node-related semantic knowledge for enhancing the quality of initial embeddings in GNNs \cite{GCN_emb,ENGINE}, or incorporate graph structural information into LLMs to improve classification predictions \cite{Graphgpt,Llaga}.
+Although such methods can effectively integrate semantic and structural information, they still fail to fully exploit historical knowledge in graph continual learning.
+In contrast, SimGCL \cite{SimGCL} is proposed as the first effort among GLM methods for graph continual learning tasks. 
+It employs structured prompts to perform instruction-based fine-tuning on LLMs during the initial task, while leveraging LLMs for classification predictions in subsequent tasks.
+Compared to general GLM methods, the graph continual learning tasks with GLMs remains largely unexplored.
+
+
+% Despite its directness and effectiveness, these methods mentioned above for graph continual learning task still exhibit several issues. 
+% First, the existing works suffer from the semantic-structural separation issue due to the difficulty in representation misalignment. 
+% The LLM embeddings and the graph structure representations live in incompatible spaces, leading to ineffective fusion.
+% Although some efforts have attempted to design structural prompts to leverage structural information, they still fail to explicitly unleash the potential of graph structures.
+% Second, the existing models struggle to effectively transfer the general knowledge learned from the early tasks to subsequent new tasks in the traditional graph continual learning paradigm.
+% The latest GLM method for graph continual learning, SimGCL, employs a mechanism that combines LLMs with prototypes for knowledge transfer. 
+% However, its static prototype strategy remains biased toward the most recent data, ignoring the effect of early prototypes and leading to suboptimal adaptation to the future tasks.
+
+Despite its directness and effectiveness, these methods mentioned above for graph continual learning task still exhibit several issues. 
+First, existing methods suffer from \textit{structural information degradation} caused by the implicit linearization of graph topology. 
+While SimGCL attempts to incorporate structural context via text prompts, they force non-Euclidean graph structures into linear sequences.
+This linearization inevitably leads to the loss of high-order topological patterns and forces the LLM to infer structure solely through semantic attention, lacking an explicit geometric prior. 
+Consequently, the distinct structural modality is overshadowed by dominant textual features, resulting in semantic-structural imbalance where critical topological changes in the evolving graph are underrepresented.
+Second, current knowledge transfer mechanisms are prone to \textit{prototype rigidity}. 
+SimGCL adopts a static prototype strategy that constructs class representations via simple mean pooling of sample embeddings. 
+This approach assumes all samples are equally reliable, ignoring the inherent uncertainty and noise in streaming data.
+In a continual setting, the deterministic aggregation fails to adaptively calibrate historical knowledge with new evidence, causing the model to overfit to noisy outliers in current tasks. 
+This leads to suboptimal knowledge preservation and limits the model's plasticity for future tasks.
+
+
+In this work, we propose a novel framework, \textbf{UN}leash Large Language Models Potent\textbf{I}al for Graph Con\textbf{T}inual Learning, i.e. UNIT. 
+UNIT consists of three crucial components that \textit{effectively integrate semantic and structural information with efficient knowledge transfer}.
+Specifically, the semantic instruction tuning module designs specific prompt instructions to fine-tune pre-trained LLMs, bridging the distributional gap between the pre-training corpus and the target task dataset to enhance the adaptability of LLMs to graph-structured tasks.
+The uncertain-aware anchor generation utilizes fine-tuned LLMs to construct semantic anchors at each task, which updates classifier weights while achieves efficient knowledge transfer without forgetting previous knowledge.
+Additionally, the structural confluence modeling explicitly generates structured anchors through graph topology, which jointly guide classifier weights with semantic anchors to achieve sufficient integration of semantic and structural information, enhancing the collaborative capabilities between semantic understanding and structural modeling.
+The comprehensive experiments across five benchmark datasets demonstrate that UNIT can accurately classify the changing data from graph continual learning tasks to achieve state-of-the-art performance.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%framework%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[th]
+	\centering
+	\includegraphics[width=\linewidth]{framework.pdf}
+	%	\includegraphics[width=\linewidth]{temp.pdf}
+	\caption{The overall framework of Unleash Large Language Models Potential for Graph Continual Learning (UNIT).
+    The proposed framework includes three stages, i.e., the semantic instruction tuning, the uncertain-aware anchor generation, and the structural confluence modeling.
+    The pre-trained LLM is fine-tuned by specific instruction prompts, then generates semantic anchors and structural anchors to jointly update classifier weights, achieving accurate classification prediction.
+    }
+	\label{framework}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Our contributions are summarized as follows:
+\begin{itemize}
+    
+	\item \textbf{Specific Design.} 
+    We deign specific instruction prompts at the initial task on LLMs for fine-tuning to bridge the distributional gap between the pre-trained LLM corpus and the target task dataset, facilitating LLM adaptation to graph continual learning tasks.
+    
+	\item \textbf{Novel framework.} 
+    We propose the uncertain-aware anchor generation and the structural confluence modeling to achieve comprehensive knowledge transfer and the sufficient integration of semantic information and structural information for graph continual learning tasks.
+    
+	\item \textbf{SOTA performance.}  
+    We conduct extensive experiments on five real-world datasets to demonstrate the effectiveness of UNIT, achieving state-of-the-art performance on graph continual learning tasks.
+\end{itemize}
+
+
+
+
+\section{Related Works}
+\subsection{Continual Learning with LLMs}
+Continual learning has long been studied as a fundamental paradigm for training models that incrementally adapt to new tasks without forgetting previously acquired knowledge \cite{GCL}, which as become a crucial paradigm for modeling evolving multimodal data.
+% \cite{GCL,GCL_2}
+With the rapid rise of large language models, an increasing number of studies are exploring how to extend these models to continual learning scenarios \cite{BERT,llama,lora,Llaga}.
+The language model for continual learning task \cite{few_1} exhibits inherent advantages in generalization capabilities when deployed for continuous learning tasks after being pre-trained on extensive corpora.
+% \cite{few_1,few_2}
+InfLoRA \cite{Inflora} and BiLoRA \cite{BiLoRA} employ parameter-efficient fine-tuning (PEFT) through methods such as freezing the backbone or retaining pre-trained weights.
+ENGINE \cite{ENGINE} and SimpleCIL \cite{SimpleCIL} minimize cross-task interference by adopting orthogonal optimizations.
+However, despite these advances, continual learning with LLMs focus on preventing catastrophic forgetting of semantic representations, remaining under-explored for graph continual learning tasks.
+Instead, our method only fine-tunes the LLM with the specific prompt in the initial task and completes subsequent tasks using the LLM with frozen parameters.
+
+
+
+\subsection{Graph Continual Learning}
+Graph continual learning primarily investigates catastrophic forgetting arising from evolving graph structures \cite{GCL}.
+The graph continual learning methods can be categorized based on their approaches to mitigating catastrophic forgetting.
+%%%%%%%%%%%%短的%%%%%%%%%%%%%%%%%
+% CPG \cite{Re} and ER-GNN \cite{Re_2} serve as regularization-based methods, which impose explicit constraints on the model through parameter regularization.
+% PI-GNN \cite{is} and HPNs\cite{is_2} are proposed as key parameter isolation methods, achieving parameter isolation through expanding parameters.
+%%%%%%%%%%%%长的%%%%%%%%%%%%%%%%%
+CPG \cite{Re} and ER-GNN \cite{Re_2} serve as regularization-based methods, which impose explicit constraints on the model through parameter regularization via topology-based weighting or knowledge distillation.
+PI-GNN \cite{is} and HPNs\cite{is_2} are proposed as key parameter isolation methods, achieving parameter isolation through expanding parameters or model components to accommodate new knowledge.
+SSM \cite{rh}, SEM\cite{rh_2}, and TPP \cite{TPP} act as replay-based methods, which replay representative historical data using key nodes and sparse computational subgraphs respectively to prevent catastrophic forgetting.
+However, these methods face significant limitations in leveraging historical knowledge due to scalability and privacy concerns in the field of graphs.
+In contrast, we introduce uncertain-aware anchor generation for efficient knowledge transfer, which can leverage historical knowledge through LLMs to inspirit future tasks.
+
+
+
+\subsection{Graph Language Models}
+Graph language models have gradually emerged as popular approaches for leveraging LLMs to address graph tasks \cite{BERT,Roberta,llama,Llaga}, driven by the rapid advancement of LLMs.
+%%%%%%%%%%%%短的%%%%%%%%%%%%%%%%%
+% Glbench \cite{Glbench} and Graphtranslator \cite{Graphtranslator} utilize LLMs as enhancers to generate semantic representations, while TEA-GLM \cite{TEA-GLM} and MAGRL \cite{MAGRL} act LLMs as predictor to perform classification predictions.
+% CoT \cite{CoT} and Locle \cite{Locle} serve as alignment methods, which allow LLMs and GNNs to be aligned within the same vector space.
+%%%%%%%%%%%%长的%%%%%%%%%%%%%%%%%
+Based on how LLMs are integrated with graph structures, GLMs methods can be categorized into three categories.
+Glbench \cite{Glbench} and Graphtranslator \cite{Graphtranslator} utilize LLMs as enhancers to generate semantic representations for node textual information, which improves the quality of GNN node embeddings.
+TEA-GLM \cite{TEA-GLM} and MAGRL \cite{MAGRL} act LLMs as predictor to perform classification predictions after designing specific prompts for graph structural information.
+CoT \cite{CoT} and Locle \cite{Locle} serve as alignment methods, which allow LLMs and GNNs to be aligned within the same vector space, providing GNNs with clearer semantic awareness.
+These GLM methods are not specifically designed for continual graph data, whose application in graph continual learning remains largely unexplored.
+Beyond these models, SimGCL \cite{SimGCL} is proposed as the first GLM method for graph-continual learning tasks. 
+It employs a static prototype strategy to guide classification predictions for the latest data, exhibiting forgetting of early information and suboptimal adaptation to future tasks.
+Compared to SimGCL, our work achieves efficient knowledge transfer and fully integrates semantic and structural information through uncertain-aware anchor generation and structural confluence modeling.
+
+
+
+
+
+\section{Methodology}
+\subsection{Preliminaries}
+\noindent{\bfseries Text-attributed Graphs (TAGs).}
+According to LLM4GCL benchmark \cite{SimGCL}, we evaluate the graph continual learning capabilities through node classification tasks on Text-attributed Graphs (TAGs) \cite{TAG}.
+The text-attributed graph is defined as $\mathcal{G = \{V, E, R\}}$, where $\mathcal{V} = \{v_1, v_2, \ldots, v_N\}$ is the set of nodes, $\mathcal{E}$ indicates the edge set, and $\mathcal{R}$ denotes the collection of textual descriptions. 
+Each node $v_i \in \mathcal{V}$ is associated with a text description $r_{v_i} \in \mathcal{R}$, drawn from the vocabulary $\mathcal{D}$ and of length $L_i$. 
+Given a TAG with a set of labeled nodes $\mathcal{V}^l$, the node classification objective is to infer the labels of the unlabeled nodes $\mathcal{V}^u$.
+
+\noindent{\bfseries Graph Continual Learning.}
+The fundamental paradigm in graph continual learning is defined as node-level class-incremental learning \cite{SimGCL}, that tackles the challenge of progressively classifying nodes as new categories appear in an expanding graph $\mathcal{G}$.
+Formally, the training procedure is organized as a sequence of tasks $\{\mathcal{T}_{s_1}, \ldots, \mathcal{T}_{s_n}\}$, with each task $\mathcal{T}_{s_i} = \{\mathcal{G}_{s_i}, \mathcal{C}_{s_i}, \mathcal{V}^l_{s_i}\}$, where $\mathcal{G}_{s_i} \subseteq \mathcal{G}$ is the induced subgraph, $\mathcal{C}_{s_i}$ the corresponding class set, and $\mathcal{V}^l_{s_i}$ the labeled nodes. 
+The disjointness constraint holds such that $\mathcal{G}_{s_i} \cap \mathcal{G}_{s_j} = \mathcal{C}_{s_i} \cap \mathcal{C}_{s_j} = \varnothing$ for all $i \neq j$. 
+During learning, the model incrementally adapts to each arriving task $\mathcal{T}_{s_i}$ and predicts the labels of the unseen nodes.
+
+\subsection{Semantic Instruction Tuning}
+It is crucial to design specific instruction prompts for tuning pre-trained LLMs to unleash their potential for graph continual learning.
+The semantic instruction tuning facilitates LLM adaptation to graph-structured tasks by bridging the distributional gap between the pre-trained LLM corpus and the target task dataset.
+Specifically, we construct the comprehensive graph prompt that encapsulates: (1) the task description with the continual learning scenario and the target dataset; 
+(2) the structural information of the graph, including node attributes and local neighborhood connectivity;
+(3) the task-specific question that defines the classification objective along with the set of candidate label descriptions.
+Formally, for a node $v_i \in \mathcal{V}$ with textual attribute $r_{v_i}$ and neighbor set $\mathcal{N}_{v_i}$, the prompt is structured as:
+\begin{equation}
+    \text{Prompt}(v_i) = r_{\text{task}} \oplus r_{\text{str}}(v_i) \oplus r_{\text{que}}(v_i),
+\end{equation}
+where $r_{\text{task}}$ describes the task description, $r_{\text{str}}(v_i)$ summarizes the node attributes and local structures of node $v_i$, and $r_{\text{que}}(v_i)$ specifies the classification query along with the label text options. 
+This prompt design enables the LLM to leverage semantic and structural cues for classification.
+To prevent overfitting and maintain efficiency, we perform instruction tuning only on the first task $\mathcal{T}_{s_1}$ using Low-Rank Adaptation (LoRA) \cite{lora} rather than full fine-tuning. 
+Formally, given a node $v_i$ with prompt $\text{Prompt}(v_i)$, the objective is to maximize the correct answer probability with label token sequence $q_i = (q_{i,1}, \ldots, q_{i,L})$. 
+The answer probability defined by the LLM with parameters $\theta$ can be expressed as:
+\begin{equation}
+\max_{\theta} \; \mathcal{P}_{\theta}\!\left(q_i \mid v_i\right) 
+= \max_{\theta} \; \prod_{l=1}^{L} \mathcal{P}_{\theta}\!\left(q_{i,l} \mid q_{i,<l}, \text{Prompt}(v_i)\right),
+\end{equation}
+where $q_{i,l}$ denotes the $l$-th token of the target label text, and $q_{i,<l}$ represents its preceding tokens. 
+Here, $\text{Prompt}(v_i)$ encapsulates the task description, the node textual attribute, the neighbor context, and the query question. 
+The probability $\mathcal{P}_{\theta}$ is modeled by the instruction-tuned LLM with LoRA parameters $\theta$, which ensures efficient adaptation without full-scale fine-tuning. 
+This formulation explicitly decomposes the sequence-level likelihood into token-level conditionals, encouraging the model to align its generative distribution with the semantic and structural cues provided in the constructed prompt.
+In Figure \ref{framework}, we provide an overview of UNIT.
+
+
+\subsection{Uncertain-aware Anchor Generation}
+To effectively preserve representative knowledge across tasks, we design an uncertain-aware anchor generation mechanism that progressively constructs class-level semantic anchors while retaining the influence of early samples. 
+We generate the semantic anchors for labeled nodes in each task to update the weights of corresponding classes in the classifier, thereby improving the accuracy of classification prediction.
+
+Specifically, for each labeled node $v_i \in \mathcal{V}^l_{s_i}$ in task $\mathcal{T}_{s_i}$, we obtain its embedding representation through the tuned LLM encoder. 
+Given the constructed prompt $\text{Prompt}(v_i)$, the node embedding extraction is defined as:
+\begin{equation}
+\mathbf{h}_i = f_{\theta}\!\left(\text{Prompt}(v_i)\right),
+\end{equation}
+where $f_{\theta}$ denotes the embedding function parameterized by the LoRA-tuned LLM. 
+These embeddings serve as the basis for anchor construction.  
+
+Then, to compute a reliable anchor for each class $c \in \mathcal{C}_{s_i}$, we weight individual embeddings according to their uncertainty-aware confidence.
+Let $\hat{p}(c|v_i)$ be the normalized probability that the LLM predicts class $c$ for node $v_i$, derived from the generation scores. 
+The uncertainty is quantified through the entropy:
+\begin{equation}
+\mathcal{H}(v_i) = - \sum_{c} \hat{p}(c|v_i) \log \hat{p}(c|v_i).
+\end{equation}
+Consequently, the confidence weight $\alpha_i \in [0,1]$ is explicitly defined as $\alpha_i = 1 - \frac{\mathcal{H}(v_i)}{\log |\mathcal{C}_{s_i}|}$, where $|\mathcal{C}_{s_i}|$ is the number of classes. 
+The class-level anchor is computed as:
+\begin{equation}
+\mathbf{p}_c^{(\mathcal{T}_{s_i})} = \frac{\sum_{y_i \in \mathcal{Y}_c^{(\mathcal{T}_{s_i})}} \alpha_i \mathbf{h}_i}{\sum_{y_i \in \mathcal{Y}_c^{(\mathcal{T}_{s_i})}} \alpha_i},
+\end{equation}
+where $\mathcal{Y}_c^{(\mathcal{T}_{s_i})}$ is the label set of nodes in task $\mathcal{T}_{s_i}$ belonging to class $c$. 
+In parallel, we maintain an effective count $n_c^{(\mathcal{T}_{s_i})}$ that records the accumulated contribution of class-$c$ samples up to task $\mathcal{T}_{s_i}$, which is updated as:
+\begin{equation}
+n_c^{(\mathcal{T}_{s_i})} = \lambda \cdot n_c^{(\mathcal{T}_{s_{i-1}})} + \sum_{y_i \in \mathcal{Y}_c^{(\mathcal{T}_{s_i})}} \alpha_i,
+\end{equation}
+where $\lambda \in (0,1]$ is the exponential decay factor. 
+This weighted count ensures that reliable samples have higher impact while outdated contributions gradually fade.  
+
+Next, we update the class anchor by softly merging the newly aggregated embedding with the decayed historical anchor. 
+Let $\mathbf{p}_c^{(\mathcal{T}_{s_{i-1}})}$ be the anchor obtained after task $\mathcal{T}_{s_{i-1}}$. The refined anchor at task $\mathcal{T}_{s_i}$ is given by:
+\begin{equation}
+\mathbf{p}_c^{(\mathcal{T}_{s_i})} = \frac{\lambda \cdot n_c^{(\mathcal{T}_{s_{i-1}})} \mathbf{p}_c^{(\mathcal{T}_{s_{i-1}})} + \sum_{y_i \in \mathcal{Y}_c^{(\mathcal{T}_{s_i})}} \alpha_i \mathbf{h}_i}{n_c^{(\mathcal{T}_{s_i})}},
+\end{equation}
+which softly discounts early anchors while adaptively emphasizing reliable new evidence.  
+
+Finally, the refined semantic anchors are combined with subsequent structural anchors and aligned with classifier weights, primarily guiding the decision boundary toward the most representative class semantics.
+By embedding anchors into the classifier, we seamlessly bridge semantic representations and task-specific predictions, enabling the model to achieve effective knowledge transfer across tasks.
+Overall, the uncertain-aware anchor generation mechanism progressively refines semantic anchors to learn knowledge from new samples while retaining the influence of early samples, enhancing the capabilities graph continual learning.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%main%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+% \small
+\setlength{\tabcolsep}{3.7pt}
+% \renewcommand{\arraystretch}{0.8}
+\centering
+\caption{Performance comparison of UNIT and baselines. 
+}
+\begin{tabular}{ccccccccccc}
+\toprule
+\multirow{2}{*}{Methods} & \multicolumn{2}{c}{Cora} & \multicolumn{2}{c}{Citeseer} & \multicolumn{2}{c}{WikiCS} & \multicolumn{2}{c}{Photo} & \multicolumn{2}{c}{Products} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} 
+\cmidrule(lr){10-11} 
+ & ACC$_{\text{avg}}$         & ACC$_\text{N}$        & ACC$_{\text{avg}}$         & ACC$_\text{N}$          & ACC$_{\text{avg}}$         & ACC$_\text{N}$        & ACC$_{\text{avg}}$         & ACC$_\text{N}$           & ACC$_{\text{avg}}$         & ACC$_\text{N}$     \\
+\midrule
+GCN    & 57.0 ± 0.6 & 38.2 ± 1.2 & 52.4 ± 1.9 & 30.2 ± 0.6 & 54.9 ± 1.8 & 34.9 ± 0.9 & 46.5 ± 1.3 & 19.9 ± 1.7 & 25.5 ± 0.8 & 5.4 ± 1.5 \\
+EWC    & 56.0 ± 1.9 & 31.0 ± 0.7 & 45.9 ± 1.6 & 28.5 ± 1.8 & 55.3 ± 0.6 & 33.0 ± 1.3 & 46.9 ± 0.6 & 20.5 ± 2.0 & 29.4 ± 1.1 & 15.9 ± 0.7 \\
+LwF    & 55.7 ± 1.4 & 30.8 ± 0.8 & 47.8 ± 1.6 & 28.2 ± 1.3 & 55.0 ± 2.0 & 34.0 ± 0.7 & 45.8 ± 1.1 & 20.4 ± 1.5 & 26.0 ± 0.6 & 7.5 ± 1.8 \\
+Cosine & 65.4 ± 0.7 & 45.2 ± 1.4 & 50.7 ± 1.7 & 31.0 ± 0.8 & 66.5 ± 1.2 & 53.5 ± 0.9 & 63.6 ± 1.8 & 49.6 ± 1.0 & 36.1 ± 1.6 & 16.1 ± 1.4 \\
+TPP    & 45.7 ± 1.2 & 13.7 ± 0.9 & 45.4 ± 0.5 & 9.6 ± 1.7 & 35.1 ± 1.5 & 9.8 ± 1.0 & 36.3 ± 0.8 & 5.7 ± 1.9 & 15.0 ± 1.2 & 0.2 ± 0.3 \\
+\midrule
+BERT      & 56.0 ± 1.3 & 29.9 ± 0.9 & 53.8 ± 1.4 & 28.7 ± 1.6 & 58.4 ± 0.7 & 30.0 ± 1.2 & 43.4 ± 1.9 & 18.4 ± 0.8 & 26.9 ± 1.3 & 4.1 ± 1.6 \\
+RoBERTa   & 54.6 ± 1.7 & 29.6 ± 1.1 & 54.1 ± 0.6 & 28.6 ± 1.8 & 55.1 ± 1.8 & 30.8 ± 0.7 & 43.5 ± 1.1 & 19.1 ± 1.4 & 27.6 ± 1.0 & 3.2 ± 1.3 \\
+LLaMA     & 65.6 ± 0.8 & 53.8 ± 1.6 & 55.7 ± 2.0 & 31.7 ± 0.9 & 55.5 ± 1.4 & 30.9 ± 1.1 & 44.6 ± 0.7 & 19.1 ± 1.7 & 29.8 ± 1.5 & 0.4 ± 0.2 \\
+SimpleCIL & 70.8 ± 1.9 & 58.3 ± 1.0 & 66.4 ± 1.3 & 49.5 ± 0.7 & 71.4 ± 1.5 & 57.3 ± 1.2 & 62.1 ± 0.8 & 52.5 ± 1.5 & 66.8 ± 1.8 & 52.6 ± 0.7 \\
+\midrule
+GCN$_{\text{LLMEmb}}$   & 59.1 ± 1.5 & 31.1 ± 1.7 & 53.6 ± 1.0 & 30.4 ± 1.1 & 53.4 ± 1.6 & 27.5 ± 0.9 & 47.7 ± 1.0 & 21.0 ± 1.5 & 26.9 ± 1.9 & 0.1 ± 0.2 \\
+ENGINE      & 59.2 ± 1.2 & 31.3 ± 1.4 & 53.5 ± 1.8 & 29.8 ± 0.7 & 56.4 ± 0.9 & 30.1 ± 1.9 & 47.9 ± 1.7 & 21.0 ± 1.1 & 27.2 ± 0.8 & 1.1 ± 0.4 \\
+GraphPrompter & 61.9 ± 1.0 & 46.8 ± 1.5 & 60.2 ± 1.3 & 30.6 ± 1.8 & 59.6 ± 1.7 & 38.3 ± 0.8 & 51.5 ± 1.4 & 31.0 ± 0.9 & 29.0 ± 1.6 & 0.8 ± 0.3 \\
+GraphGPT    & 55.5 ± 1.7 & 31.6 ± 1.0 & 60.0 ± 1.4 & 30.1 ± 1.3 & 62.0 ± 0.9 & 49.2 ± 1.6 & 50.8 ± 1.2 & 30.2 ± 1.8 & 35.5 ± 2.0 & 3.2 ± 0.5 \\
+LLaGA       & 58.2 ± 1.6 & 30.2 ± 1.9 & 51.3 ± 0.7 & 27.8 ± 1.4 & 53.7 ± 1.3 & 27.6 ± 1.7 & 47.2 ± 1.8 & 20.7 ± 0.9 & 25.7 ± 1.1 & 0.2 ± 0.1 \\
+SimGCL  & \underline{84.6 ± 0.5} & \underline{80.0 ± 2.0} & \underline{77.1 ± 1.3} & \underline{66.3 ± 0.8} & \underline{73.5 ± 1.9} & \underline{61.9 ± 1.1} & \underline{82.1 ± 1.2} & \underline{72.6 ± 0.9} & \underline{71.1 ± 1.6} & \underline{60.2 ± 1.1} \\
+\midrule
+\textbf{UNIT (ours) } & \textbf{88.7 ± 0.4} & \textbf{85.9 ± 1.0} & \textbf{79.4 ± 0.7} & \textbf{68.5 ± 0.9} & \textbf{76.1 ± 0.3} & \textbf{65.0 ± 0.7} & \textbf{83.9 ± 1.1} & \textbf{76.5 ± 0.7} & \textbf{73.2 ± 1.1} & \textbf{62.5 ± 1.3} \\
+\bottomrule
+\end{tabular}
+\label{main_results}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Structural Confluence Modeling}
+To further enrich the representation capacity of anchors, we introduce structural confluence modeling, which explicitly integrates graph topology into the anchor space. 
+While semantic instruction tuning and uncertain-aware anchor generation focus on textual and confidence-weighted representations, this module complements them by encoding lightweight structural cues that capture local connectivity patterns. 
+This confluence ensures that both semantic and structural perspectives jointly contribute to stable classification boundaries under continual learning, resolving the imbalance
+between semantic understanding and structural modeling.  
+
+First, for the node $v_i \in \mathcal{V}^l_{s_i}$, we derive a structural embedding $\mathbf{u}_i$ that summarizes the topological characteristics of its neighborhood.
+Let $\mathcal{N}(v_i)$ denote the neighbor set of $v_i$.
+We represent structural information as follows:
+\begin{equation}
+\mathbf{u}_i = g\!\left(d_i, \; \frac{1}{|\mathcal{N}(v_i)|}\sum_{k \in \mathcal{N}(v_i)} d_k, \; \phi(\mathcal{N}(v_i)) \right),
+\end{equation}
+where $d_i = |\mathcal{N}(v_i)|$ is the degree of $v_i$, the second term encodes average neighbor degree, and $\phi(\mathcal{N}(v_i))$ is the clustering coefficient capturing local density. 
+The function $g(\cdot)$ projects quantities into a fixed-dimensional embedding space.  
+
+Second, for each class $c$ in the active class set $\mathcal{C}_{s_t}$ of task $\mathcal{T}_{s_i}$, we maintain a structural anchor by aggregating the descriptors of its labeled nodes. 
+Formally, given the labeled set $\mathcal{Y}_c^{(\mathcal{T}_{s_i})} = \{ v_i \mid y_i = c \}$, the temporary anchor is defined as:
+\begin{equation}
+\mathbf{a}_c^{(\mathcal{T}_{s_i})} = \frac{1}{|\mathcal{Y}_c^{(\mathcal{T}_{s_i})}|} \sum_{y_i \in \mathcal{Y}_c^{(\mathcal{T}_{s_i})}} \mathbf{u}_i.
+\end{equation}
+This aggregation produces a representative vector that captures the structural tendencies of class $c$ in the current task.  
+
+Third, to ensure stability across tasks and avoid abrupt shifts, we update the structural anchors with the exponential decay, paralleling the semantic anchor update. 
+Let $\mathbf{a}_c^{(t-1)}$ be the structural anchor of class $c$ from the task $t-1$, and let $m_c^{(t-1)}$ be its effective count. After observing task $t$, the anchor is updated as:
+\begin{equation}
+\mathbf{a}_c^{(\mathcal{T}_{s_i})} = \frac{\gamma \cdot m_c^{(\mathcal{T}_{s_{i-1}})} \mathbf{a}_c^{(\mathcal{T}_{s_{i-1}})} + |\mathcal{Y}_c^{(\mathcal{T}_{s_i})}| \cdot \mathbf{a}_c^{(\mathcal{T}_{s_i})}}{\gamma \cdot m_c^{(\mathcal{T}_{s_{i-1}})} + |\mathcal{Y}_c^{(\mathcal{T}_{s_i})}|},
+\end{equation}
+with the effective count maintained as:
+\begin{equation}
+m_c^{(\mathcal{T}_{s_i})} = \gamma \cdot m_c^{(\mathcal{T}_{s_{i-1}})} + |\mathcal{Y}_c^{(\mathcal{T}_{s_i})}|,
+\end{equation}
+where $\gamma \in (0,1]$ is the decay factor. 
+This formulation allows the model to gradually discount outdated structural evidence while adapting to new patterns.  
+
+Finally, we injects the structural anchors into the classifier alongside the semantic anchors obtained from uncertain-aware anchor generation.
+Specifically, the classifier weight for class $c$ is updated as a convex combination of the semantic and structural anchors:
+\begin{equation}
+\mathbf{w}_c^{(\mathcal{T}_{s_i})} = \beta \cdot \mathbf{p}_c^{(\mathcal{T}_{s_i})} + (1-\beta)\cdot \mathbf{a}_c^{(\mathcal{T}_{s_i})},
+\end{equation}
+where $\mathbf{p}_c^{(\mathcal{T}_{s_i})}$ is the semantic anchor produced by the uncertain-aware anchor generation mechanism, $\mathbf{a}_c^{(\mathcal{T}_{s_i})}$ is the structural anchor, and $\beta \in [0,1]$ balances semantic and structural contributions.  
+Overall, the structural confluence modeling module enriches the anchor space by combining semantic reasoning with structural confluence.
+The combined use of textual and topological anchors enables the model to leverage complementary signals by explicitly integrating graph topology into semantic representations, mitigating the imbalance between semantic understanding and structural modeling.
+
+For the classification inference, each test node $v_j \in \mathcal{V}^u$ is represented by its semantic embedding $\mathbf{h}_j=f_\theta(\text{Prompt}(v_j))$, and classification is performed through the updated classifier:
+\begin{equation}
+z_{j,c} = \langle \mathbf{h}_j, \mathbf{w}_c^{(\mathcal{T}_{s_i})} \rangle,
+\qquad
+\hat{y}_j = \arg\max_c z_{j,c}.
+\end{equation}
+% The final decision is entirely produced by the classifier whose weights jointly encode both semantic and structural anchors, ensuring that structural confluence directly shapes the prediction boundaries without requiring explicit labels at inference. 
+
+
+
+
+\section{Experiments}
+% In this section, we present and analyse the graph continual learning performance of the proposed UNIT on five public datasets.
+
+\subsection{Experimental Setup}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%long task%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure*}[th]
+	\centering
+    \includegraphics[width=\linewidth]{task.pdf}
+	\caption{The performance comparison between UNIT and state-of-the-art methods in three baseline categories with ACC$_\text{N}$.
+    }
+	\label{task}
+\end{figure*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\noindent{\bfseries Datasets.}
+We evaluate the proposed UNIT and all baseline methods on five benchmark datasets including Cora \cite{Cora}, Citeseer \cite{Citeseer}, WikiCS \cite{WikiCS}, Photo \cite{Photo}, and Products \cite{Products}.
+We follow the settings of LLM4GCL benchmark \cite{SimGCL} by dividing the datasets into multiple tasks and classes per task to conduct a comprehensive analysis of the model's continual learning performance.
+% The detailed statistics of the datasets and descriptions are provided in Appendix.
+
+\noindent{\bfseries Baselines.}
+We conduct a comprehensive comparison of UNIT with fifteen baseline methods, which fall into three categories.
+The GNN-based methods include GCN \cite{GCN}, EWC \cite{EWC}, LwF \cite{LwF}, Cosine \cite{Cosine}, and TPP \cite{TPP}.
+The LLM-based methods include encoder-only BERT \cite{BERT}, RoBERTa \cite{Roberta}, decoder-only LLaMA \cite{llama}, and SimpleCIL \cite{SimpleCIL}.
+The GLM-based methods include two LLM-as-Enhancer methods GCN$_{\text{LLMEmb}}$ \cite{GCN_emb} and ENGINE \cite{ENGINE}, and three LLM-as-Predictor methods GraphPrompter \cite{GraphPrompter}, GraphGPT \cite{Graphgpt}, LLaGA \cite{Llaga}, and SimGCL \cite{SimGCL}.
+% The detailed introduction is presented in Appendix.
+
+\noindent{\bfseries Metrics.}
+We employ accuracy as the evaluation metric for the node classification task in graph continual learning.
+Following the standard setting established continual learning benchmark \cite{GCL_bench}, we define ACC$_{i}$ as the accuracy after the $i$-th training task.
+We adopt the final metrics ACC$_{\text{avg}}=\frac{1}{N} {\textstyle \sum_{i=1}^{N}} \text{ACC}_{i}$ and ACC$_\text{N}$, which refer to the average accuracy across all tasks and the accuracy of the last task, respectively.
+% These two metrics can sufficiently evaluate the model's overall performance and the final knowledge preservation.
+
+\noindent{\bfseries Implementations.}
+To ensure fairest possible comparison across LLM-driven baseline methods, we use same LLM backbone \emph{LLaMA3-8B} in main experiment.
+The hyperparameters decay factors $\lambda$ and $\gamma$ are set to the size of $\lambda=0.7$ and $\gamma=0.6$, respectively.
+% For all methods, we conduct a 10-run experiment to evaluate their performance.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%few-shot%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table*}
+\setlength{\tabcolsep}{3.7pt}
+% \renewcommand{\arraystretch}{0.8}
+% \small
+\centering
+\caption{Performance comparison of UNIT and baselines in the \textbf{\textit{few-shot}} scenarios. 
+}
+\begin{tabular}{ccccccccccc}
+\toprule
+\multirow{2}{*}{Methods} & \multicolumn{2}{c}{Cora} & \multicolumn{2}{c}{Citeseer} & \multicolumn{2}{c}{WikiCS} & \multicolumn{2}{c}{Photo} & \multicolumn{2}{c}{Products} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(lr){8-9} 
+\cmidrule(lr){10-11} 
+ & ACC$_{\text{avg}}$         & ACC$_\text{N}$        & ACC$_{\text{avg}}$         & ACC$_\text{N}$          & ACC$_{\text{avg}}$         & ACC$_\text{N}$        & ACC$_{\text{avg}}$         & ACC$_\text{N}$           & ACC$_{\text{avg}}$         & ACC$_\text{N}$    \\
+\midrule
+GCN    & 68.0 ± 0.5 & 38.1 ± 1.3 & 39.5 ± 1.2 & 17.4 ± 0.4 & 62.4 ± 1.2 & 47.4 ± 0.4 & 58.5 ± 1.6 & 32.3 ± 1.2 & 36.0 ± 0.9 & 14.1 ± 1.0 \\
+EWC    & 59.0 ± 1.4 & 36.3 ± 0.8 & 49.2 ± 1.4 & 21.2 ± 1.3 & 58.4 ± 0.8 & 40.4 ± 1.2 & 62.0 ± 0.7 & 28.4 ± 1.7 & 45.7 ± 1.3 & 31.5 ± 0.5 \\
+LwF    & 63.3 ± 1.6 & 43.5 ± 0.2 & 45.1 ± 1.3 & 20.7 ± 1.6 & 59.4 ± 1.6 & 41.0 ± 0.4 & 60.1 ± 1.2 & 29.4 ± 1.3 & 50.3 ± 0.7 & 38.7 ± 1.6 \\
+Cosine & 72.6 ± 0.8 & 57.8 ± 1.3 & 49.1 ± 1.6 & 25.7 ± 0.7 & 68.0 ± 1.3 & 50.7 ± 0.7 & 67.9 ± 1.4 & 50.5 ± 1.2 & 50.9 ± 1.3 & 33.6 ± 1.5 \\
+TEEN   & 60.9 ± 1.3 & 40.3 ± 0.7 & 59.0 ± 0.7 & 39.5 ± 1.8 & 59.3 ± 1.3 & 42.4 ± 1.2 & 59.3 ± 0.9 & 35.5 ± 1.7 & 49.6 ± 1.1 & 28.4 ± 1.8 \\
+TPP    & 39.0 ± 1.1 & 9.1 ± 0.7 & 37.3 ± 1.2 & 12.6 ± 1.3 & 37.3 ± 0.6 & 12.4 ± 1.0 & 40.0 ± 1.2 & 14.0 ± 0.9 & 14.0 ± 1.2 & 0.2 ± 0.1 \\
+\midrule
+BERT   & 56.4 ± 1.5 & 34.7 ± 1.2 & 61.1 ± 0.7 & 38.8 ± 1.7 & 61.7 ± 1.9 & 33.0 ± 0.9 & 47.7 ± 1.2 & 25.8 ± 1.5 & 22.4 ± 1.1 & 3.8 ± 1.0 \\
+RoBERTa & 59.6 ± 0.7 & 41.9 ± 1.5 & 54.0 ± 1.8 & 29.2 ± 0.8 & 67.2 ± 1.3 & 42.3 ± 1.2 & 58.2 ± 0.8 & 29.6 ± 1.5 & 38.8 ± 1.4 & 6.9 ± 1.1 \\
+LLaMA  & 72.6 ± 1.7 & 55.6 ± 1.1 & 75.9 ± 1.2 & 55.5 ± 0.8 & 65.2 ± 1.3 & 43.9 ± 1.4 & 61.4 ± 0.9 & 32.3 ± 1.2 & 43.5 ± 1.6 & 13.7 ± 0.8 \\
+SimpleCIL & 69.6 ± 1.2 & 53.6 ± 1.4 & 64.1 ± 1.2 & 49.9 ± 1.0 & \textbf{73.2 ± 1.6} & 63.1 ± 0.8 & 66.3 ± 1.2 & 53.0 ± 1.3 & 65.6 ± 1.4 & 53.6 ± 1.6 \\
+\midrule
+GCN$_{\text{LLMEmb}}$ & 68.2 ± 1.3 & 40.1 ± 1.6 & 54.3 ± 1.7 & 28.7 ± 0.6 & 54.7 ± 0.8 & 31.0 ± 1.7 & 66.0 ± 1.5 & 34.2 ± 1.0 & 30.6 ± 0.9 & 0.2 ± 0.3 \\
+ENGINE & 52.2 ± 1.1 & 28.3 ± 1.2 & 47.6 ± 1.1 & 25.5 ± 1.7 & 46.8 ± 1.5 & 23.7 ± 0.6 & 48.0 ± 1.2 & 21.5 ± 0.7 & 20.9 ± 1.3 & 0.1 ± 0.2 \\
+GraphPrompter & 63.2 ± 1.6 & 37.3 ± 1.1 & 65.3 ± 1.5 & 34.5 ± 1.4 & 69.5 ± 0.8 & 51.6 ± 1.3 & 69.7 ± 1.4 & 51.0 ± 1.6 & 37.9 ± 1.2 & 2.2 ± 0.4 \\
+GraphGPT & 62.4 ± 1.7 & 39.6 ± 0.6 & 65.0 ± 1.2 & 41.7 ± 1.3 & 71.2 ± 1.1 & 61.6 ± 1.5 & 62.2 ± 1.3 & 38.9 ± 0.7 & 43.2 ± 1.8 & 16.2 ± 1.6 \\
+LLaGA  & 62.0 ± 1.2 & 39.6 ± 1.1 & 52.2 ± 0.9 & 28.0 ± 1.2 & 49.4 ± 1.3 & 30.4 ± 1.6 & 48.8 ± 1.0 & 18.0 ± 0.6 & 28.0 ± 0.7 & 0.2 ± 0.1 \\
+SimGCL & \underline{78.0 ± 0.5} & \underline{67.6 ± 1.0} & \underline{78.0 ± 1.3} & \underline{63.8 ± 0.8} & 68.8 ± 1.9 & \underline{64.1 ± 1.1} & \underline{81.2 ± 1.2} & \underline{71.3 ± 0.9} & \underline{69.7 ± 1.6} & \underline{62.7 ± 1.1} \\
+\midrule
+\textbf{UNIT (ours) } & \textbf{81.4 ± 0.4} & \textbf{71.0 ± 0.7} & \textbf{79.7 ± 1.1} & \textbf{65.3 ± 0.6} & \underline{72.5 ± 1.2} & \textbf{65.9 ± 0.8} & \textbf{82.9 ± 1.0} & \textbf{74.6 ± 0.6} & \textbf{71.1 ± 1.2} & \textbf{64.2 ± 0.7} \\
+\bottomrule
+\end{tabular}
+\label{few_shot}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\subsection{Main Results}
+The evaluation results of UNIT and the state-of-the-art baselines on five public datasets are presented in Table \ref{main_results} and the following conclusions can be derived.
+First, integrating semantic information is effective to improve graph continual learning performance.
+For evaluation models, the methods incorporating semantic information achieve an overall superiority, compared to traditional graph continual learning methods that merely rely on structural information.
+Compared with the best traditional graph continual learning method TPP, UNIT ameliorates the classification performance up to 58.2\% in ACC$_{\text{avg}}$ and 62.3\% in ACC$_{\text{N}}$ metric.
+Second, specific instruction tuning for semantic information is crucial.
+LLM-based methods demonstrate competitive performance in graph continual learning tasks even without explicitly leveraging graph structure, while GLM-based methods typically design specific instructions tailored to structural information for LLM tuning.
+Compared with the state-of-the-art LLM-based method for graph continual learning, UNIT achieves an average improvement of 12.8\% in ACC$_{\text{avg}}$ and 14.6\% in ACC$_{\text{N}}$ metric, which reveals the importance of specially customized tuning in the confluence of semantic-structural modeling.
+Third, the proposed method UNIT unleashes LLMs potential for graph continual learning.
+In general, the proposed UNIT constantly outperforms the comparison baselines across the five datasets.
+% Compared with the best GLM-based method for graph continual learning SimGCL, UNIT achieves the classification performance up to 4.88\% in ACC$_{\text{avg}}$ and 7.37\% in ACC$_{\text{N}}$ metric.
+The superiority demonstrates that UNIT unleashes the LLMs potential for graph continual learning.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%LLM ablation%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[]
+% \small
+\setlength{\tabcolsep}{4.4pt}
+% \renewcommand{\arraystretch}{0.8}
+\caption{Performance comparison of UNIT with variant LLM backbones on five datasets.
+Note that in comparative experiments with other baseline methods, we adopt Llama3-8B as the LLM backbone of UNIT.
+% to guarantee experimental fairness and stability.
+}
+\begin{tabular}{lccccc}
+\toprule
+\multirow{2}{*}{Backbone} & \multicolumn{5}{c}{ACC$_\text{avg}$}                                            \\ \cmidrule{2-6} 
+                         & Cora                & Citeseer                & WikiCS & Photo     &   Products              \\ \midrule
+Llama3-3B       & 87.1±0.6          & 77.9±0.5           & 74.8±1.2    &  82.3±1.4        & 72.1±0.7\\
+Llama3-8B       & 88.7±0.4          & 79.4±0.7           & 76.1±0.3    &  83.9±1.1        & 73.2±0.4      \\
+GPT-3           & 89.5±0.3          & 80.6±1.1           & 77.2±0.6    &  84.5±0.8        & 74.3±0.5 \\
+GPT-3.5       & 90.2±1.2          & 81.3±0.4           & 79.2±0.8    &  85.2±0.9        & 75.1±1.2      \\ 
+\end{tabular}
+
+\begin{tabular}{lccccc}
+\toprule
+\multirow{2}{*}{Backbone} & \multicolumn{5}{c}{ACC$_\text{N}$}                                           \\ \cmidrule{2-6} 
+                         & Cora                & Citeseer                & WikiCS & Photo     &   Products              \\ \midrule
+llama3-3B       & 84.1±0.5          & 66.9±1.1           & 64.8±1.2    &  75.3±0.6        & 61.1±0.8\\
+llama3-8B       & 85.9±1.0          & 68.5±0.9          & 65.0±0.7     &  76.5±0.7        & 62.5±1.3      \\
+GPT-3           & 86.7±0.7          & 69.4±1.3           & 66.1±0.4    &  77.9±1.1        & 63.2±0.8 \\
+GPT-3.5       & 87.6±0.9          & 70.2±0.4           & 67.4±1.2    &  78.7±0.8        & 64.3±0.6      \\ \bottomrule
+\end{tabular}
+\label{backbone}
+\end{table}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Empirical Results}
+\noindent{\bfseries Qualitative Results.}
+To demonstrate the superiority of the proposed UNIT in each task, we conduct the additional experiment to present the accuracy performance of each task across the five datasets.
+We choose the state-of-the-art methods from three baseline categories for comparative experiments, including Cosine, SimpleCIL, and SimGCL.
+The results are shown in Figure \ref{task}.
+Based on the observations in the figure, we make several conclusions. 
+First, the proposed UNIT outperforms other methods across all tasks in the five datasets, indicating the effectiveness of unleashing LLMs potential for graph continual learning.
+Second, the performance of all methods declines during backward execution, with Cosine exhibiting the most severe degradation.
+This indicates that GNN-based methods struggle to achieve knowledge transfer between continual tasks with structural information only.
+Third, UNIT demonstrates stable performance in long-range tasks on the Products dataset, presenting that the proposed method can effectively accomplish graph continual learning tasks. The proposed UNIT outperforms other methods across all tasks in the five datasets, indicating the effectiveness of unleashing LLMs potential for graph continual learning.
+
+
+\noindent{\bfseries Few-Shot Study.}
+We conduct specialized experiments to demonstrate the superiority of the proposed method UNIT in few-shot graph continual learning tasks.
+The scenario configuration for few-shot graph continual learning aligns with the LLM4GCL benchmark \cite{SimGCL}, with results shown in Table \ref{few_shot}.
+The results demonstrate that UNIT still outperforms most existing methods in few-shot scenarios.
+Compared to the state-of-the-art methods, UNIT achieves performance improvements of up to 9.1\% in ACC$_\text{avg}$ and 14.6\% in ACC$_\text{N}$ metric, respectively.
+Moreover, in few-shot scenarios, LLM-driven methods still outperform those relying solely on GNNs, even though most GNN-based methods demonstrate promising performance.
+This demonstrates the effectiveness and necessity of the proposed method UNIT in unleashing the LLMs potential for graph continual learning.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%ablation%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[th]
+	\centering
+    \includegraphics[width=\linewidth]{ablation.pdf}
+	\caption{Ablation study results on various UNIT variants across five datasets with ACC$_{\text{avg}}$ and ACC$_{\text{N}}$ metrics. 
+    }
+	\label{ablation}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\noindent{\bfseries Varying LLM Backbones.}
+We conduct additional experiments to assess the impact of different LLM backbones on the UNIT and validate whether the capability of LLMs affect semantic comprehension.
+The experiments investigate UNIT with four LLM backbones, including \emph{Llama3-3B}, \emph{Llama3-8B}, \emph{GPT-3}, and \emph{GPT-3.5}, as shown in Table \ref{backbone}.
+In general, all LLM backbones improve the performance of graph continual learning task, but the extent of improvement varies between models.
+Besides, it can be seen that \emph{GPT-3.5} achieves the highest performance gains on all datasets, highlighting the critical importance of LLM scale and reasoning capability in UNIT.
+The proposed UNIT method can more sufficiently unleash LLMs potential for graph continual learning when it employs LLMs with more advanced semantic understanding and knowledge coverage.
+
+\subsection{Ablation Study}
+To explore how each component contributes to the performance of UNIT, we conduct a series of ablation experiments on the five datasets by excluding each module, as shown in Figure \ref{ablation}. 
+This analysis aims to assess the contribution of individual modules by iteratively removing them and observing their impact on model performance.
+We compare UNIT with its variants for graph continual learning:
+\textbf{w/o Sem} indicates that the semantic instruction tuning module is removed, and use pre-trained LLM models without semantic fine-tuning for model training.
+\textbf{w/o Unc} indicates that after semantic instruction tuning, the uncertain-aware anchor generation module is removed, and only the structural confluence modeling module is used.
+\textbf{w/o Str} denotes the removal of the structural confluence modeling module after semantic instruction tuning, and only the uncertain-aware anchor generation module is used.
+\textbf{UNIT} represents the use of the semantic instruction tuning module, the uncertain-aware anchor generation module, and the structural confluence modeling module, corresponding to our complete model.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%sensitivity%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[th]
+	\centering
+    \includegraphics[width=\linewidth]{sensitivity.pdf}
+	\caption{Parameter analysis of $\lambda$ and $\gamma$ on Cora dataset with ACC$_{\text{avg}}$ and ACC$_{\text{N}}$ metrics. Note that the values of $\lambda$ and $\gamma$ range from [0.1, $\ldots$, 0.9].
+    }
+	\label{sensitivity}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+From the results, we make several conclusions.
+Firstly, we can observe that the complete model consistently outperforms its single-module counterparts in all evaluation metrics.
+Besides, without specific fine-tuning of pre-trained LLM models, the classification capabilities of UNIT are compromised, indicating that specific instruction tuning for semantic information is crucial.
+Moreover, it is noticeable that the uncertain-aware anchor generation module and structural confluence modeling module play critical roles in UNIT and their combination greatly benefits the graph continual learning. 
+In general, each component within UNIT contributes to unleashing LLMs potential for graph continual learning.
+
+
+\subsection{Parameter Analysis}
+The proposed UNIT framework contains two main hyperparameters, i.e., $\lambda$ and $\gamma$, which indicate the decay factor of uncertain-aware anchor generation and structural confluence modeling, respectively.
+To evaluate the robustness of UNIT under varying hyperparameter configurations, we conduct a parameter sensitivity analysis on the Cora dataset with ACC$_{\text{avg}}$ and ACC$_{\text{N}}$ metrics. 
+This experiment aims to analyze the impact of the two hyper-parameters on graph continual learning performance.
+Specifically, we vary the values of $\lambda$ and $\gamma$ within the range of
+[0.1, $\ldots$, 0.9] and Figure \ref{sensitivity} presents the experimental results.
+Based on the observations in the figure, we make several conclusions.
+Firstly, UNIT tends to exhibit suboptimal performance when $\lambda$ and $\gamma$ are set to low values, e.g., 0.1 and 0.2.
+This emphasizes the critical role historical knowledge plays within the UNIT framework and highlights its effectiveness.
+Secondly, we can observe that excessively high values of $\lambda$ and $\gamma$ also adversely affect performance, as they may obscure the importance of new knowledge.
+Finally, UNIT demonstrates relatively stable ACC$_{\text{avg}}$ and ACC$_{\text{N}}$ performance across a wide range of $\lambda$ and $\gamma$ values, which proves its robustness.
+
+
+
+\section{Conclusion}
+In this paper, we investigate the systematic exploration of LLMs based on graph continual learning tasks and propose a novel framework, Unleash Large Language Models Potential for Graph Continual Learning (UNIT).
+Accordingly, we design specific prompt instructions to fine-tune pre-trained LLMs to facilitate the LLM comprehension ability to graph continual learning tasks.
+Moreover, UNIT proposes uncertainty-aware anchor generation and structural confluence modeling to achieve comprehensive knowledge transfer and sufficient integration of semantic and structural information.
+The experimental results show that UNIT can effectively accomplish the graph continual learning task, which verifies the its effectiveness and robustness.
+
+\begin{acks}
+The work is supported by the National Natural Science Foundation of China (No. 62272487 and 62433016).
+\end{acks}
+%%
+%% The next two lines define the bibliography style to be used, and
+%% the bibliography file.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{acmart}
+
+
+
+
+\end{document}
+\endinput
+%%
+%% End of file `sample-sigconf.tex'.

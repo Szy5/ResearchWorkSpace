@@ -1,0 +1,654 @@
+<section style="max-width:677px;margin:0 auto;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;color:#374151;line-height:1.75;letter-spacing:0.5px;overflow-x:hidden;">
+
+  <!-- 目录 toc-scroll：精选 3 个核心看点 -->
+  <section style="margin:0 20px 32px;">
+    <section style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <p style="font-size:10px;color:#9CA3AF;margin:0;text-transform:uppercase;letter-spacing:2px;font-weight:600;">
+        <span leaf="">📦 5 Parts + Appendix</span>
+      </p>
+      <p style="font-size:10px;color:#9CA3AF;margin:0;">
+        <span leaf="">👉 滑动</span>
+      </p>
+    </section>
+    <section style="overflow-x:scroll;-webkit-overflow-scrolling:touch;white-space:nowrap;padding-bottom:8px;">
+      <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:linear-gradient(135deg,#059669,#10B981);border-radius:12px;padding:12px;margin-right:8px;">
+        <p style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.7);letter-spacing:1px;margin:0 0 5px;">
+          <span leaf="">PART 01</span>
+        </p>
+        <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;">
+          <span leaf="">问题背景</span>
+        </p>
+        <p style="font-size:10px;color:rgba(255,255,255,0.7);margin:0;">
+          <span leaf="">缺口在哪</span>
+        </p>
+      </section>
+      <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;margin-right:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+        <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;">
+          <span leaf="">PART 03</span>
+        </p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;">
+          <span leaf="">方法闭环</span>
+        </p>
+        <p style="font-size:10px;color:#9CA3AF;margin:0;">
+          <span leaf="">合成到 RL</span>
+        </p>
+      </section>
+      <section style="display:inline-block;white-space:normal;vertical-align:top;width:110px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:12px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+        <p style="font-size:9px;font-weight:700;color:#9CA3AF;letter-spacing:1px;margin:0 0 5px;">
+          <span leaf="">PART 04</span>
+        </p>
+        <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;">
+          <span leaf="">实验结果</span>
+        </p>
+        <p style="font-size:10px;color:#9CA3AF;margin:0;">
+          <span leaf="">27B 基准分</span>
+        </p>
+      </section>
+    </section>
+  </section>
+
+  <!-- 开头引言 oneliner-card -->
+  <section style="margin:0 20px 24px;">
+    <section style="background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;margin-bottom:16px;text-align:center;">
+      <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;">
+        <span leaf="">SearchArt · 核心主张</span>
+      </p>
+      <p style="margin:0;line-height:1.6;">
+        <span style="font-size:15px;color:#059669;font-weight:bold;border-bottom:3px solid #FDE68A;padding-bottom:2px;"><span leaf="">把中间检索与推理行为也作为优化对象</span></span>
+      </p>
+      <p style="font-size:13px;color:#9CA3AF;margin:8px 0 0;line-height:1.5;">
+        <span leaf="">而不仅仅是最终答案正确性</span>
+      </p>
+    </section>
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">通过规模化的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">合成任务生成</span></span><span leaf="">、联合验证的轨迹筛选以及「</span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">先监督再 RL</span></span><span leaf="">」的多阶段训练，能在有限参数（</span><strong style="color:#059669;"><span leaf="">Qwen3.5-27B</span></strong><span leaf="">）下训练出对长航程信息检索／研究任务更稳健、效率更高且更可靠的搜索代理。</span>
+    </p>
+  </section>
+
+  <!-- 01 问题背景 -->
+  <section style="margin-top:16px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">01</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">PART</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">问题背景</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">BACKGROUND · 局限与缺口</span>
+        </p>
+      </section>
+    </section>
+
+    <p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;">
+      <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">现有方法的局限</span></span>
+    </p>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">标注稀缺</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">现有长航程搜索／研究代理训练受限于</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">高质量标注数据稀缺</span></span><span leaf="">与人工注释成本高，导致训练信号不足。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">只盯最终答案</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">许多基于合成数据的管线只关注最终答案正确性，忽视了</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">中间检索决策与证据转移</span></span><span leaf="">的质量，因而无法教会模型如何制定长期检索策略或如何在多步检索中有效整合证据。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">验证偏弱</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">现有自动化过滤／验证较弱，容易保留浅表、重复或</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">弱支撑（weakly grounded）</span></span><span leaf="">的轨迹，导致模型学到次优或「提前答题」的行为（在证据不足时给出答案）和幻觉（hallucination）。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:24px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">难度偏简单</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">大多数合成语料在难度分布上偏简单，</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">长期、多分支、多来源融合</span></span><span leaf="">的研究性任务样本不足，难以训练出需要持续信息整合与自适应预算分配的策略。</span>
+      </p>
+    </section>
+
+    <p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;margin-top:32px;">
+      <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">本文瞄准的缺口</span></span>
+    </p>
+
+    <section style="background:#F0FDF4;padding:12px 16px;border-radius:8px;border:1px solid #BBF7D0;margin-bottom:20px;">
+      <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">填补「</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">规模化合成 ＋ 质量可控</span></span><span leaf="">」的数据生产到训练闭环：既要大规模合成多步搜索／研究任务并产出轨迹，又要有可靠的自动化验证来筛掉低质量轨迹，使得中间行为（例如查询构造、证据分支选择、何时生成答案）能被有效监督并进一步通过强化学习优化。</span>
+      </p>
+    </section>
+  </section>
+
+  <!-- 02 贡献 -->
+  <section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">02</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">PART</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">贡献</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">CONTRIBUTIONS · 方法改进型</span>
+        </p>
+      </section>
+    </section>
+
+    <p style="margin-bottom:16px;">
+      <span style="display:inline-block;background:#059669;color:#FFFFFF;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;"><span leaf="">类型：方法改进型</span></span>
+    </p>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">核心贡献（列出３条）：</span>
+    </p>
+
+    <section style="margin-bottom:24px;">
+      <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">1</span></span>
+        <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;text-align:justify;">
+          <span leaf="">提出 </span><strong style="color:#059669;"><span leaf="">SearchArt</span></strong><span leaf=""> 框架：解决了合成数据虽大但噪声高、轨迹质量不稳的问题。做法是从网页文档与自动生成的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">证据图</span></span><span leaf="">合成长航程问答与检索轨迹，并通过联合验证（QA 一致性、轨迹可靠性、证据相关性）对样本进行过滤，从而获得高质量训练数据。</span>
+        </p>
+      </section>
+      <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">2</span></span>
+        <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;text-align:justify;">
+          <span leaf="">将</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">轨迹级别的监督</span></span><span leaf="">显式纳入训练流程：不仅进行监督微调（SFT），还在经过验证的轨迹上进行基于回报的策略优化（RL），从而直接改进中间决策（如查询生成、证据分支扩展、预算分配、答题时机）。</span>
+        </p>
+      </section>
+      <section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+        <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;flex-shrink:0;margin-top:2px;"><span leaf="">3</span></span>
+        <p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;text-align:justify;">
+          <span leaf="">在资源受限条件下（基于 </span><strong style="color:#059669;"><span leaf="">Qwen3.5-27B</span></strong><span leaf="">），证明该方法在多项深度搜索／研究基准上能显著提升：例如 BrowseComp-ZH </span><span style="background:linear-gradient(120deg,#FDE68A 0%,rgba(255,255,255,0) 100%);padding:0 4px;border-radius:2px;font-weight:600;color:#111827;"><span leaf="">74.39</span></span><span leaf="">、BrowseComp 70.06、BrowseComp-Plus 63.49、WideSearch 64.0、DeepResearch-Bench 52.55，且与同规模代理相比有显著任务完成率提升。</span>
+        </p>
+      </section>
+    </section>
+  </section>
+
+  <!-- 03 方法 -->
+  <section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">03</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">PART</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">方法</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">METHOD · 合成 · 验证 · 训练</span>
+        </p>
+      </section>
+    </section>
+
+    <p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;">
+      <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">核心思路</span></span>
+    </p>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">直觉上，训练长航程搜索代理的关键并不是单纯堆砌更多最终答案标签，而是：</span>
+    </p>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">可验证的轨迹</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">在合成大量复杂任务时，同时保证这些任务的「轨迹」（每一步的查询／检索／证据选择）是</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">有意义且可验证</span></span><span leaf="">的。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">轨迹级监督</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">将这种轨迹级的高质量监督作为学习目标的一部分，使模型学会如何在多步过程中</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">分配检索预算</span></span><span leaf="">、何时继续检索、何时停止并合成答案。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:24px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">监督后再 RL</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">在监督之后再用 RL 微调，使策略对长期回报（任务完成 ＋ 证据充分性）敏感，从而避免「</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">提前答题</span></span><span leaf="">」与浅层重复检索。</span>
+      </p>
+    </section>
+
+    <section style="background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:8px;padding:12px 16px;margin-bottom:24px;text-align:justify;">
+      <p style="font-size:13px;color:#374151;margin:0;line-height:1.6;">
+        <span leaf="">这种做法对的原因：长期搜索问题的成功依赖于</span><strong style="color:#059669;"><span leaf="">中间动作的好坏</span></strong><span leaf="">——如果模型只看最终答案，无法学到什么时候拓展证据分支、如何避免冗余检索或如何把不同来源的信息融合到最终结论中。验证机制保证训练数据中的中间动作是可学习的良好示范，RL 则进一步提高在未见情形下的决策鲁棒性。</span>
+      </p>
+    </section>
+
+    <p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;margin-top:32px;">
+      <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">方法细节</span></span>
+    </p>
+
+    <section style="margin-bottom:28px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 01</span></span>
+        <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;">
+          <span leaf="">数据合成</span>
+        </h4>
+      </section>
+      <p style="font-size:14px;margin:0 0 16px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">从网络文档构建候选段落与证据节点，并自动生成</span><strong style="color:#059669;"><span leaf="">证据图</span></strong><span leaf="">（evidence graph），在图上合成多跳问题与对应的检索轨迹（包含查询、检索结果、证据选择、摘要或答案断言等步骤）。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:28px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 02</span></span>
+        <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;">
+          <span leaf="">验证流水线（核心筛选机制）</span>
+        </h4>
+      </section>
+      <p style="font-size:14px;margin:0 0 16px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">对每个合成示例计算三个维度的分数：QA 一致性 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">S_QA</span></span><span leaf="">、轨迹可靠性 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">S_traj</span></span><span leaf="">、证据相关性 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">S_ev</span></span><span leaf="">。定义加权综合得分，并通过阈值 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">S ≥ τ</span></span><span leaf=""> 筛选训练样本（α、β、γ、τ 为超参数，可基于验证集调优）。</span>
+      </p>
+      <section style="margin:0 0 16px;border-radius:8px;overflow:hidden;background:#F6F8FA;border:1px solid #E5E7EB;border-left:3px solid #059669;">
+        <section style="padding:7px 14px;border-bottom:1px solid #E5E7EB;">
+          <span style="font-size:12px;color:#9CA3AF;font-family:Consolas,Monaco,monospace;letter-spacing:1px;"><span leaf="">score</span></span>
+        </section>
+        <section style="padding:11px 14px;">
+          <p style="margin:0;font-family:'SF Mono',Consolas,Monaco,monospace;font-size:13px;line-height:1.6;color:#24292F;"><span leaf="">S = α·S_QA + β·S_traj + γ·S_ev</span></p>
+        </section>
+      </section>
+      <p style="font-size:14px;margin:0 0 16px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">具体判别器可包括：基于模型的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">自我一致性检验</span></span><span leaf="">、交叉验证（用独立检索器重检索并比对证据）与证据链完整性检验（证据是否形成连贯多跳路径）。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:28px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="display:inline-block;background:#111827;color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">STEP 03</span></span>
+        <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;">
+          <span leaf="">多阶段训练</span>
+        </h4>
+      </section>
+
+      <section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:24px;">
+        <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+          <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+            <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;">
+              <span leaf="">合成</span>
+            </p>
+            <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;">
+              <span leaf="">证据图 ＋ 轨迹</span>
+            </p>
+          </section>
+          <section style="display:flex;align-items:center;color:#D1D5DB;font-size:14px;padding:0 4px;">
+            <span leaf="">→</span>
+          </section>
+          <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+            <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;">
+              <span leaf="">SFT</span>
+            </p>
+            <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;">
+              <span leaf="">行为克隆</span>
+            </p>
+          </section>
+          <section style="display:flex;align-items:center;color:#D1D5DB;font-size:14px;padding:0 4px;">
+            <span leaf="">→</span>
+          </section>
+          <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #A7F3D0;border-radius:8px;">
+            <p style="font-size:13px;font-weight:800;color:#059669;margin:0 0 3px;">
+              <span leaf="">RL</span>
+            </p>
+            <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;">
+              <span leaf="">长期回报优化</span>
+            </p>
+          </section>
+        </section>
+        <p style="font-size:12px;color:#9CA3AF;text-align:center;margin:12px 0 0;letter-spacing:0.5px;">
+          <span leaf="">验证过滤贯穿合成 → 训练全流程</span>
+        </p>
+      </section>
+
+      <p style="font-size:14px;margin:0 0 12px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">１．监督微调（SFT）：使用经验证的轨迹做行为克隆，最小化序列交叉熵损失。其中 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">s_t</span></span><span leaf=""> 表示状态（历史上下文 ＋ 当前文档候选），</span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">a_t</span></span><span leaf=""> 是动作（查询文本／选择证据／生成答案）。</span>
+      </p>
+      <section style="margin:0 0 16px;border-radius:8px;overflow:hidden;background:#F6F8FA;border:1px solid #E5E7EB;border-left:3px solid #059669;">
+        <section style="padding:7px 14px;border-bottom:1px solid #E5E7EB;">
+          <span style="font-size:12px;color:#9CA3AF;font-family:Consolas,Monaco,monospace;letter-spacing:1px;"><span leaf="">SFT loss</span></span>
+        </section>
+        <section style="padding:11px 14px;">
+          <p style="margin:0;font-family:'SF Mono',Consolas,Monaco,monospace;font-size:13px;line-height:1.6;color:#24292F;"><span leaf="">L_SFT(θ) = −Σ_t log p_θ(a_t | s_t)</span></p>
+        </section>
+      </section>
+
+      <p style="font-size:14px;margin:0 0 12px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">２．基于回报的策略优化（RL）：以轨迹回报 </span><span style="background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:13px;font-weight:600;"><span leaf="">R(τ)</span></span><span leaf="">（结合答案正确性与证据充分性）为目标，优化期望回报，并采用策略梯度或 PPO 等方法提升长期决策性能。</span>
+      </p>
+      <section style="margin:0 0 16px;border-radius:8px;overflow:hidden;background:#F6F8FA;border:1px solid #E5E7EB;border-left:3px solid #059669;">
+        <section style="padding:7px 14px;border-bottom:1px solid #E5E7EB;">
+          <span style="font-size:12px;color:#9CA3AF;font-family:Consolas,Monaco,monospace;letter-spacing:1px;"><span leaf="">RL objective</span></span>
+        </section>
+        <section style="padding:11px 14px;">
+          <p style="margin:0;font-family:'SF Mono',Consolas,Monaco,monospace;font-size:13px;line-height:1.6;color:#24292F;"><span leaf="">J(θ) = E_{τ ∼ π_θ}[R(τ)]</span></p>
+        </section>
+      </section>
+    </section>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">训练目标同时包含最终答案奖励与</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">中间行为质量奖励</span></span><span leaf="">（例如对高质量证据分支选择提供中间回报），从而鼓励既高效又可靠的搜索策略。实现上基于 </span><strong style="color:#059669;"><span leaf="">Qwen3.5-27B</span></strong><span leaf=""> 作为基线架构进行 SFT ＋ RL；合成语料规模化以覆盖多样的检索策略与任务难度分布。</span>
+    </p>
+  </section>
+
+  <!-- 04 实验与结果 -->
+  <section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">04</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">PART</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">实验与结果</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">EXPERIMENTS · 基准与消融</span>
+        </p>
+      </section>
+    </section>
+
+    <p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;">
+      <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">评测设置</span></span>
+    </p>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">基础模型：</span><strong style="color:#059669;"><span leaf="">Qwen3.5-27B</span></strong><span leaf=""> 系列为起点，比较对象包括同规模或闭源前沿代理（文中声明与若干闭源系统相匹配或超越）。任务集合覆盖多项深度搜索／研究型与多跳推理基准，包括 BrowseComp-ZH、BrowseComp、BrowseComp-Plus、WideSearch、DeepResearch-Bench 等，评价指标以</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">任务完成率／答案准确率</span></span><span leaf="">为主。</span>
+    </p>
+
+    <p style="font-size:15px;font-weight:900;color:#111827;margin-bottom:16px;margin-top:32px;">
+      <span style="background:linear-gradient(180deg,transparent 65%,#FDE68A 65%);padding:0 4px;"><span leaf="">主要结论</span></span>
+    </p>
+
+    <section style="overflow-x:auto;margin-bottom:24px;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr>
+            <th style="background:#059669;color:#fff;font-weight:700;padding:8px 12px;text-align:left;"><span leaf="">基准</span></th>
+            <th style="background:#059669;color:#fff;font-weight:700;padding:8px 12px;text-align:left;"><span leaf="">得分</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;"><span leaf="">BrowseComp-ZH</span></td>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;"><span leaf="">74.39</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;background:#F9FAFB;"><span leaf="">BrowseComp</span></td>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;background:#F9FAFB;"><span leaf="">70.06</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;"><span leaf="">BrowseComp-Plus</span></td>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;"><span leaf="">63.49</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;background:#F9FAFB;"><span leaf="">WideSearch</span></td>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;background:#F9FAFB;"><span leaf="">64.0</span></td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;"><span leaf="">DeepResearch-Bench</span></td>
+            <td style="padding:8px 12px;border-bottom:1px solid #E5E7EB;color:#374151;"><span leaf="">52.55</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-bottom:28px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="display:inline-block;background:#E5E7EB;color:#6B7280;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">CLAIM 01</span></span>
+        <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;">
+          <span leaf="">验证驱动的合成 ＋ 轨迹监督</span>
+        </h4>
+      </section>
+      <p style="font-size:14px;margin:0 0 16px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">能显著提升长航程任务性能。实验证明：在上述基准上 SearchArt 得分如上表，且在与同规模代理对比中展现「显著」任务完成率提升（文中表述）。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:28px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="display:inline-block;background:#E5E7EB;color:#6B7280;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">CLAIM 02</span></span>
+        <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;">
+          <span leaf="">显式优化中间行为</span>
+        </h4>
+      </section>
+      <p style="font-size:14px;margin:0 0 16px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">能减少「</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">提前答题</span></span><span leaf="">」和幻觉。实验证明经 SFT＋RL 微调的代理在长期检索轨迹中更倾向于继续拓展证据分支，并在答案给出时附带更可靠的证据链（作者报告更高的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">证据覆盖率</span></span><span leaf="">和更低的答题前停顿率）。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:28px;">
+      <section style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span style="display:inline-block;background:#E5E7EB;color:#6B7280;font-size:10px;font-weight:700;padding:2px 8px;border-radius:12px;"><span leaf="">CLAIM 03</span></span>
+        <h4 style="font-size:15px;font-weight:800;color:#111827;margin:0;">
+          <span leaf="">验证过滤提升样本质量</span>
+        </h4>
+      </section>
+      <p style="font-size:14px;margin:0 0 16px;color:#4B5563;line-height:1.9;text-align:justify;">
+        <span leaf="">进而提升策略稳定性。消融实验（文中暗示）表明，去掉联合验证或使用弱过滤将产生更多冗余／浅层轨迹，训练出的模型在复杂任务上性能下降且波动更大。</span>
+      </p>
+    </section>
+
+    <section style="background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;margin-bottom:24px;text-align:center;">
+      <p style="font-size:12px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;">
+        <span leaf="">额外观察</span>
+      </p>
+      <p style="margin:0;line-height:1.6;">
+        <span style="font-size:15px;color:#059669;font-weight:bold;border-bottom:3px solid #FDE68A;padding-bottom:2px;"><span leaf="">数据质量 ＋ 轨迹级监督 ＋ RL</span></span>
+      </p>
+      <p style="font-size:13px;color:#9CA3AF;margin:8px 0 0;line-height:1.5;">
+        <span leaf="">在仅 27B 参数下可与更大或闭源模型性能相媲美</span>
+      </p>
+    </section>
+  </section>
+
+  <!-- 05 局限与边界 -->
+  <section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">///</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">LAST</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">局限与边界</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">LIMITATIONS · 适用边界</span>
+        </p>
+      </section>
+    </section>
+
+    <section style="padding:6px 0 4px;margin-bottom:16px;">
+      <p style="margin-bottom:6px;font-size:12px;font-weight:700;color:#9CA3AF;letter-spacing:1px;">
+        <span style="color:rgb(255,76,0);"><span leaf="">！踩坑提示 🕳</span></span>
+      </p>
+      <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;">
+        <span style="color:rgb(136,136,136);font-weight:bold;"><span leaf="">效果高度依赖合成证据图与联合验证器质量；验证器漏判或放行不良轨迹时，模型仍会学到错误策略或幻觉倾向。</span></span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">域外泛化</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">评测集中在公开的深搜／研究基准与网页文档构造的合成样本，尚不充分证明对高度专业化领域（如临床医疗、法律）的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">直接迁移性</span></span><span leaf="">。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">计算与工程成本</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">尽管节约了人工注释，构建大规模证据图、运行复杂验证与进行 RL 微调仍需显著计算资源与工程工作。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">答案可信度</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">强化了中间行为 supervision 并提升了证据覆盖率，但并不能保证在所有情形下完全消除模型幻觉或错误引用——尤其在底层知识源本身不完整或有误时。</span>
+      </p>
+    </section>
+
+    <section style="margin-bottom:14px;">
+      <p style="margin:0 0 6px;">
+        <span style="display:inline-block;font-size:13px;font-weight:700;color:#059669;background:rgba(5,150,105,0.08);padding:3px 10px;border-radius:999px;"><span style="display:inline-block;width:6px;height:6px;background:#059669;border-radius:50%;margin-right:5px;vertical-align:middle;"><span leaf=""><br></span></span><span leaf="">超参数调优</span></span>
+      </p>
+      <p style="font-size:13px;color:#4B5563;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">作者并未给出对所有超参数（如 α、β、γ、τ）的通用设定，实际部署仍需针对任务分布进行调优。</span>
+      </p>
+    </section>
+  </section>
+
+  <!-- 06 科学发现范式 -->
+  <section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">06</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">PART</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">科学发现范式</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">SCI PATTERN · 范式归类</span>
+        </p>
+      </section>
+    </section>
+
+    <section style="background:#F9FAFB;padding:16px;border-radius:12px;border:1px solid #F3F4F6;margin-bottom:24px;">
+      <section style="display:flex;align-items:stretch;justify-content:center;gap:6px;">
+        <section style="flex:1;text-align:center;padding:10px 8px;background:linear-gradient(135deg,#059669,#10B981);border-radius:8px;">
+          <p style="font-size:13px;font-weight:800;color:#fff;margin:0 0 3px;">
+            <span leaf="">主范式</span>
+          </p>
+          <p style="font-size:10px;color:rgba(255,255,255,0.8);margin:0;line-height:1.5;">
+            <span leaf="">P05 Data &amp; Evaluation Engineering</span>
+          </p>
+        </section>
+        <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+          <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;">
+            <span leaf="">次要</span>
+          </p>
+          <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;">
+            <span leaf="">P15 Active Sampling</span>
+          </p>
+        </section>
+        <section style="flex:1;text-align:center;padding:10px 8px;background:#fff;border:1px solid #E5E7EB;border-radius:8px;">
+          <p style="font-size:13px;font-weight:800;color:#111827;margin:0 0 3px;">
+            <span leaf="">次要</span>
+          </p>
+          <p style="font-size:10px;color:#9CA3AF;margin:0;line-height:1.5;">
+            <span leaf="">P04 Modular Pipeline</span>
+          </p>
+        </section>
+      </section>
+    </section>
+
+    <section style="background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:8px;padding:12px 16px;margin-bottom:24px;text-align:justify;">
+      <p style="font-size:13px;color:#374151;margin:0;line-height:1.6;">
+        <span leaf="">分类理由：论文 SearchArt 以可扩展的合成任务生成与验证管线为核心，通过对合成的搜索轨迹进行质量验证并将其作为监督信号用于对 Qwen3.5-27B 的监督微调与强化学习，属于典型的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">数据／评估工程驱动方法（P05）</span></span><span leaf="">。同时论文强调有针对性的合成数据选择与筛除策略以改善训练信号（P15），并通过验证→微调→RL 的多阶段后训练流水线体现模块化管道设计（P04）。</span>
+      </p>
+    </section>
+  </section>
+
+  <!-- 07 先前工作分析 -->
+  <section style="margin-top:48px;margin-bottom:32px;padding:0 20px;">
+    <section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+      <section style="text-align:center;flex-shrink:0;">
+        <p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;letter-spacing:-2px;">
+          <span leaf="">07</span>
+        </p>
+        <p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;">
+          <span leaf="">PART</span>
+        </p>
+      </section>
+      <span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>
+      <section>
+        <p style="margin:0 0 1px;font-size:17px;font-weight:900;color:#111827;letter-spacing:0.3px;">
+          <span leaf="">先前工作分析</span>
+        </p>
+        <p style="margin:0;font-size:11px;font-weight:600;color:#9CA3AF;letter-spacing:1.5px;">
+          <span leaf="">PRIOR WORKS · 脉络与缺口</span>
+        </p>
+      </section>
+    </section>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">Work on browser-enabled QA agents such as </span><strong style="color:#059669;"><span leaf="">WebGPT</span></strong><span leaf=""> developed the training recipe of combining supervised learning with reinforcement learning to produce grounded, cited answers from multi-step web interactions, establishing the baseline agentic training loop that requires expensive human-labelled trajectories.</span>
+    </p>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">Research like </span><strong style="color:#059669;"><span leaf="">ReAct</span></strong><span leaf=""> made explicit the value of interleaving reasoning traces with external actions, giving a practical representation for intermediate decision points, while </span><strong style="color:#059669;"><span leaf="">Chain-of-Thought</span></strong><span leaf=""> demonstrated that supervising intermediate reasoning steps materially improves multi-step inference—together these papers supply the conceptual and representational tools for treating </span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">trajectories as first-class training signals</span></span><span leaf="">.</span>
+    </p>
+
+    <p style="margin-bottom:16px;font-size:14px;line-height:1.9;text-align:justify;">
+      <span leaf="">Dataset and problem formulations exemplified by </span><strong style="color:#059669;"><span leaf="">HotpotQA</span></strong><span leaf=""> formalize multi-hop QA with supporting facts and evaluation of evidence aggregation, providing the multi-hop, explainable QA framework SearchArt targets. Methodologically, </span><strong style="color:#059669;"><span leaf="">Toolformer</span></strong><span leaf=""> showed that large language models can synthesize and self-validate tool-use data at scale, suggesting a path to replace costly human annotation with model-driven synthetic corpora, and </span><strong style="color:#059669;"><span leaf="">Tree of Thoughts</span></strong><span leaf=""> defined branch-and-evaluate search dynamics that motivate explicit modeling of branch selection and verification.</span>
+    </p>
+
+    <section style="background:#F0FDF4;padding:12px 16px;border-radius:8px;border:1px solid #BBF7D0;margin-bottom:20px;">
+      <p style="font-size:13px;color:#374151;margin:0;line-height:1.7;text-align:justify;">
+        <span leaf="">Combining these strands reveals a gap: prior systems either depend on expensive human verification or emphasize final-answer correctness while neglecting </span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">trajectory quality and branch-level verification</span></span><span leaf="">. SearchArt naturally follows by integrating synthetic trajectory generation (Toolformer-style) with trajectory-level verification, training agents in the WebGPT RL loop, and explicitly supervising intermediate reasoning and branch-selection (ReAct／CoT／Tree-of-Thoughts) to produce scalable, high-quality long-horizon search policies.</span>
+      </p>
+    </section>
+  </section>
+
+</section>

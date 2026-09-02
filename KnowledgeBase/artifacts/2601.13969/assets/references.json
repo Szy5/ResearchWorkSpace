@@ -1,0 +1,1842 @@
+{
+  "references": [
+    {
+      "key": "asai_learning_2020",
+      "title": "Learning to Retrieve Reasoning Paths over Wikipedia Graph for Question Answering",
+      "authors": [
+        "Asai, Akari",
+        "Hashimoto, Kazuma",
+        "Hajishirzi, Hannaneh",
+        "Socher, Richard",
+        "Xiong, Caiming"
+      ],
+      "year": 2020,
+      "venue": "",
+      "doi": "10.48550/arXiv.1911.10470",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/1911.10470",
+      "raw_bibtex": "@misc{asai_learning_2020,\n\ttitle = {Learning to {Retrieve} {Reasoning} {Paths} over {Wikipedia} {Graph} for {Question} {Answering}},\n\turl = {http://arxiv.org/abs/1911.10470},\n\tdoi = {10.48550/arXiv.1911.10470},\n\tabstract = {Answering questions that require multi-hop reasoning at web-scale necessitates retrieving multiple evidence documents, one of which often has little lexical or semantic relationship to the question. This paper introduces a new graph-based recurrent retrieval approach that learns to retrieve reasoning paths over the Wikipedia graph to answer multi-hop open-domain questions. Our retriever model trains a recurrent neural network that learns to sequentially retrieve evidence paragraphs in the reasoning path by conditioning on the previously retrieved documents. Our reader model ranks the reasoning paths and extracts the answer span included in the best reasoning path. Experimental results show state-of-the-art results in three open-domain QA datasets, showcasing the effectiveness and robustness of our method. Notably, our method achieves significant improvement in HotpotQA, outperforming the previous best model by more than 14 points.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Asai, Akari and Hashimoto, Kazuma and Hajishirzi, Hannaneh and Socher, Richard and Xiong, Caiming},\n\tmonth = feb,\n\tyear = {2020},\n\tnote = {arXiv:1911.10470 [cs]},\n\tkeywords = {Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "bengio_flow_2021",
+      "title": "Flow Network based Generative Models for Non - Iterative Diverse Candidate Generation",
+      "authors": [
+        "Bengio, Emmanuel",
+        "Jain, Moksh",
+        "Korablyov, Maksym",
+        "Precup, Doina",
+        "Bengio, Yoshua"
+      ],
+      "year": 2021,
+      "venue": "",
+      "doi": "10.48550/ARXIV.2106.04399",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2106.04399",
+      "raw_bibtex": "@misc{bengio_flow_2021,\n    title = {Flow {Network} based {Generative} {Models} for {Non}-{Iterative} {Diverse} {Candidate} {Generation}},\n    copyright = {Creative Commons Attribution 4.0 International},\n    url = {https://arxiv.org/abs/2106.04399},\n    doi = {10.48550/ARXIV.2106.04399},\n    abstract = {This paper is about the problem of learning a stochastic policy for generating an object (like a molecular graph) from a sequence of actions, such that the probability of generating an object is proportional to a given positive reward for that object. Whereas standard return maximization tends to converge to a single return-maximizing sequence, there are cases where we would like to sample a diverse set of high-return solutions. These arise, for example, in black-box function optimization when few rounds are possible, each with large batches of queries, where the batches should be diverse, e.g., in the design of new molecules. One can also see this as a problem of approximately converting an energy function to a generative distribution. While MCMC methods can achieve that, they are expensive and generally only perform local exploration. Instead, training a generative policy amortizes the cost of search during training and yields to fast generation. Using insights from Temporal Difference learning, we propose GFlowNet, based on a view of the generative process as a flow network, making it possible to handle the tricky case where different trajectories can yield the same final state, e.g., there are many ways to sequentially add atoms to generate some molecular graph. We cast the set of trajectories as a flow and convert the flow consistency equations into a learning objective, akin to the casting of the Bellman equations into Temporal Difference methods. We prove that any global minimum of the proposed objectives yields a policy which samples from the desired distribution, and demonstrate the improved performance and diversity of GFlowNet on a simple domain where there are many modes to the reward function, and on a molecule synthesis task.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Bengio, Emmanuel and Jain, Moksh and Korablyov, Maksym and Precup, Doina and Bengio, Yoshua},\n    year = {2021},\n    note = {Version Number: 2},\n    keywords = {FOS: Computer and information sciences, Machine Learning (cs.LG)},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        }
+      ]
+    },
+    {
+      "key": "chandak_building_2023",
+      "title": "Building a knowledge graph to enable precision medicine",
+      "authors": [
+        "Chandak, Payal",
+        "Huang, Kexin",
+        "Zitnik, Marinka"
+      ],
+      "year": 2023,
+      "venue": "Scientific Data",
+      "doi": "10.1038/s41597-023-01960-3",
+      "arxiv_id": "",
+      "url": "https://www.nature.com/articles/s41597-023-01960-3",
+      "raw_bibtex": "@article{chandak_building_2023,\n\ttitle = {Building a knowledge graph to enable precision medicine},\n\tvolume = {10},\n\tcopyright = {2023 The Author(s)},\n\tissn = {2052-4463},\n\turl = {https://www.nature.com/articles/s41597-023-01960-3},\n\tdoi = {10.1038/s41597-023-01960-3},\n\tabstract = {Developing personalized diagnostic strategies and targeted treatments requires a deep understanding of disease biology and the ability to dissect the relationship between molecular and genetic factors and their phenotypic consequences. However, such knowledge is fragmented across publications, non-standardized repositories, and evolving ontologies describing various scales of biological organization between genotypes and clinical phenotypes. Here, we present PrimeKG, a multimodal knowledge graph for precision medicine analyses. PrimeKG integrates 20 high-quality resources to describe 17,080 diseases with 4,050,249 relationships representing ten major biological scales, including disease-associated protein perturbations, biological processes and pathways, anatomical and phenotypic scales, and the entire range of approved drugs with their therapeutic action, considerably expanding previous efforts in disease-rooted knowledge graphs. PrimeKG contains an abundance of ‘indications’, ‘contradictions’, and ‘off-label use’ drug-disease edges that lack in other knowledge graphs and can support AI analyses of how drugs affect disease-associated networks. We supplement PrimeKG’s graph structure with language descriptions of clinical guidelines to enable multimodal analyses and provide instructions for continual updates of PrimeKG as new data become available.},\n\tlanguage = {en},\n\tnumber = {1},\n\turldate = {2026-01-06},\n\tjournal = {Scientific Data},\n\tauthor = {Chandak, Payal and Huang, Kexin and Zitnik, Marinka},\n\tmonth = feb,\n\tyear = {2023},\n\tnote = {Publisher: Nature Publishing Group},\n\tkeywords = {Data integration, Machine learning, Medical research, Network topology, Predictive medicine},\n\tpages = {67},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-benchmark",
+          "text": "STaRK comprises three large, heterogeneous knowledge graphs. **AMAZON** is an e-commerce graph with roughly 1M entities and 9.4M relations, constructed from Amazon metadata, reviews [he_ups_2016], and question--answer pairs [mcauley_inferring_2015]. **MAG** is a scholarly graph with 1.9M entities"
+        }
+      ]
+    },
+    {
+      "key": "chen_graphflow_2020",
+      "title": "GraphFlow : Exploiting Conversation Flow with Graph Neural Networks for Conversational Machine Comprehension",
+      "authors": [
+        "Chen, Yu",
+        "Wu, Lingfei",
+        "Zaki, Mohammed J."
+      ],
+      "year": 2020,
+      "venue": "",
+      "doi": "10.24963/ijcai.2020/171",
+      "arxiv_id": "",
+      "url": "https://www.ijcai.org/proceedings/2020/171",
+      "raw_bibtex": "@inproceedings{chen_graphflow_2020,\n\ttitle = {{GraphFlow}: {Exploiting} {Conversation} {Flow} with {Graph} {Neural} {Networks} for {Conversational} {Machine} {Comprehension}},\n\tvolume = {2},\n\tshorttitle = {{GraphFlow}},\n\turl = {https://www.ijcai.org/proceedings/2020/171},\n\tdoi = {10.24963/ijcai.2020/171},\n\tabstract = {Electronic proceedings of IJCAI 2020},\n\tlanguage = {en},\n\turldate = {2026-01-06},\n\tauthor = {Chen, Yu and Wu, Lingfei and Zaki, Mohammed J.},\n\tmonth = jul,\n\tyear = {2020},\n\tnote = {ISSN: 1045-0823},\n\tpages = {1230--1236},\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "chen_gril_2025",
+      "title": "GRIL : Knowledge Graph Retrieval - Integrated Learning with Large Language Models",
+      "authors": [
+        "Chen, Jialin",
+        "Zhang, Houyu",
+        "Yun, Seongjun",
+        "Mottini, Alejandro",
+        "Ying, Rex",
+        "Song, Xiang",
+        "Ioannidis, Vassilis N.",
+        "Li, Zheng",
+        "Cui, Qingjun"
+      ],
+      "year": 2025,
+      "venue": "Findings of the {Association} for {Computational} {Linguistics}: {EMNLP} 2025",
+      "doi": "10.18653/v1/2025.findings-emnlp.886",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.findings-emnlp.886/",
+      "raw_bibtex": "@inproceedings{chen_gril_2025,\n    address = {Suzhou, China},\n    title = {{GRIL}: {Knowledge} {Graph} {Retrieval}-{Integrated} {Learning} with {Large} {Language} {Models}},\n    isbn = {979-8-89176-335-7},\n    shorttitle = {{GRIL}},\n    url = {https://aclanthology.org/2025.findings-emnlp.886/},\n    doi = {10.18653/v1/2025.findings-emnlp.886},\n    abstract = {Retrieval-Augmented Generation (RAG) has significantly mitigated the hallucinations of Large Language Models (LLMs) by grounding the generation with external knowledge. Recent extensions of RAG to graph-based retrieval offer a promising direction, leveraging the structural knowledge for multi-hop reasoning. However, existing graph RAG typically decouples retrieval and reasoning processes, which prevents the retriever from adapting to the reasoning needs of the LLM. They also struggle with scalability when performing multi-hop expansion over large-scale graphs, or depend heavily on annotated ground-truth entities, which are often unavailable in open-domain settings. To address these challenges, we propose a novel graph retriever trained end-to-end with LLM, which features an attention-based growing and pruning mechanism, adaptively navigating multi-hop relevant entities while filtering out noise. Within the extracted subgraph, structural knowledge and semantic features are encoded via soft tokens and the verbalized graph, respectively, which are infused into the LLM together, thereby enhancing its reasoning capability and facilitating interactive joint training of the graph retriever and the LLM reasoner. Experimental results across three QA benchmarks show that our approach consistently achieves state-of-the-art performance, validating the strength of joint graph–LLM optimization for complex reasoning tasks. Notably, our framework eliminates the need for predefined ground-truth entities by directly optimizing the retriever using LLM logits as implicit feedback, making it especially effective in open-domain settings.},\n    urldate = {2026-01-06},\n    booktitle = {Findings of the {Association} for {Computational} {Linguistics}: {EMNLP} 2025},\n    publisher = {Association for Computational Linguistics},\n    author = {Chen, Jialin and Zhang, Houyu and Yun, Seongjun and Mottini, Alejandro and Ying, Rex and Song, Xiang and Ioannidis, Vassilis N. and Li, Zheng and Cui, Qingjun},\n    editor = {Christodoulopoulos, Christos and Chakraborty, Tanmoy and Rose, Carolyn and Peng, Violet},\n    month = nov,\n    year = {2025},\n    pages = {16306--16319},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "cormack_reciprocal_2009",
+      "title": "Reciprocal rank fusion outperforms condorcet and individual rank learning methods",
+      "authors": [
+        "Cormack, Gordon V.",
+        "Clarke, Charles L A",
+        "Buettcher, Stefan"
+      ],
+      "year": 2009,
+      "venue": "Proceedings of the 32nd international {ACM} {SIGIR} conference on {Research} and development in information retrieval",
+      "doi": "10.1145/1571941.1572114",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1145/1571941.1572114",
+      "raw_bibtex": "@inproceedings{cormack_reciprocal_2009,\n\taddress = {New York, NY, USA},\n\tseries = {{SIGIR} '09},\n\ttitle = {Reciprocal rank fusion outperforms condorcet and individual rank learning methods},\n\tisbn = {978-1-60558-483-6},\n\turl = {https://doi.org/10.1145/1571941.1572114},\n\tdoi = {10.1145/1571941.1572114},\n\tabstract = {Reciprocal Rank Fusion (RRF), a simple method for combining the document rankings from multiple IR systems, consistently yields better results than any individual system, and better results than the standard method Condorcet Fuse. This result is demonstrated by using RRF to combine the results of several TREC experiments, and to build a meta-learner that ranks the LETOR 3 dataset better than any previously reported method},\n\turldate = {2026-01-06},\n\tbooktitle = {Proceedings of the 32nd international {ACM} {SIGIR} conference on {Research} and development in information retrieval},\n\tpublisher = {Association for Computing Machinery},\n\tauthor = {Cormack, Gordon V. and Clarke, Charles L A and Buettcher, Stefan},\n\tmonth = jul,\n\tyear = {2009},\n\tpages = {758--759},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-parallel-exploration",
+          "text": "[]{#sec:parallel_exploration label=\"sec:parallel_exploration\"} We increase robustness by running $n$ independent instances of the same agent in parallel and aggregating their retrieved lists, akin to self-consistency and voting-based ensembling in LLM reasoning [wang_self-consistency_2023,"
+        }
+      ]
+    },
+    {
+      "key": "das_go_2018",
+      "title": "Go for a Walk and Arrive at the Answer : Reasoning Over Paths in Knowledge Bases using Reinforcement Learning",
+      "authors": [
+        "Das, Rajarshi",
+        "Dhuliawala, Shehzaad",
+        "Zaheer, Manzil",
+        "Vilnis, Luke",
+        "Durugkar, Ishan",
+        "Krishnamurthy, Akshay",
+        "Smola, Alex",
+        "McCallum, Andrew"
+      ],
+      "year": 2018,
+      "venue": "",
+      "doi": "10.48550/arXiv.1711.05851",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/1711.05851",
+      "raw_bibtex": "@misc{das_go_2018,\n    title = {Go for a {Walk} and {Arrive} at the {Answer}: {Reasoning} {Over} {Paths} in {Knowledge} {Bases} using {Reinforcement} {Learning}},\n    shorttitle = {Go for a {Walk} and {Arrive} at the {Answer}},\n    url = {http://arxiv.org/abs/1711.05851},\n    doi = {10.48550/arXiv.1711.05851},\n    abstract = {Knowledge bases (KB), both automatically and manually constructed, are often incomplete --- many valid facts can be inferred from the KB by synthesizing existing information. A popular approach to KB completion is to infer new relations by combinatory reasoning over the information found along other paths connecting a pair of entities. Given the enormous size of KBs and the exponential number of paths, previous path-based models have considered only the problem of predicting a missing relation given two entities or evaluating the truth of a proposed triple. Additionally, these methods have traditionally used random paths between fixed entity pairs or more recently learned to pick paths between them. We propose a new algorithm MINERVA, which addresses the much more difficult and practical task of answering questions where the relation is known, but only one entity. Since random walks are impractical in a setting with combinatorially many destinations from a start node, we present a neural reinforcement learning approach which learns how to navigate the graph conditioned on the input query to find predictive paths. Empirically, this approach obtains state-of-the-art results on several datasets, significantly outperforming prior methods.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Das, Rajarshi and Dhuliawala, Shehzaad and Zaheer, Manzil and Vilnis, Luke and Durugkar, Ishan and Krishnamurthy, Akshay and Smola, Alex and McCallum, Andrew},\n    month = dec,\n    year = {2018},\n    note = {arXiv:1711.05851 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "edge_local_2025",
+      "title": "From Local to Global : A Graph RAG Approach to Query - Focused Summarization",
+      "authors": [
+        "Edge, Darren",
+        "Trinh, Ha",
+        "Cheng, Newman",
+        "Bradley, Joshua",
+        "Chao, Alex",
+        "Mody, Apurva",
+        "Truitt, Steven",
+        "Metropolitansky, Dasha",
+        "Ness, Robert Osazuwa",
+        "Larson, Jonathan"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2404.16130",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2404.16130",
+      "raw_bibtex": "@misc{edge_local_2025,\n    title = {From {Local} to {Global}: {A} {Graph} {RAG} {Approach} to {Query}-{Focused} {Summarization}},\n    shorttitle = {From {Local} to {Global}},\n    url = {http://arxiv.org/abs/2404.16130},\n    doi = {10.48550/arXiv.2404.16130},\n    abstract = {The use of retrieval-augmented generation (RAG) to retrieve relevant information from an external knowledge source enables large language models (LLMs) to answer questions over private and/or previously unseen document collections. However, RAG fails on global questions directed at an entire text corpus, such as \"What are the main themes in the dataset?\", since this is inherently a query-focused summarization (QFS) task, rather than an explicit retrieval task. Prior QFS methods, meanwhile, do not scale to the quantities of text indexed by typical RAG systems. To combine the strengths of these contrasting methods, we propose GraphRAG, a graph-based approach to question answering over private text corpora that scales with both the generality of user questions and the quantity of source text. Our approach uses an LLM to build a graph index in two stages: first, to derive an entity knowledge graph from the source documents, then to pregenerate community summaries for all groups of closely related entities. Given a question, each community summary is used to generate a partial response, before all partial responses are again summarized in a final response to the user. For a class of global sensemaking questions over datasets in the 1 million token range, we show that GraphRAG leads to substantial improvements over a conventional RAG baseline for both the comprehensiveness and diversity of generated answers.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Edge, Darren and Trinh, Ha and Cheng, Newman and Bradley, Joshua and Chao, Alex and Mody, Apurva and Truitt, Steven and Metropolitansky, Dasha and Ness, Robert Osazuwa and Larson, Jonathan},\n    month = feb,\n    year = {2025},\n    note = {arXiv:2404.16130 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Information Retrieval},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "fagin_efficient_2003",
+      "title": "Efficient similarity search and classification via rank aggregation",
+      "authors": [
+        "Fagin, Ronald",
+        "Kumar, Ravi",
+        "Sivakumar, D."
+      ],
+      "year": 2003,
+      "venue": "Proceedings of the 2003 {ACM} {SIGMOD} international conference on {Management} of data",
+      "doi": "10.1145/872757.872795",
+      "arxiv_id": "",
+      "url": "https://dl.acm.org/doi/10.1145/872757.872795",
+      "raw_bibtex": "@inproceedings{fagin_efficient_2003,\n    address = {New York, NY, USA},\n    series = {{SIGMOD} '03},\n    title = {Efficient similarity search and classification via rank aggregation},\n    isbn = {978-1-58113-634-0},\n    url = {https://dl.acm.org/doi/10.1145/872757.872795},\n    doi = {10.1145/872757.872795},\n    abstract = {We propose a novel approach to performing efficient similarity search and classification in high dimensional data. In this framework, the database elements are vectors in a Euclidean space. Given a query vector in the same space, the goal is to find elements of the database that are similar to the query. In our approach, a small number of independent \"voters\" rank the database elements based on similarity to the query. These rankings are then combined by a highly efficient aggregation algorithm. Our methodology leads both to techniques for computing approximate nearest neighbors and to a conceptually rich alternative to nearest neighbors.One instantiation of our methodology is as follows. Each voter projects all the vectors (database elements and the query) on a random line (different for each voter), and ranks the database elements based on the proximity of the projections to the projection of the query. The aggregation rule picks the database element that has the best median rank. This combination has several appealing features. On the theoretical side, we prove that with high probability, it produces a result that is a (1 + ε) factor approximation to the Euclidean nearest neighbor. On the practical side, it turns out to be extremely efficient, often exploring no more than 5\\% of the data to obtain very high-quality results. This method is also database-friendly, in that it accesses data primarily in a pre-defined order without random accesses, and, unlike other methods for approximate nearest neighbors, requires almost no extra storage. Also, we extend our approach to deal with the k nearest neighbors.We conduct two sets of experiments to evaluate the efficacy of our methods. Our experiments include two scenarios where nearest neighbors are typically employed---similarity search and classification problems. In both cases, we study the performance of our methods with respect to several evaluation criteria, and conclude that they are uniformly excellent, both in terms of quality of results and in terms of efficiency.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 2003 {ACM} {SIGMOD} international conference on {Management} of data},\n    publisher = {Association for Computing Machinery},\n    author = {Fagin, Ronald and Kumar, Ravi and Sivakumar, D.},\n    month = jun,\n    year = {2003},\n    pages = {301--312},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-parallel-exploration",
+          "text": "[]{#sec:parallel_exploration label=\"sec:parallel_exploration\"} We increase robustness by running $n$ independent instances of the same agent in parallel and aggregating their retrieved lists, akin to self-consistency and voting-based ensembling in LLM reasoning [wang_self-consistency_2023,"
+        }
+      ]
+    },
+    {
+      "key": "guu_realm_2020",
+      "title": "REALM : retrieval-augmented language model pre-training",
+      "authors": [
+        "Guu, Kelvin",
+        "Lee, Kenton",
+        "Tung, Zora",
+        "Pasupat, Panupong",
+        "Chang, Ming-Wei"
+      ],
+      "year": 2020,
+      "venue": "Proceedings of the 37th {International} {Conference} on {Machine} {Learning}",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{guu_realm_2020,\n    series = {{ICML}'20},\n    title = {{REALM}: retrieval-augmented language model pre-training},\n    volume = {119},\n    shorttitle = {{REALM}},\n    abstract = {Language model pre-training has been shown to capture a surprising amount of world knowledge, crucial for NLP tasks such as question answering. However, this knowledge is stored implicitly in the parameters of a neural network, requiring everlarger networks to cover more facts.To capture knowledge in a more modular and interpretable way, we augment language model pretraining with a latent knowledge retriever, which allows the model to retrieve and attend over documents from a large corpus such as Wikipedia, used during pre-training, fine-tuning and inference. For the first time, we show how to pre-train such a knowledge retriever in an unsupervised manner, using masked language modeling as the learning signal and backpropagating through a retrieval step that considers millions of documents.We demonstrate the effectiveness of Retrieval-Augmented Language Model pretraining (REALM) by fine-tuning on the challenging task of Open-domain Question Answering (Open-QA). We compare against state-of-the-art models for both explicit and implicit knowledge storage on three popular Open-QA benchmarks, and find that we outperform all previous methods by a significant margin (4-16\\% absolute accuracy), while also providing qualitative benefits such as interpretability and modularity.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 37th {International} {Conference} on {Machine} {Learning}},\n    publisher = {JMLR.org},\n    author = {Guu, Kelvin and Lee, Kenton and Tung, Zora and Pasupat, Panupong and Chang, Ming-Wei},\n    month = jul,\n    year = {2020},\n    pages = {3929--3938},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "he_g-retriever_2024",
+      "title": "G- Retriever : Retrieval - Augmented Generation for Textual Graph Understanding and Question Answering",
+      "authors": [
+        "He, Xiaoxin",
+        "Tian, Yijun",
+        "Sun, Yifei",
+        "Chawla, Nitesh V.",
+        "Laurent, Thomas",
+        "LeCun, Yann",
+        "Bresson, Xavier",
+        "Hooi, Bryan"
+      ],
+      "year": 2024,
+      "venue": "",
+      "doi": "10.48550/arXiv.2402.07630",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2402.07630",
+      "raw_bibtex": "@misc{he_g-retriever_2024,\n    title = {G-{Retriever}: {Retrieval}-{Augmented} {Generation} for {Textual} {Graph} {Understanding} and {Question} {Answering}},\n    shorttitle = {G-{Retriever}},\n    url = {http://arxiv.org/abs/2402.07630},\n    doi = {10.48550/arXiv.2402.07630},\n    abstract = {Given a graph with textual attributes, we enable users to `chat with their graph': that is, to ask questions about the graph using a conversational interface. In response to a user's questions, our method provides textual replies and highlights the relevant parts of the graph. While existing works integrate large language models (LLMs) and graph neural networks (GNNs) in various ways, they mostly focus on either conventional graph tasks (such as node, edge, and graph classification), or on answering simple graph queries on small or synthetic graphs. In contrast, we develop a flexible question-answering framework targeting real-world textual graphs, applicable to multiple applications including scene graph understanding, common sense reasoning, and knowledge graph reasoning. Toward this goal, we first develop a Graph Question Answering (GraphQA) benchmark with data collected from different tasks. Then, we propose our G-Retriever method, introducing the first retrieval-augmented generation (RAG) approach for general textual graphs, which can be fine-tuned to enhance graph understanding via soft prompting. To resist hallucination and to allow for textual graphs that greatly exceed the LLM's context window size, G-Retriever performs RAG over a graph by formulating this task as a Prize-Collecting Steiner Tree optimization problem. Empirical evaluations show that our method outperforms baselines on textual graph tasks from multiple domains, scales well with larger graph sizes, and mitigates hallucination.{\\textasciitilde}{\\textbackslash}footnote\\{Our codes and datasets are available at: {\\textbackslash}url\\{https://github.com/XiaoxinHe/G-Retriever\\}\\}},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {He, Xiaoxin and Tian, Yijun and Sun, Yifei and Chawla, Nitesh V. and Laurent, Thomas and LeCun, Yann and Bresson, Xavier and Hooi, Bryan},\n    month = may,\n    year = {2024},\n    note = {arXiv:2402.07630 [cs]},\n    keywords = {Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "he_ups_2016",
+      "title": "Ups and Downs : Modeling the Visual Evolution of Fashion Trends with One - Class Collaborative Filtering",
+      "authors": [
+        "He, Ruining",
+        "McAuley, Julian"
+      ],
+      "year": 2016,
+      "venue": "Proceedings of the 25th {International} {Conference} on {World} {Wide} {Web}",
+      "doi": "10.1145/2872427.2883037",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1145/2872427.2883037",
+      "raw_bibtex": "@inproceedings{he_ups_2016,\n\taddress = {Republic and Canton of Geneva, CHE},\n\tseries = {{WWW} '16},\n\ttitle = {Ups and {Downs}: {Modeling} the {Visual} {Evolution} of {Fashion} {Trends} with {One}-{Class} {Collaborative} {Filtering}},\n\tisbn = {978-1-4503-4143-1},\n\tshorttitle = {Ups and {Downs}},\n\turl = {https://doi.org/10.1145/2872427.2883037},\n\tdoi = {10.1145/2872427.2883037},\n\tabstract = {Building a successful recommender system depends on understanding both the dimensions of people's preferences as well as their dynamics. In certain domains, such as fashion, modeling such preferences can be incredibly difficult, due to the need to simultaneously model the visual appearance of products as well as their evolution over time. The subtle semantics and non-linear dynamics of fashion evolution raise unique challenges especially considering the sparsity and large scale of the underlying datasets. In this paper we build novel models for the One-Class Collaborative Filtering setting, where our goal is to estimate users' fashion-aware personalized ranking functions based on their past feedback. To uncover the complex and evolving visual factors that people consider when evaluating products, our method combines high-level visual features extracted from a deep convolutional neural network, users' past feedback, as well as evolving trends within the community. Experimentally we evaluate our method on two large real-world datasets from Amazon.com, where we show it to outperform state-of-the-art personalized ranking measures, and also use it to visualize the high-level fashion trends across the 11-year span of our dataset.},\n\turldate = {2026-01-06},\n\tbooktitle = {Proceedings of the 25th {International} {Conference} on {World} {Wide} {Web}},\n\tpublisher = {International World Wide Web Conferences Steering Committee},\n\tauthor = {He, Ruining and McAuley, Julian},\n\tmonth = apr,\n\tyear = {2016},\n\tpages = {507--517},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-benchmark",
+          "text": "STaRK comprises three large, heterogeneous knowledge graphs. **AMAZON** is an e-commerce graph with roughly 1M entities and 9.4M relations, constructed from Amazon metadata, reviews [he_ups_2016], and question--answer pairs [mcauley_inferring_2015]. **MAG** is a scholarly graph with 1.9M entities"
+        }
+      ]
+    },
+    {
+      "key": "hinton_distilling_2015",
+      "title": "Distilling the Knowledge in a Neural Network",
+      "authors": [
+        "Hinton, Geoffrey",
+        "Vinyals, Oriol",
+        "Dean, Jeff"
+      ],
+      "year": 2015,
+      "venue": "",
+      "doi": "10.48550/arXiv.1503.02531",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/1503.02531",
+      "raw_bibtex": "@misc{hinton_distilling_2015,\n    title = {Distilling the {Knowledge} in a {Neural} {Network}},\n    url = {http://arxiv.org/abs/1503.02531},\n    doi = {10.48550/arXiv.1503.02531},\n    abstract = {A very simple way to improve the performance of almost any machine learning algorithm is to train many different models on the same data and then to average their predictions. Unfortunately, making predictions using a whole ensemble of models is cumbersome and may be too computationally expensive to allow deployment to a large number of users, especially if the individual models are large neural nets. Caruana and his collaborators have shown that it is possible to compress the knowledge in an ensemble into a single model which is much easier to deploy and we develop this approach further using a different compression technique. We achieve some surprising results on MNIST and we show that we can significantly improve the acoustic model of a heavily used commercial system by distilling the knowledge in an ensemble of models into a single model. We also introduce a new type of ensemble composed of one or more full models and many specialist models which learn to distinguish fine-grained classes that the full models confuse. Unlike a mixture of experts, these specialist models can be trained rapidly and in parallel.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Hinton, Geoffrey and Vinyals, Oriol and Dean, Jeff},\n    month = mar,\n    year = {2015},\n    note = {arXiv:1503.02531 [stat]},\n    keywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing, Statistics - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-agent-distillation",
+          "text": "[]{#subsec:distill label=\"subsec:distill\"} While operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency [hinton_distilling_2015]. We adopt a standard teacher--student paradigm in which a student model imitates the"
+        }
+      ]
+    },
+    {
+      "key": "hu2025remindrag",
+      "title": "ReMindRAG: Low-Cost LLM -Guided Knowledge Graph Traversal for Efficient RAG",
+      "authors": [
+        "Hu, Yikuan",
+        "Zhu, Jifeng",
+        "Tang, Lanrui",
+        "Huang, Chen"
+      ],
+      "year": 2025,
+      "venue": "NeurIPS",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{hu2025remindrag,\n  title={{ReMindRAG:} Low-Cost {LLM}-Guided Knowledge Graph Traversal for Efficient {RAG}},\n  author={Hu, Yikuan and Zhu, Jifeng and Tang, Lanrui and Huang, Chen},\n  journal={NeurIPS},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "hu_grag_2025",
+      "title": "GRAG : Graph Retrieval - Augmented Generation",
+      "authors": [
+        "Hu, Yuntong",
+        "Lei, Zhihan",
+        "Zhang, Zheng",
+        "Pan, Bo",
+        "Ling, Chen",
+        "Zhao, Liang"
+      ],
+      "year": 2025,
+      "venue": "Findings of the {Association} for {Computational} {Linguistics}: {NAACL} 2025",
+      "doi": "10.18653/v1/2025.findings-naacl.232",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.findings-naacl.232/",
+      "raw_bibtex": "@inproceedings{hu_grag_2025,\n    address = {Albuquerque, New Mexico},\n    title = {{GRAG}: {Graph} {Retrieval}-{Augmented} {Generation}},\n    isbn = {979-8-89176-195-7},\n    shorttitle = {{GRAG}},\n    url = {https://aclanthology.org/2025.findings-naacl.232/},\n    doi = {10.18653/v1/2025.findings-naacl.232},\n    abstract = {Naive Retrieval-Augmented Generation (RAG) focuses on individual documents during retrieval and, as a result, falls short in handling networked documents which are very popular in many applications such as citation graphs, social media, and knowledge graphs. To overcome this limitation, we introduce Graph Retrieval-Augmented Generation (GRAG), which tackles the fundamental challenges in retrieving textual subgraphs and integrating the joint textual and topological information into Large Language Models (LLMs) to enhance its generation. To enable efficient textual subgraph retrieval, we propose a novel divide-and-conquer strategy that retrieves the optimal subgraph structure in linear time. To achieve graph context-aware generation, incorporate textual graphs into LLMs through two complementary views—the text view and the graph view—enabling LLMs to more effectively comprehend and utilize the graph context. Extensive experiments on graph reasoning benchmarks demonstrate that in scenarios requiring multi-hop reasoning on textual graphs, our GRAG approach significantly outperforms current state-of-the-art RAG methods. Our datasets as well as codes of GRAG are available at https://github.com/HuieL/GRAG.},\n    urldate = {2026-01-06},\n    booktitle = {Findings of the {Association} for {Computational} {Linguistics}: {NAACL} 2025},\n    publisher = {Association for Computational Linguistics},\n    author = {Hu, Yuntong and Lei, Zhihan and Zhang, Zheng and Pan, Bo and Ling, Chen and Zhao, Liang},\n    editor = {Chiruzzo, Luis and Ritter, Alan and Wang, Lu},\n    month = apr,\n    year = {2025},\n    pages = {4145--4157},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "hu_lora_2021",
+      "title": "LoRA : Low - Rank Adaptation of Large Language Models",
+      "authors": [
+        "Hu, Edward J.",
+        "Shen, Yelong",
+        "Wallis, Phillip",
+        "Allen-Zhu, Zeyuan",
+        "Li, Yuanzhi",
+        "Wang, Shean",
+        "Wang, Lu",
+        "Chen, Weizhu"
+      ],
+      "year": 2021,
+      "venue": "",
+      "doi": "10.48550/arXiv.2106.09685",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2106.09685",
+      "raw_bibtex": "@misc{hu_lora_2021,\n    title = {{LoRA}: {Low}-{Rank} {Adaptation} of {Large} {Language} {Models}},\n    shorttitle = {{LoRA}},\n    url = {http://arxiv.org/abs/2106.09685},\n    doi = {10.48550/arXiv.2106.09685},\n    abstract = {An important paradigm of natural language processing consists of large-scale pre-training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full fine-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example -- deploying independent instances of fine-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre-trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks. Compared to GPT-3 175B fine-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than fine-tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite having fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deficiency in language model adaptation, which sheds light on the efficacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at https://github.com/microsoft/LoRA.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Hu, Edward J. and Shen, Yelong and Wallis, Phillip and Allen-Zhu, Zeyuan and Li, Yuanzhi and Wang, Shean and Wang, Lu and Chen, Weizhu},\n    month = oct,\n    year = {2021},\n    note = {arXiv:2106.09685 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-distillation-setup",
+          "text": "For each graph, we collect teacher trajectories on the training split to distill into a smaller, lower-cost model ([\\[subsec:distill\\]](#subsec:distill){reference-type=\"ref+Label\" reference=\"subsec:distill\"}), offering a viable alternative when under tighter compute budgets. Using GPT-4.1 as the"
+        }
+      ]
+    },
+    {
+      "key": "huerta-enochian_instruction_2024",
+      "title": "Instruction Fine - Tuning : Does Prompt Loss Matter ?",
+      "authors": [
+        "Huerta-Enochian, Mathew",
+        "Ko, Seung Yong"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 2024 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing}",
+      "doi": "10.18653/v1/2024.emnlp-main.1267",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2024.emnlp-main.1267/",
+      "raw_bibtex": "@inproceedings{huerta-enochian_instruction_2024,\n    address = {Miami, Florida, USA},\n    title = {Instruction {Fine}-{Tuning}: {Does} {Prompt} {Loss} {Matter}?},\n    shorttitle = {Instruction {Fine}-{Tuning}},\n    url = {https://aclanthology.org/2024.emnlp-main.1267/},\n    doi = {10.18653/v1/2024.emnlp-main.1267},\n    abstract = {We present a novel study analyzing the effects of various prompt loss token weights (PLW) for supervised instruction fine-tuning (SIFT). While prompt-masking (PLW = 0) is common for SIFT, some fine-tuning APIs support fractional PLWs and suggest that using a small non-zero PLW can help stabilize learning when fine-tuning on short-completion data. However, there has never been a study confirming this claim, and OpenAI, a major cloud-based SIFT provider, recently removed this parameter from their fine-tuning API. We found that performance of models fine-tuned on short-completion data had a statistically-significant negative quadratic relationship with PLW. Using small values (0.01 {\\textbackslash}ensuremath- 0.5) of PLW produced better results on multiple-choice and short-generation benchmarks (outperforming models fine-tuned on long-completion data) while large values ({\\textbackslash}ensuremath{\\textbackslash}approx 1.0) of PLW produced better results on long-generation benchmarks. We explained this effect and verified its importance through additional experiments. This research serves as a warning to API providers about the importance of providing a PLW parameter for SIFT.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 2024 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing}},\n    publisher = {Association for Computational Linguistics},\n    author = {Huerta-Enochian, Mathew and Ko, Seung Yong},\n    editor = {Al-Onaizan, Yaser and Bansal, Mohit and Chen, Yun-Nung},\n    month = nov,\n    year = {2024},\n    pages = {22771--22795},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-agent-distillation",
+          "text": "[]{#subsec:distill label=\"subsec:distill\"} While operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency [hinton_distilling_2015]. We adopt a standard teacher--student paradigm in which a student model imitates the"
+        }
+      ]
+    },
+    {
+      "key": "izacard_leveraging_2021",
+      "title": "Leveraging Passage Retrieval with Generative Models for Open Domain Question Answering",
+      "authors": [
+        "Izacard, Gautier",
+        "Grave, Edouard"
+      ],
+      "year": 2021,
+      "venue": "Proceedings of the 16th {Conference} of the {European} {Chapter} of the {Association} for {Computational} {Linguistics}: {Main} {Volume}",
+      "doi": "10.18653/v1/2021.eacl-main.74",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2021.eacl-main.74/",
+      "raw_bibtex": "@inproceedings{izacard_leveraging_2021,\n    address = {Online},\n    title = {Leveraging {Passage} {Retrieval} with {Generative} {Models} for {Open} {Domain} {Question} {Answering}},\n    url = {https://aclanthology.org/2021.eacl-main.74/},\n    doi = {10.18653/v1/2021.eacl-main.74},\n    abstract = {Generative models for open domain question answering have proven to be competitive, without resorting to external knowledge. While promising, this approach requires to use models with billions of parameters, which are expensive to train and query. In this paper, we investigate how much these models can benefit from retrieving text passages, potentially containing evidence. We obtain state-of-the-art results on the Natural Questions and TriviaQA open benchmarks. Interestingly, we observe that the performance of this method significantly improves when increasing the number of retrieved passages. This is evidence that sequence-to-sequence models offers a flexible framework to efficiently aggregate and combine evidence from multiple passages.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 16th {Conference} of the {European} {Chapter} of the {Association} for {Computational} {Linguistics}: {Main} {Volume}},\n    publisher = {Association for Computational Linguistics},\n    author = {Izacard, Gautier and Grave, Edouard},\n    editor = {Merlo, Paola and Tiedemann, Jorg and Tsarfaty, Reut},\n    month = apr,\n    year = {2021},\n    pages = {874--880},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "jeong2025database",
+      "title": "Database-Augmented Query Representation for Information Retrieval",
+      "authors": [
+        "Jeong, Soyeong",
+        "Baek, Jinheon",
+        "Cho, Sukmin",
+        "Hwang, Sung Ju",
+        "Park, Jong C"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{jeong2025database,\n  title={Database-Augmented Query Representation for Information Retrieval},\n  author={Jeong, Soyeong and Baek, Jinheon and Cho, Sukmin and Hwang, Sung Ju and Park, Jong C},\n  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},\n  pages={16622--16644},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "kaesberg_voting_2025",
+      "title": "Voting or Consensus ? Decision - Making in Multi - Agent Debate",
+      "authors": [
+        "Kaesberg, Lars Benedikt",
+        "Becker, Jonas",
+        "Wahle, Jan Philip",
+        "Ruas, Terry",
+        "Gipp, Bela"
+      ],
+      "year": 2025,
+      "venue": "Findings of the {Association} for {Computational} {Linguistics}: {ACL} 2025",
+      "doi": "10.18653/v1/2025.findings-acl.606",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2502.19130",
+      "raw_bibtex": "@inproceedings{kaesberg_voting_2025,\n    title = {Voting or {Consensus}? {Decision}-{Making} in {Multi}-{Agent} {Debate}},\n    shorttitle = {Voting or {Consensus}?},\n    url = {http://arxiv.org/abs/2502.19130},\n    doi = {10.18653/v1/2025.findings-acl.606},\n    abstract = {Much of the success of multi-agent debates depends on carefully choosing the right parameters. The decision-making protocol stands out as it can highly impact final model answers, depending on how decisions are reached. Systematic comparison of decision protocols is difficult because many studies alter multiple discussion parameters beyond the protocol. So far, it has been largely unknown how decision-making influences different tasks. This work systematically evaluates the impact of seven decision protocols (e.g., majority voting, unanimity consensus). We change only one variable at a time - the decision protocol - to analyze how different methods affect the collaboration between agents and measure differences in knowledge and reasoning tasks. Our results show that voting protocols improve performance by 13.2\\% in reasoning tasks and consensus protocols by 2.8\\% in knowledge tasks compared to other decision protocols. Increasing the number of agents improves performance, while more discussion rounds before voting reduce it. To improve decision-making by increasing answer diversity, we propose two new methods, All-Agents Drafting (AAD) and Collective Improvement (CI). Our methods improve task performance by up to 3.3\\% with AAD and up to 7.4\\% with CI. This work demonstrates the importance of decision-making in multi-agent debates beyond scaling.},\n    urldate = {2026-01-06},\n    booktitle = {Findings of the {Association} for {Computational} {Linguistics}: {ACL} 2025},\n    author = {Kaesberg, Lars Benedikt and Becker, Jonas and Wahle, Jan Philip and Ruas, Terry and Gipp, Bela},\n    year = {2025},\n    note = {arXiv:2502.19130 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Multiagent Systems},\n    pages = {11640--11671},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-parallel-exploration",
+          "text": "[]{#sec:parallel_exploration label=\"sec:parallel_exploration\"} We increase robustness by running $n$ independent instances of the same agent in parallel and aggregating their retrieved lists, akin to self-consistency and voting-based ensembling in LLM reasoning [wang_self-consistency_2023,"
+        }
+      ]
+    },
+    {
+      "key": "kang_distilling_2025",
+      "title": "Distilling LLM Agent into Small Models with Retrieval and Code Tools",
+      "authors": [
+        "Kang, Minki",
+        "Jeong, Jongwon",
+        "Lee, Seanie",
+        "Cho, Jaewoong",
+        "Hwang, Sung Ju"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2505.17612",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2505.17612",
+      "raw_bibtex": "@misc{kang_distilling_2025,\n    title = {Distilling {LLM} {Agent} into {Small} {Models} with {Retrieval} and {Code} {Tools}},\n    url = {http://arxiv.org/abs/2505.17612},\n    doi = {10.48550/arXiv.2505.17612},\n    abstract = {Large language models (LLMs) excel at complex reasoning tasks but remain computationally expensive, limiting their practical deployment. To address this, recent works have focused on distilling reasoning capabilities into smaller language models (sLMs) using chain-of-thought (CoT) traces from teacher LLMs. However, this approach struggles in scenarios requiring rare factual knowledge or precise computation, where sLMs often hallucinate due to limited capability. In this work, we propose Agent Distillation, a framework for transferring not only reasoning capability but full task-solving behavior from LLM-based agents into sLMs with retrieval and code tools. We improve agent distillation along two complementary axes: (1) we introduce a prompting method called first-thought prefix to enhance the quality of teacher-generated trajectories; and (2) we propose a self-consistent action generation for improving test-time robustness of small agents. We evaluate our method on eight reasoning tasks across factual and mathematical domains, covering both in-domain and out-of-domain generalization. Our results show that sLMs as small as 0.5B, 1.5B, 3B parameters can achieve performance competitive with next-tier larger 1.5B, 3B, 7B models fine-tuned using CoT distillation, demonstrating the potential of agent distillation for building practical, tool-using small agents. Our code is available at https://github.com/Nardien/agent-distillation.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Kang, Minki and Jeong, Jongwon and Lee, Seanie and Cho, Jaewoong and Hwang, Sung Ju},\n    month = nov,\n    year = {2025},\n    note = {arXiv:2505.17612 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-agent-distillation",
+          "text": "[]{#subsec:distill label=\"subsec:distill\"} While operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency [hinton_distilling_2015]. We adopt a standard teacher--student paradigm in which a student model imitates the"
+        }
+      ]
+    },
+    {
+      "key": "karpukhin_dense_2020",
+      "title": "Dense Passage Retrieval for Open - Domain Question Answering",
+      "authors": [
+        "Karpukhin, Vladimir",
+        "Oguz, Barlas",
+        "Min, Sewon",
+        "Lewis, Patrick",
+        "Wu, Ledell",
+        "Edunov, Sergey",
+        "Chen, Danqi",
+        "Yih, Wen-tau"
+      ],
+      "year": 2020,
+      "venue": "Proceedings of the 2020 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing} ({EMNLP})",
+      "doi": "10.18653/v1/2020.emnlp-main.550",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2020.emnlp-main.550/",
+      "raw_bibtex": "@inproceedings{karpukhin_dense_2020,\n    address = {Online},\n    title = {Dense {Passage} {Retrieval} for {Open}-{Domain} {Question} {Answering}},\n    url = {https://aclanthology.org/2020.emnlp-main.550/},\n    doi = {10.18653/v1/2020.emnlp-main.550},\n    abstract = {Open-domain question answering relies on efficient passage retrieval to select candidate contexts, where traditional sparse vector space models, such as TF-IDF or BM25, are the de facto method. In this work, we show that retrieval can be practically implemented using dense representations alone, where embeddings are learned from a small number of questions and passages by a simple dual-encoder framework. When evaluated on a wide range of open-domain QA datasets, our dense retriever outperforms a strong Lucene-BM25 system greatly by 9\\%-19\\% absolute in terms of top-20 passage retrieval accuracy, and helps our end-to-end QA system establish new state-of-the-art on multiple open-domain QA benchmarks.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 2020 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing} ({EMNLP})},\n    publisher = {Association for Computational Linguistics},\n    author = {Karpukhin, Vladimir and Oguz, Barlas and Min, Sewon and Lewis, Patrick and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},\n    editor = {Webber, Bonnie and Cohn, Trevor and He, Yulan and Liu, Yang},\n    month = nov,\n    year = {2020},\n    pages = {6769--6781},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "ko2025cooprags",
+      "title": "Cooperative Retrieval-Augmented Generation for Question Answering: Mutual Information Exchange and Ranking by Contrasting Layers",
+      "authors": [
+        "Ko, Youmin",
+        "Seo, Sungjong",
+        "Kim, Hyunjoon"
+      ],
+      "year": 2025,
+      "venue": "NeurIPS",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2512.10422",
+      "raw_bibtex": "@inproceedings{ko2025cooprags,\n  title     = {Cooperative Retrieval-Augmented Generation for Question Answering: Mutual Information Exchange and Ranking by Contrasting Layers},\n  author    = {Ko, Youmin and Seo, Sungjong and Kim, Hyunjoon},\n  booktitle = {NeurIPS},\n  year      = {2025},\n  url       = {https://arxiv.org/abs/2512.10422}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "lee_hybgrag_2025",
+      "title": "HybGRAG : Hybrid Retrieval - Augmented Generation on Textual and Relational Knowledge Bases",
+      "authors": [
+        "Lee, Meng-Chieh",
+        "Zhu, Qi",
+        "Mavromatis, Costas",
+        "Han, Zhen",
+        "Adeshina, Soji",
+        "Ioannidis, Vassilis N.",
+        "Rangwala, Huzefa",
+        "Faloutsos, Christos"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd {Annual} {Meeting} of the {Association} for {Computational} {Linguistics} ({Volume} 1: {Long} {Papers})",
+      "doi": "10.18653/v1/2025.acl-long.43",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.acl-long.43/",
+      "raw_bibtex": "@inproceedings{lee_hybgrag_2025,\n    address = {Vienna, Austria},\n    title = {{HybGRAG}: {Hybrid} {Retrieval}-{Augmented} {Generation} on {Textual} and {Relational} {Knowledge} {Bases}},\n    isbn = {979-8-89176-251-0},\n    shorttitle = {{HybGRAG}},\n    url = {https://aclanthology.org/2025.acl-long.43/},\n    doi = {10.18653/v1/2025.acl-long.43},\n    abstract = {Given a semi-structured knowledge base (SKB), where text documents are interconnected by relations, how can we effectively retrieve relevant information to answer user questions?Retrieval-Augmented Generation (RAG) retrieves documents to assist large language models (LLMs) in question answering; while Graph RAG (GRAG) uses structured knowledge bases as its knowledge source.However, many questions require both textual and relational information from SKB — referred to as “hybrid” questions — which complicates the retrieval process and underscores the need for a hybrid retrieval method that leverages both information.In this paper, through our empirical analysis, we identify key insights that show why existing methods may struggle with hybrid question answering (HQA) over SKB. Based on these insights, we propose HybGRAG for HQA, consisting of a retriever bank and a critic module, with the following advantages:1. Agentic, it automatically refines the output by incorporating feedback from the critic module, 2. Adaptive, it solves hybrid questions requiring both textual and relational information with the retriever bank,3. Interpretable, it justifies decision making with intuitive refinement path, and4. Effective, it surpasses all baselines on HQA benchmarks.In experiments on the STaRK benchmark, HybGRAG achieves significant performance gains, with an average relative improvement in Hit@1 of 51\\%.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 63rd {Annual} {Meeting} of the {Association} for {Computational} {Linguistics} ({Volume} 1: {Long} {Papers})},\n    publisher = {Association for Computational Linguistics},\n    author = {Lee, Meng-Chieh and Zhu, Qi and Mavromatis, Costas and Han, Zhen and Adeshina, Soji and Ioannidis, Vassilis N. and Rangwala, Huzefa and Faloutsos, Christos},\n    editor = {Che, Wanxiang and Nabende, Joyce and Shutova, Ekaterina and Pilehvar, Mohammad Taher},\n    month = jul,\n    year = {2025},\n    pages = {879--893},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "lei_mixture_2025",
+      "title": "Mixture of Structural -and- Textual Retrieval over Text -rich Graph Knowledge Bases",
+      "authors": [
+        "Lei, Yongjia",
+        "Han, Haoyu",
+        "Rossi, Ryan A.",
+        "Dernoncourt, Franck",
+        "Lipka, Nedim",
+        "Halappanavar, Mahantesh M",
+        "Tang, Jiliang",
+        "Wang, Yu"
+      ],
+      "year": 2025,
+      "venue": "Findings of the {Association} for {Computational} {Linguistics}: {ACL} 2025",
+      "doi": "10.18653/v1/2025.findings-acl.941",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.findings-acl.941/",
+      "raw_bibtex": "@inproceedings{lei_mixture_2025,\n    address = {Vienna, Austria},\n    title = {Mixture of {Structural}-and-{Textual} {Retrieval} over {Text}-rich {Graph} {Knowledge} {Bases}},\n    isbn = {979-8-89176-256-5},\n    url = {https://aclanthology.org/2025.findings-acl.941/},\n    doi = {10.18653/v1/2025.findings-acl.941},\n    abstract = {Text-rich Graph Knowledge Bases (TG-KBs) have become increasingly crucial for answering queries by providing textual and structural knowledge. However, current retrieval methods often retrieve these two types of knowledge in isolation without considering their mutual reinforcement and existing hybrid methods even bypass structural retrieval entirely. To fill this gap, we propose a Mixture of Structural-and-Textual Retrieval (MoR) to retrieve these two types of knowledge via a Planning-Reasoning-Organizing framework. In the Planning stage, MoR generates textual planning graphs delineating the logic for answering queries. Following planning graphs, in the Reasoning stage, MoR interweaves structural traversal and textual matching to obtain candidates from TG-KBs. In the Organizing stage, MoR further reranks fetched candidates based on their structural trajectory. Extensive experiments demonstrate the superiority of MoR in harmonizing structural and textual retrieval with inspiring insights, including imbalanced retrieving performance across different query logics and the benefits of integrating structural trajectories for candidate reranking.},\n    urldate = {2026-01-06},\n    booktitle = {Findings of the {Association} for {Computational} {Linguistics}: {ACL} 2025},\n    publisher = {Association for Computational Linguistics},\n    author = {Lei, Yongjia and Han, Haoyu and Rossi, Ryan A. and Dernoncourt, Franck and Lipka, Nedim and Halappanavar, Mahantesh M and Tang, Jiliang and Wang, Yu},\n    editor = {Che, Wanxiang and Nabende, Joyce and Shutova, Ekaterina and Pilehvar, Mohammad Taher},\n    month = jul,\n    year = {2025},\n    pages = {18306--18321},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        }
+      ]
+    },
+    {
+      "key": "lewis_retrieval-augmented_2020",
+      "title": "Retrieval-augmented generation for knowledge-intensive NLP tasks",
+      "authors": [
+        "Lewis, Patrick",
+        "Perez, Ethan",
+        "Piktus, Aleksandra",
+        "Petroni, Fabio",
+        "Karpukhin, Vladimir",
+        "Goyal, Naman",
+        "Küttler, Heinrich",
+        "Lewis, Mike",
+        "Yih, Wen-tau",
+        "Rocktäschel, Tim",
+        "Riedel, Sebastian",
+        "Kiela, Douwe"
+      ],
+      "year": 2020,
+      "venue": "Proceedings of the 34th {International} {Conference} on {Neural} {Information} {Processing} {Systems}",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{lewis_retrieval-augmented_2020,\n    address = {Red Hook, NY, USA},\n    series = {{NIPS} '20},\n    title = {Retrieval-augmented generation for knowledge-intensive {NLP} tasks},\n    isbn = {978-1-7138-2954-6},\n    abstract = {Large pre-trained language models have been shown to store factual knowledge in their parameters, and achieve state-of-the-art results when fine-tuned on downstream NLP tasks. However, their ability to access and precisely manipulate knowledge is still limited, and hence on knowledge-intensive tasks, their performance lags behind task-specific architectures. Additionally, providing provenance for their decisions and updating their world knowledge remain open research problems. Pre-trained models with a differentiable access mechanism to explicit non-parametric memory can overcome this issue, but have so far been only investigated for extractive downstream tasks. We explore a general-purpose fine-tuning recipe for retrieval-augmented generation (RAG) — models which combine pre-trained parametric and non-parametric memory for language generation. We introduce RAG models where the parametric memory is a pre-trained seq2seq model and the non-parametric memory is a dense vector index of Wikipedia, accessed with a pre-trained neural retriever. We compare two RAG formulations, one which conditions on the same retrieved passages across the whole generated sequence, and another which can use different passages per token. We fine-tune and evaluate our models on a wide range of knowledge-intensive NLP tasks and set the state of the art on three open domain QA tasks, outperforming parametric seq2seq models and task-specific retrieve-and-extract architectures. For language generation tasks, we find that RAG models generate more specific, diverse and factual language than a state-of-the-art parametric-only seq2seq baseline.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 34th {International} {Conference} on {Neural} {Information} {Processing} {Systems}},\n    publisher = {Curran Associates Inc.},\n    author = {Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and Küttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rocktäschel, Tim and Riedel, Sebastian and Kiela, Douwe},\n    month = dec,\n    year = {2020},\n    pages = {9459--9474},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "li2025retrollm",
+      "title": "RetroLLM : Empowering large language models to retrieve fine-grained evidence within generation",
+      "authors": [
+        "Li, Xiaoxi",
+        "Jin, Jiajie",
+        "Zhou, Yujia",
+        "Wu, Yongkang",
+        "Li, Zhonghua",
+        "Qi, Ye",
+        "Dou, Zhicheng"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{li2025retrollm,\n  title={{RetroLLM}: Empowering large language models to retrieve fine-grained evidence within generation},\n  author={Li, Xiaoxi and Jin, Jiajie and Zhou, Yujia and Wu, Yongkang and Li, Zhonghua and Qi, Ye and Dou, Zhicheng},\n  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n  pages={16754--16779},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "li_multi-field_2025",
+      "title": "Multi- Field Adaptive Retrieval",
+      "authors": [
+        "Li, Millicent",
+        "Chen, Tongfei",
+        "Durme, Benjamin Van",
+        "Xia, Patrick"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2410.20056",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2410.20056",
+      "raw_bibtex": "@misc{li_multi-field_2025,\n\ttitle = {Multi-{Field} {Adaptive} {Retrieval}},\n\turl = {http://arxiv.org/abs/2410.20056},\n\tdoi = {10.48550/arXiv.2410.20056},\n\tabstract = {Document retrieval for tasks such as search and retrieval-augmented generation typically involves datasets that are unstructured: free-form text without explicit internal structure in each document. However, documents can have a structured form, consisting of fields such as an article title, message body, or HTML header. To address this gap, we introduce Multi-Field Adaptive Retrieval (MFAR), a flexible framework that accommodates any number of and any type of document indices on structured data. Our framework consists of two main steps: (1) the decomposition of an existing document into fields, each indexed independently through dense and lexical methods, and (2) learning a model which adaptively predicts the importance of a field by conditioning on the document query, allowing on-the-fly weighting of the most likely field(s). We find that our approach allows for the optimized use of dense versus lexical representations across field types, significantly improves in document ranking over a number of existing retrievers, and achieves state-of-the-art performance for multi-field structured data.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Li, Millicent and Chen, Tongfei and Durme, Benjamin Van and Xia, Patrick},\n\tmonth = apr,\n\tyear = {2025},\n\tnote = {arXiv:2410.20056 [cs]},\n\tkeywords = {Computer Science - Computation and Language, Computer Science - Information Retrieval},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        }
+      ]
+    },
+    {
+      "key": "li_simple_2025",
+      "title": "Simple Is Effective : The Roles of Graphs and Large Language Models in Knowledge - Graph - Based Retrieval - Augmented Generation",
+      "authors": [
+        "Li, Mufei",
+        "Miao, Siqi",
+        "Li, Pan"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2410.20724",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2410.20724",
+      "raw_bibtex": "@misc{li_simple_2025,\n    title = {Simple {Is} {Effective}: {The} {Roles} of {Graphs} and {Large} {Language} {Models} in {Knowledge}-{Graph}-{Based} {Retrieval}-{Augmented} {Generation}},\n    shorttitle = {Simple {Is} {Effective}},\n    url = {http://arxiv.org/abs/2410.20724},\n    doi = {10.48550/arXiv.2410.20724},\n    abstract = {Large Language Models (LLMs) demonstrate strong reasoning abilities but face limitations such as hallucinations and outdated knowledge. Knowledge Graph (KG)-based Retrieval-Augmented Generation (RAG) addresses these issues by grounding LLM outputs in structured external knowledge from KGs. However, current KG-based RAG frameworks still struggle to optimize the trade-off between retrieval effectiveness and efficiency in identifying a suitable amount of relevant graph information for the LLM to digest. We introduce SubgraphRAG, extending the KG-based RAG framework that retrieves subgraphs and leverages LLMs for reasoning and answer prediction. Our approach innovatively integrates a lightweight multilayer perceptron with a parallel triple-scoring mechanism for efficient and flexible subgraph retrieval while encoding directional structural distances to enhance retrieval effectiveness. The size of retrieved subgraphs can be flexibly adjusted to match the query's need and the downstream LLM's capabilities. This design strikes a balance between model complexity and reasoning power, enabling scalable and generalizable retrieval processes. Notably, based on our retrieved subgraphs, smaller LLMs like Llama3.1-8B-Instruct deliver competitive results with explainable reasoning, while larger models like GPT-4o achieve state-of-the-art accuracy compared with previous baselines -- all without fine-tuning. Extensive evaluations on the WebQSP and CWQ benchmarks highlight SubgraphRAG's strengths in efficiency, accuracy, and reliability by reducing hallucinations and improving response grounding.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Li, Mufei and Miao, Siqi and Li, Pan},\n    month = feb,\n    year = {2025},\n    note = {arXiv:2410.20724 [cs]},\n    keywords = {Computer Science - Computation and Language, Computer Science - Information Retrieval, Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "liu2025ontology",
+      "title": "Ontology-guided reverse thinking makes large language models stronger on knowledge graph question answering",
+      "authors": [
+        "Liu, Runxuan",
+        "Luobei, Luobei",
+        "Li, Jiaqi",
+        "Wang, Baoxin",
+        "Liu, Ming",
+        "Wu, Dayong",
+        "Wang, Shijin",
+        "Qin, Bing"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{liu2025ontology,\n  title={Ontology-guided reverse thinking makes large language models stronger on knowledge graph question answering},\n  author={Liu, Runxuan and Luobei, Luobei and Li, Jiaqi and Wang, Baoxin and Liu, Ming and Wu, Dayong and Wang, Shijin and Qin, Bing},\n  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n  pages={15269--15284},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "loshchilov_decoupled_2019",
+      "title": "Decoupled Weight Decay Regularization",
+      "authors": [
+        "Loshchilov, Ilya",
+        "Hutter, Frank"
+      ],
+      "year": 2019,
+      "venue": "",
+      "doi": "10.48550/arXiv.1711.05101",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/1711.05101",
+      "raw_bibtex": "@misc{loshchilov_decoupled_2019,\n\ttitle = {Decoupled {Weight} {Decay} {Regularization}},\n\turl = {http://arxiv.org/abs/1711.05101},\n\tdoi = {10.48550/arXiv.1711.05101},\n\tabstract = {L\\$\\_2\\$ regularization and weight decay regularization are equivalent for standard stochastic gradient descent (when rescaled by the learning rate), but as we demonstrate this is {\\textbackslash}emph\\{not\\} the case for adaptive gradient algorithms, such as Adam. While common implementations of these algorithms employ L\\$\\_2\\$ regularization (often calling it \"weight decay\" in what may be misleading due to the inequivalence we expose), we propose a simple modification to recover the original formulation of weight decay regularization by {\\textbackslash}emph\\{decoupling\\} the weight decay from the optimization steps taken w.r.t. the loss function. We provide empirical evidence that our proposed modification (i) decouples the optimal choice of weight decay factor from the setting of the learning rate for both standard SGD and Adam and (ii) substantially improves Adam's generalization performance, allowing it to compete with SGD with momentum on image classification datasets (on which it was previously typically outperformed by the latter). Our proposed decoupled weight decay has already been adopted by many researchers, and the community has implemented it in TensorFlow and PyTorch; the complete source code for our experiments is available at https://github.com/loshchil/AdamW-and-SGDW},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Loshchilov, Ilya and Hutter, Frank},\n\tmonth = jan,\n\tyear = {2019},\n\tnote = {arXiv:1711.05101 [cs]},\n\tkeywords = {Computer Science - Machine Learning, Computer Science - Neural and Evolutionary Computing, Mathematics - Optimization and Control},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-distillation-setup",
+          "text": "For each graph, we collect teacher trajectories on the training split to distill into a smaller, lower-cost model ([\\[subsec:distill\\]](#subsec:distill){reference-type=\"ref+Label\" reference=\"subsec:distill\"}), offering a viable alternative when under tighter compute budgets. Using GPT-4.1 as the"
+        }
+      ]
+    },
+    {
+      "key": "luo_reasoning_2024",
+      "title": "Reasoning on Graphs : Faithful and Interpretable Large Language Model Reasoning",
+      "authors": [
+        "Luo, Linhao",
+        "Li, Yuan-Fang",
+        "Haffari, Gholamreza",
+        "Pan, Shirui"
+      ],
+      "year": 2024,
+      "venue": "",
+      "doi": "10.48550/arXiv.2310.01061",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2310.01061",
+      "raw_bibtex": "@misc{luo_reasoning_2024,\n    title = {Reasoning on {Graphs}: {Faithful} and {Interpretable} {Large} {Language} {Model} {Reasoning}},\n    shorttitle = {Reasoning on {Graphs}},\n    url = {http://arxiv.org/abs/2310.01061},\n    doi = {10.48550/arXiv.2310.01061},\n    abstract = {Large language models (LLMs) have demonstrated impressive reasoning abilities in complex tasks. However, they lack up-to-date knowledge and experience hallucinations during reasoning, which can lead to incorrect reasoning processes and diminish their performance and trustworthiness. Knowledge graphs (KGs), which capture vast amounts of facts in a structured format, offer a reliable source of knowledge for reasoning. Nevertheless, existing KG-based LLM reasoning methods only treat KGs as factual knowledge bases and overlook the importance of their structural information for reasoning. In this paper, we propose a novel method called reasoning on graphs (RoG) that synergizes LLMs with KGs to enable faithful and interpretable reasoning. Specifically, we present a planning-retrieval-reasoning framework, where RoG first generates relation paths grounded by KGs as faithful plans. These plans are then used to retrieve valid reasoning paths from the KGs for LLMs to conduct faithful reasoning. Furthermore, RoG not only distills knowledge from KGs to improve the reasoning ability of LLMs through training but also allows seamless integration with any arbitrary LLMs during inference. Extensive experiments on two benchmark KGQA datasets demonstrate that RoG achieves state-of-the-art performance on KG reasoning tasks and generates faithful and interpretable reasoning results.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Luo, Linhao and Li, Yuan-Fang and Haffari, Gholamreza and Pan, Shirui},\n    month = feb,\n    year = {2024},\n    note = {arXiv:2310.01061 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "ma2025think",
+      "title": "Think-on-graph 2.0: Deep and faithful large language model reasoning with knowledge-guided retrieval augmented generation",
+      "authors": [
+        "Ma, Shengjie",
+        "Xu, Chengjin",
+        "Jiang, Xuhui",
+        "Li, Muzhi",
+        "Qu, Huaren",
+        "Yang, Cehao",
+        "Mao, Jiaxin",
+        "Guo, Jian"
+      ],
+      "year": 2025,
+      "venue": "ICLR",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{ma2025think,\n  title={Think-on-graph 2.0: Deep and faithful large language model reasoning with knowledge-guided retrieval augmented generation},\n  author={Ma, Shengjie and Xu, Chengjin and Jiang, Xuhui and Li, Muzhi and Qu, Huaren and Yang, Cehao and Mao, Jiaxin and Guo, Jian},\n  journal={ICLR},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "manning_introduction_2008",
+      "title": "Introduction to information retrieval",
+      "authors": [
+        "Manning, Christopher D.",
+        "Raghavan, Prabhakar",
+        "Schütze, Hinrich"
+      ],
+      "year": 2008,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@book{manning_introduction_2008,\n    address = {Cambridge},\n    title = {Introduction to information retrieval},\n    isbn = {978-0-521-86571-5},\n    language = {eng},\n    publisher = {Cambridge university press},\n    author = {Manning, Christopher D. and Raghavan, Prabhakar and Schütze, Hinrich},\n    year = {2008},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-untitled",
+          "text": "We study retrieval over a knowledge graph , where $V$ and $E$ denote entities and edges, $\\phi_V$ and $\\phi_E$ assign a type to each node and relation, and $d_V(v)$ denotes the text attributes associated with node $v$, such as titles, descriptions, or other metadata. Given a natural-language query"
+        }
+      ]
+    },
+    {
+      "key": "markowitz_tree--traversals_2024",
+      "title": "Tree-of- Traversals : A Zero - Shot Reasoning Algorithm for Augmenting Black -box Language Models with Knowledge Graphs",
+      "authors": [
+        "Markowitz, Elan",
+        "Ramakrishna, Anil",
+        "Dhamala, Jwala",
+        "Mehrabi, Ninareh",
+        "Peris, Charith",
+        "Gupta, Rahul",
+        "Chang, Kai-Wei",
+        "Galstyan, Aram"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 62nd {Annual} {Meeting} of the {Association} for {Computational} {Linguistics} ({Volume} 1: {Long} {Papers})",
+      "doi": "10.18653/v1/2024.acl-long.665",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2024.acl-long.665/",
+      "raw_bibtex": "@inproceedings{markowitz_tree--traversals_2024,\n    address = {Bangkok, Thailand},\n    title = {Tree-of-{Traversals}: {A} {Zero}-{Shot} {Reasoning} {Algorithm} for {Augmenting} {Black}-box {Language} {Models} with {Knowledge} {Graphs}},\n    shorttitle = {Tree-of-{Traversals}},\n    url = {https://aclanthology.org/2024.acl-long.665/},\n    doi = {10.18653/v1/2024.acl-long.665},\n    abstract = {Knowledge graphs (KGs) complement Large Language Models (LLMs) by providing reliable, structured, domain-specific, and up-to-date external knowledge. However, KGs and LLMs are often developed separately and must be integrated after training. We introduce Tree-of-Traversals, a novel zero-shot reasoning algorithm that enables augmentation of black-box LLMs with one or more KGs. The algorithm equips a LLM with actions for interfacing a KG and enables the LLM to perform tree search over possible thoughts and actions to find high confidence reasoning paths. Tree-of-Traversals significantly improves performance on question answering and KG question answering tasks. Code is available at https://github.com/amazon-science/tree-of-traversals},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 62nd {Annual} {Meeting} of the {Association} for {Computational} {Linguistics} ({Volume} 1: {Long} {Papers})},\n    publisher = {Association for Computational Linguistics},\n    author = {Markowitz, Elan and Ramakrishna, Anil and Dhamala, Jwala and Mehrabi, Ninareh and Peris, Charith and Gupta, Rahul and Chang, Kai-Wei and Galstyan, Aram},\n    editor = {Ku, Lun-Wei and Martins, Andre and Srikumar, Vivek},\n    month = aug,\n    year = {2024},\n    pages = {12302--12319},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "mavromatis_gnn-rag_2025",
+      "title": "GNN - RAG : Graph Neural Retrieval for Efficient Large Language Model Reasoning on Knowledge Graphs",
+      "authors": [
+        "Mavromatis, Costas",
+        "Karypis, George"
+      ],
+      "year": 2025,
+      "venue": "Findings of the {Association} for {Computational} {Linguistics}: {ACL} 2025",
+      "doi": "10.18653/v1/2025.findings-acl.856",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.findings-acl.856/",
+      "raw_bibtex": "@inproceedings{mavromatis_gnn-rag_2025,\n    address = {Vienna, Austria},\n    title = {{GNN}-{RAG}: {Graph} {Neural} {Retrieval} for {Efficient} {Large} {Language} {Model} {Reasoning} on {Knowledge} {Graphs}},\n    isbn = {979-8-89176-256-5},\n    shorttitle = {{GNN}-{RAG}},\n    url = {https://aclanthology.org/2025.findings-acl.856/},\n    doi = {10.18653/v1/2025.findings-acl.856},\n    abstract = {Retrieval-augmented generation (RAG) in Knowledge Graph Question Answering (KGQA) enhances the context of Large Language Models (LLMs) by incorporating information retrieved from the Knowledge Graph (KG). Most recent approaches rely on costly LLM calls to generate executable relation paths or traverse the KG, which is inefficient in complex KGQA tasks, such as those involving multi-hop or multi-entity questions. We introduce the GNN-RAG framework, which utilizes lightweight Graph Neural Networks (GNNs) for effective and efficient graph retrieval. The GNN learns to assign importance weights to nodes based on their relevance to the question, as well as the relevance of their neighboring nodes. This enables the framework to effectively handle context from deeper parts of the graph, improving retrieval performance. GNN-RAG retrieves the shortest paths connecting question entities to GNN answer candidates, providing this information as context for the LLM. Experimental results show that GNN-RAG achieves effective retrieval on two widely used KGQA benchmarks (WebQSP and CWQ), outperforming or matching GPT-4 performance with a 7B tuned LLM. Additionally, GNN-RAG excels on multi-hop and multi-entity questions outperforming LLM-based retrieval approaches by 8.9–15.5\\% points at answer F1. Furthermore, it surpasses long-context inference while using 9{\\textbackslash}times fewer KG tokens. The code is provided in https://github.com/cmavro/GNN-RAG.},\n    urldate = {2026-01-06},\n    booktitle = {Findings of the {Association} for {Computational} {Linguistics}: {ACL} 2025},\n    publisher = {Association for Computational Linguistics},\n    author = {Mavromatis, Costas and Karypis, George},\n    editor = {Che, Wanxiang and Nabende, Joyce and Shutova, Ekaterina and Pilehvar, Mohammad Taher},\n    month = jul,\n    year = {2025},\n    pages = {16682--16699},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "mcauley_inferring_2015",
+      "title": "Inferring Networks of Substitutable and Complementary Products",
+      "authors": [
+        "McAuley, Julian",
+        "Pandey, Rahul",
+        "Leskovec, Jure"
+      ],
+      "year": 2015,
+      "venue": "Proceedings of the 21th {ACM} {SIGKDD} {International} {Conference} on {Knowledge} {Discovery} and {Data} {Mining}",
+      "doi": "10.1145/2783258.2783381",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1145/2783258.2783381",
+      "raw_bibtex": "@inproceedings{mcauley_inferring_2015,\n\taddress = {New York, NY, USA},\n\tseries = {{KDD} '15},\n\ttitle = {Inferring {Networks} of {Substitutable} and {Complementary} {Products}},\n\tisbn = {978-1-4503-3664-2},\n\turl = {https://doi.org/10.1145/2783258.2783381},\n\tdoi = {10.1145/2783258.2783381},\n\tabstract = {To design a useful recommender system, it is important to understand how products relate to each other. For example, while a user is browsing mobile phones, it might make sense to recommend other phones, but once they buy a phone, we might instead want to recommend batteries, cases, or chargers. In economics, these two types of recommendations are referred to as substitutes and complements: substitutes are products that can be purchased instead of each other, while complements are products that can be purchased in addition to each other. Such relationships are essential as they help us to identify items that are relevant to a user's search.Our goal in this paper is to learn the semantics of substitutes and complements from the text of online reviews. We treat this as a supervised learning problem, trained using networks of products derived from browsing and co-purchasing logs. Methodologically, we build topic models that are trained to automatically discover topics from product reviews that are successful at predicting and explaining such relationships. Experimentally, we evaluate our system on the Amazon product catalog, a large dataset consisting of 9 million products, 237 million links, and 144 million reviews.},\n\turldate = {2026-01-06},\n\tbooktitle = {Proceedings of the 21th {ACM} {SIGKDD} {International} {Conference} on {Knowledge} {Discovery} and {Data} {Mining}},\n\tpublisher = {Association for Computing Machinery},\n\tauthor = {McAuley, Julian and Pandey, Rahul and Leskovec, Jure},\n\tmonth = aug,\n\tyear = {2015},\n\tpages = {785--794},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-benchmark",
+          "text": "STaRK comprises three large, heterogeneous knowledge graphs. **AMAZON** is an e-commerce graph with roughly 1M entities and 9.4M relations, constructed from Amazon metadata, reviews [he_ups_2016], and question--answer pairs [mcauley_inferring_2015]. **MAG** is a scholarly graph with 1.9M entities"
+        }
+      ]
+    },
+    {
+      "key": "muennighoff_generative_2025",
+      "title": "Generative Representational Instruction Tuning",
+      "authors": [
+        "Muennighoff, Niklas",
+        "Su, Hongjin",
+        "Wang, Liang",
+        "Yang, Nan",
+        "Wei, Furu",
+        "Yu, Tao",
+        "Singh, Amanpreet",
+        "Kiela, Douwe"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2402.09906",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2402.09906",
+      "raw_bibtex": "@misc{muennighoff_generative_2025,\n\ttitle = {Generative {Representational} {Instruction} {Tuning}},\n\turl = {http://arxiv.org/abs/2402.09906},\n\tdoi = {10.48550/arXiv.2402.09906},\n\tabstract = {All text-based language problems can be reduced to either generation or embedding. Current models only perform well at one or the other. We introduce generative representational instruction tuning (GRIT) whereby a large language model is trained to handle both generative and embedding tasks by distinguishing between them through instructions. Compared to other open models, our resulting GritLM 7B sets a new state of the art on the Massive Text Embedding Benchmark (MTEB) and outperforms all models up to its size on a range of generative tasks. By scaling up further, GritLM 8x7B outperforms all open generative language models that we tried while still being among the best embedding models. Notably, we find that GRIT matches training on only generative or embedding data, thus we can unify both at no performance loss. Among other benefits, the unification via GRIT speeds up Retrieval-Augmented Generation (RAG) by {\\textgreater} 60\\% for long documents, by no longer requiring separate retrieval and generation models. Models, code, etc. are freely available at https://github.com/ContextualAI/gritlm.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Muennighoff, Niklas and Su, Hongjin and Wang, Liang and Yang, Nan and Wei, Furu and Yu, Tao and Singh, Amanpreet and Kiela, Douwe},\n\tmonth = mar,\n\tyear = {2025},\n\tnote = {arXiv:2402.09906 [cs]},\n\tkeywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        }
+      ]
+    },
+    {
+      "key": "ouyang_training_2022",
+      "title": "Training language models to follow instructions with human feedback",
+      "authors": [
+        "Ouyang, Long",
+        "Wu, Jeff",
+        "Jiang, Xu",
+        "Almeida, Diogo",
+        "Wainwright, Carroll L.",
+        "Mishkin, Pamela",
+        "Zhang, Chong",
+        "Agarwal, Sandhini",
+        "Slama, Katarina",
+        "Ray, Alex",
+        "Schulman, John",
+        "Hilton, Jacob",
+        "Kelton, Fraser",
+        "Miller, Luke",
+        "Simens, Maddie",
+        "Askell, Amanda",
+        "Welinder, Peter",
+        "Christiano, Paul",
+        "Leike, Jan",
+        "Lowe, Ryan"
+      ],
+      "year": 2022,
+      "venue": "",
+      "doi": "10.48550/arXiv.2203.02155",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2203.02155",
+      "raw_bibtex": "@misc{ouyang_training_2022,\n    title = {Training language models to follow instructions with human feedback},\n    url = {http://arxiv.org/abs/2203.02155},\n    doi = {10.48550/arXiv.2203.02155},\n    abstract = {Making language models bigger does not inherently make them better at following a user's intent. For example, large language models can generate outputs that are untruthful, toxic, or simply not helpful to the user. In other words, these models are not aligned with their users. In this paper, we show an avenue for aligning language models with user intent on a wide range of tasks by fine-tuning with human feedback. Starting with a set of labeler-written prompts and prompts submitted through the OpenAI API, we collect a dataset of labeler demonstrations of the desired model behavior, which we use to fine-tune GPT-3 using supervised learning. We then collect a dataset of rankings of model outputs, which we use to further fine-tune this supervised model using reinforcement learning from human feedback. We call the resulting models InstructGPT. In human evaluations on our prompt distribution, outputs from the 1.3B parameter InstructGPT model are preferred to outputs from the 175B GPT-3, despite having 100x fewer parameters. Moreover, InstructGPT models show improvements in truthfulness and reductions in toxic output generation while having minimal performance regressions on public NLP datasets. Even though InstructGPT still makes simple mistakes, our results show that fine-tuning with human feedback is a promising direction for aligning language models with human intent.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Ouyang, Long and Wu, Jeff and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll L. and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Miller, Luke and Simens, Maddie and Askell, Amanda and Welinder, Peter and Christiano, Paul and Leike, Jan and Lowe, Ryan},\n    month = mar,\n    year = {2022},\n    note = {arXiv:2203.02155 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-agent-distillation",
+          "text": "[]{#subsec:distill label=\"subsec:distill\"} While operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency [hinton_distilling_2015]. We adopt a standard teacher--student paradigm in which a student model imitates the"
+        }
+      ]
+    },
+    {
+      "key": "peng_graph_2025",
+      "title": "Graph Retrieval - Augmented Generation : A Survey",
+      "authors": [
+        "Peng, Boci",
+        "Zhu, Yun",
+        "Liu, Yongchao",
+        "Bo, Xiaohe",
+        "Shi, Haizhou",
+        "Hong, Chuntao",
+        "Zhang, Yan",
+        "Tang, Siliang"
+      ],
+      "year": 2025,
+      "venue": "ACM Trans. Inf. Syst.",
+      "doi": "10.1145/3777378",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1145/3777378",
+      "raw_bibtex": "@article{peng_graph_2025,\n\ttitle = {Graph {Retrieval}-{Augmented} {Generation}: {A} {Survey}},\n\tvolume = {44},\n\tissn = {1046-8188},\n\tshorttitle = {Graph {Retrieval}-{Augmented} {Generation}},\n\turl = {https://doi.org/10.1145/3777378},\n\tdoi = {10.1145/3777378},\n\tabstract = {Recently, Retrieval-Augmented Generation (RAG) has achieved remarkable success in addressing the challenges of Large Language Models (LLMs) without necessitating retraining. By referencing an external knowledge base, RAG refines LLM outputs, effectively mitigating issues such as “hallucination,” lack of domain-specific knowledge, and outdated information. However, the complex structure of relationships among different entities in databases presents challenges for RAG systems. In response, GraphRAG leverages structural information across entities to enable more precise and comprehensive retrieval, capturing relational knowledge and facilitating more accurate, context-aware responses. Given the novelty and potential of GraphRAG, a systematic review of current technologies is imperative. This article provides the first comprehensive overview of GraphRAG methodologies. We formalize the GraphRAG workflow, encompassing Graph-Based Indexing, Graph-Guided Retrieval, and Graph-Enhanced Generation. We then outline the core technologies and training methods at each stage. Additionally, we examine downstream tasks, application domains, evaluation methodologies, and industrial use cases of GraphRAG. Finally, we explore future research directions to inspire further inquiries and advance progress in the field. In order to track recent progress, we set up a repository at .},\n\tnumber = {2},\n\turldate = {2026-01-05},\n\tjournal = {ACM Trans. Inf. Syst.},\n\tauthor = {Peng, Boci and Zhu, Yun and Liu, Yongchao and Bo, Xiaohe and Shi, Haizhou and Hong, Chuntao and Zhang, Yan and Tang, Siliang},\n\tmonth = dec,\n\tyear = {2025},\n\tpages = {35:1--35:52},\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "ren2025investigating",
+      "title": "Investigating the factual knowledge boundary of large language models with retrieval augmentation",
+      "authors": [
+        "Ren, Ruiyang",
+        "Wang, Yuhao",
+        "Qu, Yingqi",
+        "Zhao, Wayne Xin",
+        "Liu, Jing",
+        "Wu, Hua",
+        "Wen, Ji-Rong",
+        "Wang, Haifeng"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 31st International Conference on Computational Linguistics",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{ren2025investigating,\n  title={Investigating the factual knowledge boundary of large language models with retrieval augmentation},\n  author={Ren, Ruiyang and Wang, Yuhao and Qu, Yingqi and Zhao, Wayne Xin and Liu, Jing and Wu, Hua and Wen, Ji-Rong and Wang, Haifeng},\n  booktitle={Proceedings of the 31st International Conference on Computational Linguistics},\n  pages={3697--3715},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "robertson_probabilistic_2009",
+      "title": "The Probabilistic Relevance Framework : BM25 and Beyond",
+      "authors": [
+        "Robertson, Stephen",
+        "Zaragoza, Hugo"
+      ],
+      "year": 2009,
+      "venue": "Found. Trends Inf. Retr.",
+      "doi": "10.1561/1500000019",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1561/1500000019",
+      "raw_bibtex": "@article{robertson_probabilistic_2009,\n    title = {The {Probabilistic} {Relevance} {Framework}: {BM25} and {Beyond}},\n    volume = {3},\n    issn = {1554-0669},\n    shorttitle = {The {Probabilistic} {Relevance} {Framework}},\n    url = {https://doi.org/10.1561/1500000019},\n    doi = {10.1561/1500000019},\n    abstract = {The Probabilistic Relevance Framework (PRF) is a formal framework for document retrieval, grounded in work done in the 1970—1980s, which led to the development of one of the most successful text-retrieval algorithms, BM25. In recent years, research in the PRF has yielded new retrieval models capable of taking into account document meta-data (especially structure and link-graph information). Again, this has led to one of the most successful Web-search and corporate-search algorithms, BM25F. This work presents the PRF from a conceptual point of view, describing the probabilistic modelling assumptions behind the framework and the different ranking algorithms that result from its application: the binary independence model, relevance feedback models, BM25 and BM25F. It also discusses the relation between the PRF and other statistical models for IR, and covers some related topics, such as the use of non-textual features, and parameter optimisation for models with free parameters.},\n    number = {4},\n    urldate = {2026-01-06},\n    journal = {Found. Trends Inf. Retr.},\n    author = {Robertson, Stephen and Zaragoza, Hugo},\n    month = apr,\n    year = {2009},\n    pages = {333--389},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-untitled",
+          "text": "We study retrieval over a knowledge graph , where $V$ and $E$ denote entities and edges, $\\phi_V$ and $\\phi_E$ assign a type to each node and relation, and $d_V(v)$ denotes the text attributes associated with node $v$, such as titles, descriptions, or other metadata. Given a natural-language query"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        }
+      ]
+    },
+    {
+      "key": "schick_toolformer_2023",
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "authors": [
+        "Schick, Timo",
+        "Dwivedi-Yu, Jane",
+        "Dessì, Roberto",
+        "Raileanu, Roberta",
+        "Lomeli, Maria",
+        "Zettlemoyer, Luke",
+        "Cancedda, Nicola",
+        "Scialom, Thomas"
+      ],
+      "year": 2023,
+      "venue": "",
+      "doi": "10.48550/arXiv.2302.04761",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2302.04761",
+      "raw_bibtex": "@misc{schick_toolformer_2023,\n    title = {Toolformer: {Language} {Models} {Can} {Teach} {Themselves} to {Use} {Tools}},\n    shorttitle = {Toolformer},\n    url = {http://arxiv.org/abs/2302.04761},\n    doi = {10.48550/arXiv.2302.04761},\n    abstract = {Language models (LMs) exhibit remarkable abilities to solve new tasks from just a few examples or textual instructions, especially at scale. They also, paradoxically, struggle with basic functionality, such as arithmetic or factual lookup, where much simpler and smaller models excel. In this paper, we show that LMs can teach themselves to use external tools via simple APIs and achieve the best of both worlds. We introduce Toolformer, a model trained to decide which APIs to call, when to call them, what arguments to pass, and how to best incorporate the results into future token prediction. This is done in a self-supervised way, requiring nothing more than a handful of demonstrations for each API. We incorporate a range of tools, including a calculator, a Q{\\textbackslash}\\&A system, two different search engines, a translation system, and a calendar. Toolformer achieves substantially improved zero-shot performance across a variety of downstream tasks, often competitive with much larger models, without sacrificing its core language modeling abilities.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Schick, Timo and Dwivedi-Yu, Jane and Dessì, Roberto and Raileanu, Roberta and Lomeli, Maria and Zettlemoyer, Luke and Cancedda, Nicola and Scialom, Thomas},\n    month = feb,\n    year = {2023},\n    note = {arXiv:2302.04761 [cs]},\n    keywords = {Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-untitled",
+          "text": "We study retrieval over a knowledge graph , where $V$ and $E$ denote entities and edges, $\\phi_V$ and $\\phi_E$ assign a type to each node and relation, and $d_V(v)$ denotes the text attributes associated with node $v$, such as titles, descriptions, or other metadata. Given a natural-language query"
+        },
+        {
+          "section_id": "sec-agent-distillation",
+          "text": "[]{#subsec:distill label=\"subsec:distill\"} While operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency [hinton_distilling_2015]. We adopt a standard teacher--student paradigm in which a student model imitates the"
+        }
+      ]
+    },
+    {
+      "key": "shi_instruction_2024",
+      "title": "Instruction Tuning With Loss Over Instructions",
+      "authors": [
+        "Shi, Zhengyan",
+        "Yang, Adam X.",
+        "Wu, Bin",
+        "Aitchison, Laurence",
+        "Yilmaz, Emine",
+        "Lipani, Aldo"
+      ],
+      "year": 2024,
+      "venue": "",
+      "doi": "10.48550/arXiv.2405.14394",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2405.14394",
+      "raw_bibtex": "@misc{shi_instruction_2024,\n    title = {Instruction {Tuning} {With} {Loss} {Over} {Instructions}},\n    url = {http://arxiv.org/abs/2405.14394},\n    doi = {10.48550/arXiv.2405.14394},\n    abstract = {Instruction tuning plays a crucial role in shaping the outputs of language models (LMs) to desired styles. In this work, we propose a simple yet effective method, Instruction Modelling (IM), which trains LMs by applying a loss function to the instruction and prompt part rather than solely to the output part. Through experiments across 21 diverse benchmarks, we show that, in many scenarios, IM can effectively improve the LM performance on both NLP tasks (e.g., MMLU, TruthfulQA, and HumanEval) and open-ended generation benchmarks (e.g., MT-Bench and AlpacaEval). Remarkably, in the most advantageous case, IM boosts model performance on AlpacaEval 1.0 by over 100\\%. We identify two key factors influencing the effectiveness of IM: (1) The ratio between instruction length and output length in the training data; and (2) The number of training examples. We observe that IM is especially beneficial when trained on datasets with lengthy instructions paired with brief outputs, or under the Superficial Alignment Hypothesis (SAH) where a small amount of training examples are used for instruction tuning. Further analysis substantiates our hypothesis that our improvement can be attributed to reduced overfitting to instruction tuning datasets. It is worth noting that we are not proposing {\\textbackslash}ours as a replacement for current fine-tuning processes. Instead, our work aims to provide practical guidance for instruction tuning LMs, especially in low-resource scenarios.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Shi, Zhengyan and Yang, Adam X. and Wu, Bin and Aitchison, Laurence and Yilmaz, Emine and Lipani, Aldo},\n    month = oct,\n    year = {2024},\n    note = {arXiv:2405.14394 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-agent-distillation",
+          "text": "[]{#subsec:distill label=\"subsec:distill\"} While operates on off-the-shelf models, its behavior can be distilled into a smaller language model to reduce inference cost and latency [hinton_distilling_2015]. We adopt a standard teacher--student paradigm in which a student model imitates the"
+        }
+      ]
+    },
+    {
+      "key": "sun_pullnet_2019",
+      "title": "PullNet : Open Domain Question Answering with Iterative Retrieval on Knowledge Bases and Text",
+      "authors": [
+        "Sun, Haitian",
+        "Bedrax-Weiss, Tania",
+        "Cohen, William"
+      ],
+      "year": 2019,
+      "venue": "Proceedings of the 2019 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing} and the 9th {International} {Joint} {Conference} on {Natural} {Language} {Processing} ({EMNLP}-{IJCNLP})",
+      "doi": "10.18653/v1/D19-1242",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/D19-1242/",
+      "raw_bibtex": "@inproceedings{sun_pullnet_2019,\n    address = {Hong Kong, China},\n    title = {{PullNet}: {Open} {Domain} {Question} {Answering} with {Iterative} {Retrieval} on {Knowledge} {Bases} and {Text}},\n    shorttitle = {{PullNet}},\n    url = {https://aclanthology.org/D19-1242/},\n    doi = {10.18653/v1/D19-1242},\n    abstract = {We consider open-domain question answering (QA) where answers are drawn from either a corpus, a knowledge base (KB), or a combination of both of these. We focus on a setting in which a corpus is supplemented with a large but incomplete KB, and on questions that require non-trivial (e.g., “multi-hop”) reasoning. We describe PullNet, an integrated framework for (1) learning what to retrieve and (2) reasoning with this heterogeneous information to find the best answer. PullNet uses an iterative process to construct a question-specific subgraph that contains information relevant to the question. In each iteration, a graph convolutional network (graph CNN) is used to identify subgraph nodes that should be expanded using retrieval (or “pull”) operations on the corpus and/or KB. After the subgraph is complete, another graph CNN is used to extract the answer from the subgraph. This retrieve-and-reason process allows us to answer multi-hop questions using large KBs and corpora. PullNet is weakly supervised, requiring question-answer pairs but not gold inference paths. Experimentally PullNet improves over the prior state-of-the art, and in the setting where a corpus is used with incomplete KB these improvements are often dramatic. PullNet is also often superior to prior systems in a KB-only setting or a text-only setting.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 2019 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing} and the 9th {International} {Joint} {Conference} on {Natural} {Language} {Processing} ({EMNLP}-{IJCNLP})},\n    publisher = {Association for Computational Linguistics},\n    author = {Sun, Haitian and Bedrax-Weiss, Tania and Cohen, William},\n    editor = {Inui, Kentaro and Jiang, Jing and Ng, Vincent and Wan, Xiaojun},\n    month = nov,\n    year = {2019},\n    pages = {2380--2390},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "sun_search--graph_2025",
+      "title": "Search-on- Graph : Iterative Informed Navigation for Large Language Model Reasoning on Knowledge Graphs",
+      "authors": [
+        "Sun, Jia Ao",
+        "Yu, Hao",
+        "Gotti, Fabrizio",
+        "Mo, Fengran",
+        "Wu, Yihong",
+        "Hui, Yuchen",
+        "Nie, Jian-Yun"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2510.08825",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2510.08825",
+      "raw_bibtex": "@misc{sun_search--graph_2025,\n\ttitle = {Search-on-{Graph}: {Iterative} {Informed} {Navigation} for {Large} {Language} {Model} {Reasoning} on {Knowledge} {Graphs}},\n\tshorttitle = {Search-on-{Graph}},\n\turl = {http://arxiv.org/abs/2510.08825},\n\tdoi = {10.48550/arXiv.2510.08825},\n\tabstract = {Large language models (LLMs) have demonstrated impressive reasoning abilities yet remain unreliable on knowledge-intensive, multi-hop questions -- they miss long-tail facts, hallucinate when uncertain, and their internal knowledge lags behind real-world change. Knowledge graphs (KGs) offer a structured source of relational evidence, but existing KGQA methods face fundamental trade-offs: compiling complete SPARQL queries without knowing available relations proves brittle, retrieving large subgraphs introduces noise, and complex agent frameworks with parallel exploration exponentially expand search spaces. To address these limitations, we propose Search-on-Graph (SoG), a simple yet effective framework that enables LLMs to perform iterative informed graph navigation using a single, carefully designed {\\textbackslash}textsc\\{Search\\} function. Rather than pre-planning paths or retrieving large subgraphs, SoG follows an ``observe-then-navigate'' principle: at each step, the LLM examines actual available relations from the current entity before deciding on the next hop. This approach further adapts seamlessly to different KG schemas and handles high-degree nodes through adaptive filtering. Across six KGQA benchmarks spanning Freebase and Wikidata, SoG achieves state-of-the-art performance without fine-tuning. We demonstrate particularly strong gains on Wikidata benchmarks (+16{\\textbackslash}\\% improvement over previous best methods) alongside consistent improvements on Freebase benchmarks.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Sun, Jia Ao and Yu, Hao and Gotti, Fabrizio and Mo, Fengran and Wu, Yihong and Hui, Yuchen and Nie, Jian-Yun},\n\tmonth = oct,\n\tyear = {2025},\n\tnote = {arXiv:2510.08825 [cs]},\n\tkeywords = {Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "sun_think--graph_2024",
+      "title": "Think-on- Graph : Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+      "authors": [
+        "Sun, Jiashuo",
+        "Xu, Chengjin",
+        "Tang, Lumingyuan",
+        "Wang, Saizhuo",
+        "Lin, Chen",
+        "Gong, Yeyun",
+        "Ni, Lionel M.",
+        "Shum, Heung-Yeung",
+        "Guo, Jian"
+      ],
+      "year": 2024,
+      "venue": "",
+      "doi": "10.48550/arXiv.2307.07697",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2307.07697",
+      "raw_bibtex": "@misc{sun_think--graph_2024,\n\ttitle = {Think-on-{Graph}: {Deep} and {Responsible} {Reasoning} of {Large} {Language} {Model} on {Knowledge} {Graph}},\n\tshorttitle = {Think-on-{Graph}},\n\turl = {http://arxiv.org/abs/2307.07697},\n\tdoi = {10.48550/arXiv.2307.07697},\n\tabstract = {Although large language models (LLMs) have achieved significant success in various tasks, they often struggle with hallucination problems, especially in scenarios requiring deep and responsible reasoning. These issues could be partially addressed by introducing external knowledge graphs (KG) in LLM reasoning. In this paper, we propose a new LLM-KG integrating paradigm ``\\${\\textbackslash}hbox\\{LLM\\}{\\textbackslash}otimes{\\textbackslash}hbox\\{KG\\}\\$'' which treats the LLM as an agent to interactively explore related entities and relations on KGs and perform reasoning based on the retrieved knowledge. We further implement this paradigm by introducing a new approach called Think-on-Graph (ToG), in which the LLM agent iteratively executes beam search on KG, discovers the most promising reasoning paths, and returns the most likely reasoning results. We use a number of well-designed experiments to examine and illustrate the following advantages of ToG: 1) compared with LLMs, ToG has better deep reasoning power; 2) ToG has the ability of knowledge traceability and knowledge correctability by leveraging LLMs reasoning and expert feedback; 3) ToG provides a flexible plug-and-play framework for different LLMs, KGs and prompting strategies without any additional training cost; 4) the performance of ToG with small LLM models could exceed large LLM such as GPT-4 in certain scenarios and this reduces the cost of LLM deployment and application. As a training-free method with lower computational cost and better generality, ToG achieves overall SOTA in 6 out of 9 datasets where most previous SOTAs rely on additional training.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Sun, Jiashuo and Xu, Chengjin and Tang, Lumingyuan and Wang, Saizhuo and Lin, Chen and Gong, Yeyun and Ni, Lionel M. and Shum, Heung-Yeung and Guo, Jian},\n\tmonth = mar,\n\tyear = {2024},\n\tnote = {arXiv:2307.07697 [cs]},\n\tkeywords = {Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        },
+        {
+          "section_id": "sec-benchmarking",
+          "text": "[\\[tab:stark-results\\]](#tab:stark-results){reference-type=\"ref+Label\" reference=\"tab:stark-results\"} reports retrieval performance on STaRK, grouped by training regime. Across all methods assessed, achieves the best average performance. Classical retrievers remain strong baselines on AMAZON, when"
+        }
+      ]
+    },
+    {
+      "key": "verma2024plan",
+      "title": "Plan* RAG : Efficient test-time planning for retrieval augmented generation",
+      "authors": [
+        "Verma, Prakhar",
+        "Midigeshi, Sukruta Prakash",
+        "Sinha, Gaurav",
+        "Solin, Arno",
+        "Natarajan, Nagarajan",
+        "Sharma, Amit"
+      ],
+      "year": 2024,
+      "venue": "arXiv:2410.20753",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{verma2024plan,\n  title={Plan* {RAG}: Efficient test-time planning for retrieval augmented generation},\n  author={Verma, Prakhar and Midigeshi, Sukruta Prakash and Sinha, Gaurav and Solin, Arno and Natarajan, Nagarajan and Sharma, Amit},\n  journal={arXiv:2410.20753},\n  year={2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "wan2025digest",
+      "title": "Digest the Knowledge: Large Language Models empowered Message Passing for Knowledge Graph Question Answering",
+      "authors": [
+        "Wan, Junhong",
+        "Yu, Tao",
+        "Jiang, Kunyu",
+        "Fu, Yao",
+        "Jiang, Weihao",
+        "Zhu, Jiang"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{wan2025digest,\n  title={Digest the Knowledge: Large Language Models empowered Message Passing for Knowledge Graph Question Answering},\n  author={Wan, Junhong and Yu, Tao and Jiang, Kunyu and Fu, Yao and Jiang, Weihao and Zhu, Jiang},\n  booktitle={Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n  pages={15426--15442},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "wang2025corag",
+      "title": "Chain-of-Retrieval Augmented Generation",
+      "authors": [
+        "Wang, Liang",
+        "Chen, Haonan",
+        "Yang, Nan",
+        "Huang, Xiaolong",
+        "Dou, Zhicheng",
+        "Wei, Furu"
+      ],
+      "year": 2025,
+      "venue": "NeurIPS",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2501.14342",
+      "raw_bibtex": "@inproceedings{wang2025corag,\n  title     = {Chain-of-Retrieval Augmented Generation},\n  author    = {Wang, Liang and Chen, Haonan and Yang, Nan and Huang, Xiaolong and Dou, Zhicheng and Wei, Furu},\n  booktitle = {NeurIPS},\n  year      = {2025},\n  url       = {https://arxiv.org/abs/2501.14342}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "wang2025survey",
+      "title": "Survey on factuality in large language models",
+      "authors": [
+        "Wang, Cunxiang",
+        "Liu, Xiaoze",
+        "Yue, Yuanhao",
+        "Guo, Qipeng",
+        "Hu, Xiangkun",
+        "Tang, Xiangru",
+        "Zhang, Tianhang",
+        "Jiayang, Cheng",
+        "Yao, Yunzhi",
+        "Hu, Xuming",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "ACM Computing Surveys",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{wang2025survey,\n  title={Survey on factuality in large language models},\n  author={Wang, Cunxiang and Liu, Xiaoze and Yue, Yuanhao and Guo, Qipeng and Hu, Xiangkun and Tang, Xiangru and Zhang, Tianhang and Jiayang, Cheng and Yao, Yunzhi and Hu, Xuming and others},\n  journal={ACM Computing Surveys},\n  volume={58},\n  number={1},\n  pages={1--37},\n  year={2025},\n  publisher={ACM New York, NY}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "wang2026kg",
+      "title": "KG-Hopper: Empowering Compact Open LLMs with Knowledge Graph Reasoning via Reinforcement Learning",
+      "authors": [
+        "Wang, Shuai",
+        "Yu, Yinan"
+      ],
+      "year": 2026,
+      "venue": "IJCNN",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{wang2026kg,\n  title={{KG-Hopper:} Empowering Compact Open LLMs with Knowledge Graph Reasoning via Reinforcement Learning},\n  author={Wang, Shuai and Yu, Yinan},\n  journal={IJCNN},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "wang_microsoft_2020",
+      "title": "Microsoft Academic Graph : When experts are not enough",
+      "authors": [
+        "Wang, Kuansan",
+        "Shen, Zhihong",
+        "Huang, Chiyuan",
+        "Wu, Chieh-Han",
+        "Dong, Yuxiao",
+        "Kanakia, Anshul"
+      ],
+      "year": 2020,
+      "venue": "Quantitative Science Studies",
+      "doi": "10.1162/qss_a_00021",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1162/qss_a_00021",
+      "raw_bibtex": "@article{wang_microsoft_2020,\n\ttitle = {Microsoft {Academic} {Graph}: {When} experts are not enough},\n\tvolume = {1},\n\tissn = {2641-3337},\n\tshorttitle = {Microsoft {Academic} {Graph}},\n\turl = {https://doi.org/10.1162/qss_a_00021},\n\tdoi = {10.1162/qss_a_00021},\n\tabstract = {An ongoing project explores the extent to which artificial intelligence (AI), specifically in the areas of natural language processing and semantic reasoning, can be exploited to facilitate the studies of science by deploying software agents equipped with natural language understanding capabilities to read scholarly publications on the web. The knowledge extracted by these AI agents is organized into a heterogeneous graph, called Microsoft Academic Graph (MAG), where the nodes and the edges represent the entities engaging in scholarly communications and the relationships among them, respectively. The frequently updated data set and a few software tools central to the underlying AI components are distributed under an open data license for research and commercial applications. This paper describes the design, schema, and technical and business motivations behind MAG and elaborates how MAG can be used in analytics, search, and recommendation scenarios. How AI plays an important role in avoiding various biases and human induced errors in other data sets and how the technologies can be further improved in the future are also discussed.},\n\tnumber = {1},\n\turldate = {2026-01-06},\n\tjournal = {Quantitative Science Studies},\n\tauthor = {Wang, Kuansan and Shen, Zhihong and Huang, Chiyuan and Wu, Chieh-Han and Dong, Yuxiao and Kanakia, Anshul},\n\tmonth = feb,\n\tyear = {2020},\n\tpages = {396--413},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-benchmark",
+          "text": "STaRK comprises three large, heterogeneous knowledge graphs. **AMAZON** is an e-commerce graph with roughly 1M entities and 9.4M relations, constructed from Amazon metadata, reviews [he_ups_2016], and question--answer pairs [mcauley_inferring_2015]. **MAG** is a scholarly graph with 1.9M entities"
+        }
+      ]
+    },
+    {
+      "key": "wang_self-consistency_2023",
+      "title": "Self- Consistency Improves Chain of Thought Reasoning in Language Models",
+      "authors": [
+        "Wang, Xuezhi",
+        "Wei, Jason",
+        "Schuurmans, Dale",
+        "Le, Quoc",
+        "Chi, Ed",
+        "Narang, Sharan",
+        "Chowdhery, Aakanksha",
+        "Zhou, Denny"
+      ],
+      "year": 2023,
+      "venue": "",
+      "doi": "10.48550/arXiv.2203.11171",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2203.11171",
+      "raw_bibtex": "@misc{wang_self-consistency_2023,\n    title = {Self-{Consistency} {Improves} {Chain} of {Thought} {Reasoning} in {Language} {Models}},\n    url = {http://arxiv.org/abs/2203.11171},\n    doi = {10.48550/arXiv.2203.11171},\n    abstract = {Chain-of-thought prompting combined with pre-trained large language models has achieved encouraging results on complex reasoning tasks. In this paper, we propose a new decoding strategy, self-consistency, to replace the naive greedy decoding used in chain-of-thought prompting. It first samples a diverse set of reasoning paths instead of only taking the greedy one, and then selects the most consistent answer by marginalizing out the sampled reasoning paths. Self-consistency leverages the intuition that a complex reasoning problem typically admits multiple different ways of thinking leading to its unique correct answer. Our extensive empirical evaluation shows that self-consistency boosts the performance of chain-of-thought prompting with a striking margin on a range of popular arithmetic and commonsense reasoning benchmarks, including GSM8K (+17.9\\%), SVAMP (+11.0\\%), AQuA (+12.2\\%), StrategyQA (+6.4\\%) and ARC-challenge (+3.9\\%).},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Wang, Xuezhi and Wei, Jason and Schuurmans, Dale and Le, Quoc and Chi, Ed and Narang, Sharan and Chowdhery, Aakanksha and Zhou, Denny},\n    month = mar,\n    year = {2023},\n    note = {arXiv:2203.11171 [cs]},\n    keywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-parallel-exploration",
+          "text": "[]{#sec:parallel_exploration label=\"sec:parallel_exploration\"} We increase robustness by running $n$ independent instances of the same agent in parallel and aggregating their retrieved lists, akin to self-consistency and voting-based ensembling in LLM reasoning [wang_self-consistency_2023,"
+        }
+      ]
+    },
+    {
+      "key": "wu_avatar_2024",
+      "title": "AvaTaR : Optimizing LLM Agents for Tool Usage via Contrastive Reasoning",
+      "authors": [
+        "Wu, Shirley",
+        "Zhao, Shiyu",
+        "Huang, Qian",
+        "Huang, Kexin",
+        "Yasunaga, Michihiro",
+        "Cao, Kaidi",
+        "Ioannidis, Vassilis N.",
+        "Subbian, Karthik",
+        "Leskovec, Jure",
+        "Zou, James"
+      ],
+      "year": 2024,
+      "venue": "",
+      "doi": "10.48550/arXiv.2406.11200",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2406.11200",
+      "raw_bibtex": "@misc{wu_avatar_2024,\n\ttitle = {{AvaTaR}: {Optimizing} {LLM} {Agents} for {Tool} {Usage} via {Contrastive} {Reasoning}},\n\tshorttitle = {{AvaTaR}},\n\turl = {http://arxiv.org/abs/2406.11200},\n\tdoi = {10.48550/arXiv.2406.11200},\n\tabstract = {Large language model (LLM) agents have demonstrated impressive capabilities in utilizing external tools and knowledge to boost accuracy and reduce hallucinations. However, developing prompting techniques that enable LLM agents to effectively use these tools and knowledge remains a heuristic and labor-intensive task. Here, we introduce AvaTaR, a novel and automated framework that optimizes an LLM agent to effectively leverage provided tools, improving performance on a given task. During optimization, we design a comparator module to iteratively deliver insightful and comprehensive prompts to the LLM agent by contrastively reasoning between positive and negative examples sampled from training data. We demonstrate AvaTaR on four complex multimodal retrieval datasets featuring textual, visual, and relational information, and three general question-answering (QA) datasets. We find AvaTaR consistently outperforms state-of-the-art approaches across all seven tasks, exhibiting strong generalization ability when applied to novel cases and achieving an average relative improvement of 14\\% on the Hit@1 metric for the retrieval datasets and 13\\% for the QA datasets. Code and dataset are available at https://github.com/zou-group/avatar.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Wu, Shirley and Zhao, Shiyu and Huang, Qian and Huang, Kexin and Yasunaga, Michihiro and Cao, Kaidi and Ioannidis, Vassilis N. and Subbian, Karthik and Leskovec, Jure and Zou, James},\n\tmonth = oct,\n\tyear = {2024},\n\tnote = {arXiv:2406.11200 [cs]},\n\tkeywords = {Computer Science - Computation and Language, Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        }
+      ]
+    },
+    {
+      "key": "wu_stark_2024",
+      "title": "STARK : benchmarking LLM retrieval on textual and relational knowledge bases",
+      "authors": [
+        "Wu, Shirley",
+        "Zhao, Shiyu",
+        "Yasunaga, Michihiro",
+        "Huang, Kexin",
+        "Cao, Kaidi",
+        "Huang, Qian",
+        "Ioannidis, Vassiiis N.",
+        "Suhhian, Karthik",
+        "Zou, James",
+        "Leskovec, Jure"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 38th {International} {Conference} on {Neural} {Information} {Processing} {Systems}",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{wu_stark_2024,\n\taddress = {Red Hook, NY, USA},\n\tseries = {{NIPS} '24},\n\ttitle = {{STARK}: benchmarking {LLM} retrieval on textual and relational knowledge bases},\n\tvolume = {37},\n\tisbn = {979-8-3313-1438-5},\n\tshorttitle = {{STARK}},\n\tabstract = {Answering real-world complex queries, such as complex product search, often requires accurate retrieval from semi-structured knowledge bases that involve blend of unstructured (e.g., textual descriptions of products) and structured (e.g., entity relations of products) information. However, many previous works studied textual and relational retrieval tasks as separate topics. To address the gap, we develop STARK, a large-scale Semi-structure retrieval benchmark on Textual and Relational Knowledge Bases. Our benchmark covers three domains: product search, academic paper search, and queries in precision medicine. We design a novel pipeline to synthesize realistic user queries that integrate diverse relational information and complex textual properties, together with their ground-truth answers (items). We conduct rigorous human evaluation to validate the quality of our synthesized queries. We further enhance the benchmark with high-quality human-generated queries to provide an authentic reference. STARK serves as a comprehensive testbed for evaluating the performance of retrieval systems driven by large language models (LLMs). Our experiments suggest that STARK presents significant challenges to the current retrieval and LLM systems, highlighting the need for more capable semi-structured retrieval systems.},\n\turldate = {2026-01-06},\n\tbooktitle = {Proceedings of the 38th {International} {Conference} on {Neural} {Information} {Processing} {Systems}},\n\tpublisher = {Curran Associates Inc.},\n\tauthor = {Wu, Shirley and Zhao, Shiyu and Yasunaga, Michihiro and Huang, Kexin and Cao, Kaidi and Huang, Qian and Ioannidis, Vassiiis N. and Suhhian, Karthik and Zou, James and Leskovec, Jure},\n\tmonth = dec,\n\tyear = {2024},\n\tpages = {127129--127153},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "[]{#sec:experiments label=\"sec:experiments\"} We measure retrieval performance on STaRK, a benchmark for entity-level retrieval over heterogeneous, text-rich KGs [wu_stark_2024]."
+        },
+        {
+          "section_id": "sec-text-vs-relational-adaptive-retrieval",
+          "text": "STaRK reports, for each graph, the average share of queries that are primarily textual versus primarily relational (multi-hop) (Fig. 5 in @wu_stark_2024). We use these proportions as a reference and compare them to 's tool-call allocation on our evaluation split. Concretely, we treat the fraction"
+        }
+      ]
+    },
+    {
+      "key": "xia2025ground",
+      "title": "Ground every sentence: Improving retrieval-augmented llms with interleaved reference-claim generation",
+      "authors": [
+        "Xia, Sirui",
+        "Wang, Xintao",
+        "Liang, Jiaqing",
+        "Zhang, Yifei",
+        "Zhou, Weikang",
+        "Deng, Jiaji",
+        "Yu, Fei",
+        "Xiao, Yanghua"
+      ],
+      "year": 2025,
+      "venue": "Findings of the Association for Computational Linguistics: NAACL 2025",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{xia2025ground,\n  title={Ground every sentence: Improving retrieval-augmented llms with interleaved reference-claim generation},\n  author={Xia, Sirui and Wang, Xintao and Liang, Jiaqing and Zhang, Yifei and Zhou, Weikang and Deng, Jiaji and Yu, Fei and Xiao, Yanghua},\n  booktitle={Findings of the Association for Computational Linguistics: NAACL 2025},\n  pages={969--988},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "xia_knowledge-aware_2025",
+      "title": "Knowledge- Aware Query Expansion with Large Language Models for Textual and Relational Retrieval",
+      "authors": [
+        "Xia, Yu",
+        "Wu, Junda",
+        "Kim, Sungchul",
+        "Yu, Tong",
+        "Rossi, Ryan A.",
+        "Wang, Haoliang",
+        "McAuley, Julian"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2410.13765",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2410.13765",
+      "raw_bibtex": "@misc{xia_knowledge-aware_2025,\n    title = {Knowledge-{Aware} {Query} {Expansion} with {Large} {Language} {Models} for {Textual} and {Relational} {Retrieval}},\n    url = {http://arxiv.org/abs/2410.13765},\n    doi = {10.48550/arXiv.2410.13765},\n    abstract = {Large language models (LLMs) have been used to generate query expansions augmenting original queries for improving information search. Recent studies also explore providing LLMs with initial retrieval results to generate query expansions more grounded to document corpus. However, these methods mostly focus on enhancing textual similarities between search queries and target documents, overlooking document relations. For queries like \"Find me a highly rated camera for wildlife photography compatible with my Nikon F-Mount lenses\", existing methods may generate expansions that are semantically similar but structurally unrelated to user intents. To handle such semi-structured queries with both textual and relational requirements, in this paper we propose a knowledge-aware query expansion framework, augmenting LLMs with structured document relations from knowledge graph (KG). To further address the limitation of entity-based scoring in existing KG-based methods, we leverage document texts as rich KG node representations and use document-based relation filtering for our Knowledge-Aware Retrieval (KAR). Extensive experiments on three datasets of diverse domains show the advantages of our method compared against state-of-the-art baselines on textual and relational semi-structured retrieval.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Xia, Yu and Wu, Junda and Kim, Sungchul and Yu, Tong and Rossi, Ryan A. and Wang, Haoliang and McAuley, Julian},\n    month = feb,\n    year = {2025},\n    note = {arXiv:2410.13765 [cs]},\n    keywords = {Computer Science - Computation and Language, Computer Science - Information Retrieval},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        },
+        {
+          "section_id": "sec-benchmarking",
+          "text": "[\\[tab:stark-results\\]](#tab:stark-results){reference-type=\"ref+Label\" reference=\"tab:stark-results\"} reports retrieval performance on STaRK, grouped by training regime. Across all methods assessed, achieves the best average performance. Classical retrievers remain strong baselines on AMAZON, when"
+        }
+      ]
+    },
+    {
+      "key": "xiong_deeppath_2017",
+      "title": "DeepPath : A Reinforcement Learning Method for Knowledge Graph Reasoning",
+      "authors": [
+        "Xiong, Wenhan",
+        "Hoang, Thien",
+        "Wang, William Yang"
+      ],
+      "year": 2017,
+      "venue": "Proceedings of the 2017 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing}",
+      "doi": "10.18653/v1/D17-1060",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/D17-1060/",
+      "raw_bibtex": "@inproceedings{xiong_deeppath_2017,\n\taddress = {Copenhagen, Denmark},\n\ttitle = {{DeepPath}: {A} {Reinforcement} {Learning} {Method} for {Knowledge} {Graph} {Reasoning}},\n\tshorttitle = {{DeepPath}},\n\turl = {https://aclanthology.org/D17-1060/},\n\tdoi = {10.18653/v1/D17-1060},\n\tabstract = {We study the problem of learning to reason in large scale knowledge graphs (KGs). More specifically, we describe a novel reinforcement learning framework for learning multi-hop relational paths: we use a policy-based agent with continuous states based on knowledge graph embeddings, which reasons in a KG vector-space by sampling the most promising relation to extend its path. In contrast to prior work, our approach includes a reward function that takes the accuracy, diversity, and efficiency into consideration. Experimentally, we show that our proposed method outperforms a path-ranking based algorithm and knowledge graph embedding methods on Freebase and Never-Ending Language Learning datasets.},\n\turldate = {2026-01-06},\n\tbooktitle = {Proceedings of the 2017 {Conference} on {Empirical} {Methods} in {Natural} {Language} {Processing}},\n\tpublisher = {Association for Computational Linguistics},\n\tauthor = {Xiong, Wenhan and Hoang, Thien and Wang, William Yang},\n\teditor = {Palmer, Martha and Hwa, Rebecca and Riedel, Sebastian},\n\tmonth = sep,\n\tyear = {2017},\n\tpages = {564--573},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "yan2026explore",
+      "title": "Explore-on-Graph: Incentivizing Autonomous Exploration of Large Language Models on Knowledge Graphs with Path-refined Reward Modeling",
+      "authors": [
+        "Yan, Shiqi",
+        "Chen, Yubo",
+        "Zhou, Ruiqi",
+        "Yao, Zhengxi",
+        "Chen, Shuai",
+        "Zhang, Tianyi",
+        "Zhang, Shijie",
+        "Zhang, Wei Qiang",
+        "Huang, Yongfeng",
+        "Duan, Haixin",
+        "others"
+      ],
+      "year": 2026,
+      "venue": "ICLR",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{yan2026explore,\n  title={Explore-on-Graph: Incentivizing Autonomous Exploration of Large Language Models on Knowledge Graphs with Path-refined Reward Modeling},\n  author={Yan, Shiqi and Chen, Yubo and Zhou, Ruiqi and Yao, Zhengxi and Chen, Shuai and Zhang, Tianyi and Zhang, Shijie and Zhang, Wei Qiang and Huang, Yongfeng and Duan, Haixin and others},\n  journal={ICLR},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "yang_graphsearch_2025",
+      "title": "GraphSearch : An Agentic Deep Searching Workflow for Graph Retrieval - Augmented Generation",
+      "authors": [
+        "Yang, Cehao",
+        "Wu, Xiaojun",
+        "Lin, Xueyuan",
+        "Xu, Chengjin",
+        "Jiang, Xuhui",
+        "Sun, Yuanliang",
+        "Li, Jia",
+        "Xiong, Hui",
+        "Guo, Jian"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2509.22009",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2509.22009",
+      "raw_bibtex": "@misc{yang_graphsearch_2025,\n\ttitle = {{GraphSearch}: {An} {Agentic} {Deep} {Searching} {Workflow} for {Graph} {Retrieval}-{Augmented} {Generation}},\n\tshorttitle = {{GraphSearch}},\n\turl = {http://arxiv.org/abs/2509.22009},\n\tdoi = {10.48550/arXiv.2509.22009},\n\tabstract = {Graph Retrieval-Augmented Generation (GraphRAG) enhances factual reasoning in LLMs by structurally modeling knowledge through graph-based representations. However, existing GraphRAG approaches face two core limitations: shallow retrieval that fails to surface all critical evidence, and inefficient utilization of pre-constructed structural graph data, which hinders effective reasoning from complex queries. To address these challenges, we propose {\\textbackslash}textsc\\{GraphSearch\\}, a novel agentic deep searching workflow with dual-channel retrieval for GraphRAG. {\\textbackslash}textsc\\{GraphSearch\\} organizes the retrieval process into a modular framework comprising six modules, enabling multi-turn interactions and iterative reasoning. Furthermore, {\\textbackslash}textsc\\{GraphSearch\\} adopts a dual-channel retrieval strategy that issues semantic queries over chunk-based text data and relational queries over structural graph data, enabling comprehensive utilization of both modalities and their complementary strengths. Experimental results across six multi-hop RAG benchmarks demonstrate that {\\textbackslash}textsc\\{GraphSearch\\} consistently improves answer accuracy and generation quality over the traditional strategy, confirming {\\textbackslash}textsc\\{GraphSearch\\} as a promising direction for advancing graph retrieval-augmented generation.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Yang, Cehao and Wu, Xiaojun and Lin, Xueyuan and Xu, Chengjin and Jiang, Xuhui and Sun, Yuanliang and Li, Jia and Xiong, Hui and Guo, Jian},\n\tmonth = sep,\n\tyear = {2025},\n\tnote = {arXiv:2509.22009 [cs]},\n\tkeywords = {Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "yang_qwen3_2025",
+      "title": "Qwen3 Technical Report",
+      "authors": [
+        "Yang, An",
+        "Li, Anfeng",
+        "Yang, Baosong",
+        "Zhang, Beichen",
+        "Hui, Binyuan",
+        "Zheng, Bo",
+        "Yu, Bowen",
+        "Gao, Chang",
+        "Huang, Chengen",
+        "Lv, Chenxu",
+        "Zheng, Chujie",
+        "Liu, Dayiheng",
+        "Zhou, Fan",
+        "Huang, Fei",
+        "Hu, Feng",
+        "Ge, Hao",
+        "Wei, Haoran",
+        "Lin, Huan",
+        "Tang, Jialong",
+        "Yang, Jian",
+        "Tu, Jianhong",
+        "Zhang, Jianwei",
+        "Yang, Jianxin",
+        "Yang, Jiaxi",
+        "Zhou, Jing",
+        "Zhou, Jingren",
+        "Lin, Junyang",
+        "Dang, Kai",
+        "Bao, Keqin",
+        "Yang, Kexin",
+        "Yu, Le",
+        "Deng, Lianghao",
+        "Li, Mei",
+        "Xue, Mingfeng",
+        "Li, Mingze",
+        "Zhang, Pei",
+        "Wang, Peng",
+        "Zhu, Qin",
+        "Men, Rui",
+        "Gao, Ruize",
+        "Liu, Shixuan",
+        "Luo, Shuang",
+        "Li, Tianhao",
+        "Tang, Tianyi",
+        "Yin, Wenbiao",
+        "Ren, Xingzhang",
+        "Wang, Xinyu",
+        "Zhang, Xinyu",
+        "Ren, Xuancheng",
+        "Fan, Yang",
+        "Su, Yang",
+        "Zhang, Yichang",
+        "Zhang, Yinger",
+        "Wan, Yu",
+        "Liu, Yuqiong",
+        "Wang, Zekun",
+        "Cui, Zeyu",
+        "Zhang, Zhenru",
+        "Zhou, Zhipeng",
+        "Qiu, Zihan"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2505.09388",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2505.09388",
+      "raw_bibtex": "@misc{yang_qwen3_2025,\n    title = {Qwen3 {Technical} {Report}},\n    url = {http://arxiv.org/abs/2505.09388},\n    doi = {10.48550/arXiv.2505.09388},\n    abstract = {In this work, we present Qwen3, the latest version of the Qwen model family. Qwen3 comprises a series of large language models (LLMs) designed to advance performance, efficiency, and multilingual capabilities. The Qwen3 series includes models of both dense and Mixture-of-Expert (MoE) architectures, with parameter scales ranging from 0.6 to 235 billion. A key innovation in Qwen3 is the integration of thinking mode (for complex, multi-step reasoning) and non-thinking mode (for rapid, context-driven responses) into a unified framework. This eliminates the need to switch between different models--such as chat-optimized models (e.g., GPT-4o) and dedicated reasoning models (e.g., QwQ-32B)--and enables dynamic mode switching based on user queries or chat templates. Meanwhile, Qwen3 introduces a thinking budget mechanism, allowing users to allocate computational resources adaptively during inference, thereby balancing latency and performance based on task complexity. Moreover, by leveraging the knowledge from the flagship models, we significantly reduce the computational resources required to build smaller-scale models, while ensuring their highly competitive performance. Empirical evaluations demonstrate that Qwen3 achieves state-of-the-art results across diverse benchmarks, including tasks in code generation, mathematical reasoning, agent tasks, etc., competitive against larger MoE models and proprietary models. Compared to its predecessor Qwen2.5, Qwen3 expands multilingual support from 29 to 119 languages and dialects, enhancing global accessibility through improved cross-lingual understanding and generation capabilities. To facilitate reproducibility and community-driven research and development, all Qwen3 models are publicly accessible under Apache 2.0.},\n    urldate = {2026-01-06},\n    publisher = {arXiv},\n    author = {Yang, An and Li, Anfeng and Yang, Baosong and Zhang, Beichen and Hui, Binyuan and Zheng, Bo and Yu, Bowen and Gao, Chang and Huang, Chengen and Lv, Chenxu and Zheng, Chujie and Liu, Dayiheng and Zhou, Fan and Huang, Fei and Hu, Feng and Ge, Hao and Wei, Haoran and Lin, Huan and Tang, Jialong and Yang, Jian and Tu, Jianhong and Zhang, Jianwei and Yang, Jianxin and Yang, Jiaxi and Zhou, Jing and Zhou, Jingren and Lin, Junyang and Dang, Kai and Bao, Keqin and Yang, Kexin and Yu, Le and Deng, Lianghao and Li, Mei and Xue, Mingfeng and Li, Mingze and Zhang, Pei and Wang, Peng and Zhu, Qin and Men, Rui and Gao, Ruize and Liu, Shixuan and Luo, Shuang and Li, Tianhao and Tang, Tianyi and Yin, Wenbiao and Ren, Xingzhang and Wang, Xinyu and Zhang, Xinyu and Ren, Xuancheng and Fan, Yang and Su, Yang and Zhang, Yichang and Zhang, Yinger and Wan, Yu and Liu, Yuqiong and Wang, Zekun and Cui, Zeyu and Zhang, Zhenru and Zhou, Zhipeng and Qiu, Zihan},\n    month = may,\n    year = {2025},\n    note = {arXiv:2505.09388 [cs]},\n    keywords = {Computer Science - Computation and Language},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-distillation-setup",
+          "text": "For each graph, we collect teacher trajectories on the training split to distill into a smaller, lower-cost model ([\\[subsec:distill\\]](#subsec:distill){reference-type=\"ref+Label\" reference=\"subsec:distill\"}), offering a viable alternative when under tighter compute budgets. Using GPT-4.1 as the"
+        },
+        {
+          "section_id": "sec-limitations",
+          "text": "Despite strong retrieval performance, has limitations. First, agentic retrieval incurs higher latency than single-pass retrievers because it requires multiple LLM calls over an interaction trajectory. Larger budgets improve retrieval quality but also increase runtime. Second, our best-performing"
+        },
+        {
+          "section_id": "sec-implementation-details",
+          "text": "is run with $n{=}3$ parallel agents and a maximum trajectory length of $T_{\\max}{=}20$. For the distilled variant, we use Qwen3-8B [yang_qwen3_2025] (matching the model scale used by GraphFlow and Think-on-Graph with LLaMA3), trained via imitation on teacher trajectories, while keeping the tool"
+        }
+      ]
+    },
+    {
+      "key": "yao2025expandr",
+      "title": "ExpandR: Teaching Dense Retrievers Beyond Queries with LLM Guidance",
+      "authors": [
+        "Yao, Sijia",
+        "Huang, Pengcheng",
+        "Liu, Zhenghao",
+        "Gu, Yu",
+        "Yan, Yukun",
+        "Yu, Shi",
+        "Yu, Ge"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{yao2025expandr,\n  title={{ExpandR:} Teaching Dense Retrievers Beyond Queries with {LLM} Guidance},\n  author={Yao, Sijia and Huang, Pengcheng and Liu, Zhenghao and Gu, Yu and Yan, Yukun and Yu, Shi and Yu, Ge},\n  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},\n  pages={19047--19065},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "yao_react_2023",
+      "title": "ReAct : Synergizing Reasoning and Acting in Language Models",
+      "authors": [
+        "Yao, Shunyu",
+        "Zhao, Jeffrey",
+        "Yu, Dian",
+        "Du, Nan",
+        "Shafran, Izhak",
+        "Narasimhan, Karthik",
+        "Cao, Yuan"
+      ],
+      "year": 2023,
+      "venue": "",
+      "doi": "10.48550/arXiv.2210.03629",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2210.03629",
+      "raw_bibtex": "@misc{yao_react_2023,\n\ttitle = {{ReAct}: {Synergizing} {Reasoning} and {Acting} in {Language} {Models}},\n\tshorttitle = {{ReAct}},\n\turl = {http://arxiv.org/abs/2210.03629},\n\tdoi = {10.48550/arXiv.2210.03629},\n\tabstract = {While large language models (LLMs) have demonstrated impressive capabilities across tasks in language understanding and interactive decision making, their abilities for reasoning (e.g. chain-of-thought prompting) and acting (e.g. action plan generation) have primarily been studied as separate topics. In this paper, we explore the use of LLMs to generate both reasoning traces and task-specific actions in an interleaved manner, allowing for greater synergy between the two: reasoning traces help the model induce, track, and update action plans as well as handle exceptions, while actions allow it to interface with external sources, such as knowledge bases or environments, to gather additional information. We apply our approach, named ReAct, to a diverse set of language and decision making tasks and demonstrate its effectiveness over state-of-the-art baselines, as well as improved human interpretability and trustworthiness over methods without reasoning or acting components. Concretely, on question answering (HotpotQA) and fact verification (Fever), ReAct overcomes issues of hallucination and error propagation prevalent in chain-of-thought reasoning by interacting with a simple Wikipedia API, and generates human-like task-solving trajectories that are more interpretable than baselines without reasoning traces. On two interactive decision making benchmarks (ALFWorld and WebShop), ReAct outperforms imitation and reinforcement learning methods by an absolute success rate of 34\\% and 10\\% respectively, while being prompted with only one or two in-context examples. Project site with code: https://react-lm.github.io},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},\n\tmonth = mar,\n\tyear = {2023},\n\tnote = {arXiv:2210.03629 [cs]},\n\tkeywords = {Computer Science - Artificial Intelligence, Computer Science - Computation and Language, Computer Science - Machine Learning},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-untitled",
+          "text": "We study retrieval over a knowledge graph , where $V$ and $E$ denote entities and edges, $\\phi_V$ and $\\phi_E$ assign a type to each node and relation, and $d_V(v)$ denotes the text attributes associated with node $v$, such as titles, descriptions, or other metadata. Given a natural-language query"
+        }
+      ]
+    },
+    {
+      "key": "yu_can_2025",
+      "title": "Can Knowledge - Graph -based Retrieval Augmented Generation Really Retrieve What You Need ?",
+      "authors": [
+        "Yu, Junchi",
+        "Liu, Yujie",
+        "Gu, Jindong",
+        "Torr, Philip",
+        "Zhou, Dongzhan"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "10.48550/arXiv.2510.16582",
+      "arxiv_id": "",
+      "url": "http://arxiv.org/abs/2510.16582",
+      "raw_bibtex": "@misc{yu_can_2025,\n\ttitle = {Can {Knowledge}-{Graph}-based {Retrieval} {Augmented} {Generation} {Really} {Retrieve} {What} {You} {Need}?},\n\turl = {http://arxiv.org/abs/2510.16582},\n\tdoi = {10.48550/arXiv.2510.16582},\n\tabstract = {Retrieval-Augmented Generation (RAG) based on knowledge graphs (KGs) enhances large language models (LLMs) by providing structured and interpretable external knowledge. However, existing KG-based RAG methods struggle to retrieve accurate and diverse information from text-rich KGs for complex real-world queries. Process Reward Models (PRMs) offer a way to align the retrieval process of KG-based RAG with query-specific knowledge requirements, but they heavily rely on process-level supervision signals that are expensive and hard to obtain on KGs. To address this challenge, we propose GraphFlow, a framework that efficiently retrieves accurate and diverse knowledge required for real-world queries from text-rich KGs. GraphFlow employs a transition-based flow matching objective to jointly optimize a retrieval policy and a flow estimator. The flow estimator factorizes the reward of the retrieval outcome into the intermediate retrieval states. Such reward factorization guides the retrieval policy to retrieve candidates from KGs in proportion to their reward. This allows GraphFlow to explore high-quality regions of KGs that yield diverse and relevant results. We evaluate GraphFlow on the STaRK benchmark, which includes real-world queries from multiple domains over text-rich KGs. GraphFlow outperforms strong KG-RAG baselines, including GPT-4o, by 10\\% on average in hit rate and recall. It also shows strong generalization to unseen KGs, demonstrating its effectiveness and robustness.},\n\turldate = {2026-01-06},\n\tpublisher = {arXiv},\n\tauthor = {Yu, Junchi and Liu, Yujie and Gu, Jindong and Torr, Philip and Zhou, Dongzhan},\n\tmonth = oct,\n\tyear = {2025},\n\tnote = {arXiv:2510.16582 [cs]},\n\tkeywords = {Computer Science - Artificial Intelligence},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        },
+        {
+          "section_id": "sec-baselines-and-metrics",
+          "text": "We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality. **BM25** [robertson_probabilistic_2009] is the same sparse,"
+        },
+        {
+          "section_id": "sec-benchmarking",
+          "text": "[\\[tab:stark-results\\]](#tab:stark-results){reference-type=\"ref+Label\" reference=\"tab:stark-results\"} reports retrieval performance on STaRK, grouped by training regime. Across all methods assessed, achieves the best average performance. Classical retrievers remain strong baselines on AMAZON, when"
+        }
+      ]
+    },
+    {
+      "key": "zhang2024knowledge",
+      "title": "The knowledge alignment problem: Bridging human and external knowledge for large language models",
+      "authors": [
+        "Zhang, Shuo",
+        "Pan, Liangming",
+        "Zhao, Junzhou",
+        "Wang, William Yang"
+      ],
+      "year": 2024,
+      "venue": "Findings of the Association for Computational Linguistics: ACL 2024",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{zhang2024knowledge,\n  title={The knowledge alignment problem: Bridging human and external knowledge for large language models},\n  author={Zhang, Shuo and Pan, Liangming and Zhao, Junzhou and Wang, William Yang},\n  booktitle={Findings of the Association for Computational Linguistics: ACL 2024},\n  pages={2025--2038},\n  year={2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "zheng_corag_2025",
+      "title": "CoRAG : Enhancing Hybrid Retrieval - Augmented Generation through a Cooperative Retriever Architecture",
+      "authors": [
+        "Zheng, Zaiyi",
+        "Wang, Song",
+        "Chen, Zihan",
+        "Zhu, Yaochen",
+        "He, Yinhan",
+        "Hong, Liangjie",
+        "Guo, Qi",
+        "Li, Jundong"
+      ],
+      "year": 2025,
+      "venue": "Findings of the {Association} for {Computational} {Linguistics}: {EMNLP} 2025",
+      "doi": "10.18653/v1/2025.findings-emnlp.872",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.findings-emnlp.872/",
+      "raw_bibtex": "@inproceedings{zheng_corag_2025,\n    address = {Suzhou, China},\n    title = {{CoRAG}: {Enhancing} {Hybrid} {Retrieval}-{Augmented} {Generation} through a {Cooperative} {Retriever} {Architecture}},\n    isbn = {979-8-89176-335-7},\n    shorttitle = {{CoRAG}},\n    url = {https://aclanthology.org/2025.findings-emnlp.872/},\n    doi = {10.18653/v1/2025.findings-emnlp.872},\n    abstract = {Retrieval-Augmented Generation (RAG) is introduced to enhance Large Language Models (LLMs) by integrating external knowledge. However, conventional RAG approaches treat retrieved documents as independent units, often overlooking their interdependencies. Hybrid-RAG, a recently proposed paradigm that combines textual documents and graph-structured relational information for RAG, mitigates this limitation by collecting entity documents during graph traversal. However, existing methods only retrieve related documents from local neighbors or subgraphs in the knowledge base, which often miss relevant information located further away from a global view. To overcome the above challenges, we propose CoRAG that dynamically chooses whether to retrieve information through direct textual search or explore graph structures in the knowledge base. Our architecture blends different retrieval results, ensuring the potentially correct answer is chosen based on the query context. The textual retrieval components also enable global retrieval by scoring non-neighboring entity documents based on semantic relevance, bypassing the locality constraints of graph traversal. Experiments on semi-structured (relational and textual) knowledge base QA benchmarks demonstrate the outstanding performance of CoRAG.},\n    urldate = {2026-01-06},\n    booktitle = {Findings of the {Association} for {Computational} {Linguistics}: {EMNLP} 2025},\n    publisher = {Association for Computational Linguistics},\n    author = {Zheng, Zaiyi and Wang, Song and Chen, Zihan and Zhu, Yaochen and He, Yinhan and Hong, Liangjie and Guo, Qi and Li, Jundong},\n    editor = {Christodoulopoulos, Christos and Chakraborty, Tanmoy and Rose, Carolyn and Peng, Violet},\n    month = nov,\n    year = {2025},\n    pages = {16088--16101},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    },
+    {
+      "key": "zhu-etal-2025-mitigating",
+      "title": "Mitigating Lost-in-Retrieval Problems in Retrieval Augmented Multi-Hop Question Answering",
+      "authors": [
+        "Zhu, Rongzhi",
+        "Liu, Xiangyu",
+        "Sun, Zequn",
+        "Wang, Yiwei",
+        "Hu, Wei"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "10.18653/v1/2025.acl-long.1089",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.acl-long.1089/",
+      "raw_bibtex": "@inproceedings{zhu-etal-2025-mitigating,\n  title     = {Mitigating Lost-in-Retrieval Problems in Retrieval Augmented Multi-Hop Question Answering},\n  author    = {Zhu, Rongzhi  and\n               Liu, Xiangyu  and\n               Sun, Zequn  and\n               Wang, Yiwei  and\n               Hu, Wei},\n  editor    = {Che, Wanxiang  and\n               Nabende, Joyce  and\n               Shutova, Ekaterina  and\n               Pilehvar, Mohammad Taher},\n  booktitle = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n  month     = jul,\n  year      = {2025},\n  address   = {Vienna, Austria},\n  publisher = {Association for Computational Linguistics},\n  url       = {https://aclanthology.org/2025.acl-long.1089/},\n  doi       = {10.18653/v1/2025.acl-long.1089},\n  pages     = {22362--22375},\n  isbn      = {979-8-89176-251-0}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        }
+      ]
+    },
+    {
+      "key": "zhu_knowledge_2025",
+      "title": "Knowledge Graph - Guided Retrieval Augmented Generation",
+      "authors": [
+        "Zhu, Xiangrong",
+        "Xie, Yuexiang",
+        "Liu, Yi",
+        "Li, Yaliang",
+        "Hu, Wei"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 2025 {Conference} of the {Nations} of the {Americas} {Chapter} of the {Association} for {Computational} {Linguistics}: {Human} {Language} {Technologies} ({Volume} 1: {Long} {Papers})",
+      "doi": "10.18653/v1/2025.naacl-long.449",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.naacl-long.449/",
+      "raw_bibtex": "@inproceedings{zhu_knowledge_2025,\n    address = {Albuquerque, New Mexico},\n    title = {Knowledge {Graph}-{Guided} {Retrieval} {Augmented} {Generation}},\n    isbn = {979-8-89176-189-6},\n    url = {https://aclanthology.org/2025.naacl-long.449/},\n    doi = {10.18653/v1/2025.naacl-long.449},\n    abstract = {Retrieval-augmented generation (RAG) has emerged as a promising technology for addressing hallucination issues in the responses generated by large language models (LLMs). Existing studies on RAG primarily focus on applying semantic-based approaches to retrieve isolated relevant chunks, which ignore their intrinsic relationships. In this paper, we propose a novel Knowledge Graph-Guided Retrieval Augmented Generation (KG{\\textasciicircum}2RAG) framework that utilizes knowledge graphs (KGs) to provide fact-level relationships between chunks, improving the diversity and coherence of the retrieved results. Specifically, after performing a semantic-based retrieval to provide seed chunks, KG{\\textasciicircum}2RAG employs a KG-guided chunk expansion process and a KG-based chunk organization process to deliver relevant and important knowledge in well-organized paragraphs. Extensive experiments conducted on the HotpotQA dataset and its variants demonstrate the advantages of KG{\\textasciicircum}2RAG compared to existing RAG-based approaches, in terms of both response quality and retrieval quality.},\n    urldate = {2026-01-06},\n    booktitle = {Proceedings of the 2025 {Conference} of the {Nations} of the {Americas} {Chapter} of the {Association} for {Computational} {Linguistics}: {Human} {Language} {Technologies} ({Volume} 1: {Long} {Papers})},\n    publisher = {Association for Computational Linguistics},\n    author = {Zhu, Xiangrong and Xie, Yuexiang and Liu, Yi and Li, Yaliang and Hu, Wei},\n    editor = {Chiruzzo, Luis and Ritter, Alan and Wang, Lu},\n    month = apr,\n    year = {2025},\n    pages = {8912--8924},\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Large language models rely on knowledge retrieval to ground and align their outputs in external evidence [ren2025investigating, wang2025survey, xia2025ground, zhang2024knowledge], from retrieval-augmented generation (RAG) to systems and memory modules that operate over *semi-structured* knowledge"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "Retrieval-augmented generation grounds LLM outputs in external evidence [lewis_retrieval-augmented_2020, guu_realm_2020]. Recent work injects structure by building graphs to aggregate evidence. GraphRAG performs local-to-global retrieval over entity-centric graphs [edge_local_2025], and related"
+        }
+      ]
+    }
+  ]
+}

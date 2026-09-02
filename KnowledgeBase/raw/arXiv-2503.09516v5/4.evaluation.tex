@@ -1,0 +1,55 @@
+
+% \vspace{-0.1in}
+\section{Main Results}
+
+
+\subsection{Datasets}
+
+% We conduct experiments on seven datasets, including: (1) general question answering datasets: NQ \citep{kwiatkowski2019natural}, TriviaQA \citep{joshi2017triviaqa}, PopQA \citep{mallen2022not}, and Webquestions \citep{berant2013semantic}; and (2) multi-hop question answering datasets: HotpotQA \citep{yang2018hotpotqa}, 2wikimultihopQA \citep{ho2020constructing}, Musique \citep{trivedi2022musique}, and Bamboogle \citep{press2022measuring}.
+
+We evaluate \Ours on seven benchmark datasets, categorized as follows:
+%
+(1) \textbf{General Question Answering}: NQ \citep{kwiatkowski2019natural}, TriviaQA \citep{joshi2017triviaqa}, and PopQA \citep{mallen2022not}.
+(2) \textbf{Multi-Hop Question Answering}: HotpotQA \citep{yang2018hotpotqa}, 2WikiMultiHopQA \citep{ho2020constructing}, Musique \citep{trivedi2022musique}, and Bamboogle \citep{press2022measuring}.
+These datasets encompass a diverse range of search with reasoning challenges, enabling a comprehensive evaluation of \Ours. % across both single-turn and multi-hop scenarios.
+
+\subsection{Baselines}
+
+
+To evaluate the effectiveness of \Ours, we compare it against the following baselines:
+% \hamed{there are so many different ways you can implement any of these baselines. You should explain them all in detail. For instance, in RAG, how many documents did you use? what training strategy did you use, etc. etc.}
+%
+(1) \textbf{Inference without Retrieval}: Direct inference and Chain-of-Thought (CoT) reasoning \citep{wei2022chain}.
+(2) \textbf{Inference with Retrieval}: Retrieval-Augmented Generation (RAG) \citep{lewis2020retrieval}, IRCoT \citep{trivedi2022interleaving}, and Search-o1 \citep{li2025search}.
+(3) \textbf{Fine-Tuning-Based Methods}: Supervised fine-tuning (SFT) \citep{chung2024scaling}, RL-based fine-tuning without a search engine (R1) \citep{guo2025deepseek} and rejection sampling \citep{ahn2024large} with a search engine. 
+For R1, we train the LLMs with the RL methods proposed in \cite{guo2025deepseek} with our data to have a fair comparison with \Ours. It only contains reasoning and answer steps without a search engine.
+For rejection sampling, we generate five candidate responses per training prompt from the same dataset with the instructed LLMs and select those that lead to correct final answers. These selected trajectories are then used to construct a new training set that retains the same multi-turn LLM–search engine interaction rollout mechanism proposed in \Ours to fine-tune the LLMs.
+% \hamed{For RL without search, why don't you just call it R1? Especially, since your approach is called Search-R1, it's reasonable to see R1 alone in the baselines.}
+
+These baselines cover a broad spectrum of retrieval-augmented and fine-tuning approaches, allowing for a comprehensive assessment of \Ours in both zero-shot and learned retrieval settings.
+To make a fair comparison between different methods, we use the same retriever, same number of retrieved documents, same knowledge corpus, same training data and same pre-trained LLMs. Details can be found in Appendix \ref{sec:apx:setting}.
+
+\subsection{Experimental Setup}\label{sec:exp-setup}
+
+We conduct experiments using two types of models: Qwen-2.5-3B (Base/Instruct) and Qwen-2.5-7B (Base/Instruct) \citep{yang2024qwen2}.
+For retrieval, we use the 2018 Wikipedia dump \citep{karpukhin2020dense} as the knowledge source and E5 \citep{wang2022text} as the retriever. To ensure fair comparison, we follow \cite{lin2023ra} and set the number of retrieved passages to 3 across all retrieval-based methods. 
+A study of the number of retrieved passages can be found in Appendix \ref{sec:apx:topk}.
+% \hamed{for submission, you should revisit this. Or at least have an experiment with variable number of retrieved docs.}
+
+For training, we merge the training sets of NQ and HotpotQA to form a unified dataset for \Ours and other fine-tuning based baselines. Evaluation is conducted on the test or validation sets of seven datasets to assess both in-domain and out-of-domain performance. Exact Match (EM) is used as the evaluation metric, following \cite{yu2024rankrag}.
+For inference-style baselines, we use instruct models, as base models fail to follow instructions. For RL tuning methods, experiments are conducted on both base and instruct models. More details on experimental settings can be found in Appendix \ref{sec:apx:setting}.
+
+% For PPO variant of \Ours, the policy LLM learning rate is set to 1e-6, and value LLM learning rate to 1e-5. The Generalized Advantage Estimation (GAE) parameters are $\lambda=1$ and $\gamma=1$.
+% In GRPO Training, the policy LLM learning rate is set to 1e-6, with five sampled responses per prompt.
+% We use exact match (EM) to calculate the outcome reward.
+Unless stated otherwise, \textbf{PPO is used as the default RL method}, and a detailed comparison between PPO and GRPO is provided in Section \ref{sec:ppo-grpo}.
+
+\input{tables/main}
+
+\subsection{Performance}
+
+The main results comparing \Ours with baseline methods across the seven datasets are presented in Table \ref{tab:main}. From the results, we make the following key observations:
+\textbf{(1) \Ours consistently outperforms strong baseline methods.} We achieve 24\% and 20\% average relative improvement with Qwen2.5-7B and Qwen2.5-3B, respectively. These gains hold across both in-distribution evaluation (\textit{i.e.}, NQ and HotpotQA) and out-of-distribution evaluation (\textit{i.e.}, TriviaQA, PopQA, 2WikiMultiHopQA, Musique, and Bamboogle).
+\textbf{(2) \Ours surpasses RL-based training for LLM reasoning without retrieval (R1).} This aligns with expectations, as incorporating search into LLM reasoning provides access to relevant external knowledge, improving overall performance.
+\textbf{(3) \Ours is effective for both base and instruction-tuned models.} This demonstrates that DeepSeek-R1-Zero-style RL with outcome-based rewards \citep{guo2025deepseek} can be successfully applied to reasoning with search, extending beyond its previously established effectiveness in pure reasoning scenarios.
+\textbf{(4) Larger models are better on learning how to do search.} \Ours on 7B model shows much larger ``performance gap'' compared with 3B model (\textit{e.g.}, compared with second best model - RAG).

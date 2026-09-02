@@ -1,0 +1,89 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "Search-Self-Play",
+  "created_at": "2026-07-13T12:21:04.774594+00:00",
+  "updated_at": "2026-07-15T12:46:09.735791+00:00",
+  "paper": {
+    "title": "Search Self-play: Pushing the Frontier of Agent Capability without Supervision",
+    "authors": [
+      "Hongliang Lu",
+      "Yuhang Wen",
+      "Pengyu Cheng",
+      "Ruijin Ding",
+      "Jiaqi Guo",
+      "Haotian Xu",
+      "Chutian Wang",
+      "Haonan Chen",
+      "Xiaoxi Jiang",
+      "Guanjun Jiang"
+    ],
+    "abstract": "Reinforcement learning with verifiable rewards (RLVR) has become the mainstream technique for training LLM agents. However, RLVR highly depends on well-crafted task queries and corresponding ground-truth answers to provide accurate rewards, which requires significant human effort and hinders the scaling of RL processes, especially in agentic scenarios. Although a few recent works explore task synthesis methods, the difficulty of generated agentic tasks can hardly be controlled to provide effective RL training advantages. To achieve agentic RLVR with higher scalability, we explore self-play training for deep search agents, in which the learning LLM utilizes multi-turn search engine calling and acts simultaneously as both a task proposer and a problem solver. The task proposer aims to generate deep search queries with well-defined ground-truth answers and increasing task difficulty. The problem solver tries to handle the generated search queries and output the correct answer predictions. To ensure that each generated search query has accurate ground truth, we collect all the searching results from the proposer's trajectory as external knowledge, then conduct retrieval-augmentation generation (RAG) to test whether the proposed query can be correctly answered with all necessary search documents provided. In this search self-play (SSP) game, the proposer and the solver co-evolve their agent capabilities through both competition and cooperation. With substantial experimental results, we find that SSP can significantly improve search agents' performance uniformly on various benchmarks without any supervision under both from-scratch and continuous RL training setups. The code is at https://github.com/Qwen-Applications/SSP.",
+    "year": 2025,
+    "venue": "ICLR",
+    "arxiv_id": "2510.18821",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-07-15",
+    "blog_html_path": "summary_排版_摸鱼绿(moyu-green).html",
+    "blog_html_generated_at": "2026-07-15T08:26:23.323809+00:00"
+  },
+  "source": {
+    "raw_dir": "raw/Search-Self-Play",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "1556dc4be77ff0acd4c87560a563311e2081cd0c172f2d08924fe394e82d4e81",
+        "bytes": 114256
+      },
+      {
+        "path": "math_commands.tex",
+        "sha256": "0644ff8a6065af9ea6162731f9ccc8b7add6a9f7c95923493806db1bd2a878d7",
+        "bytes": 12422
+      },
+      {
+        "path": "alg/ssp.tex",
+        "sha256": "372cd708f5021bf1916649821f679354aa8222fa5647a08609f77126e779ad99",
+        "bytes": 1636
+      },
+      {
+        "path": "alg/examples.tex",
+        "sha256": "44a9dfd0abef869aa579ccbf6caa944fd1d32c7c638fcbb95386e3b94391094d",
+        "bytes": 27758
+      },
+      {
+        "path": "alg/prompts.tex",
+        "sha256": "154bded2377b05139f7960a4bc1aceaf05002729143eca71f71fb7b85f9908b4",
+        "bytes": 9108
+      },
+      {
+        "path": "alg/bad_cases.tex",
+        "sha256": "a42e0b7c1f420f1b53a0dd8c83906f5a2779ecb26553a72c1d203294c8669624",
+        "bytes": 13025
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 29,
+    "figures": 17,
+    "references": 82
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 14, column 1):\nunexpected Tok (line 14, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 14, column 1):\nunexpected Tok (line 14, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

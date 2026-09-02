@@ -1,0 +1,13 @@
+\section{Preliminary}
+
+\noindent\textbf{Knowledge Graphs (KGs)} contain abundant factual knowledge in the form of a set of triples: $\gG=\{(e,r,e')|e,e'\in\gE,r\in\gR\}$, where $\gE$ and $\gR$ denote the set of entities and relations, respectively.
+
+\noindent\textbf{Relation Paths} are a sequence of relations: $z=\{r_1,r_2,\dots,r_l\}$, where $r_i\in\gR$ denotes the $i$-th relation in the path and $l$ denotes the length of the path.
+
+\noindent\textbf{Reasoning Paths} are the instances of a relation path $z$ in KGs: $w_z=e_0\xrightarrow{r_1}e_1\xrightarrow{r_2}\ldots\xrightarrow{r_l}e_{l}$, where $e_i\in\gE$ denotes the $i$-th entity and $r_i$ denotes the $i$-th relation in the relation path $z$.
+%Relation paths expressing the semantic relations between entities have been used in many KG reasoning tasks \citep{das2018go,cui2023path}. 
+\begin{example}
+        Given a relation path: $z=\texttt{marry\_to}\to\texttt{father\_of}$, a reasoning path instance could be: $w_z=\text{Alice}\xrightarrow{\texttt{marry\_to}}\text{Bob}\xrightarrow{\texttt{father\_of}}\text{Charlie}$, which denotes ``Alice'' is married to ``Bob'' and ``Bob'' is the father of ``Charlie''.
+\end{example}
+
+\noindent\textbf{Knowledge Graph Question Answering (KGQA)} is a typical reasoning task based on KGs. Given a natural language question $q$ and a KG $\gG$, the task aims to design a function $f$ to predict answers $a\in\gA_q$ based on knowledge from $\gG$, i.e., $a=f(q,\gG)$. Following previous works \citep{sun2019pullnet,jiang2022unikgqa}, we assume the entities $e_q\in\gT_q$ mentioned in $q$ and answers $a\in\gA_q$ are labeled and linked to the corresponding entities in $\gG$, i.e., $\gT_q,\gA_q\subseteq\gE$.

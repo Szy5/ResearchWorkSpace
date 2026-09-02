@@ -71,6 +71,8 @@ artifacts/GraphWalker/article.html
 - 不自动调用群发或发布接口。
 - 不把 Markdown 转公众号 HTML；本需求假设 HTML 已经存在。
 - 不自动生成封面图。
++ 未提供 `--cover` / 上传封面 / `thumb_media_id` 时，按草稿标题自动生成纯色标题封面（Pillow）。
++ 环境变量 `WECHAT_COVER_PATH` 仅作为自动生成失败时的兜底。
 - 不维护 `wiki/`、embedding、检索索引。
 - 不把微信 token 持久化到仓库文件；如需缓存，应放到本地临时缓存或后续专门设计。
 
@@ -105,7 +107,7 @@ paper-wiki publish wechat <slug> \
 | `--title` | 否 | HTML 文件名或 frontmatter/metadata 推断 | 微信草稿标题 |
 | `--author` | 否 | `WECHAT_AUTHOR` | 作者名 |
 | `--digest` | 否 | 空 | 图文摘要 |
-| `--cover` | 否 | `WECHAT_COVER_PATH` | 封面图路径；相对路径优先按项目根解析 |
+| `--cover` | 否 | 无（未提供时自动生成标题封面；`WECHAT_COVER_PATH` 仅作兜底） | 封面图路径；相对路径优先按项目根解析 |
 | `--thumb-media-id` | 否 | `WECHAT_THUMB_MEDIA_ID` | 已上传的封面素材 ID；传入后可跳过封面上传 |
 | `--save-rendered` | 否 | `False` | 将图片替换后的 HTML 保存到 `artifacts/{slug}/{原文件名}_wechat_rendered.html` |
 | `--verbose` | 否 | `False` | 输出调试日志，但不得打印 secret |
@@ -294,7 +296,7 @@ RUN_WECHAT_API_TESTS=1 pytest tests/integration/test_wechat_publish.py
 | --- | --- |
 | “发布”是否必须自动群发，而非只进草稿箱？ | 首版只进草稿箱，人工确认后发布 |
 | HTML 文件名是否固定？ | 不固定，通过 `--html` 显式传参 |
-| 是否允许没有封面图？ | 微信草稿通常需要封面素材，首版要求 `--cover` 或 `--thumb-media-id` |
+| 是否允许没有封面图？ | 未提供封面或 `thumb_media_id` 时自动生成标题封面；仍可通过 `--cover` / 上传封面覆盖 |
 | 是否要把发布记录写回 artifact 目录？ | 可选，默认只打印结果；后续可写 `wechat_publish_history.jsonl` |
 | 是否要支持批量发布多个 slug？ | 首版单篇，批量可在 shell 或后续 CLI 中扩展 |
 

@@ -6,10 +6,55 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: theme('colors.ink');
+  background: theme('colors.fog');
+  font-family: theme('fontFamily.sans');
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: theme('colors.moss-soft');
+  color: theme('colors.ink');
+}
+
+:focus-visible {
+  outline: 2px solid theme('colors.moss');
+  outline-offset: 2px;
+}
+
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, #f5f7fb 0%, #eef1f5 55%, #e8ecf2 100%);
+}
+
+.app-shell::before {
+  content: '';
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.45;
+  background-image:
+    linear-gradient(rgba(31, 94, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31, 94, 255, 0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 20%, transparent 75%);
+}
+
+.app-shell > * {
+  position: relative;
+  z-index: 1;
 }
 
 .workbench-panels {
@@ -21,7 +66,7 @@ body {
 }
 
 .resize-handle {
-  @apply mx-4 w-1 flex-none rounded-full bg-line transition-colors hover:bg-moss;
+  @apply mx-2 w-1 flex-none rounded-sm bg-line transition-colors hover:bg-moss/40;
 }
 
 .resize-handle[data-resize-handle-state='drag'] {
@@ -29,44 +74,44 @@ body {
 }
 
 .side-nav-button {
-  @apply relative inline-flex h-11 w-full items-center gap-3 rounded-lg px-3 text-sm text-body transition-colors hover:bg-canvas hover:text-ink;
+  @apply relative inline-flex h-10 w-full items-center gap-3 rounded-lg px-3 text-sm text-rail-mute transition-colors duration-150 hover:bg-white/5 hover:text-white;
 }
 
 .side-nav-button.is-active {
-  @apply bg-canvas font-medium text-ink;
+  @apply bg-white/10 font-medium text-white;
 }
 
 .side-nav-button.is-active::before {
   content: '';
-  @apply absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-full bg-moss;
+  @apply absolute left-0 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-sm bg-moss;
 }
 
 .icon-button {
-  @apply inline-flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-line bg-canvas text-ink transition-colors hover:border-moss hover:text-moss;
+  @apply inline-flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-line bg-canvas text-ink transition-all duration-150 hover:border-moss/40 hover:text-moss hover:shadow-soft;
 }
 
 .action-button {
-  @apply inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-canvas px-3 text-sm text-ink transition-colors hover:border-moss hover:text-moss disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-canvas px-3.5 text-sm text-ink transition-all duration-150 hover:border-moss/40 hover:text-moss hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .button-primary {
-  @apply inline-flex items-center gap-2 rounded-lg bg-moss px-4 text-sm font-medium text-canvas transition-colors hover:bg-moss-deep disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex items-center gap-2 rounded-lg bg-moss px-4 text-sm font-medium text-white transition-all duration-150 hover:bg-moss-deep hover:shadow-soft disabled:cursor-not-allowed disabled:opacity-50;
 }
 
 .paper-card {
-  @apply block w-full rounded-xl border border-line bg-canvas p-4 transition hover:border-moss hover:bg-canvas;
+  @apply block w-full rounded-xl border border-line bg-canvas p-4 text-left shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-moss/35 hover:shadow-lift;
 }
 
 .paper-card-active {
-  @apply border-2 border-moss;
+  @apply border-moss/55 ring-1 ring-moss/20;
 }
 
 .candidate-card {
-  @apply w-full rounded-xl border border-line bg-canvas p-4 transition;
+  @apply w-full rounded-xl border border-line bg-canvas p-4 shadow-soft transition-all duration-200 hover:border-moss/30 hover:shadow-lift;
 }
 
 .candidate-card-selected {
-  @apply border-2 border-moss;
+  @apply border-moss/55 ring-1 ring-moss/20;
 }
 
 .candidate-card-failed {
@@ -74,19 +119,19 @@ body {
 }
 
 .badge {
-  @apply inline-flex h-6 items-center gap-1 rounded-md border border-line bg-fog px-2 text-body;
+  @apply inline-flex h-6 items-center gap-1 rounded-md border border-line bg-fog px-2 text-[11px] font-medium tracking-wide text-body;
 }
 
 .badge-pattern {
-  @apply border-copper bg-copper-soft text-copper;
+  @apply border-copper/25 bg-copper-soft text-copper;
 }
 
 .metric {
-  @apply rounded-lg border border-line bg-canvas p-3;
+  @apply rounded-xl border border-line bg-canvas p-3 shadow-soft;
 }
 
 .metric strong {
-  @apply block text-lg;
+  @apply block font-serif text-xl font-medium tracking-tight;
 }
 
 .metric span {
@@ -94,19 +139,19 @@ body {
 }
 
 .toolbar {
-  @apply flex flex-wrap items-center gap-2 border-y border-line bg-canvas py-2;
+  @apply flex flex-wrap items-center gap-2 border-y border-line bg-canvas/80 py-2.5 backdrop-blur-sm;
 }
 
 .segmented-control {
-  @apply inline-flex h-9 overflow-hidden rounded-lg border border-line bg-fog;
+  @apply inline-flex h-9 overflow-hidden rounded-lg border border-line bg-fog p-0.5;
 }
 
 .segmented-control button {
-  @apply inline-flex h-full items-center gap-2 border-r border-line px-3 text-sm text-body last:border-r-0 hover:bg-canvas hover:text-ink;
+  @apply inline-flex h-full items-center gap-2 rounded-md px-3 text-sm text-body transition-colors hover:text-ink;
 }
 
 .segmented-control button.is-selected {
-  @apply bg-canvas text-moss;
+  @apply bg-canvas font-medium text-moss shadow-soft;
 }
 
 .segmented-control.compact {
@@ -118,20 +163,56 @@ body {
 }
 
 .editor {
-  @apply w-full resize-y rounded-lg border border-line bg-canvas p-3 font-mono text-sm leading-6 outline-none focus:border-moss;
+  @apply w-full resize-y rounded-xl border border-line bg-canvas p-3 font-mono text-sm leading-6 outline-none focus:border-moss;
 }
 
 .side-panel {
-  @apply rounded-xl border border-line bg-canvas p-4;
+  @apply rounded-xl border border-line bg-canvas p-4 shadow-soft;
 }
 
 .panel-title {
-  @apply text-sm font-semibold uppercase tracking-normal text-body;
+  @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-muted;
+}
+
+.page-kicker {
+  @apply text-[11px] font-semibold uppercase tracking-[0.16em] text-moss;
+}
+
+.page-title {
+  @apply font-serif text-[28px] font-medium leading-tight tracking-tight text-ink;
+}
+
+.page-subtitle {
+  @apply mt-1.5 text-sm leading-6 text-body;
+}
+
+.search-shell {
+  @apply flex items-center gap-3 rounded-xl border border-line bg-canvas pl-4 pr-1.5 shadow-soft transition-all duration-200 focus-within:border-moss/45 focus-within:shadow-lift;
+}
+
+.surface-card {
+  @apply rounded-xl border border-line bg-canvas shadow-soft;
+}
+
+.alert-error {
+  @apply rounded-lg border border-error-line bg-error-soft p-3 text-sm text-error;
+}
+
+.alert-success {
+  @apply rounded-lg border border-line bg-moss-soft p-3 text-sm text-moss-deep;
+}
+
+.alert-warn {
+  @apply rounded-lg border border-copper/25 bg-copper-soft p-3 text-sm text-copper;
+}
+
+.empty-state {
+  @apply rounded-xl border border-dashed border-line-strong/80 bg-canvas/80 px-8 py-12 text-center;
 }
 
 .markdown-empty,
 .markdown-body {
-  @apply mt-3 min-h-[640px] rounded-xl border border-line bg-canvas px-8 py-7;
+  @apply mt-3 min-h-[640px] rounded-xl border border-line bg-canvas px-8 py-7 shadow-soft;
 }
 
 .markdown-empty {
@@ -139,20 +220,20 @@ body {
 }
 
 .markdown-body {
-  @apply max-w-none font-serif text-[15.5px] text-ink;
-  line-height: 1.75;
+  @apply max-w-none font-serif text-[16px] text-ink;
+  line-height: 1.8;
 }
 
 .markdown-body h1 {
-  @apply mb-5 border-b border-line pb-3 text-3xl font-semibold leading-tight;
+  @apply mb-5 border-b border-line pb-3 font-serif text-3xl font-medium leading-tight tracking-tight;
 }
 
 .markdown-body h2 {
-  @apply mb-3 mt-8 border-b border-line pb-2 text-xl font-semibold leading-tight;
+  @apply mb-3 mt-8 border-b border-line pb-2 font-serif text-xl font-medium leading-tight;
 }
 
 .markdown-body h3 {
-  @apply mb-2 mt-6 text-lg font-semibold;
+  @apply mb-2 mt-6 font-serif text-lg font-medium;
 }
 
 .markdown-body p {
@@ -223,7 +304,7 @@ body {
 }
 
 .image-lightbox-backdrop {
-  @apply fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/80 p-6;
+  @apply fixed inset-0 z-50 flex cursor-zoom-out items-center justify-center bg-black/80 p-6 animate-fade-in;
 }
 
 .image-lightbox-backdrop img {
@@ -239,15 +320,15 @@ body {
 }
 
 .prior-card {
-  @apply rounded-lg border border-line bg-canvas p-3;
+  @apply rounded-lg border border-line bg-canvas p-3 shadow-soft;
 }
 
 .prior-card h3 {
-  @apply font-serif text-sm font-semibold leading-5 text-ink;
+  @apply font-serif text-sm font-medium leading-5 text-ink;
 }
 
 .role-badge {
-  @apply flex-none rounded-md border border-copper/40 bg-fog px-2 py-1 text-xs text-copper;
+  @apply flex-none rounded-md border border-copper/25 bg-fog px-2 py-1 text-xs text-copper;
 }
 
 .prior-meta {
@@ -260,4 +341,111 @@ body {
 
 .prior-relationship {
   @apply mt-3 text-sm leading-6 text-ink-soft;
+}
+
+.data-table {
+  @apply w-full min-w-[900px] text-left text-sm;
+}
+
+.data-table thead {
+  @apply bg-fog text-[11px] uppercase tracking-[0.08em] text-muted;
+}
+
+.data-table th {
+  @apply px-4 py-3 font-medium;
+}
+
+.data-table tbody tr {
+  @apply border-t border-line transition-colors hover:bg-fog/70;
+}
+
+.data-table td {
+  @apply px-4 py-3 align-top;
+}
+
+/* Shared form controls */
+.field {
+  @apply block;
+}
+
+.field-label {
+  @apply mb-1.5 block text-[12px] font-medium tracking-wide text-ink-soft;
+}
+
+.field-hint {
+  @apply mt-1.5 text-[11px] leading-5 text-muted;
+}
+
+.field-input {
+  @apply h-10 w-full rounded-lg border border-line bg-canvas px-3 text-sm text-ink outline-none transition
+    placeholder:text-muted focus:border-moss/55 focus:shadow-soft disabled:cursor-not-allowed disabled:bg-fog disabled:text-muted;
+}
+
+.field-input-lg {
+  @apply h-11 w-full rounded-lg border border-line bg-canvas px-3 text-sm text-ink outline-none transition
+    placeholder:text-muted focus:border-moss/55 focus:shadow-soft;
+}
+
+.field-textarea {
+  @apply w-full resize-y rounded-lg border border-line bg-canvas px-3 py-2.5 font-sans text-sm leading-6 text-ink outline-none transition
+    placeholder:text-muted focus:border-moss/55 focus:shadow-soft;
+}
+
+.field-select {
+  @apply field-input appearance-none bg-[length:12px] bg-[right_0.75rem_center] bg-no-repeat pr-9;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a93a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+}
+
+.field-select-trigger {
+  @apply inline-flex h-10 w-full min-w-[8.5rem] items-center justify-between gap-2 rounded-lg border border-line bg-canvas px-3 text-left text-sm text-ink outline-none transition
+    hover:border-line-strong focus-visible:border-moss/55 focus-visible:shadow-soft
+    disabled:cursor-not-allowed disabled:bg-fog disabled:text-muted;
+}
+
+.field-select-menu {
+  @apply absolute left-0 right-0 z-30 mt-1.5 max-h-64 overflow-auto rounded-xl border border-line bg-canvas py-1.5 shadow-lift;
+}
+
+.field-select-option {
+  @apply flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm text-ink transition hover:bg-fog;
+}
+
+.field-select-option.is-active {
+  @apply bg-moss-soft/70 text-moss-deep;
+}
+
+.file-drop {
+  @apply flex cursor-pointer flex-col gap-3 rounded-xl border border-dashed border-line-strong/80 bg-fog/50 p-3.5 transition-all duration-150;
+}
+
+.file-drop:hover,
+.file-drop.is-dragging {
+  @apply border-moss/50 bg-moss-soft/40;
+}
+
+.file-drop.has-files {
+  @apply border-solid border-line bg-canvas;
+}
+
+.file-drop-icon {
+  @apply inline-flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-line bg-canvas text-moss shadow-soft;
+}
+
+.file-drop-action {
+  @apply inline-flex h-9 w-full flex-none items-center justify-center gap-1.5 rounded-lg border border-line bg-canvas text-xs font-medium text-ink-soft shadow-soft transition hover:border-moss/40 hover:text-moss;
+}
+
+.check {
+  @apply h-4 w-4 flex-none cursor-pointer appearance-none rounded border border-line-strong bg-canvas transition
+    checked:border-moss checked:bg-moss checked:bg-[length:12px] checked:bg-center checked:bg-no-repeat
+    focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-moss;
+  background-image: none;
+}
+
+.check:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='3.5 8.5 6.5 11.5 12.5 4.5'/%3E%3C/svg%3E");
+}
+
+.check-row {
+  @apply inline-flex cursor-pointer items-center gap-2 text-sm text-body;
 }

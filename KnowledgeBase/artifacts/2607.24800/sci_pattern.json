@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P05",
+    "P12"
+  ],
+  "secondary_pattern_names": [
+    "Data & Evaluation Engineering",
+    "Mechanistic Decomposition & Causal Localization"
+  ],
+  "confidence": "high",
+  "reasoning": "论文\"2607.24800\"从一个实证差距出发：向检索控制器注入前检索配置与轨迹提示非但未提升而是降低了检索性能，作者因此把“在检索前思考”重新表述为一个动作选择/控制问题而非简单的提示格式改动，契合Gap-Driven Reframing (P01)。同时论文提供了一个轻量的诊断协议并固定图数据与度量（在\"PRIME\"、\"MAG\"、\"Amazon\"上测试，使用开源控制器如\"Qwen3-14B\"、\"Qwen3-30B-A3B\"），属于Data & Evaluation Engineering (P05)；并通过成对轨迹分析将退化归因于重复调用、零结果调用和探索预算分配等可干预机制，体现Mechanistic Decomposition & Causal Localization (P12)。"
+}

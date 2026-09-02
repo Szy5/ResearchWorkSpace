@@ -1,0 +1,47 @@
+\section{Limitations, Future Work, and Broader Impact}
+\label{app:discussion}
+
+\subsection{Limitations}
+
+\textbf{Environment complexity.}
+Our 42 sandbox environments each expose 3--29 tools with deterministic behavior and compose up to four environments per task. Real-world deployments often connect agents to dozens of independent systems with hundreds of endpoints, non-standard error handling, and partial failures. The gap between our sandboxes and production tool surfaces means that results may not fully transfer to more complex settings.
+
+\textbf{Taxonomy scope.}
+The eight scenarios cover the principal abstention triggers for single-agent, single-turn tool use. We do not address multi-agent delegation (when one agent should defer to another), long-horizon tasks where risk accumulates gradually, or adversarial prompt injection. The taxonomy is designed to be extensible along its two axes (detectability and deficiency type), so new scenarios can be incorporated as failure modes are identified.
+
+\textbf{Judge reliability.}
+The LLM judge (GPT-5.4) shows high agreement with human annotators (Appendix~\ref{app:judge-validation}), but may still exhibit bias on borderline cases, particularly for categories where the abstention signal is subtle.
+
+\textbf{Single-run evaluation.}
+Each model runs each task once. LLM outputs are stochastic, so multi-run evaluation would likely reveal variance that single-run numbers do not capture.
+
+\subsection{Future Work}
+
+\textbf{Multi-turn interaction.}
+All tasks are single-turn. A natural extension is to test whether agents correctly update their act/abstain decision after receiving user clarification or override in follow-up turns.
+
+\textbf{Human baseline.}
+Establishing human performance on the same task pairs would provide a ceiling and help calibrate how much of the current gap is due to model limitations versus inherent task ambiguity.
+
+\textbf{Multilingual evaluation.}
+Ambiguity and conflicting constraints manifest differently across languages. A multilingual version of the benchmark would test whether abstention capability transfers across linguistic boundaries.
+
+\textbf{Multi-run robustness.}
+Running each task multiple times (pass@$k$) would distinguish tasks a model cannot solve from tasks it solves unreliably.
+
+\textbf{Step-level timeliness.}
+The commit check already captures the timing question that matters most: whether the agent crosses the irreversibility line before it abstains. Critical actions are defined on each task's execution DAG, and an agent that acts first and hedges later is isolated as post-hoc abstention rather than credited with restraint. What we do not report is a finer-grained latency profile, i.e., how many steps past the first observable trigger an agent keeps interacting before it halts~\citep{luo2026agentic}. The DAG and trigger record pin down when the trigger first becomes observable, so step-resolved metrics such as abstention recall at the earliest warranted step are computable from the traces we already log.
+
+\textbf{Context-conditioned abstention.}
+Our tasks carry no explicit agent-persona conditioning and start each agent run from an empty trajectory. Two open questions are whether abstention propensity shifts under (a) explicit persona priors injected in the system prompt (e.g., \emph{careful expert} vs.\ \emph{speed-first engineer}), and (b) long-horizon context where the should-abstain trigger appears only after many prior tool observations have accumulated. The split between (a) and (b) probes whether abstention is a stable trait or a context-modulated style, and category-specific shifts would reveal how much of the headline gap closes with scaffolding alone.
+
+\subsection{Broader Impact}
+
+\textbf{Safer deployment.}
+The benchmark helps developers identify over-acting tendencies before deployment, reducing the risk of agents executing unintended irreversible actions under ambiguity or tool failure.
+
+\textbf{Calibration training signal.}
+The paired task design provides natural preference data for improving act/abstain calibration, similar to how preference pairs are used in RLHF.
+
+\textbf{Contamination mitigation.}
+The \pipeline{} pipeline can generate fresh task instances on demand, reducing the contamination risk inherent in static benchmarks. To further guard against benchmark gaming, we release the full pipeline implementation but hold out the generated task distribution, making it difficult to overfit to the specific surface patterns of the released evaluation set.

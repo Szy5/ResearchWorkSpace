@@ -1,0 +1,35 @@
+\begin{table*}[t]
+    \centering
+    \footnotesize 
+    \setlength{\tabcolsep}{3.0pt} 
+    \begin{tabular}{l|cc|cc@{\hskip 10pt}cc|cc@{\hskip 10pt}cc|cc}
+    \toprule
+    \multirow{3}{*}{\makecell[c]{\textbf{Methods}}} & \multicolumn{10}{c|}{\textbf{Hallucination}} & \multicolumn{2}{c}{\textbf{Reasoning}} \\
+    \cmidrule(lr){2-11} \cmidrule(lr){12-13}
+    & \multicolumn{2}{c|}{\textbf{TruthfulQA}} & \multicolumn{4}{c|}{\textbf{SimpleQA}} & \multicolumn{4}{c|}{\textbf{ChineseSimpleQA}} & \multirow{2}{*}{\makecell[c]{\small\textbf{GPQA}\\\small\textbf{Diamond}}} & \multirow{2}{*}{\small\textbf{AIME}}\\
+    \cmidrule(lr){2-3} \cmidrule(lr){4-7} \cmidrule(lr){8-11}
+    & \small\textbf{Rouge} & \small\textbf{Bleu} & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & & \\
+    \midrule
+    \rowcolor{lightgray} \multicolumn{13}{c}{\textit{\textbf{Skywork-OR1-7B-Preview}}} \\
+    \midrule
+    \text{Zero-shot}    & 56.20 & 51.60 & 7.48 & 59.47 & 35.73 & 9.16 & 10.95 & 57.87 & 35.00 & 13.30 & 44.95 & 34.67  \\
+    \text{DPO}          & 56.13 & 51.33 & 6.65 & \perf{81.27}{+21.80} & 12.93 & 10.93 & 11.83 & \perf{77.47}{+19.60} & 12.13 & 18.81 & 44.34 & 34.67 \\
+    \text{FactTune-FS}  & 57.60 & 53.00 & 3.51 & \perf{44.33}{-15.14} & 54.07 & 2.20 & 10.84 & \perf{40.60}{-17.27} & 54.47 & 9.40 & 45.45 & 34.67  \\
+    \text{SFT}          & 57.27 & 50.93 & 9.52 & \perf{61.07}{+1.60} & 32.40 & 10.71 & 8.21 & \perf{78.93}{+21.06} & 14.00 & 7.59 & 39.39 & 38.67  \\
+    \text{TruthRL}      & 57.67 & 53.47 & 8.15 & \perf{49.07}{-10.40} & 46.60 & 8.30 & 12.33 & \perf{32.60}{-25.27} & 62.80 & 8.78 & 46.36 & 33.33 \\
+    \text{KnowRL}       & 58.27 & 52.80 & 7.32 & \perf{40.20}{-19.27} & \textbf{56.60} & 6.17 & 10.30 & \perf{28.40}{-29.47} & \textbf{68.33} & 6.32 & \textbf{48.89} $\uparrow$ & \textbf{38.00} $\uparrow$ \\[3pt]
+    \midrule
+    \rowcolor{lightgray} \multicolumn{13}{c}{\textit{\textbf{DeepSeek-R1-Distill-Qwen-7B}}} \\
+    \midrule
+    \text{Zero-shot}    & 57.40 & 51.53 & 4.89 & 62.47 & 34.33 & 6.20 & 10.23 & 60.27 & 32.93 & 11.83 & 45.45 & 29.33  \\
+    \text{DPO}          & 55.60 & 51.40 & 5.65 & \perf{76.33}{+13.86} & 19.07 & 8.74 & 9.54 & \perf{67.20}{+6.93} & 25.73 & 13.20 & 40.40 & 28.67 \\
+    \text{FactTune-FS}  & 56.93 & 52.13 & 2.73 & \perf{61.73}{-0.74} & 36.53 & 2.12 & 8.90 & \perf{56.60}{-3.67} & 37.87 & 10.48 & 43.74 & 30.67  \\
+    \text{SFT}          & 57.13 & 51.27 & 9.38 & \perf{82.47}{+20.00} & 9.00 & 15.72 & 9.86 & \perf{82.07}{+21.80} & 8.93 & 9.41 & 38.28 & 35.33  \\
+    \text{TruthRL}      & 56.27 & 51.94 & 5.93 & \perf{50.73}{-11.74} & 46.07 & 6.19 & 9.37 & \perf{30.47}{-29.80} & 66.40 & 4.69 & 44.34 & 31.33 \\
+    \text{KnowRL}       & 57.20 & 52.40 & 5.50 & \perf{48.27}{-14.20} & \textbf{48.93} & 5.43 & 8.38 & \perf{28.07}{-32.20} & \textbf{69.40} & 4.94 & \textbf{46.97} $\uparrow$ & \textbf{34.00} $\uparrow$ \\
+    \bottomrule
+    \end{tabular}
+    \caption{\textbf{Multi-run Evaluation Results.} Robust multi-run performance (Avg@5, Temperature=0.6) of KnowRL compared against baselines on the Skywork-OR1-7B-Preview and DeepSeek-R1-Distill-Qwen-7B models. Zero-shot refers to the original model performance. The key improvements are marked in \textbf{bold}.}
+    \vspace{-3ex}
+    \label{tab:multi_run_results}
+\end{table*}

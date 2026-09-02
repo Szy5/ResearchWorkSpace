@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "WebGPT: Improving the Factual Accuracy of Language Models through Web Browsing",
+      "authors": "Nakano et al.",
+      "year": 2021,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "WebGPT established the paradigm of training a browsing-enabled QA agent with supervised + reinforcement learning to produce grounded answers and citations, and SearchArt positions itself as a scalable alternative by replacing expensive human-labelled browsing trajectories with large-scale synthetic, verification-filtered trajectories while retaining the RL/supervised training loop."
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao",
+      "year": 2022,
+      "arxiv_id": "2210.03629",
+      "role": "Inspiration",
+      "relationship_sentence": "ReAct introduced the explicit interleaving of reasoning traces and external actions (tool calls/queries) as training and prompting signals, directly inspiring SearchArt's emphasis on modeling and supervising intermediate search decisions and action-reasoning transitions in trajectories."
+    },
+    {
+      "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+      "authors": "Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia, Ed Chi, Quoc Le, Denny Zhou",
+      "year": 2022,
+      "arxiv_id": "2201.11903",
+      "role": "Inspiration",
+      "relationship_sentence": "Chain-of-Thought showed that exposing and supervising intermediate reasoning chains improves multi-step reasoning, providing the conceptual foundation for SearchArt's focus on optimizing not only final answers but the quality and structure of intermediate search/reasoning steps."
+    },
+    {
+      "title": "HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering",
+      "authors": "Yang et al.",
+      "year": 2018,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "HotpotQA formalized multi-hop, evidence-supported QA with annotated supporting facts, supplying the problem formulation and evaluation mindset (multi-step evidence aggregation and explainability) that SearchArt extends to long-horizon, web-scale search trajectories and synthetic evidence graphs."
+    },
+    {
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "authors": "Timo Schick, Jane Dwivedi-Yu, Roberto Dessì, Roberta Raileanu, Maria Lomeli, Luke Zettlemoyer, Nicola Cancedda, Thomas Scialom",
+      "year": 2023,
+      "arxiv_id": "2302.04761",
+      "role": "Inspiration",
+      "relationship_sentence": "Toolformer demonstrated self-supervised synthesis of tool-use examples by having models generate and validate API calls, directly motivating SearchArt's approach to large-scale synthetic generation of search trajectories combined with automated verification to produce training data for tool-enabled agents."
+    },
+    {
+      "title": "Tree of Thoughts: Deliberate Problem Solving with Large Language Models",
+      "authors": "Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Thomas L. Griffiths, Yuan Cao, Karthik Narasimhan",
+      "year": 2023,
+      "arxiv_id": "2305.10601",
+      "role": "Related Problem",
+      "relationship_sentence": "Tree of Thoughts introduced structured branch-and-evaluate search over partial reasoning states to improve problem solving, motivating SearchArt's emphasis on evidence-branch selection, verification of intermediate branches, and training policies that expand or prune search branches adaptively."
+    }
+  ],
+  "synthesis_narrative": "Work on browser-enabled QA agents such as \"WebGPT\" developed the training recipe of combining supervised learning with reinforcement learning to produce grounded, cited answers from multi-step web interactions, establishing the baseline agentic training loop that requires expensive human-labelled trajectories. Research like \"ReAct\" made explicit the value of interleaving reasoning traces with external actions, giving a practical representation for intermediate decision points, while \"Chain-of-Thought\" demonstrated that supervising intermediate reasoning steps materially improves multi-step inference—together these papers supply the conceptual and representational tools for treating trajectories as first-class training signals. Dataset and problem formulations exemplified by \"HotpotQA\" formalize multi-hop QA with supporting facts and evaluation of evidence aggregation, providing the multi-hop, explainable QA framework SearchArt targets. Methodologically, \"Toolformer\" showed that large language models can synthesize and self-validate tool-use data at scale, suggesting a path to replace costly human annotation with model-driven synthetic corpora, and \"Tree of Thoughts\" defined branch-and-evaluate search dynamics that motivate explicit modeling of branch selection and verification. Combining these strands reveals a gap: prior systems either depend on expensive human verification or emphasize final-answer correctness while neglecting trajectory quality and branch-level verification. SearchArt naturally follows by integrating synthetic trajectory generation (Toolformer-style) with trajectory-level verification, training agents in the WebGPT RL loop, and explicitly supervising intermediate reasoning and branch-selection (ReAct/CoT/Tree-of-Thoughts) to produce scalable, high-quality long-horizon search policies."
+}

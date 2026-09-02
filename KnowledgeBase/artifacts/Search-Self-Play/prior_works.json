@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "OLIVAW: Mastering Othello without Human Knowledge, nor a Fortune",
+      "authors": "David Silver, Julian Schrittwieser, Karen Simonyan, Ioannis Antonoglou, Aja Huang, Arthur Guez, Thomas Hubert, Lucas Baker, Matthew Lai, Adrian Bolton, Yutian Chen, Timothy Lillicrap, Fan Hui, Laurent Sifre, George van den Driessche, Thore Graepel & Demis Hassabis",
+      "year": 2021,
+      "arxiv_id": "2103.17228",
+      "role": "Foundation",
+      "relationship_sentence": "该工作首创了自对弈(self-play)作为无需人工标签即可持续产生训练数据和自适应难度课程的范式，构成了本文将自对弈思想移植到深度搜索代理的根基。"
+    },
+    {
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "authors": "Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal, Heinrich Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, Sebastian Riedel, Douwe Kiela",
+      "year": 2020,
+      "arxiv_id": "2005.11401",
+      "role": "Foundation",
+      "relationship_sentence": "RAG 提供了用检索文档作为外部证据以保证生成答案可验证性的技术框架，本文把 RAG 用于对 proposer's 搜索轨迹进行答题验证，确保自生成问题的 ground-truth 可核实。"
+    },
+    {
+      "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+      "authors": "DeepSeek-AI",
+      "year": 2025,
+      "arxiv_id": "2501.12948",
+      "role": "Foundation",
+      "relationship_sentence": "该工作提出并普及了“可验证奖励（RLVR）”的代理训练范式——以是否与人工/验证答案一致作为奖励标准——SSP 正是在 RLVR 的问题背景下，试图用自玩+RAG 缓解对人工核验的依赖。"
+    },
+    {
+      "title": "Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning",
+      "authors": "Bowen Jin, Hansi Zeng, Zhenrui Yue, Jinsung Yoon, Sercan Arik, Dong Wang, Hamed Zamani, Jiawei Han",
+      "year": 2025,
+      "arxiv_id": "2503.09516",
+      "role": "Baseline",
+      "relationship_sentence": "Search-R1 是本文在深度搜索场景中直接对比和改进的公开基线系统，SSP 在与其相同的 agentic 工具与评测协议下展示了显著提升。"
+    },
+    {
+      "title": "WebSailor: Navigating Super-human Reasoning for Web Agent",
+      "authors": "Kuan Li, Zhongwang Zhang, Huifeng Yin, Liwen Zhang, Litu Ou, Jialong Wu, Wenbiao Yin, Baixuan Li, Zhengwei Tao, Xinyu Wang, Weizhou Shen, Junkai Zhang, Dingchu Zhang, Xixi Wu, Yong Jiang, Ming Yan, Pengjun Xie, Fei Huang, Jingren Zhou",
+      "year": 2025,
+      "arxiv_id": "2507.02592",
+      "role": "Gap Identification",
+      "relationship_sentence": "WebSailor 等合成查询方法提出了自动生成训练题目的思路，但暴露出离线校验成本高与难以动态控制难度的局限，SSP 针对这些具体缺陷提出在线自玩与自适应难度机制。"
+    },
+    {
+      "title": "Self-playing Adversarial Language Game Enhances LLM Reasoning",
+      "authors": "Pengyu Cheng, Tianhao Hu, Han Xu, Zhisong Zhang, Zheng Yuan, Yong Dai, Lei Han, Nan Du, Xiaolong Li",
+      "year": 2024,
+      "arxiv_id": "2404.10642",
+      "role": "Inspiration",
+      "relationship_sentence": "SPAG 将自对弈用于提升 LLM 推理能力，展示了自玩能改进语言模型策略和评估方式，SSP 借鉴了这种自演化训练思路但把焦点扩展到带工具的 agentic 多回合搜索场景。"
+    },
+    {
+      "title": "R-Zero: Self-Evolving Reasoning LLM from Zero Data",
+      "authors": "Chengsong Huang, Wenhao Yu, Xiaoyang Wang, Hongming Zhang, Zongxia Li, Ruosen Li, Jiaxin Huang, Haitao Mi, Dong Yu",
+      "year": 2025,
+      "arxiv_id": "2508.05004",
+      "role": "Inspiration",
+      "relationship_sentence": "R‑Zero 同时训练 proposer 与 solver 的并行框架直接启发了 SSP 的 co-evolution 设计，SSP 在此基础上引入外部检索与 RAG 验证以解决纯内知识限制。"
+    }
+  ],
+  "synthesis_narrative": "多项既有工作在技术细节上为本文奠定了直接基础：AlphaGo Zero 首次把自对弈证明为无需人工标签即可产生连续自适应训练分布的通用范式；Lewis 等人的 RAG 明确了用检索文档作为可验证证据来保证生成答案正确性的实用机制；Guo 提出的 RLVR 体系把代理训练的问题形式化为“以可核验答案为奖励”的范式，构成了本文所要改进的训练范畴；Search‑R1 则提供了与本文共享的深度搜索代理实现与评测协议，是本文主要对比与改进的基线；WebSailor 等查询合成方法揭示了离线合成在验证成本与难度控制上的局限；而 SPAG 与 R‑Zero 系列工作展示了把自对弈用于 LLM 能力提升以及同时训练 proposer/solver 的可行性但各自受限于模型内知识或缺乏工具交互。 这些前作共同暴露的机会是清晰的：需要一个既能在线自生训练题目又能保证题目答案可核验、并能随 solver 能力自适应升级的代理训练流程。Search Self‑play 正是在此基础上自然衔接：把自对弈的自适应课程思想与 RAG 的检索验证机制结合，且将 proposer 装备真实搜索工具实现外部证据挖掘，从而在 RLVR 框架下实现无监督、可验证且动态提升难度的深度搜索代理训练。"
+}

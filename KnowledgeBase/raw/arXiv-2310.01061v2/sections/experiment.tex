@@ -1,0 +1,66 @@
+\section{Experiment}
+In our experiments, we aim to answer the following research questions:
+\textbf{RQ1:} Can \ourmethod achieve state-of-the-art performance on the KGQA tasks?
+\textbf{RQ2:} Can the planning module of \ourmethod be integrated with other LLMs to improve their performance?
+% \textbf{RQ3:} Can \ourmethod be finetuned and effectively transferred to other knowledge graphs?
+\textbf{RQ3:} Can \ourmethod conduct faithful reasoning and generate interpretable reasoning results?
+
+
+\subsection{Experiment Settings}
+% \input{tables/datasets.tex}
+\noindent\textbf{Datasets.} 
+We evaluate the reasoning ability of \ourmethod on two benchmark KGQA datasets: WebQuestionSP (WebQSP) \citep{yih2016value} and Complex WebQuestions (CWQ) \citep{talmor2018web}, which contain up to 4-hop questions. Freebase \citep{bollacker2008freebase} is the background knowledge graph for both datasets, which contains around 88 million entities, 20 thousand relations, and 126 million triples. The details of the datasets are described in \Cref{app:dataset}. 
+
+
+\noindent\textbf{Baselines.} We compare \ourmethod with 21 baselines grouping into 5 categories: 1) Embedding-based methods, 2) Retrieval-augmented methods, 3) Semantic parsing methods, 4) LLMs, and 5) LLMs+KGs methods. The details of each baseline are described in \Cref{app:baselines}.
+
+\noindent\textbf{Evaluation Metrics.} Following previous works, we use Hits@1 and F1 as the evaluation metrics. Hits@1 measures the proportion of questions whose top-1 predicted answer is correct. Since a question may correspond to multiple answers, F1 considers the coverage of all answers, which balances the precision and recall of the predicted answers.
+
+\noindent\textbf{Implementations.} For \ourmethod, we use LLaMA2-Chat-7B \citep{touvron2023llama} as the LLM backbone, which is instruction finetuned on the training split of WebQSP and CWQ as well as Freebase for 3 epochs. We generate the top-3 relation paths using beam-search for each question. Since UniKGQA \citep{jiang2022unikgqa} and DECAF \citep{yu2022decaf} are state-of-the-art methods, we directly refer their results and those of the other baselines reported in their papers for comparisons. For LLMs, we use zero-shot prompting to conduct KGQA. The detailed settings are described in \Cref{app:settings}.
+
+\input{tables/kgqa.tex}
+
+\subsection{RQ1: KGQA Performance Comparison}
+\noindent\textbf{Main Results.} In this section, we compare \ourmethod with other baselines on KGQA tasks. The results are shown in \Cref{tab:kgqa}. Our method achieves the best performance on both datasets across most metrics. Specifically, compared to the SOTA method DECAF~\citep{yu2022decaf} on WebQSP, our method improves Hits@1 by 4.4\%. On the CWQ dataset, which is more challenging due to multi-hop questions, our method improves both Hits@1 and F1 by 22.3\% and 14.4\% against the SOTA model UniKGQA~\citep{jiang2022unikgqa}. These results demonstrate the superior reasoning ability of our method in KGQA.
+
+Among other methods, retrieval-augmented approaches outperform conventional embedding-based methods by retrieving relevant subgraphs from KGs, which reduces reasoning complexity. Furthermore, SR+NSM and SR+NSM+E2E adopt relation paths-based retrieval which achieves better performance, highlighting the importance of relation paths.
+%
+Semantic parsing methods perform better than retrieval methods on WebQSP but worse on CWQ due to the complexity of generating logical queries for complex questions in CWQ. Although LLMs-based methods achieve comparable performance, they are limited by hallucinations and lack of knowledge as shown in \Cref{sec:cases}. The LLMs+KGs methods achieve the second-best performance, which demonstrates the effectiveness of unifying KGs and LLMs for reasoning.
+
+\textbf{Ablation Study.} We conduct an ablation study to analyze the effectiveness of the \emph{planning module} and \emph{reasoning module} in our method (\ourmethod). We compare four variants: 1) \emph{w/o planning}, where we remove the planning module and perform reasoning without retrieved reasoning paths; 2) \emph{w/o reasoning}, where we remove the reasoning module and use all answers from retrieved reasoning paths as results; 3) \emph{w/ random plans}, where we randomly retrieve reasoning paths from KGs and feed them into the reasoning module; 4) \emph{w/ vote reasoning}, where we adopt the majority voting to select top-5 answers from retrieved reasoning paths. The results are shown in \Cref{tab:ablation}.
+
+\input{tables/ablation.tex}
+
+
+From the results, it is evident that without a planning module, our method degenerates to conventional LLMs that solely rely on questions as input, suffering from the lack of knowledge issue. Although removing the reasoning module leads to high recall due to an increased number of answers, precision drops significantly because of noise in retrieved paths. This demonstrates the effectiveness of the reasoning module in identifying important reasoning paths and filtering out noise. Furthermore, using random plans achieves worse performance than removing the planning module, highlighting the importance of a planning module who generates faithful reasoning plans. Using a simple majority vote reasoning can improve the results which also demonstrate the necessity of reasoning module.
+
+\begin{figure}[]
+    \begin{center}
+    %\framebox[4.0in]{$\;$}
+    \includegraphics[width=0.7\columnwidth,trim=0 2mm 0 0,clip]{images/k-beam.pdf}
+    \end{center}
+    \vspace{-4mm}
+    \caption{Faithfulness of top-$K$ generated relation paths. \emph{Green bars} denote the average number of retrieved reasoning paths, \emph{solid lines} denote the answer coverage of the retrieved paths, and \emph{dashed line} denote the answer coverage of the reasoning module based on the retrieved reasoning paths.}
+    \label{fig:k-beam}
+    \vspace{-7mm}
+\end{figure}
+
+\subsection{RQ2: Plug-and-Play \ourmethod Planning Module}
+\input{tables/plug-and-play.tex}
+In this section, we evaluate the effectiveness of integrating the planning module of \ourmethod with different LLMs during inference to improve their performance. Specifically, we first adopt the planning module of \ourmethod to generate relation paths and feed the retrieved reasoning paths as context into different LLMs for reasoning. The results are presented in \Cref{tab:plug-and-play}. To account for the fact that it is difficult to extract the number of answers from LLM's output. We only report the Hits@1 and Recall metrics. 
+
+From the results, we can notice that the performance of all LLMs is substantially improved by integrating the planning module of \ourmethod. Specifically, the Hits@1 of ChatGPT, Alpaca, LLaMA2, and Flan-T5 are improved by 8.5\%, 15.3\%, and 119.3\%, respectively. This demonstrates that the planning module of \ourmethod can be seamlessly integrated with other LLMs to improve their performance without retraining.
+
+% \input{tables/transfer.tex}
+
+% \subsection{RQ3: Transferability to Other KGs}
+% We also evaluate the transferability of \ourmethod to other KGs. We select the MetaQA-3hop dataset \citep{zhang2018variational} which is based on Wiki-Movies KGs\footnote{\url{https://research.fb.com/downloads/babi.}}. We select 1000 samples from the training split and utilize two training strategies to finetune \ourmethod: 1) \emph{training from scratch}, where we directly optimize \ourmethod with 1000 samples; 2) \emph{transfer from Freebase}, where we conduct a further finetuning based on \ourmethod trained for Freebase. The results are shown in \Cref{tab:transfer}. From results, we can see that transfer from Freebase achieves better performance than training from scratch, which demonstrates the transferability of \ourmethod to other KGs.
+
+\subsection{RQ3: Faithful reasoning and interpretable results}\label{sec:cases}
+\noindent\textbf{Quantitative Results.} To evaluate the faithfulness of the relation paths, we illustrate the quantitative results in \Cref{fig:k-beam}. In experiments, we sweep the number of top-$K$ relation paths generated by \ourmethod. From results, we can see that the number of retrieved reasoning paths increases with $K$, which also leads to more answers to be covered (recall). This demonstrates the faithfulness of the relation paths by retrieving the answers. However, more retrieved reasoning paths also lead to more noise and retrieval time (shown in \Cref{app:retrieval_cost}), which decreases the precision and makes little contribution to the final results (reasoning-f1). Therefore, we set $K=3$ in experiments.
+
+
+\input{tables/case_study.tex}
+
+\noindent\textbf{Case studies.} We also illustrate two case studies in \Cref{tab:case1} and \Cref{tab:case2}. In \Cref{tab:case1}, we can find that ChatGPT+CoT suffers from the lack of knowledge issue and cannot answer the question. On the contrary, \ourmethod can generate faithful relation paths and retrieve valid reasoning paths from KGs for reasoning. Besides, \ourmethod can provide interpretable explanations based on the reasoning paths. In \Cref{tab:case2}, we can see that ChatGPT+CoT suffers from hallucinations and generates incorrect answers. In contrast, although the retrieved reasoning paths contain noises, the reasoning module can identify the correct reasoning paths and conduct faithful reasoning. These results demonstrate the effectiveness of \ourmethod in conducting faithful reasoning and generating interpretable results. More cases can be found in \Cref{app:case_rel,app:case_inter}.
+

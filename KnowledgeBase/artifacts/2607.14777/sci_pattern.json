@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P05",
+    "P04"
+  ],
+  "secondary_pattern_names": [
+    "Data & Evaluation Engineering",
+    "Modular Pipeline Composition"
+  ],
+  "confidence": "high",
+  "reasoning": "论文“Seed”明确指出结果导向RL在长序列任务中存在的监督缺口，并将该缺口重新表述为将完整的on-policy轨迹转化为可蒸馏的行为规则（即生成自然语言的“hindsight skills”）以回灌至策略，从而符合Gap-Driven Reframing（P01）。其次，方法通过构造合成监督信号（以“hindsight skills”作为训练时的合成监督）属于数据/合成监督工程范畴（P05）；同时将收集—分析—重打分—蒸馏组织为两阶段、可替换的演员/分析器模块化流程，体现了模块化流水线思想（P04）。"
+}

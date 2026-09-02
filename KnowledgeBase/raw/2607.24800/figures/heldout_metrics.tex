@@ -1,0 +1,65 @@
+\providecolor{mplblue}{HTML}{1F77B4}
+\providecolor{mplorange}{HTML}{FF7F0E}
+\providecolor{mplgreen}{HTML}{2CA02C}
+
+\begin{tikzpicture}
+\begin{axis}[
+    width=6.7in,
+    height=3.15in,
+    ybar,
+    area legend,
+    bar width=13pt,
+    ymin=-0.3,
+    ymax=0.002,
+    xmin=0.45,
+    xmax=3.55,
+    ylabel={TraceBound - Unconditioned},
+    xtick={1,2,3},
+    xticklabels={PRIME,MAG,Amazon},
+    ytick={0,-0.05,-0.10,-0.15,-0.20,-0.25},
+    yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=2},
+    xticklabel style={font=\large},
+    tick label style={font=\large},
+    label style={font=\Large},
+    title style={font=\LARGE},
+    axis x line*=bottom,
+    axis y line*=left,
+    axis line style={black,semithick},
+    tick style={black},
+    extra y ticks={0},
+    extra y tick labels={},
+    extra y tick style={
+        grid=major,
+        major grid style={black,semithick},
+        tick style={draw=none}
+    },
+    legend style={
+        at={(0.02,0.03)},
+        anchor=south west,
+        draw=gray!50,
+        fill=white,
+        fill opacity=0.92,
+        text opacity=1,
+        legend columns=3,
+        font=\large
+    },
+    legend cell align={left},
+]
+\addplot+[] coordinates {
+    (1,-0.061)
+    (2,-0.243)
+    (3,-0.056)
+};
+\addplot+[] coordinates {
+    (1,-0.039)
+    (2,-0.248)
+    (3,-0.095)
+};
+\addplot+[] coordinates {
+    (1,-0.062)
+    (2,-0.274)
+    (3,-0.044)
+};
+\legend{Hit@5, Recall@20, MRR}
+\end{axis}
+\end{tikzpicture}

@@ -1,0 +1,56 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2607.15845",
+  "created_at": "2026-07-20T12:29:39.503244+00:00",
+  "updated_at": "2026-07-20T12:29:39.503244+00:00",
+  "paper": {
+    "title": "Knowledge-Centric Agents for Workflow Generation in ComfyUI",
+    "authors": [
+      "Zhendong Li~ Lei Sun~",
+      "Ruibo Ming~ He Zhang~ Danda Pani Paudel~ Luc Van Gool~ Jinjin Gu~"
+    ],
+    "abstract": "Workflow generation in visual creation systems such as ComfyUI demands not only syntactic accuracy but also expert-level reasoning over modular compositions. Existing large language model (LLM) approaches often treat this as a direct text-to-JSON generation task, struggling with structural brittleness and lacking the experiential knowledge required for effective design. We argue that successful workflow generation requires modeling knowledge itself, including its structure, hierarchy, and reasoning dynamics. To this end, we propose a knowledge-centric framework that learns to invert, inject, and infer with knowledge across multiple abstraction levels. We first perform knowledge inversion to distill hierarchical representations, ranging from full pseudo-codes and skeletons to high-level strategies, from large collections of real-world workflows. We then conduct knowledge injection through supervised fine-tuning, teaching the model to reason from task descriptions to strategies and from strategies to executable structures. During inference, the model performs reversible reasoning to synthesize executable workflows, augmented by self-refinement for structural coherence. Extensive experiments demonstrate that our method produces workflows with richer node diversity, more coherent structures, and higher execution success rates than existing systems, establishing a new foundation for knowledge-driven, agentic workflow generation.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-07-20",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "raw/2607.15845",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "9fb5fa5c8cc666e452fb0b12db17c53b6252f725aa533d1166b4f313e3740f24",
+        "bytes": 69569
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 21,
+    "figures": 4,
+    "references": 84
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 18, column 1):\nunexpected Tok (line 18, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 18, column 1):\nunexpected Tok (line 18, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

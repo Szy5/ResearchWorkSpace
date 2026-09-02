@@ -1,0 +1,35 @@
+
+\section{Introduction}
+
+Large language models (LLMs) have demonstrated remarkable capabilities in natural language understanding and generation \citep{hendrycks2020measuring,clark2018think}.
+Despite these achievements, LLMs often encounter challenges when tasked with complex reasoning \citep{wei2022chain} and retrieving up-to-date information from external sources \citep{jin2024long}. Addressing these limitations necessitates integrating advanced reasoning abilities \citep{huang2022towards} and the capability to interact effectively with search engines to best utilize external up-to-date information \citep{schick2023toolformer}.
+
+Existing approaches for integrating LLMs with search engines typically fall into two categories: (1) retrieval-augmented generation (RAG) \citep{gao2023retrieval, lewis2020retrieval} and (2) treating the search engine as a tool \citep{yao2023react, schick2023toolformer}. 
+RAG models often retrieve passages based on the LLM input as query and incorporate them into the LLM’s context for generation \citep{lewis2020retrieval}. 
+This allows the LLM to leverage external knowledge when answering questions. 
+% However, many RAG models are constrained by retrieval inaccuracy \citep{jin2024long} and multi-hop retrieval capability \citep{yang2018hotpotqa}.
+Although existing work \citep{trivedi2022interleaving} prompts LLM for multi-turn, multi-query retrieval, this approach is suboptimal because the LLM is not optimized to learn how to interact effectively with search engines during training.
+Alternatively, LLMs can be prompted or trained to utilize tools, including search engines, as part of their reasoning process \citep{qu2025tool, trivedi2022interleaving}. 
+However, prompting-based approaches often struggle to generalize, as certain tasks may not have been encountered during LLM pretraining. 
+On the other hand, training-based approaches offer greater adaptability but are difficult to scale effectively due to their reliance on large-scale, high-quality annotated trajectories and the inherent non-differentiability of the search operation, which renders end-to-end gradient descent-based optimization inapplicable \citep{schick2023toolformer,asai2024self}.
+
+Reinforcement Learning (RL) \citep{sutton1999reinforcement,kaelbling1996reinforcement} has emerged as a potent paradigm for enhancing the reasoning capabilities of LLMs \citep{guo2025deepseek,hou2025advancing,xie2025logic,kumar2024training}.
+Notably, models like OpenAI-o1 \citep{jaech2024openai} and DeepSeek-R1 \citep{guo2025deepseek} have leveraged RL techniques (\textit{e.g.}, PPO \citep{schulman2017proximal} and GRPO \citep{shao2024deepseekmath}) to improve logical inference and problem-solving skills by learning from experience and feedback.
+With RL, even when trained solely on the outcome rewards, the models learn complex reasoning capabilities, including self-verification \citep{weng2022large} and self-correction \citep{kumar2024training}. However, applying RL to search-and-reasoning scenarios presents three key challenges:
+(1) \textbf{RL Framework and Stability} – It remains unclear how to effectively integrate the search engine into the RL approaches for LLMs while ensuring stable optimization, particularly when incorporating retrieved context.
+(2) \textbf{Multi-Turn Interleaved Reasoning and Search} – Ideally, the LLM should be capable of iterative reasoning and search engine calls, dynamically adjusting the retrieval strategy based on the complexity of the problem.
+(3) \textbf{Reward Design} – Designing an effective reward function for search and reasoning tasks remains a fundamental challenge, as it is unclear whether simple outcome-based rewards are sufficient to guide the LLM to learn meaningful and consistent search behaviors.
+
+To address aforementioned challenges, we introduce \Ours, a novel RL framework that enables LLMs to interact with search engines in an interleaved manner with their own reasoning. 
+Specifically, \Ours introduces the following key innovations:
+(1) We model the search engine as part of the environment, enabling sampled trajectory sequences that interleave LLM token generation with search engine retrievals. \Ours is compatible with various RL algorithms, including PPO and GRPO, and we apply retrieved token masking to ensure stable optimization.
+(2) \Ours supports multi-turn retrieval and reasoning, invoking search calls when explicitly triggered by \search{ and } tokens. Retrieved content is enclosed within \info{ and } tokens, while LLM reasoning steps are wrapped within \think{ and } tokens. The final answer is formatted using \answer{ and } tokens, allowing for structured, iterative decision-making.
+(3) We adopt a straightforward outcome-based reward function, avoiding the complexity of process-based rewards. Our results demonstrate that this minimal reward design is effective in search-and-reasoning scenarios.
+As such, \Ours can be viewed as an extension of DeepSeek-R1 Zero \citep{guo2025deepseek}, which primarily focuses on parametric reasoning by introducing search-augmented RL training for enhanced retrieval-driven decision-making.
+
+In summary, our key contributions are threefold:
+\begin{itemize}[leftmargin=*]
+    \item Our work analyzes the challenges and provides perspectives on implementing RL to improve how LLMs reason using search engine results.
+    \item We propose \Ours, a novel RL framework that supports LLM rollouts and direct optimization with a search engine, including retrieved token masking to stabilize RL training, multi-turn interleaved reasoning and search to support complex task-solving and an effective outcome reward function.
+    \item We conduct systematic experiments to demonstrate the effectiveness of \Ours, with two LLMs achieving respective average relative \textbf{improvements of 41\% and 20\% over RAG baselines} under the same experimental setup (\textit{e.g.}, same retrieval model, training data, and pre-trained LLMs). In addition, we provide insights on RL for reasoning and search settings, including RL method selection, different LLM choices, and response length study.
+\end{itemize}

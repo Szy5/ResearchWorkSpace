@@ -1,0 +1,67 @@
+\definecolor{bggreen}{HTML}{E6F4EA}
+\definecolor{bggray}{HTML}{F8F9FA}
+
+\newcommand{\groupspace}{\noalign{\begingroup\color{white}\hrule height 0.5em\endgroup}}
+
+% 最后一列专用的宏（不使用 \rlap，占用真实宽度）
+\newcommand{\gainlast}[1]{\textsubscript{\textcolor{softgreen}{#1}}} 
+\newcommand{\droplast}[1]{\textsubscript{\textcolor{softred}{#1}}} 
+% 最后一列对应的隐形占位宏（用于 Base 行，确保上下小数点对齐）
+\newcommand{\gainphantomlast}[1]{\phantom{\textsubscript{#1}}}
+
+\begin{table}[tbp] 
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.3} 
+
+% 定义学术级颜色
+\definecolor{softgreen}{rgb}{0.12, 0.60, 0.12} 
+\definecolor{softred}{rgb}{0.75, 0.25, 0.25} % 温和红色，用于标示消退实验中的性能下降
+
+% 定义不占用宽度的下标宏，保证主数字严格居中对齐
+\newcommand{\gain}[1]{\rlap{\textsubscript{\textcolor{softgreen}{#1}}}} 
+\newcommand{\drop}[1]{\rlap{\textsubscript{\textcolor{softred}{#1}}}} % 消退降幅下标
+\newcommand{\same}[1]{\rlap{\textsubscript{\textcolor{black}{#1}}}}
+
+\begin{NiceTabular*}{\textwidth}{l @{\extracolsep{\fill}} cccc ccccc c}[colortbl-like]
+\toprule
+\multirow{2}{*}{\textbf{Method}} & \multicolumn{4}{c}{\textbf{API-Bank}} & \multicolumn{5}{c}{\textbf{BFCL}} & \multirow{2}{*}{\textbf{Avg.}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-10}
+ & L1 & L2 & L3 & Avg. & JS & Py & Java & Live & Avg. & \\
+\midrule
+% --- 第一组 ---
+\rowcolor{bggray} Qwen3-4B-Ins & 58.1 & 42.5 & 35.6 & 51.4 & 57.8 & 91.8 & 59.8 & 75.6 & 71.2 & 60.2\gainphantomlast{+6.5} \\
+\rowcolor{bggray} \quad + Unguided SP & 60.2\gain{+2.1} & 46.3\gain{+3.8} & 40.8\gain{+5.2} & 54.4\gain{+3.0} & 65.8\gain{+8.0} & 95.0\gain{+3.2} & 63.0\gain{+3.2} & 77.9\gain{+2.3} & 75.4\gain{+4.2} & 64.1\gainlast{+3.9} \\
+\rowcolor{bggreen} \quad \textbf{+ Skill-SP} & \textbf{64.6}\gain{+6.5} & \textbf{54.7}\gain{+12.2} & \textbf{44.0}\gain{+8.4} & \textbf{58.9}\gain{+7.5} & \textbf{65.5}\gain{+7.7} & \textbf{96.0}\gain{+4.2} & \textbf{63.5}\gain{+3.7} & \textbf{78.5}\gain{+2.9} & \textbf{75.9}\gain{+4.7} & \textbf{66.7}\gainlast{+6.5} \\
+\groupspace
+
+
+
+% --- 第二组 ---
+\rowcolor{bggray} Qwen3-8B & 73.3 & 61.4 & 43.9 & 65.5 & 69.0 & 95.1 & 64.9 & 77.9 & 76.7 & 69.4\gainphantomlast{+2.8} \\
+\rowcolor{bggray} \quad + Unguided SP & 74.3\gain{+1.0} & 64.4\gain{+3.0} & 48.3\gain{+4.4} & 67.5\gain{+2.0} & 71.8\gain{+2.8} & 95.8\gain{+0.7} & 64.9\same{+0.0} & 77.8\drop{-0.1} & 77.5\gain{+0.8} & 71.0\gainlast{+1.6} \\
+\rowcolor{bggreen} \quad \textbf{+ Skill-SP} & \textbf{75.9}\gain{+2.6} & \textbf{67.2}\gain{+5.8} & \textbf{50.0}\gain{+6.1} & \textbf{69.2}\gain{+3.7} & \textbf{72.8}\gain{+3.8} & \textbf{96.0}\gain{+0.9} & \textbf{65.1}\gain{+0.2} & \textbf{78.7}\gain{+0.8} & \textbf{78.2}\gain{+1.5} & \textbf{72.2}\gainlast{+2.8} \\
+\groupspace
+
+
+% --- 第三组 ---
+\rowcolor{bggray} Ministral-3-8B & 37.6 & 35.6 & 20.7 & 33.7 & 8.2 & 16.4 & 9.2 & 17.3 & 12.8 & 20.7\gainphantomlast{+42.9} \\
+\rowcolor{bggray} \quad + Unguided SP & 38.5\gain{+0.9} & 36.4\gain{+0.8} & 20.8\gain{+0.1} & 34.4\gain{+0.7} & 7.5\drop{-0.7} & 15.4\drop{-1.0} & 8.5\drop{-0.7} & 18.8\gain{+1.5} & 12.5\drop{-0.3} & 20.8\gainlast{+0.1\phantom{9}} \\
+\rowcolor{bggreen} \quad \textbf{+ Skill-SP} & \textbf{68.5}\gain{+30.9} & \textbf{56.2}\gain{+20.6} & \textbf{42.9}\gain{+22.2} & \textbf{61.5}\gain{+27.8} & \textbf{48.5}\gain{+40.3} & \textbf{90.8}\gain{+74.4} & \textbf{58.1}\gain{+48.9} & \textbf{80.0}\gain{+62.7} & \textbf{69.3}\gain{+56.5} & \textbf{63.6}\gainlast{+42.9} \\
+\groupspace
+
+% --- 第四组 ---
+\rowcolor{bggray} Ministral-3-14B & 31.1 & 15.5 & 15.7 & 26.0 & 14.5 & 32.9 & 18.6 & 27.2 & 23.3 & 22.2\gainphantomlast{+42.3} \\
+\rowcolor{bggray} \quad + Unguided SP & 67.2\gain{+36.1} & 50.6\gain{+35.1} & 46.3\gain{+30.6} & 60.8\gain{+34.8} & 36.8\gain{+22.3} & 88.7\gain{+55.8} & 46.1\gain{+27.5} & 77.2\gain{+50.0} & 62.2\gain{+38.9} & 59.0\gainlast{+36.8} \\
+\rowcolor{bggreen} \quad \textbf{+ Skill-SP} & \textbf{70.9}\gain{+39.8} & \textbf{57.5}\gain{+42.0} & \textbf{48.9}\gain{+33.2} & \textbf{64.5}\gain{+38.5} & \textbf{42.0}\gain{+27.5} & \textbf{89.9}\gain{+57.0} & \textbf{59.0}\gain{+40.4} & \textbf{83.1}\gain{+55.9} & \textbf{68.5}\gain{+45.2} & \textbf{64.5}\gainlast{+42.3} \\
+\groupspace
+
+% --- 第五组 ---
+\rowcolor{bggray} Granite-4.1-3B & 57.5 & 53.7 & 43.2 & 53.9 & 66.5 & 66.5 & 57.4 & 55.9 & 61.6 & 57.2\gainphantomlast{+5.3} \\
+\rowcolor{bggray} \quad + Unguided SP & 59.0\gain{+1.5} & 54.3\gain{+0.6} & 42.9\drop{-0.3} & 54.9\gain{+1.0} & 63.5\drop{-3.0} & 70.6\gain{+4.1} & 57.9\gain{+0.5} & 59.5\gain{+3.6} & 62.9\gain{+1.3} & 58.2\gainlast{+1.0} \\
+\rowcolor{bggreen} \quad \textbf{+ Skill-SP} & \textbf{63.2}\gain{+5.7} & \textbf{57.1}\gain{+3.4} & \textbf{47.0}\gain{+3.8} & \textbf{59.0}\gain{+5.1} & \textbf{67.5}\gain{+1.0} & \textbf{78.7}\gain{+12.2} & \textbf{57.9}\gain{+0.5} & \textbf{65.9}\gain{+10.0} & \textbf{67.5}\gain{+5.9} & \textbf{62.5}\gainlast{+5.3} \\
+\bottomrule
+\end{NiceTabular*}
+\caption{\textbf{Main tool-call prediction results (avg@8).} Models are evaluated on API-Bank across three difficulty levels (L1--L3) and on BFCL across diverse programming languages and live scenarios. Absolute changes over base models are shown as subscripts: gains in green (\textcolor{softgreen}{\textbf{+Gain}}), drops in red (\textcolor{softred}{\textbf{-Drop}}).}
+\label{tab:tool_call_main}
+\end{table}

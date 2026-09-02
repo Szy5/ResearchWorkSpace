@@ -1,0 +1,48 @@
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.15}
+\caption{Training hyperparameters for \textsc{Seed}.}
+\label{tab:rl_hyperparameters}
+\vspace{0.1in}
+\begin{tabular}{@{}p{0.4\textwidth}p{0.5\textwidth}@{}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+
+Training steps
+& 150  \\
+
+Training batch size
+& 16 for ALFWorld and WebShop; 128 for Search \\
+
+Rollout group size $N$
+& 8 \\
+
+Learning rate
+& $1\times10^{-6}$  \\
+
+PPO clip parameter $\epsilon_\mathrm{clip}$
+& 0.2 \\
+
+Sharpness of OPD gate $\beta_\mathrm{opd}$
+& 5.0 \\
+ 
+OPD loss coefficient $\lambda_{\mathrm{opd}}$
+& 0.01 \\
+
+KL coefficient $\beta_{\mathrm{KL}}$
+& 0.01 \\
+
+Maximum prompt length
+& 2,048 for ALFWorld ; 4,096 for WebShop and Search  \\
+
+Response length
+& 512 \\
+
+Maximum interaction steps
+& 30 for ALFWorld, 15 for WebShop, and 4 for Search. \\
+\bottomrule
+\end{tabular}
+\end{table*}

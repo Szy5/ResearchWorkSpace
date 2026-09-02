@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Hindsight Experience Replay",
+      "authors": "Marcin Andrychowicz, Filip Wolski, Alex Ray, Jonas Schneider, Rachel Fong, Peter Welinder, Bob McGrew, Josh Tobin, Pieter Abbeel, Wojciech Zaremba",
+      "year": 2017,
+      "arxiv_id": "1707.01495",
+      "role": "Foundation",
+      "relationship_sentence": "“Hindsight Experience Replay” 提出将完成的轨迹以不同目标重标注以缓解稀疏回报问题，直接提供了把终局经验重新解释为可学习信号的范式，SEED 在此基础上把完成轨迹转化为可复用的自然语言“hindsight skills”以实现轨迹级信息到 token 级监督的转换。"
+    },
+    {
+      "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning",
+      "authors": "Stephane Ross, Geoffrey J. Gordon, J. Andrew Bagnell",
+      "year": 2010,
+      "arxiv_id": "1011.0686",
+      "role": "Foundation",
+      "relationship_sentence": "“DAgger” 强调通过让学习者在其自身分布上采样以减少分布错配的必要性，直接支撑了 SEED 采用 on-policy 采样和自我蒸馏以确保辅助监督与当前策略分布一致的设计原则。"
+    },
+    {
+      "title": "Reflexion: An Autonomous Agent with Self-Reflection",
+      "authors": "Jaewoo Shinn et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "“Reflexion” 展示了让模型基于其过去交互做语言化反思以改进后续行为的路线，启发 SEED 用模型自身作为轨迹分析器，将完成轨迹解析成可指导后续决策的自然语言技能。"
+    },
+    {
+      "title": "Reflexion: an autonomous agent with dynamic memory and self-reflection",
+      "authors": "Noah Shinn, Beck Labash, Ashwin Gopinath",
+      "year": 2023,
+      "arxiv_id": "2303.11366v1",
+      "role": "Inspiration",
+      "relationship_sentence": "“Self-Refine” 提出通过模型自我评估与多轮修正提升输出质量的迭代机制，直接启发了 SEED 的自我演化循环——策略既生成轨迹又基于这些轨迹不断改进其分析与决策能力。"
+    },
+    {
+      "title": "On-Policy Delta Distillation",
+      "authors": "Byeongho Heo, Jaehui Hwang, Sangdoo Yun, Dongyoon Han",
+      "year": 2026,
+      "arxiv_id": "2607.15161",
+      "role": "Baseline",
+      "relationship_sentence": "“On-Policy Distillation” 将蒸馏约束限定在学习者自身采样的输出以缓解分布偏差并提供稠密监督，SEED 在这一方法上做出核心改进：通过 skill-augmented 重评分数将技能引入为密集的 token 级 on-policy 蒸馏信号。"
+    },
+    {
+      "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+      "authors": "Guanzhi Wang, Yuqi Xie, Yunfan Jiang, Ajay Mandlekar, Chaowei Xiao, Yuke Zhu, Linxi Fan, Anima Anandkumar",
+      "year": 2023,
+      "arxiv_id": "2305.16291",
+      "role": "Gap Identification",
+      "relationship_sentence": "“Voyager” 演示了通过记忆和外部技能库持续积累技能的可行性，但也暴露了依赖外部记忆/检索的局限，正是这类局限促使 SEED 探索把轨迹中提取的技能直接内化进策略参数以避免部署时的外部技能依赖。"
+    }
+  ],
+  "synthesis_narrative": "在有关稀疏回报与轨迹重标注的工作中，“Hindsight Experience Replay” 明确提出把完成轨迹重新解释为训练信号，这为把整段交互挖掘成可学习信息奠定了基础；“DAgger” 则从理论和实践上强调了在学习者自身分布上采样以减轻分布错配的必要性，支撑了对 on-policy 训练/蒸馏的采样设计。面向语言代理的研究如“Reflexion”与“Self-Refine”展示了用模型自身的语言化反思或多轮自修正来提取洞见并改进行为的可行机制，直接启发把轨迹分析模块做成与策略共享的、会随着策略进化的语言化分析器。同时，已有“On-Policy Distillation”方法为在学习者采样上施加稠密蒸馏监督提供了直接的技术脉络。另一方面，像“Voyager”这类依赖外部记忆或静态技能库的代理，暴露了技能易变且可能与当前策略错位的缺陷。從这些工作的组合中，自然而然浮现出一个机会：把完成轨迹的 hindsight 信息以自然语言技能形式提取出來、在同一 checkpoint 上自我生成并以 on-policy 的稠密蒸馏信号回写到策略中，从而实现监督与策略分布共演化并在推理时不依赖外部技能。这一思想正是 SEED 在方法论和实现上整合并推进上述前作的自然下一步。"
+}

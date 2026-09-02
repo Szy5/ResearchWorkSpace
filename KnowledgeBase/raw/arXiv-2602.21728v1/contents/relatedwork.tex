@@ -1,0 +1,32 @@
+\section{Related Work}
+% Knowledge Graph Question Answering (KGQA) is a critical task for improving factuality and mitigating hallucinations through grounding their reasoning on verifiable and structured facts.
+
+Knowledge graphs, which consist of relational triples that describe real-world entities and their relationships~\citep{kg_acm,chen-etal-2022-learning,zhang2022relu}, 
+have been extensively adopted to guide the reasoning process of large language models to improve factuality and reduce hallucinations~\citep{agrawal2024can}.
+Recent approaches to KG-enhanced reasoning could be broadly categorized into two paradigms based on the generation of the reasoning process: rule-based methods~\citep{sun2023thinkongraph,zhang-etal-2025-rule,li-etal-2025-decoding-graphs} and imitation-based methods~\citep{wu2024cotkr,mavromatis2025gnn,jiang-etal-2025-kg}.
+To ensure the faithfulness of the reasoning process, rule-based methods guide the LLM's reasoning process on the KGs by pre-defined rules.
+For example, ToG~\citep{sun2023thinkongraph} introduced intuitive instructions to prompt LLMs to prune entities and relations from subgraphs. 
+To improve retrieval efficiency, ReKnoS~\citep{wang2025reasoning} proposed to recognize super-relations that are defined as a set of semantically related relations.
+Moreover, DoG~\citep{li-etal-2025-decoding-graphs} adopted graph-aware constrained decoding with structured chains to constrain the decoding process. 
+The approaches were generally training-free, but did not enhance the intrinsic reasoning capabilities of the LLMs themselves.
+
+Imitation-based methods focus on emulating reasoning patterns derived from fine-tuning data.
+Early work mainly tried to convert questions into executable logical forms (e.g. SPARQL) for knowledge graph retrieval~\citep{lan2020query,das-etal-2021-case,ye-etal-2022-rng}, which heavily relied on the quality of generated queries.
+More recent work widely used Chain of Thought (CoT) to enhance LLM reasoning~\citep{wu2024cotkr,zhao2024kg}.
+To reduce incorrect thoughts, RoG~\citep{luo2024rog} proposed a planning-retrieval-reasoning framework that grounds plans in KGs. 
+PoG~\citep{chen2024plan} further improved the planning process through a reflection mechanism for self-correction.
+Though Kg-Agent~\citep{jiang-etal-2025-kg} employed several agents to iteratively reason over KGs, it relied on supervised fine-tuning with synthesized program data and failed to generalize beyond pre-defined tool-based reasoning paths.
+
+Different from previous work, we propose to incentivize autonomous exploration via reinforcement learning with path-refined reward modeling, enabling the model to explore novel reasoning paths that fall outside the distribution of pre-defined rules or supervised fine-tuning data.
+Experimental results on several benchmark datasets prove the effectiveness of our method.
+
+
+
+
+
+
+
+
+
+
+

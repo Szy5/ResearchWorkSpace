@@ -1,0 +1,271 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers, compress, sort}{natbib}
+% ready for submission
+% \usepackage{neurips_2023}
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+\usepackage[final]{neurips_data_2024}
+% \usepackage{neurips_data_2024}
+
+% HUMAN EVAL ON THE QUERIES
+% 100 EACH DATASET
+
+% QUERIES: FAILURE PATTERNS
+% CORRELATION BETWEEN QUERY LENGTH AND FAILURE/SUCCESS
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[hidelinks]{hyperref}       % hyperlinks
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage[dvipsnames, table]{xcolor}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{titlesec}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage[utf8]{inputenc}
+\let\Bbbk\relax\usepackage{amssymb,amsmath,caption}
+\usepackage[hang,flushmargin]{footmisc}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{extarrows}
+\usepackage{subfigure}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{colortbl} 
+\usepackage{makecell}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\usepackage{wrapfig}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{threeparttable}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{bbold}
+\usepackage{tabularx}
+\usepackage[framemethod=TikZ]{mdframed}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  columns=flexible,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+}
+\newtheorem{problem}{Definition}%[section] 
+\newtheorem{motivation}{Observation}%[section]
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{proposition}{Proposition}%[section]
+\newcommand{\Centaur}{\fontspec{Centaur}}
+
+\newcommand{\solution}[0]{\textrm{MasKG}\xspace}
+\newcommand{\vpara}[1]{\vspace{0.07in}\noindent\textbf{#1}\xspace}
+\newcommand{\beq}[1]{{\small \begin{equation}#1\end{equation}}}
+\newcommand{\beqn}[1]{{\small\begin{eqnarray}#1\end{eqnarray}}}
+\newcommand{\besp}[1]{\begin{split}#1\end{split}}
+\newcommand{\trieq}[0]{\triangleq}
+\newcommand*{\iidsim}{\overset{\text{i.i.d.}}{\sim}}
+
+\newcommand{\james}[1]{\textcolor{blue}{(James: #1)}}
+\newcommand{\shirley}[1]{\textcolor{purple}{(Shirley: #1)}}
+\newcommand{\jure}[1]{\textcolor{blue}{(Jure: #1)}}
+\newcommand{\kexin}[1]{\textcolor{blue}{(Kexin: #1)}}
+\newcommand{\michi}[1]{\textcolor{pink}{(Michi: #1)}}
+\newcommand{\qian}[1]{\textcolor{cyan}{(Qian: #1)}}
+\newcommand{\shiyu}[1]{\textcolor{brown}{(Shiyu: #1)}}
+\newcommand{\karthik}[1]{\textcolor{red}{(Karthik: #1)}}
+\newcommand{\hw}[1]{\textcolor{black}{#1}} % human written 
+
+\newcommand{\revision}[1]{\textcolor{black}{#1}}
+\usepackage{courier}
+\newcommand{\method}{Agent Retriever } 
+\newcommand{\methodt}{Agent Retriever} 
+\newcommand{\kbs}{knowlege bases } 
+\newcommand{\kbst}{knowlege bases} 
+\newcommand{\kb}{knowlege base } 
+\newcommand{\kbt}{knowlege base} 
+% \fontfamily{lmtt}\fontseries{b}\selectfont 
+% STaRK, STaRKRet, SemiRet, RetBench
+\newcommand{\benchmarkt}{\textsc{STaRK}} 
+\newcommand{\benchmarkh}{\textsc{STaRK }}
+\newcommand{\amazont}{\textsc{STaRK-Amazon}}
+\newcommand{\amazonh}{\textsc{STaRK-Amazon }}
+\newcommand{\magt}{\textsc{STaRK-MAG}}
+\newcommand{\magh}{\textsc{STaRK-MAG }}
+\newcommand{\primekgt}{\textsc{STaRK-Prime}}
+\newcommand{\primekgh}{\textsc{STaRK-Prime }}
+\newcommand{\ie}{\textit{i.e., }}
+\newcommand{\eg}{\textit{e.g., }}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\st}{\textit{s.t. }}
+\newcommand{\etc}{\textit{etc.}}
+\newcommand{\wrt}{\textit{w.r.t. }}
+\newcommand{\cf}{\textit{cf. }}
+\newcommand{\aka}{\textit{aka. }}
+\newcommand{\xhdr}[1]{{\vspace{-2pt}\noindent\bfseries #1}.}
+
+% my package and commands
+\newcommand\condent{\raisebox{-2pt}{\includegraphics[width=0.8em]{icons/blue.pdf}}}
+\newcommand\interent{\raisebox{-2pt}{\includegraphics[width=0.8em]{icons/gray.pdf}}}
+\newcommand\maskent{\raisebox{-2pt}{\includegraphics[width=0.8em]{icons/green.pdf}}}
+
+
+% Some math definitions
+\newcommand{\lap}{\mathrm{Lap}}
+\newcommand{\pr}{\mathrm{Pr}}
+
+\newcommand{\Tset}{\mathcal{T}}
+\newcommand{\Dset}{\mathcal{D}}
+\newcommand{\Rbound}{\widetilde{\mathcal{R}}}
+
+% my theorem definition
+\newcommand{\tohide}[1]{} 
+\newcommand*\thankssame[1][\value{footnote}]{\footnotemark[#1]}
+
+
+\title{\benchmarkt: Benchmarking LLM Retrieval on Textual and Relational Knowledge Bases }
+% \title{Retrieval with Textual and Relational Knowledge: Benchmarks and an Agent-based Approach}
+% STaRK Retrieval + Agent
+% \title{Agent Retriever for Retrieval Tasks on Textual and Relational Knowledge via Contrastive Reasoning}
+% \title{Agent Retriever for Improving Retrieval on Textual and Relational Knowledge Bases}
+\author{%
+  Shirley Wu$^{*\S}$,
+   Shiyu Zhao$^{*\S}$, 
+   Michihiro Yasunaga$^{\S}$, 
+  Kexin Huang$^{\S}$, Kaidi Cao$^{\S}$, Qian Huang$^{\S}$, \\
+  \textbf{Vassilis N. Ioannidis}$^{\dag}$, \textbf{Karthik Subbian}$^{\dag}$, \textbf{James Zou}$^{\ddag\S}$, \textbf{Jure Leskovec}$^{\ddag\S}$\\
+  % \\
+  $^{\S}$Department of Computer Science, Stanford University\ \ \ $^{\dag}$Amazon\\
+  {\textcolor{cyan}{\url{https://stark.stanford.edu/}}}
+  % $^{\S}$\texttt{\{shirwu,shiyuz,myasu,kexinh,kaidicao,qhwang\}}\\
+  % \texttt{\{jamesz,jure\}@cs.stanford.edu}, $^{\dag}$\texttt{\{vasilei,ksubbian\}@amazon.com}
+}
+
+
+
+\begin{document}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+% Associate the asterisk with the desired footnote text
+\footnotetext{$^{*\ddag}$Equal first-author / senior contribution. \\Correspondence: \texttt{\{shirwu, jamesz, jure\}@cs.stanford.edu}.}
+% \footnotetext{\ \ The work of Vassilis N. Ioannidis and Karthik Subbian does not relate to their position at Amazon.}
+
+\maketitle
+% \qian{The name STaRK overlaps with another popular work exactly https://arxiv.org/abs/2203.14465 }
+
+\vspace{-10pt}
+\begin{abstract}  
+\label{sec:abs}
+    \input{0-abstract}
+\end{abstract}
+
+
+\input{1-intro}
+\input{3-benchmark}
+\input{4-exp}
+\input{2-related}
+\input{5-conclusions}
+\input{6-ack}
+
+\renewcommand\refname{REFERENCES}
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{ref}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Checklist}
+
+% %%% BEGIN INSTRUCTIONS %%%
+% The checklist follows the references.  Please
+% read the checklist guidelines carefully for information on how to answer these
+% questions.  For each question, change the default \answerTODO{} to \answerYes{},
+% \answerNo{}, or \answerNA{}.  You are strongly encouraged to include a {\bf
+% justification to your answer}, either by referencing the appropriate section of
+% your paper or providing a brief inline description.  For example:
+% \begin{itemize}
+%   \item Did you include the license to the code and datasets? \answerYes{See Section~\ref{gen_inst}.}
+%   \item Did you include the license to the code and datasets? \answerNo{The code and the data are proprietary.}
+%   \item Did you include the license to the code and datasets? \answerNA{}
+% \end{itemize}
+% Please do not modify the questions and only use the provided macros for your
+% answers.  Note that the Checklist section does not count towards the page
+% limit.  In your paper, please delete this instructions block and only keep the
+% Checklist section heading above along with the questions/answers below.
+% %%% END INSTRUCTIONS %%%
+
+\begin{enumerate}
+
+\item For all authors...
+\begin{enumerate}
+  \item Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
+    \answerYes{} We clearly state our problem scope and highlight our main contribution compared to the existing works.
+  \item Did you describe the limitations of your work?
+    \answerYes{} Please see the conclusion and future work section.
+  \item Did you discuss any potential negative societal impacts of your work?
+    \answerYes{} Please see the conclusion and future work section.
+  \item Have you read the ethics review guidelines and ensured that your paper conforms to them?
+    \answerYes{}
+\end{enumerate}
+
+\item If you are including theoretical results...
+\begin{enumerate}
+  \item Did you state the full set of assumptions of all theoretical results?
+    \answerNA{}
+	\item Did you include complete proofs of all theoretical results?
+    \answerNA{}
+\end{enumerate}
+
+\item If you ran experiments (e.g. for benchmarks)...
+\begin{enumerate}
+  \item Did you include the code, data, and instructions needed to reproduce the main experimental results (either in the supplemental material or as a URL)?
+    \answerYes{} Our website {\textcolor{cyan}{\url{https://stark.stanford.edu/}}} and GitHub codebase {\textcolor{cyan}{\url{https://github.com/snap-stanford/STaRK}}} contains code, data, and experimental pipelines.
+  \item Did you specify all the training details (e.g., data splits, hyperparameters, how they were chosen)?
+    \answerYes{} Please see the experiment setup in Section 3.1, where we explained all of the choices made. We also make the data splits public.
+	\item Did you report error bars (e.g., with respect to the random seed after running experiments multiple times)?
+    \answerNA{}
+	\item Did you include the total amount of compute and the type of resources used (e.g., type of GPUs, internal cluster, or cloud provider)?
+    \answerYes{} We provide the GPU device information and report the latency cost.
+\end{enumerate}
+
+\item If you are using existing assets (e.g., code, data, models) or curating/releasing new assets...
+\begin{enumerate}
+  \item If your work uses existing assets, did you cite the creators?
+    \answerYes{}
+  \item Did you mention the license of the assets?
+    \answerYes{} We mentioned them in our webpage.
+  \item Did you include any new assets either in the supplemental material or as a URL?
+    \answerYes{}
+  \item Did you discuss whether and how consent was obtained from people whose data you're using/curating?
+    \answerYes{} The resources are from exisiting public data that is open to access.
+  \item Did you discuss whether the data you are using/curating contains personally identifiable information or offensive content?
+    \answerYes{} The only data with potential personally identifiable information and offensive content is Amazon semi-structured dataset, which is already made anonymized by the public resources.
+\end{enumerate}
+
+\item If you used crowdsourcing or conducted research with human subjects...
+\begin{enumerate}
+  \item Did you include the full text of instructions given to participants and screenshots, if applicable?
+    \answerYes{}
+  \item Did you describe any potential participant risks, with links to Institutional Review Board (IRB) approvals, if applicable?
+    \answerNA{}
+  \item Did you include the estimated hourly wage paid to participants and the total amount spent on participant compensation?
+    \answerNA{}. We invited volunteered participants who are acknowledged.
+    \end{enumerate}
+
+\end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+
+\appendix
+\input{appendix}
+\clearpage
+\end{document}
+
+
+

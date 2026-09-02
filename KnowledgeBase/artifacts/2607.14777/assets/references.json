@@ -1,0 +1,2229 @@
+{
+  "references": [
+    {
+      "key": "NEURIPS2024_c848b7d3",
+      "title": "Fine-Tuning Large Vision-Language Models as Decision-Making Agents via Reinforcement Learning",
+      "authors": [
+        "Zhai, Yuexiang",
+        "Bai, Hao",
+        "Lin, Zipeng",
+        "Pan, Jiayi",
+        "Tong, Shengbang",
+        "Zhou, Yifei",
+        "Suhr, Alane",
+        "Xie, Saining",
+        "LeCun, Yann",
+        "Ma, Yi",
+        "Levine, Sergey"
+      ],
+      "year": 2024,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "10.52202/079017-3522",
+      "arxiv_id": "",
+      "url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/c848b7d3adc08fcd0bf1df3101ba6728-Paper-Conference.pdf",
+      "raw_bibtex": "@inproceedings{NEURIPS2024_c848b7d3,\n author = {Zhai, Yuexiang and Bai, Hao and Lin, Zipeng and Pan, Jiayi and Tong, Shengbang and Zhou, Yifei and Suhr, Alane and Xie, Saining and LeCun, Yann and Ma, Yi and Levine, Sergey},\n booktitle = {Advances in Neural Information Processing Systems},\n doi = {10.52202/079017-3522},\n editor = {A. Globerson and L. Mackey and D. Belgrave and A. Fan and U. Paquet and J. Tomczak and C. Zhang},\n pages = {110935--110971},\n publisher = {Curran Associates, Inc.},\n title = {Fine-Tuning Large Vision-Language Models as Decision-Making Agents via Reinforcement Learning},\n url = {https://proceedings.neurips.cc/paper_files/paper/2024/file/c848b7d3adc08fcd0bf1df3101ba6728-Paper-Conference.pdf},\n volume = {37},\n year = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-multimodal-extension",
+          "text": "[]{#app:multimodal_extension label=\"app:multimodal_extension\"} To examine whether [Seed]{.smallcaps} extends beyond text-only interaction, we evaluate Qwen2.5-VL-3B-Instruct [bai2025qwen2] on two vision-based agentic benchmarks. Sokoban [SchraderSokoban2018] presents each state as a $6\\times6$"
+        }
+      ]
+    },
+    {
+      "key": "SchraderSokoban2018",
+      "title": "gym-sokoban",
+      "authors": [
+        "Schrader, Max-Philipp B."
+      ],
+      "year": 2018,
+      "venue": "GitHub repository",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@misc{SchraderSokoban2018,\n  author = {Schrader, Max-Philipp B.},\n  title = {gym-sokoban},\n  year = {2018},\n  publisher = {GitHub},\n  journal = {GitHub repository},\n  howpublished = {\\url{https://github.com/mpSchrader/gym-sokoban}},\n  commit = {#CommitId}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-multimodal-extension",
+          "text": "[]{#app:multimodal_extension label=\"app:multimodal_extension\"} To examine whether [Seed]{.smallcaps} extends beyond text-only interaction, we evaluate Qwen2.5-VL-3B-Instruct [bai2025qwen2] on two vision-based agentic benchmarks. Sokoban [SchraderSokoban2018] presents each state as a $6\\times6$"
+        }
+      ]
+    },
+    {
+      "key": "agarwal2024onpolicy",
+      "title": "On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes",
+      "authors": [
+        "Agarwal, Rishabh",
+        "Vieillard, Nino",
+        "Zhou, Yongchao",
+        "Stanczyk, Piotr",
+        "Ramos, Sabela",
+        "Geist, Matthieu",
+        "Bachem, Olivier"
+      ],
+      "year": 2024,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2306.13649",
+      "raw_bibtex": "@inproceedings{agarwal2024onpolicy,\n  title     = {On-Policy Distillation of Language Models: Learning from Self-Generated Mistakes},\n  author    = {Agarwal, Rishabh and Vieillard, Nino and Zhou, Yongchao and Stanczyk, Piotr and Ramos, Sabela and Geist, Matthieu and Bachem, Olivier},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2306.13649}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "andrychowicz2017hindsight",
+      "title": "Hindsight experience replay",
+      "authors": [
+        "Andrychowicz, Marcin",
+        "Wolski, Filip",
+        "Ray, Alex",
+        "Schneider, Jonas",
+        "Fong, Rachel",
+        "Welinder, Peter",
+        "McGrew, Bob",
+        "Tobin, Josh",
+        "Pieter Abbeel, OpenAI",
+        "Zaremba, Wojciech"
+      ],
+      "year": 2017,
+      "venue": "Advances in neural information processing systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{andrychowicz2017hindsight,\n  title={Hindsight experience replay},\n  author={Andrychowicz, Marcin and Wolski, Filip and Ray, Alex and Schneider, Jonas and Fong, Rachel and Welinder, Peter and McGrew, Bob and Tobin, Josh and Pieter Abbeel, OpenAI and Zaremba, Wojciech},\n  journal={Advances in neural information processing systems},\n  volume={30},\n  year={2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "arjona2019rudder",
+      "title": "RUDDER : Return Decomposition for Delayed Rewards",
+      "authors": [
+        "Arjona-Medina, Jose A.",
+        "Gillhofer, Michael",
+        "Widrich, Michael",
+        "Unterthiner, Thomas",
+        "Brandstetter, Johannes",
+        "Hochreiter, Sepp"
+      ],
+      "year": 2019,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/1806.07857",
+      "raw_bibtex": "@inproceedings{arjona2019rudder,\n  title     = {{RUDDER}: Return Decomposition for Delayed Rewards},\n  author    = {Arjona-Medina, Jose A. and Gillhofer, Michael and Widrich, Michael and Unterthiner, Thomas and Brandstetter, Johannes and Hochreiter, Sepp},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2019},\n  url       = {https://arxiv.org/abs/1806.07857}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "bai2025qwen2",
+      "title": "Qwen2. 5-vl technical report",
+      "authors": [
+        "Bai, Shuai",
+        "Chen, Keqin",
+        "Liu, Xuejing",
+        "Wang, Jialin",
+        "Ge, Wenbin",
+        "Song, Sibo",
+        "Dang, Kai",
+        "Wang, Peng",
+        "Wang, Shijie",
+        "Tang, Jun",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2502.13923",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{bai2025qwen2,\n  title={Qwen2. 5-vl technical report},\n  author={Bai, Shuai and Chen, Keqin and Liu, Xuejing and Wang, Jialin and Ge, Wenbin and Song, Sibo and Dang, Kai and Wang, Peng and Wang, Shijie and Tang, Jun and others},\n  journal={arXiv preprint arXiv:2502.13923},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-multimodal-extension",
+          "text": "[]{#app:multimodal_extension label=\"app:multimodal_extension\"} To examine whether [Seed]{.smallcaps} extends beyond text-only interaction, we evaluate Qwen2.5-VL-3B-Instruct [bai2025qwen2] on two vision-based agentic benchmarks. Sokoban [SchraderSokoban2018] presents each state as a $6\\times6$"
+        }
+      ]
+    },
+    {
+      "key": "cheng2026dspark",
+      "title": "DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation",
+      "authors": [
+        "Cheng, Xin",
+        "Yu, Xingkai",
+        "Shao, Chenze",
+        "Li, Jiashi",
+        "Xiong, Yunfan",
+        "Qian, Yi",
+        "Zhu, Jiaqi",
+        "Ma, Shirong",
+        "Zhang, Xiaokang",
+        "Ye, Jiasheng",
+        "others"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2607.05147",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{cheng2026dspark,\n  title={DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation},\n  author={Cheng, Xin and Yu, Xingkai and Shao, Chenze and Li, Jiashi and Xiong, Yunfan and Qian, Yi and Zhu, Jiaqi and Ma, Shirong and Zhang, Xiaokang and Ye, Jiasheng and others},\n  journal={arXiv preprint arXiv:2607.05147},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "cobbe2021training",
+      "title": "Training Verifiers to Solve Math Word Problems",
+      "authors": [
+        "Cobbe, Karl",
+        "Kosaraju, Vineet",
+        "Bavarian, Mohammad",
+        "Chen, Mark",
+        "Jun, Heewoo",
+        "Kaiser, Lukasz",
+        "Plappert, Matthias",
+        "Tworek, Jerry",
+        "Hilton, Jacob",
+        "Nakano, Reiichiro",
+        "Hesse, Christopher",
+        "Schulman, John"
+      ],
+      "year": 2021,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2110.14168",
+      "url": "https://arxiv.org/abs/2110.14168",
+      "raw_bibtex": "@misc{cobbe2021training,\n  title         = {Training Verifiers to Solve Math Word Problems},\n  author        = {Cobbe, Karl and Kosaraju, Vineet and Bavarian, Mohammad and Chen, Mark and Jun, Heewoo and Kaiser, Lukasz and Plappert, Matthias and Tworek, Jerry and Hilton, Jacob and Nakano, Reiichiro and Hesse, Christopher and Schulman, John},\n  year          = {2021},\n  eprint        = {2110.14168},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2110.14168}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "deng2023mind2web",
+      "title": "Mind2Web : Towards a Generalist Agent for the Web",
+      "authors": [
+        "Deng, Xiang",
+        "Gu, Yu",
+        "Zheng, Boyuan",
+        "Chen, Shijie",
+        "Stevens, Samuel",
+        "Wang, Boshi",
+        "Sun, Huan",
+        "Su, Yu"
+      ],
+      "year": 2023,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2306.06070",
+      "raw_bibtex": "@inproceedings{deng2023mind2web,\n  title     = {{Mind2Web}: Towards a Generalist Agent for the Web},\n  author    = {Deng, Xiang and Gu, Yu and Zheng, Boyuan and Chen, Shijie and Stevens, Samuel and Wang, Boshi and Sun, Huan and Su, Yu},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2023},\n  url       = {https://arxiv.org/abs/2306.06070}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "fang2026roboteq",
+      "title": "RobotEQ: Transitioning from Passive Intelligence to Active Intelligence in Embodied AI",
+      "authors": [
+        "Fang, Kuofei",
+        "Che, Xinyi",
+        "Ouyang, Haomin",
+        "Zhang, Shufan",
+        "Wang, Xuehao",
+        "Liu, Qi",
+        "Liu, Liyi",
+        "Zhang, Chenqi",
+        "Cai, Wenxi",
+        "Dai, Wenyu",
+        "others"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2605.06234",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{fang2026roboteq,\n  title={RobotEQ: Transitioning from Passive Intelligence to Active Intelligence in Embodied AI},\n  author={Fang, Kuofei and Che, Xinyi and Ouyang, Haomin and Zhang, Shufan and Wang, Xuehao and Liu, Qi and Liu, Liyi and Zhang, Chenqi and Cai, Wenxi and Dai, Wenyu and others},\n  journal={arXiv preprint arXiv:2605.06234},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "ge2025samule",
+      "title": "SAMULE : Self-Learning Agents Enhanced by Multi-level Reflection",
+      "authors": [
+        "Ge, Yubin",
+        "Romeo, Salvatore",
+        "Cai, Jason",
+        "Sunkara, Monica",
+        "Zhang, Yi"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "10.18653/v1/2025.emnlp-main.839",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2025.emnlp-main.839/",
+      "raw_bibtex": "@inproceedings{ge2025samule,\n  title={{SAMULE}: Self-Learning Agents Enhanced by Multi-level Reflection},\n  author={Ge, Yubin and Romeo, Salvatore and Cai, Jason and Sunkara, Monica and Zhang, Yi},\n  booktitle={Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing},\n  pages={16591--16610},\n  year={2025},\n  address={Suzhou, China},\n  publisher={Association for Computational Linguistics},\n  doi={10.18653/v1/2025.emnlp-main.839},\n  url={https://aclanthology.org/2025.emnlp-main.839/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "hinton2015distilling",
+      "title": "Distilling the Knowledge in a Neural Network",
+      "authors": [
+        "Hinton, Geoffrey",
+        "Vinyals, Oriol",
+        "Dean, Jeff"
+      ],
+      "year": 2015,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "1503.02531",
+      "url": "https://arxiv.org/abs/1503.02531",
+      "raw_bibtex": "@misc{hinton2015distilling,\n  title         = {Distilling the Knowledge in a Neural Network},\n  author        = {Hinton, Geoffrey and Vinyals, Oriol and Dean, Jeff},\n  year          = {2015},\n  eprint        = {1503.02531},\n  archivePrefix = {arXiv},\n  primaryClass  = {stat.ML},\n  url           = {https://arxiv.org/abs/1503.02531}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "ho2020constructing",
+      "title": "Constructing A Multi-hop QA Dataset for Comprehensive Evaluation of Reasoning Steps",
+      "authors": [
+        "Ho, Xanh",
+        "Duong Nguyen, Anh-Khoa",
+        "Sugawara, Saku",
+        "Aizawa, Akiko"
+      ],
+      "year": 2020,
+      "venue": "Proceedings of the 28th International Conference on Computational Linguistics",
+      "doi": "10.18653/v1/2020.coling-main.580",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2020.coling-main.580/",
+      "raw_bibtex": "@inproceedings{ho2020constructing,\n  title     = {Constructing A Multi-hop {QA} Dataset for Comprehensive Evaluation of Reasoning Steps},\n  author    = {Ho, Xanh and Duong Nguyen, Anh-Khoa and Sugawara, Saku and Aizawa, Akiko},\n  booktitle = {Proceedings of the 28th International Conference on Computational Linguistics},\n  pages     = {6609--6625},\n  year      = {2020},\n  doi       = {10.18653/v1/2020.coling-main.580},\n  url       = {https://aclanthology.org/2020.coling-main.580/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "hubotter2026sdpo",
+      "title": "Reinforcement Learning via Self-Distillation",
+      "authors": [
+        "H \\\"u botter, Jonas",
+        "L \\\"u beck, Frederike",
+        "Behric, Lejs",
+        "Baumann, Anton",
+        "Bagatella, Marco",
+        "Marta, Daniel",
+        "Hakimi, Ido",
+        "Shenfeld, Idan",
+        "Kleine Buening, Thomas",
+        "Guestrin, Carlos",
+        "Krause, Andreas"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2601.20802",
+      "url": "https://arxiv.org/abs/2601.20802",
+      "raw_bibtex": "@misc{hubotter2026sdpo,\n  title         = {Reinforcement Learning via Self-Distillation},\n  author        = {H{\\\"u}botter, Jonas and L{\\\"u}beck, Frederike and Behric, Lejs and Baumann, Anton and Bagatella, Marco and Marta, Daniel and Hakimi, Ido and Shenfeld, Idan and Kleine Buening, Thomas and Guestrin, Carlos and Krause, Andreas},\n  year          = {2026},\n  eprint        = {2601.20802},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2601.20802}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        }
+      ]
+    },
+    {
+      "key": "jiang2025importance",
+      "title": "Importance Weighting Can Help Large Language Models Self-Improve",
+      "authors": [
+        "Jiang, Chunyang",
+        "Chan, Chi-Min",
+        "Xue, Wei",
+        "Liu, Qifeng",
+        "Guo, Yike"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "doi": "10.1609/aaai.v39i23.34602",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{jiang2025importance,\n  title={Importance Weighting Can Help Large Language Models Self-Improve},\n  author={Jiang, Chunyang and Chan, Chi-Min and Xue, Wei and Liu, Qifeng and Guo, Yike},\n  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},\n  volume={39},\n  pages={24257--24265},\n  year={2025},\n  doi={10.1609/aaai.v39i23.34602}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "jiang2025selfincorrect",
+      "title": "SELF-[IN]CORRECT: LLMs Struggle with Discriminating Self-Generated Responses",
+      "authors": [
+        "Jiang, Dongwei",
+        "Zhang, Jingyu",
+        "Weller, Orion",
+        "Weir, Nathaniel",
+        "Van Durme, Benjamin",
+        "Khashabi, Daniel"
+      ],
+      "year": 2025,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "doi": "10.1609/aaai.v39i23.34603",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{jiang2025selfincorrect,\n  title={SELF-[IN]CORRECT: LLMs Struggle with Discriminating Self-Generated Responses},\n  author={Jiang, Dongwei and Zhang, Jingyu and Weller, Orion and Weir, Nathaniel and Van Durme, Benjamin and Khashabi, Daniel},\n  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},\n  volume={39},\n  pages={24266--24275},\n  year={2025},\n  doi={10.1609/aaai.v39i23.34603}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "jimenez2024swebench",
+      "title": "SWE-bench : Can Language Models Resolve Real-World GitHub Issues?",
+      "authors": [
+        "Jimenez, Carlos E.",
+        "Yang, John",
+        "Wettig, Alexander",
+        "Yao, Shunyu",
+        "Pei, Kexin",
+        "Press, Ofir",
+        "Narasimhan, Karthik"
+      ],
+      "year": 2024,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2310.06770",
+      "raw_bibtex": "@inproceedings{jimenez2024swebench,\n  title     = {{SWE-bench}: Can Language Models Resolve Real-World GitHub Issues?},\n  author    = {Jimenez, Carlos E. and Yang, John and Wettig, Alexander and Yao, Shunyu and Pei, Kexin and Press, Ofir and Narasimhan, Karthik},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2310.06770}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "jin2025searchr1",
+      "title": "Search-R1 : Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning",
+      "authors": [
+        "Jin, Bowen",
+        "Zeng, Hansi",
+        "Yue, Zhenrui",
+        "Wang, Dong",
+        "Zamani, Hamed",
+        "Han, Jiawei"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2503.09516",
+      "url": "https://arxiv.org/abs/2503.09516",
+      "raw_bibtex": "@misc{jin2025searchr1,\n  title         = {{Search-R1}: Training {LLMs} to Reason and Leverage Search Engines with Reinforcement Learning},\n  author        = {Jin, Bowen and Zeng, Hansi and Yue, Zhenrui and Wang, Dong and Zamani, Hamed and Han, Jiawei},\n  year          = {2025},\n  eprint        = {2503.09516},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.CL},\n  url           = {https://arxiv.org/abs/2503.09516}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "joshi2017triviaqa",
+      "title": "TriviaQA : A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension",
+      "authors": [
+        "Joshi, Mandar",
+        "Choi, Eunsol",
+        "Weld, Daniel",
+        "Zettlemoyer, Luke"
+      ],
+      "year": 2017,
+      "venue": "Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics",
+      "doi": "10.18653/v1/P17-1147",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/P17-1147/",
+      "raw_bibtex": "@inproceedings{joshi2017triviaqa,\n  title     = {{TriviaQA}: A Large Scale Distantly Supervised Challenge Dataset for Reading Comprehension},\n  author    = {Joshi, Mandar and Choi, Eunsol and Weld, Daniel and Zettlemoyer, Luke},\n  booktitle = {Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics},\n  pages     = {1601--1611},\n  year      = {2017},\n  doi       = {10.18653/v1/P17-1147},\n  url       = {https://aclanthology.org/P17-1147/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "kim2016sequence",
+      "title": "Sequence-Level Knowledge Distillation",
+      "authors": [
+        "Kim, Yoon",
+        "Rush, Alexander M."
+      ],
+      "year": 2016,
+      "venue": "Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "10.18653/v1/D16-1139",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/D16-1139",
+      "raw_bibtex": "@inproceedings{kim2016sequence,\n  title     = {Sequence-Level Knowledge Distillation},\n  author    = {Kim, Yoon and Rush, Alexander M.},\n  booktitle = {Proceedings of the 2016 Conference on Empirical Methods in Natural Language Processing},\n  pages     = {1317--1327},\n  year      = {2016},\n  doi       = {10.18653/v1/D16-1139},\n  url       = {https://aclanthology.org/D16-1139}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "ko2026reopold",
+      "title": "Scaling Reasoning Efficiently via Relaxed On-Policy Distillation",
+      "authors": [
+        "Ko, Jongwoo",
+        "Abdali, Sara",
+        "Kim, Young Jin",
+        "Chen, Tianyi",
+        "Cameron, Pashmina"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2603.11137",
+      "url": "https://arxiv.org/abs/2603.11137",
+      "raw_bibtex": "@misc{ko2026reopold,\n  title         = {Scaling Reasoning Efficiently via Relaxed On-Policy Distillation},\n  author        = {Ko, Jongwoo and Abdali, Sara and Kim, Young Jin and Chen, Tianyi and Cameron, Pashmina},\n  year          = {2026},\n  eprint        = {2603.11137},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2603.11137}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        }
+      ]
+    },
+    {
+      "key": "koh2024visualwebarena",
+      "title": "VisualWebArena: Evaluating Multimodal Agents on Realistic Visual Web Tasks",
+      "authors": [
+        "Koh, Jing Yu",
+        "Lo, Robert",
+        "Jang, Lawrence",
+        "Duvvur, Vikram",
+        "Lim, Ming Chong",
+        "Huang, Po-Yu",
+        "Neubig, Graham",
+        "Zhou, Shuyan",
+        "Salakhutdinov, Ruslan",
+        "Fried, Daniel"
+      ],
+      "year": 2024,
+      "venue": "arXiv preprint arXiv:2401.13649",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{koh2024visualwebarena,\n  title={VisualWebArena: Evaluating Multimodal Agents on Realistic Visual Web Tasks},\n  author={Koh, Jing Yu and Lo, Robert and Jang, Lawrence and Duvvur, Vikram and Lim, Ming Chong and Huang, Po-Yu and Neubig, Graham and Zhou, Shuyan and Salakhutdinov, Ruslan and Fried, Daniel},\n  journal={arXiv preprint arXiv:2401.13649},\n  year={2024}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "kumar2025score",
+      "title": "Training Language Models to Self-Correct via Reinforcement Learning",
+      "authors": [
+        "Kumar, Aviral",
+        "Zhuang, Vincent",
+        "Agarwal, Rishabh",
+        "Su, Yi",
+        "Co-Reyes, JD",
+        "Singh, Avi",
+        "Baumli, Kate",
+        "Iqbal, Shariq",
+        "Bishop, Colton",
+        "Roelofs, Rebecca",
+        "Zhang, Lei",
+        "McKinney, Kay",
+        "Shrivastava, Disha",
+        "Paduraru, Cosmin",
+        "Tucker, George",
+        "Precup, Doina",
+        "Behbahani, Feryal",
+        "Faust, Aleksandra"
+      ],
+      "year": 2025,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://proceedings.iclr.cc/paper_files/paper/2025/hash/871ac99fdc5282d0301934d23945ebaa-Abstract-Conference.html",
+      "raw_bibtex": "@inproceedings{kumar2025score,\n  title={Training Language Models to Self-Correct via Reinforcement Learning},\n  author={Kumar, Aviral and Zhuang, Vincent and Agarwal, Rishabh and Su, Yi and Co-Reyes, JD and Singh, Avi and Baumli, Kate and Iqbal, Shariq and Bishop, Colton and Roelofs, Rebecca and Zhang, Lei and McKinney, Kay and Shrivastava, Disha and Paduraru, Cosmin and Tucker, George and Precup, Doina and Behbahani, Feryal and Faust, Aleksandra},\n  booktitle={International Conference on Learning Representations},\n  year={2025},\n  url={https://proceedings.iclr.cc/paper_files/paper/2025/hash/871ac99fdc5282d0301934d23945ebaa-Abstract-Conference.html}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "kwiatkowski2019natural",
+      "title": "Natural Questions: A Benchmark for Question Answering Research",
+      "authors": [
+        "Kwiatkowski, Tom",
+        "Palomaki, Jennimaria",
+        "Redfield, Olivia",
+        "Collins, Michael",
+        "Parikh, Ankur",
+        "Alberti, Chris",
+        "Epstein, Danielle",
+        "Polosukhin, Illia",
+        "Devlin, Jacob",
+        "Lee, Kenton",
+        "Toutanova, Kristina",
+        "Jones, Llion",
+        "Kelcey, Matthew",
+        "Chang, Ming-Wei",
+        "Dai, Andrew M.",
+        "Uszkoreit, Jakob",
+        "Le, Quoc",
+        "Petrov, Slav"
+      ],
+      "year": 2019,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "doi": "10.1162/tacl_a_00276",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/Q19-1026/",
+      "raw_bibtex": "@article{kwiatkowski2019natural,\n  title     = {Natural Questions: A Benchmark for Question Answering Research},\n  author    = {Kwiatkowski, Tom and Palomaki, Jennimaria and Redfield, Olivia and Collins, Michael and Parikh, Ankur and Alberti, Chris and Epstein, Danielle and Polosukhin, Illia and Devlin, Jacob and Lee, Kenton and Toutanova, Kristina and Jones, Llion and Kelcey, Matthew and Chang, Ming-Wei and Dai, Andrew M. and Uszkoreit, Jakob and Le, Quoc and Petrov, Slav},\n  journal   = {Transactions of the Association for Computational Linguistics},\n  volume    = {7},\n  pages     = {452--466},\n  year      = {2019},\n  doi       = {10.1162/tacl_a_00276},\n  url       = {https://aclanthology.org/Q19-1026/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "li2026longhorizonterminal",
+      "title": "Long-Horizon-Terminal-Bench: Testing the Limits of Agents on Long-Horizon Terminal Tasks with Dense Reward-Based Grading",
+      "authors": [
+        "Zongxia Li",
+        "Zhongzhi Li",
+        "Yucheng Shi",
+        "Ruhan Wang",
+        "Junyao Yang",
+        "Zhichao Liu",
+        "Xiyang Wu",
+        "Anhao Li",
+        "Yue Yu",
+        "Ninghao Liu",
+        "Lichao Sun",
+        "Haotao Mi",
+        "LeoweiLiang"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2607.08964",
+      "url": "https://arxiv.org/abs/2607.08964",
+      "raw_bibtex": "@misc{li2026longhorizonterminal,\n      title={Long-Horizon-Terminal-Bench: Testing the Limits of Agents on Long-Horizon Terminal Tasks with Dense Reward-Based Grading}, \n      author={Zongxia Li and Zhongzhi Li and Yucheng Shi and Ruhan Wang and Junyao Yang and Zhichao Liu and Xiyang Wu and Anhao Li and Yue Yu and Ninghao Liu and Lichao Sun and Haotao Mi and LeoweiLiang},\n      year={2026},\n      eprint={2607.08964},\n      archivePrefix={arXiv},\n      primaryClass={cs.AI},\n      url={https://arxiv.org/abs/2607.08964}, \n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "lightman2024lets",
+      "title": "Let's Verify Step by Step",
+      "authors": [
+        "Lightman, Hunter",
+        "Kosaraju, Vineet",
+        "Burda, Yura",
+        "Edwards, Harri",
+        "Baker, Bowen",
+        "Lee, Teddy",
+        "Leike, Jan",
+        "Schulman, John",
+        "Sutskever, Ilya",
+        "Cobbe, Karl"
+      ],
+      "year": 2024,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2305.20050",
+      "raw_bibtex": "@inproceedings{lightman2024lets,\n  title     = {Let's Verify Step by Step},\n  author    = {Lightman, Hunter and Kosaraju, Vineet and Burda, Yura and Edwards, Harri and Baker, Bowen and Lee, Teddy and Leike, Jan and Schulman, John and Sutskever, Ilya and Cobbe, Karl},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2305.20050}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "liu2023agentbench",
+      "title": "AgentBench: Evaluating LLMs as Agents",
+      "authors": [
+        "Liu, Xiao",
+        "Yu, Hao",
+        "Zhang, Hanchen",
+        "Xu, Yifan",
+        "Lei, Xuanyu",
+        "Lai, Hanyu",
+        "Gu, Yu",
+        "Ding, Hangliang",
+        "Men, Kaiwen",
+        "Yang, Kejuan",
+        "Zhang, Shudan",
+        "Deng, Xiang",
+        "Zeng, Aohan",
+        "Du, Zhengxiao",
+        "Zhang, Chenhui",
+        "Shen, Sheng",
+        "Zhang, Tianjun",
+        "Su, Yu",
+        "Sun, Huan",
+        "Huang, Minlie",
+        "Dong, Yuxiao",
+        "Tang, Jie"
+      ],
+      "year": 2023,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2308.03688",
+      "url": "https://arxiv.org/abs/2308.03688",
+      "raw_bibtex": "@misc{liu2023agentbench,\n  title         = {AgentBench: Evaluating {LLMs} as Agents},\n  author        = {Liu, Xiao and Yu, Hao and Zhang, Hanchen and Xu, Yifan and Lei, Xuanyu and Lai, Hanyu and Gu, Yu and Ding, Hangliang and Men, Kaiwen and Yang, Kejuan and Zhang, Shudan and Deng, Xiang and Zeng, Aohan and Du, Zhengxiao and Zhang, Chenhui and Shen, Sheng and Zhang, Tianjun and Su, Yu and Sun, Huan and Huang, Minlie and Dong, Yuxiao and Tang, Jie},\n  year          = {2023},\n  eprint        = {2308.03688},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.CL},\n  url           = {https://arxiv.org/abs/2308.03688}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "lu2026sdar",
+      "title": "Self-Distilled Agentic Reinforcement Learning",
+      "authors": [
+        "Lu, Zhengxi",
+        "Yao, Zhiyuan",
+        "Han, Zhuowen",
+        "Wang, Zi-Han",
+        "Wu, Jinyang",
+        "Gu, Qi",
+        "Cai, Xunliang",
+        "Lu, Weiming",
+        "Xiao, Jun",
+        "Zhuang, Yueting",
+        "Shen, Yongliang"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2605.15155",
+      "url": "https://arxiv.org/abs/2605.15155",
+      "raw_bibtex": "@misc{lu2026sdar,\n  title         = {Self-Distilled Agentic Reinforcement Learning},\n  author        = {Lu, Zhengxi and Yao, Zhiyuan and Han, Zhuowen and Wang, Zi-Han and Wu, Jinyang and Gu, Qi and Cai, Xunliang and Lu, Weiming and Xiao, Jun and Zhuang, Yueting and Shen, Yongliang},\n  year          = {2026},\n  eprint        = {2605.15155},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2605.15155}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        },
+        {
+          "section_id": "sec-self-evolving-on-policy-distillation",
+          "text": "The second stage performs agentic RL with an additional token-level OPD signal. At the start of each update, [Seed]{.smallcaps} freezes the current policy as $\\pi_{\\theta_{\\mathrm{old}}}$. This snapshot collects trajectories and also parameterizes the analyzer that extracts their hindsight skills."
+        },
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare [Seed]{.smallcaps} against three categories of baselines: prompting-only methods, outcome-based reinforcement learning methods, and self-distillation or skill-distillation methods. Unless a method is marked with an asterisk, evaluation is conducted using only the standard task prompt and"
+        },
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "lu2026skill0",
+      "title": "Skill0: In-context agentic reinforcement learning for skill internalization",
+      "authors": [
+        "Lu, Zhengxi",
+        "Yao, Zhiyuan",
+        "Wu, Jinyang",
+        "Han, Chengcheng",
+        "Gu, Qi",
+        "Cai, Xunliang",
+        "Lu, Weiming",
+        "Xiao, Jun",
+        "Zhuang, Yueting",
+        "Shen, Yongliang"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2604.02268",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{lu2026skill0,\n  title={Skill0: In-context agentic reinforcement learning for skill internalization},\n  author={Lu, Zhengxi and Yao, Zhiyuan and Wu, Jinyang and Han, Chengcheng and Gu, Qi and Cai, Xunliang and Lu, Weiming and Xiao, Jun and Zhuang, Yueting and Shen, Yongliang},\n  journal={arXiv preprint arXiv:2604.02268},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "luo2025agentlightning",
+      "title": "Agent Lightning: Train ANY AI Agents with Reinforcement Learning",
+      "authors": [
+        "Luo, Xufang",
+        "Zhang, Yuge",
+        "He, Zhiyuan",
+        "Wang, Zilong",
+        "Zhao, Siyun",
+        "Li, Dongsheng",
+        "Qiu, Luna K.",
+        "Yang, Yuqing"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2508.03680",
+      "url": "https://arxiv.org/abs/2508.03680",
+      "raw_bibtex": "@misc{luo2025agentlightning,\n  title         = {Agent Lightning: Train {ANY} {AI} Agents with Reinforcement Learning},\n  author        = {Luo, Xufang and Zhang, Yuge and He, Zhiyuan and Wang, Zilong and Zhao, Siyun and Li, Dongsheng and Qiu, Luna K. and Yang, Yuqing},\n  year          = {2025},\n  eprint        = {2508.03680},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2508.03680}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "luo2025large",
+      "title": "Large language model agent: A survey on methodology, applications and challenges",
+      "authors": [
+        "Luo, Junyu",
+        "Zhang, Weizhi",
+        "Yuan, Ye",
+        "Zhao, Yusheng",
+        "Yang, Junwei",
+        "Gu, Yiyang",
+        "Wu, Bohan",
+        "Chen, Binqi",
+        "Qiao, Ziyue",
+        "Long, Qingqing",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2503.21460",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{luo2025large,\n  title={Large language model agent: A survey on methodology, applications and challenges},\n  author={Luo, Junyu and Zhang, Weizhi and Yuan, Ye and Zhao, Yusheng and Yang, Junwei and Gu, Yiyang and Wu, Bohan and Chen, Binqi and Qiao, Ziyue and Long, Qingqing and others},\n  journal={arXiv preprint arXiv:2503.21460},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "madaan2023selfrefine",
+      "title": "Self-Refine: Iterative Refinement with Self-Feedback",
+      "authors": [
+        "Madaan, Aman",
+        "Tandon, Niket",
+        "Gupta, Prakhar",
+        "Hallinan, Skyler",
+        "Gao, Luyu",
+        "Wiegreffe, Sarah",
+        "Alon, Uri",
+        "Dziri, Nouha",
+        "Prabhumoye, Shrimai",
+        "Yang, Yiming",
+        "Gupta, Shashank",
+        "Majumder, Bodhisattwa Prasad",
+        "Hermann, Katherine",
+        "Welleck, Sean",
+        "Yazdanbakhsh, Amir",
+        "Clark, Peter"
+      ],
+      "year": 2023,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2303.17651",
+      "raw_bibtex": "@inproceedings{madaan2023selfrefine,\n  title     = {Self-Refine: Iterative Refinement with Self-Feedback},\n  author    = {Madaan, Aman and Tandon, Niket and Gupta, Prakhar and Hallinan, Skyler and Gao, Luyu and Wiegreffe, Sarah and Alon, Uri and Dziri, Nouha and Prabhumoye, Shrimai and Yang, Yiming and Gupta, Shashank and Majumder, Bodhisattwa Prasad and Hermann, Katherine and Welleck, Sean and Yazdanbakhsh, Amir and Clark, Peter},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2023},\n  url       = {https://arxiv.org/abs/2303.17651}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "mahbub2026selfpreference",
+      "title": "Mitigating Self-Preference by Authorship Obfuscation",
+      "authors": [
+        "Mahbub, Taslim",
+        "Feng, Shi"
+      ],
+      "year": 2026,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "doi": "10.1609/aaai.v40i44.41105",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{mahbub2026selfpreference,\n  title={Mitigating Self-Preference by Authorship Obfuscation},\n  author={Mahbub, Taslim and Feng, Shi},\n  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},\n  volume={40},\n  pages={37701--37708},\n  year={2026},\n  doi={10.1609/aaai.v40i44.41105}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "mallen2023popqa",
+      "title": "When Not to Trust Language Models: Investigating Effectiveness of Parametric and Non-Parametric Memories",
+      "authors": [
+        "Mallen, Alex",
+        "Asai, Akari",
+        "Zhong, Victor",
+        "Das, Rajarshi",
+        "Khashabi, Daniel",
+        "Hajishirzi, Hannaneh"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics",
+      "doi": "10.18653/v1/2023.acl-long.546",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2023.acl-long.546/",
+      "raw_bibtex": "@inproceedings{mallen2023popqa,\n  title     = {When Not to Trust Language Models: Investigating Effectiveness of Parametric and Non-Parametric Memories},\n  author    = {Mallen, Alex and Asai, Akari and Zhong, Victor and Das, Rajarshi and Khashabi, Daniel and Hajishirzi, Hannaneh},\n  booktitle = {Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics},\n  pages     = {9802--9822},\n  year      = {2023},\n  doi       = {10.18653/v1/2023.acl-long.546},\n  url       = {https://aclanthology.org/2023.acl-long.546/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "ouyang2022training",
+      "title": "Training Language Models to Follow Instructions with Human Feedback",
+      "authors": [
+        "Ouyang, Long",
+        "Wu, Jeff",
+        "Jiang, Xu",
+        "Almeida, Diogo",
+        "Wainwright, Carroll L.",
+        "Mishkin, Pamela",
+        "Zhang, Chong",
+        "Agarwal, Sandhini",
+        "Slama, Katarina",
+        "Ray, Alex",
+        "Schulman, John",
+        "Hilton, Jacob",
+        "Kelton, Fraser",
+        "Miller, Luke",
+        "Simens, Maddie",
+        "Askell, Amanda",
+        "Welinder, Peter",
+        "Christiano, Paul",
+        "Leike, Jan",
+        "Lowe, Ryan"
+      ],
+      "year": 2022,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2203.02155",
+      "raw_bibtex": "@inproceedings{ouyang2022training,\n  title     = {Training Language Models to Follow Instructions with Human Feedback},\n  author    = {Ouyang, Long and Wu, Jeff and Jiang, Xu and Almeida, Diogo and Wainwright, Carroll L. and Mishkin, Pamela and Zhang, Chong and Agarwal, Sandhini and Slama, Katarina and Ray, Alex and Schulman, John and Hilton, Jacob and Kelton, Fraser and Miller, Luke and Simens, Maddie and Askell, Amanda and Welinder, Peter and Christiano, Paul and Leike, Jan and Lowe, Ryan},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2022},\n  url       = {https://arxiv.org/abs/2203.02155}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "patil2024gorilla",
+      "title": "Gorilla: Large Language Model Connected with Massive APIs",
+      "authors": [
+        "Patil, Shishir G.",
+        "Zhang, Tianjun",
+        "Wang, Xin",
+        "Gonzalez, Joseph E."
+      ],
+      "year": 2024,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2305.15334",
+      "raw_bibtex": "@inproceedings{patil2024gorilla,\n  title     = {Gorilla: Large Language Model Connected with Massive {APIs}},\n  author    = {Patil, Shishir G. and Zhang, Tianjun and Wang, Xin and Gonzalez, Joseph E.},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2305.15334}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "press2023measuring",
+      "title": "Measuring and Narrowing the Compositionality Gap in Language Models",
+      "authors": [
+        "Press, Ofir",
+        "Zhang, Muru",
+        "Min, Sewon",
+        "Schmidt, Ludwig",
+        "Smith, Noah",
+        "Lewis, Mike"
+      ],
+      "year": 2023,
+      "venue": "Findings of the Association for Computational Linguistics: EMNLP 2023",
+      "doi": "10.18653/v1/2023.findings-emnlp.378",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2023.findings-emnlp.378/",
+      "raw_bibtex": "@inproceedings{press2023measuring,\n  title     = {Measuring and Narrowing the Compositionality Gap in Language Models},\n  author    = {Press, Ofir and Zhang, Muru and Min, Sewon and Schmidt, Ludwig and Smith, Noah and Lewis, Mike},\n  booktitle = {Findings of the Association for Computational Linguistics: EMNLP 2023},\n  pages     = {5687--5711},\n  year      = {2023},\n  doi       = {10.18653/v1/2023.findings-emnlp.378},\n  url       = {https://aclanthology.org/2023.findings-emnlp.378/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "qi2026generalizationgap",
+      "title": "On the Generalization Gap in Self-Evolving Language Model Reasoning",
+      "authors": [
+        "Qi, Zhenting",
+        "Baby, Susanna Maria",
+        "Baby, Stefanie Anna",
+        "Yuan, Kan",
+        "Tomkins, Andrew",
+        "Vu, Tu",
+        "Juan, Da-Cheng",
+        "Rashtchian, Cyrus"
+      ],
+      "year": 2026,
+      "venue": "Forty-third International Conference on Machine Learning",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://openreview.net/forum?id=mnUidYi5qO",
+      "raw_bibtex": "@inproceedings{qi2026generalizationgap,\n  title={On the Generalization Gap in Self-Evolving Language Model Reasoning},\n  author={Qi, Zhenting and Baby, Susanna Maria and Baby, Stefanie Anna and Yuan, Kan and Tomkins, Andrew and Vu, Tu and Juan, Da-Cheng and Rashtchian, Cyrus},\n  booktitle={Forty-third International Conference on Machine Learning},\n  year={2026},\n  url={https://openreview.net/forum?id=mnUidYi5qO}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "ross2011reduction",
+      "title": "A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning",
+      "authors": [
+        "Ross, St \\'e phane",
+        "Gordon, Geoffrey J.",
+        "Bagnell, J. Andrew"
+      ],
+      "year": 2011,
+      "venue": "Proceedings of the Fourteenth International Conference on Artificial Intelligence and Statistics",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://proceedings.mlr.press/v15/ross11a.html",
+      "raw_bibtex": "@inproceedings{ross2011reduction,\n  title     = {A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning},\n  author    = {Ross, St{\\'e}phane and Gordon, Geoffrey J. and Bagnell, J. Andrew},\n  booktitle = {Proceedings of the Fourteenth International Conference on Artificial Intelligence and Statistics},\n  pages     = {627--635},\n  year      = {2011},\n  url       = {https://proceedings.mlr.press/v15/ross11a.html}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "schick2023toolformer",
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "authors": [
+        "Schick, Timo",
+        "Dwivedi-Yu, Jane",
+        "Dess \\`i , Roberto",
+        "Raileanu, Roberta",
+        "Lomeli, Maria",
+        "Zettlemoyer, Luke",
+        "Cancedda, Nicola",
+        "Scialom, Thomas"
+      ],
+      "year": 2023,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2302.04761",
+      "raw_bibtex": "@inproceedings{schick2023toolformer,\n  title     = {Toolformer: Language Models Can Teach Themselves to Use Tools},\n  author    = {Schick, Timo and Dwivedi-Yu, Jane and Dess{\\`i}, Roberto and Raileanu, Roberta and Lomeli, Maria and Zettlemoyer, Luke and Cancedda, Nicola and Scialom, Thomas},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2023},\n  url       = {https://arxiv.org/abs/2302.04761}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "schulman2016gae",
+      "title": "High-Dimensional Continuous Control Using Generalized Advantage Estimation",
+      "authors": [
+        "Schulman, John",
+        "Moritz, Philipp",
+        "Levine, Sergey",
+        "Jordan, Michael I.",
+        "Abbeel, Pieter"
+      ],
+      "year": 2016,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/1506.02438",
+      "raw_bibtex": "@inproceedings{schulman2016gae,\n  title     = {High-Dimensional Continuous Control Using Generalized Advantage Estimation},\n  author    = {Schulman, John and Moritz, Philipp and Levine, Sergey and Jordan, Michael I. and Abbeel, Pieter},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2016},\n  url       = {https://arxiv.org/abs/1506.02438}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "schulman2017ppo",
+      "title": "Proximal Policy Optimization Algorithms",
+      "authors": [
+        "Schulman, John",
+        "Wolski, Filip",
+        "Dhariwal, Prafulla",
+        "Radford, Alec",
+        "Klimov, Oleg"
+      ],
+      "year": 2017,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "1707.06347",
+      "url": "https://arxiv.org/abs/1707.06347",
+      "raw_bibtex": "@misc{schulman2017ppo,\n  title         = {Proximal Policy Optimization Algorithms},\n  author        = {Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},\n  year          = {2017},\n  eprint        = {1707.06347},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/1707.06347}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "shao2024deepseekmath",
+      "title": "DeepSeekMath : Pushing the Limits of Mathematical Reasoning in Open Language Models",
+      "authors": [
+        "Shao, Zhihong",
+        "Wang, Peiyi",
+        "Zhu, Qihao",
+        "Xu, Runxin",
+        "Song, Junxiao",
+        "Bi, Xiao",
+        "Zhang, Haowei",
+        "Zhang, Mingchuan",
+        "Li, Y. K.",
+        "Wu, Y.",
+        "Guo, Daya"
+      ],
+      "year": 2024,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2402.03300",
+      "url": "https://arxiv.org/abs/2402.03300",
+      "raw_bibtex": "@misc{shao2024deepseekmath,\n  title         = {{DeepSeekMath}: Pushing the Limits of Mathematical Reasoning in Open Language Models},\n  author        = {Shao, Zhihong and Wang, Peiyi and Zhu, Qihao and Xu, Runxin and Song, Junxiao and Bi, Xiao and Zhang, Haowei and Zhang, Mingchuan and Li, Y. K. and Wu, Y. and Guo, Daya},\n  year          = {2024},\n  eprint        = {2402.03300},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.CL},\n  url           = {https://arxiv.org/abs/2402.03300}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        },
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare [Seed]{.smallcaps} against three categories of baselines: prompting-only methods, outcome-based reinforcement learning methods, and self-distillation or skill-distillation methods. Unless a method is marked with an asterisk, evaluation is conducted using only the standard task prompt and"
+        }
+      ]
+    },
+    {
+      "key": "shen2026double",
+      "title": "Double: Breaking the Acceleration Limit via Double Retrieval Speculative Parallelism",
+      "authors": [
+        "Shen, Yuhao",
+        "Liu, Tianyu",
+        "Shen, Junyi",
+        "Wu, Jinyang",
+        "Kong, Quan",
+        "Li, Huan",
+        "Wang, Cong"
+      ],
+      "year": 2026,
+      "venue": "Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{shen2026double,\n    title = \"Double: Breaking the Acceleration Limit via Double Retrieval Speculative Parallelism\",\n    author = \"Shen, Yuhao  and\n      Liu, Tianyu  and\n      Shen, Junyi  and\n      Wu, Jinyang  and\n      Kong, Quan  and\n      Li, Huan  and\n      Wang, Cong\",\n    booktitle = \"Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)\",\n    month = jul,\n    year = \"2026\",\n    address = \"San Diego, California, United States\",\n    publisher = \"Association for Computational Linguistics\",\n    pages = \"19242--19263\",\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "shinn2023reflexion",
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "authors": [
+        "Shinn, Noah",
+        "Cassano, Federico",
+        "Berman, Edward",
+        "Gopinath, Ashwin",
+        "Narasimhan, Karthik",
+        "Yao, Shunyu"
+      ],
+      "year": 2023,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2303.11366",
+      "raw_bibtex": "@inproceedings{shinn2023reflexion,\n  title     = {Reflexion: Language Agents with Verbal Reinforcement Learning},\n  author    = {Shinn, Noah and Cassano, Federico and Berman, Edward and Gopinath, Ashwin and Narasimhan, Karthik and Yao, Shunyu},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2023},\n  url       = {https://arxiv.org/abs/2303.11366}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "shridhar2021alfworld",
+      "title": "ALFWorld : Aligning Text and Embodied Environments for Interactive Learning",
+      "authors": [
+        "Shridhar, Mohit",
+        "Yuan, Xingdi",
+        "C \\ o t \\'e , Marc-Alexandre",
+        "Bisk, Yonatan",
+        "Trischler, Adam",
+        "Hausknecht, Matthew"
+      ],
+      "year": 2021,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2010.03768",
+      "raw_bibtex": "@inproceedings{shridhar2021alfworld,\n  title     = {{ALFWorld}: Aligning Text and Embodied Environments for Interactive Learning},\n  author    = {Shridhar, Mohit and Yuan, Xingdi and C{\\^o}t{\\'e}, Marc-Alexandre and Bisk, Yonatan and Trischler, Adam and Hausknecht, Matthew},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2021},\n  url       = {https://arxiv.org/abs/2010.03768}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "trivedi2022musique",
+      "title": "MuSiQue : Multihop Questions via Single-hop Question Composition",
+      "authors": [
+        "Trivedi, Harsh",
+        "Balasubramanian, Niranjan",
+        "Khot, Tushar",
+        "Sabharwal, Ashish"
+      ],
+      "year": 2022,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "doi": "10.1162/tacl_a_00475",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2022.tacl-1.31/",
+      "raw_bibtex": "@article{trivedi2022musique,\n  title     = {{MuSiQue}: Multihop Questions via Single-hop Question Composition},\n  author    = {Trivedi, Harsh and Balasubramanian, Niranjan and Khot, Tushar and Sabharwal, Ashish},\n  journal   = {Transactions of the Association for Computational Linguistics},\n  volume    = {10},\n  pages     = {539--554},\n  year      = {2022},\n  doi       = {10.1162/tacl_a_00475},\n  url       = {https://aclanthology.org/2022.tacl-1.31/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "trivedi2024appworld",
+      "title": "AppWorld : A Controllable World of Apps and People for Benchmarking Interactive Coding Agents",
+      "authors": [
+        "Trivedi, Harsh",
+        "Khot, Tushar",
+        "Hartmann, Mareike",
+        "Manku, Ruskin Raj",
+        "Dong, Vinty",
+        "Li, Edward",
+        "Gupta, Shashank",
+        "Sabharwal, Ashish",
+        "Balasubramanian, Niranjan"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2407.18901",
+      "raw_bibtex": "@inproceedings{trivedi2024appworld,\n  title     = {{AppWorld}: A Controllable World of Apps and People for Benchmarking Interactive Coding Agents},\n  author    = {Trivedi, Harsh and Khot, Tushar and Hartmann, Mareike and Manku, Ruskin Raj and Dong, Vinty and Li, Edward and Gupta, Shashank and Sabharwal, Ashish and Balasubramanian, Niranjan},\n  booktitle = {Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2407.18901}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "uesato2022solving",
+      "title": "Solving Math Word Problems with Process- and Outcome-Based Feedback",
+      "authors": [
+        "Uesato, Jonathan",
+        "Kushman, Nate",
+        "Kumar, Ramana",
+        "Song, Francis",
+        "Siegel, Noah",
+        "Wang, Lisa",
+        "Creswell, Antonia",
+        "Irving, Geoffrey",
+        "Higgins, Irina"
+      ],
+      "year": 2022,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2211.14275",
+      "url": "https://arxiv.org/abs/2211.14275",
+      "raw_bibtex": "@misc{uesato2022solving,\n  title         = {Solving Math Word Problems with Process- and Outcome-Based Feedback},\n  author        = {Uesato, Jonathan and Kushman, Nate and Kumar, Ramana and Song, Francis and Siegel, Noah and Wang, Lisa and Creswell, Antonia and Irving, Geoffrey and Higgins, Irina},\n  year          = {2022},\n  eprint        = {2211.14275},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2211.14275}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "wang2023voyager",
+      "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+      "authors": [
+        "Wang, Guanzhi",
+        "Xie, Yuqi",
+        "Jiang, Yunfan",
+        "Mandlekar, Ajay",
+        "Xiao, Chaowei",
+        "Zhu, Yuke",
+        "Fan, Linxi",
+        "Anandkumar, Anima"
+      ],
+      "year": 2023,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2305.16291",
+      "url": "https://arxiv.org/abs/2305.16291",
+      "raw_bibtex": "@misc{wang2023voyager,\n  title         = {Voyager: An Open-Ended Embodied Agent with Large Language Models},\n  author        = {Wang, Guanzhi and Xie, Yuqi and Jiang, Yunfan and Mandlekar, Ajay and Xiao, Chaowei and Zhu, Yuke and Fan, Linxi and Anandkumar, Anima},\n  year          = {2023},\n  eprint        = {2305.16291},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.AI},\n  url           = {https://arxiv.org/abs/2305.16291}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "wang2024surveyagents",
+      "title": "A Survey on Large Language Model based Autonomous Agents",
+      "authors": [
+        "Wang, Lei",
+        "Ma, Chen",
+        "Feng, Xueyang",
+        "Zhang, Zeyu",
+        "Yang, Hao",
+        "Zhang, Jingsen",
+        "Chen, Zhiyuan",
+        "Tang, Jiakai",
+        "Chen, Xu",
+        "Lin, Yankai",
+        "Zhao, Wayne Xin",
+        "Wei, Zhewei",
+        "Wen, Ji-Rong"
+      ],
+      "year": 2024,
+      "venue": "Frontiers of Computer Science",
+      "doi": "10.1007/s11704-024-40231-1",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{wang2024surveyagents,\n  title   = {A Survey on Large Language Model based Autonomous Agents},\n  author  = {Wang, Lei and Ma, Chen and Feng, Xueyang and Zhang, Zeyu and Yang, Hao and Zhang, Jingsen and Chen, Zhiyuan and Tang, Jiakai and Chen, Xu and Lin, Yankai and Zhao, Wayne Xin and Wei, Zhewei and Wen, Ji-Rong},\n  journal = {Frontiers of Computer Science},\n  year    = {2024},\n  doi     = {10.1007/s11704-024-40231-1}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "wang2025ragen",
+      "title": "RAGEN : Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning",
+      "authors": [
+        "Wang, Zihan",
+        "Wang, Kangrui",
+        "Wang, Qineng",
+        "Zhang, Pingyue",
+        "Li, Linjie",
+        "Yang, Zhengyuan",
+        "Jin, Xing",
+        "Yu, Kefan",
+        "Nguyen, Minh Nhat",
+        "Liu, Licheng",
+        "Gottlieb, Eli",
+        "Lu, Yiping",
+        "Cho, Kyunghyun",
+        "Wu, Jiajun",
+        "Fei-Fei, Li",
+        "Wang, Lijuan",
+        "Choi, Yejin",
+        "Li, Manling"
+      ],
+      "year": 2025,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2504.20073",
+      "url": "https://arxiv.org/abs/2504.20073",
+      "raw_bibtex": "@misc{wang2025ragen,\n  title         = {{RAGEN}: Understanding Self-Evolution in {LLM} Agents via Multi-Turn Reinforcement Learning},\n  author        = {Wang, Zihan and Wang, Kangrui and Wang, Qineng and Zhang, Pingyue and Li, Linjie and Yang, Zhengyuan and Jin, Xing and Yu, Kefan and Nguyen, Minh Nhat and Liu, Licheng and Gottlieb, Eli and Lu, Yiping and Cho, Kyunghyun and Wu, Jiajun and Fei-Fei, Li and Wang, Lijuan and Choi, Yejin and Li, Manling},\n  year          = {2025},\n  eprint        = {2504.20073},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2504.20073}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "wang2026skillsd",
+      "title": "Skill-SD : Skill-Conditioned Self-Distillation for Multi-turn LLM Agents",
+      "authors": [
+        "Wang, Hao",
+        "Wang, Guozhi",
+        "Xiao, Han",
+        "Zhou, Yufeng",
+        "Pan, Yue",
+        "Wang, Jichao",
+        "Xu, Ke",
+        "Wen, Yafei",
+        "Ruan, Xiaohu",
+        "Chen, Xiaoxin",
+        "Qi, Honggang"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2604.10674",
+      "url": "https://arxiv.org/abs/2604.10674",
+      "raw_bibtex": "@misc{wang2026skillsd,\n  title         = {{Skill-SD}: Skill-Conditioned Self-Distillation for Multi-turn {LLM} Agents},\n  author        = {Wang, Hao and Wang, Guozhi and Xiao, Han and Zhou, Yufeng and Pan, Yue and Wang, Jichao and Xu, Ke and Wen, Yafei and Ruan, Xiaohu and Chen, Xiaoxin and Qi, Honggang},\n  year          = {2026},\n  eprint        = {2604.10674},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2604.10674}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        },
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare [Seed]{.smallcaps} against three categories of baselines: prompting-only methods, outcome-based reinforcement learning methods, and self-distillation or skill-distillation methods. Unless a method is marked with an asterisk, evaluation is conducted using only the standard task prompt and"
+        }
+      ]
+    },
+    {
+      "key": "wu2024beyond",
+      "title": "Beyond examples: High-level automated reasoning paradigm in in-context learning via mcts",
+      "authors": [
+        "Wu, Jinyang",
+        "Feng, Mingkuan",
+        "Zhang, Shuai",
+        "Che, Feihu",
+        "Wen, Zengqi",
+        "Liao, Chonghua",
+        "Tao, Jianhua"
+      ],
+      "year": 2024,
+      "venue": "arXiv preprint arXiv:2411.18478",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{wu2024beyond,\n  title={Beyond examples: High-level automated reasoning paradigm in in-context learning via mcts},\n  author={Wu, Jinyang and Feng, Mingkuan and Zhang, Shuai and Che, Feihu and Wen, Zengqi and Liao, Chonghua and Tao, Jianhua},\n  journal={arXiv preprint arXiv:2411.18478},\n  year={2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "wu2026atlas",
+      "title": "ATLAS : Orchestrating Heterogeneous Models and Tools for Multi-Domain Complex Reasoning",
+      "authors": [
+        "Wu, Jinyang",
+        "Zhai, Guocheng",
+        "Jin, Ruihan",
+        "Yuan, Jiahao",
+        "Shen, Yuhao",
+        "Zhang, Shuai",
+        "Wen, Zhengqi",
+        "Tao, Jianhua"
+      ],
+      "year": 2026,
+      "venue": "Findings of the {A}ssociation for {C}omputational {L}inguistics: {ACL} 2026",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{wu2026atlas,\n    title = \"{ATLAS}: Orchestrating Heterogeneous Models and Tools for Multi-Domain Complex Reasoning\",\n    author = \"Wu, Jinyang  and\n      Zhai, Guocheng  and\n      Jin, Ruihan  and\n      Yuan, Jiahao  and\n      Shen, Yuhao  and\n      Zhang, Shuai  and\n      Wen, Zhengqi  and\n      Tao, Jianhua\",\n    booktitle = \"Findings of the {A}ssociation for {C}omputational {L}inguistics: {ACL} 2026\",\n    month = jul,\n    year = \"2026\",\n    address = \"San Diego, California, United States\",\n    publisher = \"Association for Computational Linguistics\",\n    pages = \"17503--17535\",\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "wu2026maestro",
+      "title": "Maestro: Reinforcement Learning to Orchestrate Hierarchical Model-Skill Ensembles",
+      "authors": [
+        "Wu, Jinyang",
+        "Zhai, Guocheng",
+        "Jin, Ruihan",
+        "Shen, Yuhao",
+        "Lu, Zhengxi",
+        "Zhang, Fan",
+        "Luo, Haoran",
+        "Lian, Zheng",
+        "Wen, Zhengqi",
+        "Tao, Jianhua"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2605.22177",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{wu2026maestro,\n  title={Maestro: Reinforcement Learning to Orchestrate Hierarchical Model-Skill Ensembles},\n  author={Wu, Jinyang and Zhai, Guocheng and Jin, Ruihan and Shen, Yuhao and Lu, Zhengxi and Zhang, Fan and Luo, Haoran and Lian, Zheng and Wen, Zhengqi and Tao, Jianhua},\n  journal={arXiv preprint arXiv:2605.22177},\n  year={2026}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "wu2026spark",
+      "title": "SPARK : Strategic Policy-Aware Exploration via Dynamic Branching for Long-Horizon Agentic Learning",
+      "authors": [
+        "Wu, Jinyang",
+        "Yang, Shuo",
+        "Shen, Yuhao",
+        "Zhang, Shuai",
+        "Wen, Zhengqi",
+        "Tao, Jianhua"
+      ],
+      "year": 2026,
+      "venue": "Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{wu2026spark,\n    title = \"{SPARK}: Strategic Policy-Aware Exploration via Dynamic Branching for Long-Horizon Agentic Learning\",\n    author = \"Wu, Jinyang  and\n      Yang, Shuo  and\n      Shen, Yuhao  and\n      Zhang, Shuai  and\n      Wen, Zhengqi  and\n      Tao, Jianhua\",\n    booktitle = \"Proceedings of the 64th Annual Meeting of the {A}ssociation for {C}omputational {L}inguistics (Volume 1: Long Papers)\",\n    month = jul,\n    year = \"2026\",\n    address = \"San Diego, California, United States\",\n    publisher = \"Association for Computational Linguistics\",\n    pages = \"23981--24004\",\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        },
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "xi2025rise",
+      "title": "The Rise and Potential of Large Language Model Based Agents: A Survey",
+      "authors": [
+        "Xi, Zhiheng",
+        "Chen, Wenxiang",
+        "Guo, Xin",
+        "He, Wei",
+        "Ding, Yiwen",
+        "Hong, Boyang",
+        "Zhang, Ming",
+        "Wang, Junzhe",
+        "Jin, Senjie",
+        "Zhou, Enyu",
+        "Zheng, Rui",
+        "Fan, Xiaoran",
+        "Wang, Xiao",
+        "Xiong, Limao",
+        "Zhou, Yuhao",
+        "Wang, Weiran",
+        "Jiang, Changhao",
+        "Zou, Yicheng",
+        "Liu, Xiangyang",
+        "Yin, Zhangyue",
+        "Dou, Shihan",
+        "Weng, Rongxiang",
+        "Cheng, Wensen",
+        "Zhang, Qi",
+        "Qin, Wenjuan",
+        "Zheng, Yongyan",
+        "Qiu, Xipeng",
+        "Huang, Xuanjing",
+        "Gui, Tao"
+      ],
+      "year": 2025,
+      "venue": "Science China Information Sciences",
+      "doi": "10.1007/s11432-024-4222-0",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{xi2025rise,\n  title   = {The Rise and Potential of Large Language Model Based Agents: A Survey},\n  author  = {Xi, Zhiheng and Chen, Wenxiang and Guo, Xin and He, Wei and Ding, Yiwen and Hong, Boyang and Zhang, Ming and Wang, Junzhe and Jin, Senjie and Zhou, Enyu and Zheng, Rui and Fan, Xiaoran and Wang, Xiao and Xiong, Limao and Zhou, Yuhao and Wang, Weiran and Jiang, Changhao and Zou, Yicheng and Liu, Xiangyang and Yin, Zhangyue and Dou, Shihan and Weng, Rongxiang and Cheng, Wensen and Zhang, Qi and Qin, Wenjuan and Zheng, Yongyan and Qiu, Xipeng and Huang, Xuanjing and Gui, Tao},\n  journal = {Science China Information Sciences},\n  year    = {2025},\n  doi     = {10.1007/s11432-024-4222-0}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "xu2026odysseyarena",
+      "title": "OdysseyArena: Benchmarking Large Language Models For Long-Horizon, Active and Inductive Interactions",
+      "authors": [
+        "Xu, Fangzhi",
+        "Yan, Hang",
+        "Sun, Qiushi",
+        "Wu, Jinyang",
+        "Huang, Zixian",
+        "Huang, Muye",
+        "Gong, Jingyang",
+        "Ding, Zichen",
+        "Cheng, Kanzhi",
+        "Wang, Yian",
+        "others"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2602.05843",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{xu2026odysseyarena,\n  title={OdysseyArena: Benchmarking Large Language Models For Long-Horizon, Active and Inductive Interactions},\n  author={Xu, Fangzhi and Yan, Hang and Sun, Qiushi and Wu, Jinyang and Huang, Zixian and Huang, Muye and Gong, Jingyang and Ding, Zichen and Cheng, Kanzhi and Wang, Yian and others},\n  journal={arXiv preprint arXiv:2602.05843},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        },
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "yang2018hotpotqa",
+      "title": "HotpotQA : A Dataset for Diverse, Explainable Multi-hop Question Answering",
+      "authors": [
+        "Yang, Zhilin",
+        "Qi, Peng",
+        "Zhang, Saizheng",
+        "Bengio, Yoshua",
+        "Cohen, William",
+        "Salakhutdinov, Ruslan",
+        "Manning, Christopher D."
+      ],
+      "year": 2018,
+      "venue": "Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing",
+      "doi": "10.18653/v1/D18-1259",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/D18-1259/",
+      "raw_bibtex": "@inproceedings{yang2018hotpotqa,\n  title     = {{HotpotQA}: A Dataset for Diverse, Explainable Multi-hop Question Answering},\n  author    = {Yang, Zhilin and Qi, Peng and Zhang, Saizheng and Bengio, Yoshua and Cohen, William and Salakhutdinov, Ruslan and Manning, Christopher D.},\n  booktitle = {Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing},\n  pages     = {2369--2380},\n  year      = {2018},\n  doi       = {10.18653/v1/D18-1259},\n  url       = {https://aclanthology.org/D18-1259/}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "yang2024qwen25",
+      "title": "Qwen2.5 Technical Report",
+      "authors": [
+        "Yang, An",
+        "Yang, Baosong",
+        "Zhang, Beichen",
+        "Hui, Binyuan",
+        "Zheng, Bo",
+        "Yu, Bowen",
+        "Li, Chengyuan",
+        "Liu, Dayiheng",
+        "Huang, Fei",
+        "Wei, Haoran",
+        "Lin, Huan",
+        "Yang, Jian",
+        "Tu, Jianhong",
+        "Zhang, Jianwei",
+        "Yang, Jianxin",
+        "Yang, Jiaxi",
+        "Zhou, Jingren",
+        "Lin, Junyang",
+        "Dang, Kai",
+        "Lu, Keming",
+        "Bao, Keqin",
+        "Yang, Kexin",
+        "Yu, Le",
+        "Li, Mei",
+        "Xue, Mingfeng",
+        "Zhang, Pei",
+        "Zhu, Qin",
+        "Men, Rui",
+        "Lin, Runji",
+        "Li, Tianhao",
+        "Tang, Tianyi",
+        "Xia, Tingyu",
+        "Ren, Xingzhang",
+        "Ren, Xuancheng",
+        "Fan, Yang",
+        "Su, Yang",
+        "Zhang, Yichang",
+        "Wan, Yu",
+        "Liu, Yuqiong",
+        "Cui, Zeyu",
+        "Zhang, Zhenru",
+        "Qiu, Zihan"
+      ],
+      "year": 2024,
+      "venue": "arXiv preprint arXiv:2412.15115",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{yang2024qwen25,\n  title   = {Qwen2.5 Technical Report},\n  author  = {Yang, An and Yang, Baosong and Zhang, Beichen and Hui, Binyuan\n             and Zheng, Bo and Yu, Bowen and Li, Chengyuan and Liu, Dayiheng\n             and Huang, Fei and Wei, Haoran and Lin, Huan and Yang, Jian\n             and Tu, Jianhong and Zhang, Jianwei and Yang, Jianxin\n             and Yang, Jiaxi and Zhou, Jingren and Lin, Junyang and Dang, Kai\n             and Lu, Keming and Bao, Keqin and Yang, Kexin and Yu, Le\n             and Li, Mei and Xue, Mingfeng and Zhang, Pei and Zhu, Qin\n             and Men, Rui and Lin, Runji and Li, Tianhao and Tang, Tianyi\n             and Xia, Tingyu and Ren, Xingzhang and Ren, Xuancheng\n             and Fan, Yang and Su, Yang and Zhang, Yichang and Wan, Yu\n             and Liu, Yuqiong and Cui, Zeyu and Zhang, Zhenru and Qiu, Zihan},\n  journal = {arXiv preprint arXiv:2412.15115},\n  year    = {2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        }
+      ]
+    },
+    {
+      "key": "yang2025qwen3",
+      "title": "Qwen3 Technical Report",
+      "authors": [
+        "Yang, An",
+        "Li, Anfeng",
+        "Yang, Baosong",
+        "Zhang, Beichen",
+        "Hui, Binyuan",
+        "Zheng, Bo",
+        "Yu, Bowen",
+        "Gao, Chang",
+        "Huang, Chengen",
+        "Lv, Chenxu",
+        "Zheng, Chujie",
+        "Liu, Dayiheng",
+        "Zhou, Fan",
+        "Huang, Fei",
+        "Hu, Feng",
+        "Ge, Hao",
+        "Wei, Haoran",
+        "Lin, Huan",
+        "Tang, Jialong",
+        "Yang, Jian",
+        "Tu, Jianhong",
+        "Zhang, Jianwei",
+        "Yang, Jianxin",
+        "Yang, Jiaxi",
+        "Zhou, Jing",
+        "Zhou, Jingren",
+        "Lin, Junyang",
+        "Dang, Kai",
+        "Bao, Keqin",
+        "Yang, Kexin",
+        "Yu, Le",
+        "Deng, Lianghao",
+        "Li, Mei",
+        "Xue, Mingfeng",
+        "Li, Mingze",
+        "Zhang, Pei",
+        "Wang, Peng",
+        "Zhu, Qin",
+        "Men, Rui",
+        "Gao, Ruize",
+        "Liu, Shixuan",
+        "Luo, Shuang",
+        "Li, Tianhao",
+        "Tang, Tianyi",
+        "Yin, Wenbiao",
+        "Ren, Xingzhang",
+        "Wang, Xinyu",
+        "Zhang, Xinyu",
+        "Ren, Xuancheng",
+        "Fan, Yang",
+        "Su, Yang",
+        "Zhang, Yichang",
+        "Zhang, Yinger",
+        "Wan, Yu",
+        "Liu, Yuqiong",
+        "Wang, Zekun",
+        "Cui, Zeyu",
+        "Zhang, Zhenru",
+        "Zhou, Zhipeng",
+        "Qiu, Zihan"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2505.09388",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{yang2025qwen3,\n  title   = {Qwen3 Technical Report},\n  author  = {Yang, An and Li, Anfeng and Yang, Baosong and Zhang, Beichen\n             and Hui, Binyuan and Zheng, Bo and Yu, Bowen and Gao, Chang\n             and Huang, Chengen and Lv, Chenxu and Zheng, Chujie\n             and Liu, Dayiheng and Zhou, Fan and Huang, Fei and Hu, Feng\n             and Ge, Hao and Wei, Haoran and Lin, Huan and Tang, Jialong\n             and Yang, Jian and Tu, Jianhong and Zhang, Jianwei\n             and Yang, Jianxin and Yang, Jiaxi and Zhou, Jing\n             and Zhou, Jingren and Lin, Junyang and Dang, Kai and Bao, Keqin\n             and Yang, Kexin and Yu, Le and Deng, Lianghao and Li, Mei\n             and Xue, Mingfeng and Li, Mingze and Zhang, Pei and Wang, Peng\n             and Zhu, Qin and Men, Rui and Gao, Ruize and Liu, Shixuan\n             and Luo, Shuang and Li, Tianhao and Tang, Tianyi and Yin, Wenbiao\n             and Ren, Xingzhang and Wang, Xinyu and Zhang, Xinyu\n             and Ren, Xuancheng and Fan, Yang and Su, Yang and Zhang, Yichang\n             and Zhang, Yinger and Wan, Yu and Liu, Yuqiong and Wang, Zekun\n             and Cui, Zeyu and Zhang, Zhenru and Zhou, Zhipeng and Qiu, Zihan},\n  journal = {arXiv preprint arXiv:2505.09388},\n  year    = {2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        }
+      ]
+    },
+    {
+      "key": "yang2026opid",
+      "title": "OPID: On-Policy Skill Distillation for Agentic Reinforcement Learning",
+      "authors": [
+        "Yang, Shuo",
+        "Wu, Jinyang",
+        "Lu, Zhengxi",
+        "Shen, Yuhao",
+        "Zhang, Fan",
+        "Feng, Lang",
+        "Zhang, Shuai",
+        "Luo, Haoran",
+        "Lian, Zheng",
+        "Wen, Zhengqi",
+        "others"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2606.26790",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{yang2026opid,\n  title={OPID: On-Policy Skill Distillation for Agentic Reinforcement Learning},\n  author={Yang, Shuo and Wu, Jinyang and Lu, Zhengxi and Shen, Yuhao and Zhang, Fan and Feng, Lang and Zhang, Shuai and Luo, Haoran and Lian, Zheng and Wen, Zhengqi and others},\n  journal={arXiv preprint arXiv:2606.26790},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "yang2026rlsd",
+      "title": "Self-Distilled RLVR",
+      "authors": [
+        "Yang, Chenxu",
+        "Qin, Chuanyu",
+        "Si, Qingyi",
+        "Chen, Minghui",
+        "Gu, Naibin",
+        "Yao, Dingyu",
+        "Lin, Zheng",
+        "Wang, Weiping",
+        "Wang, Jiaqi",
+        "Duan, Nan"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2604.03128",
+      "url": "https://arxiv.org/abs/2604.03128",
+      "raw_bibtex": "@misc{yang2026rlsd,\n  title         = {Self-Distilled {RLVR}},\n  author        = {Yang, Chenxu and Qin, Chuanyu and Si, Qingyi and Chen, Minghui and Gu, Naibin and Yao, Dingyu and Lin, Zheng and Wang, Weiping and Wang, Jiaqi and Duan, Nan},\n  year          = {2026},\n  eprint        = {2604.03128},\n  archivePrefix = {arXiv},\n  url           = {https://arxiv.org/abs/2604.03128}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare [Seed]{.smallcaps} against three categories of baselines: prompting-only methods, outcome-based reinforcement learning methods, and self-distillation or skill-distillation methods. Unless a method is marked with an asterisk, evaluation is conducted using only the standard task prompt and"
+        }
+      ]
+    },
+    {
+      "key": "yao2022webshop",
+      "title": "WebShop : Towards Scalable Real-World Web Interaction with Grounded Language Agents",
+      "authors": [
+        "Yao, Shunyu",
+        "Chen, Howard",
+        "Yang, John",
+        "Narasimhan, Karthik"
+      ],
+      "year": 2022,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2207.01206",
+      "raw_bibtex": "@inproceedings{yao2022webshop,\n  title     = {{WebShop}: Towards Scalable Real-World Web Interaction with Grounded Language Agents},\n  author    = {Yao, Shunyu and Chen, Howard and Yang, John and Narasimhan, Karthik},\n  booktitle = {Advances in Neural Information Processing Systems},\n  year      = {2022},\n  url       = {https://arxiv.org/abs/2207.01206}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-datasets",
+          "text": "Our experiments cover three representative forms of long-horizon agentic interaction: embodied household reasoning, web navigation, and search-augmented question answering. Table tab:appendix_datasets_summary summarizes the benchmarks and the data sizes used for SFT, RL training, and evaluation."
+        }
+      ]
+    },
+    {
+      "key": "yao2023react",
+      "title": "ReAct : Synergizing Reasoning and Acting in Language Models",
+      "authors": [
+        "Yao, Shunyu",
+        "Zhao, Jeffrey",
+        "Yu, Dian",
+        "Du, Nan",
+        "Shafran, Izhak",
+        "Narasimhan, Karthik",
+        "Cao, Yuan"
+      ],
+      "year": 2023,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2210.03629",
+      "raw_bibtex": "@inproceedings{yao2023react,\n  title     = {{ReAct}: Synergizing Reasoning and Acting in Language Models},\n  author    = {Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik and Cao, Yuan},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2023},\n  url       = {https://arxiv.org/abs/2210.03629}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "zai2026glm52",
+      "title": "GLM-5.2: Built for Long-Horizon Tasks",
+      "authors": [
+        "Z.ai"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@misc{zai2026glm52,\n  title        = {{GLM-5.2: Built for Long-Horizon Tasks}},\n  author       = {{Z.ai}},\n  year         = {2026},\n  month        = jun,\n  day          = {16},\n  howpublished = {\\url{https://z.ai/blog/glm-5.2}},\n  note         = {Accessed: 2026-06-22}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-implementation-details",
+          "text": "#### Benchmark metrics. We adopt benchmark-specific measures following the corresponding evaluation protocols. For ALFWorld, let $\\mathrm{SR}_{c}$ denote the success rate on task category $c$. The overall result assigns equal weight to all six categories and is computed as $$"
+        }
+      ]
+    },
+    {
+      "key": "zhang2026deepplanning",
+      "title": "DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints",
+      "authors": [
+        "Zhang, Yinger",
+        "Jiang, Shutong",
+        "Li, Renhao",
+        "Tu, Jianhong",
+        "Su, Yang",
+        "Deng, Lianghao",
+        "Guo, Xudong",
+        "Lv, Chenxu",
+        "Lin, Junyang"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2601.18137",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{zhang2026deepplanning,\n  title={DeepPlanning: Benchmarking Long-Horizon Agentic Planning with Verifiable Constraints},\n  author={Zhang, Yinger and Jiang, Shutong and Li, Renhao and Tu, Jianhong and Su, Yang and Deng, Lianghao and Guo, Xudong and Lv, Chenxu and Lin, Junyang},\n  journal={arXiv preprint arXiv:2601.18137},\n  year={2026}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    },
+    {
+      "key": "zhang2026the",
+      "title": "The Landscape of Agentic Reinforcement Learning for LLM s: A Survey",
+      "authors": [
+        "Guibin Zhang",
+        "Hejia Geng",
+        "Xiaohang Yu",
+        "Zhenfei Yin",
+        "Zaibin Zhang",
+        "Zelin Tan",
+        "Heng Zhou",
+        "Zhong-Zhi Li",
+        "Xiangyuan Xue",
+        "Yijiang Li",
+        "Yifan Zhou",
+        "Yang Chen",
+        "Chen Zhang",
+        "Yutao Fan",
+        "Zihu Wang",
+        "Songtao Huang",
+        "Francisco Piedrahita Velez",
+        "Yue Liao",
+        "Hongru WANG",
+        "Mengyue Yang",
+        "Heng Ji",
+        "Jun Wang",
+        "Shuicheng YAN",
+        "Philip Torr",
+        "LEI BAI"
+      ],
+      "year": 2026,
+      "venue": "Transactions on Machine Learning Research",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{\nzhang2026the,\ntitle={The Landscape of Agentic Reinforcement Learning for {LLM}s: A Survey},\nauthor={Guibin Zhang and Hejia Geng and Xiaohang Yu and Zhenfei Yin and Zaibin Zhang and Zelin Tan and Heng Zhou and Zhong-Zhi Li and Xiangyuan Xue and Yijiang Li and Yifan Zhou and Yang Chen and Chen Zhang and Yutao Fan and Zihu Wang and Songtao Huang and Francisco Piedrahita Velez and Yue Liao and Hongru WANG and Mengyue Yang and Heng Ji and Jun Wang and Shuicheng YAN and Philip Torr and LEI BAI},\njournal={Transactions on Machine Learning Research},\nissn={2835-8856},\nyear={2026},\nnote={Survey Certification}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        }
+      ]
+    },
+    {
+      "key": "zhao2024expel",
+      "title": "ExpeL : LLM Agents Are Experiential Learners",
+      "authors": [
+        "Zhao, Andrew",
+        "Huang, Daniel",
+        "Xu, Quentin",
+        "Lin, Matthieu",
+        "Liu, Yong-Jin",
+        "Huang, Gao"
+      ],
+      "year": 2024,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2308.10144",
+      "raw_bibtex": "@inproceedings{zhao2024expel,\n  title     = {{ExpeL}: {LLM} Agents Are Experiential Learners},\n  author    = {Zhao, Andrew and Huang, Daniel and Xu, Quentin and Lin, Matthieu and Liu, Yong-Jin and Huang, Gao},\n  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2308.10144}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "zhao2026selfdistilledreasoner",
+      "title": "Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models",
+      "authors": [
+        "Zhao, Siyan",
+        "Xie, Zhihui",
+        "Liu, Mengchen",
+        "Huang, Jing",
+        "Pang, Guan",
+        "Chen, Feiyu",
+        "Grover, Aditya"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2601.18734",
+      "url": "https://arxiv.org/abs/2601.18734",
+      "raw_bibtex": "@misc{zhao2026selfdistilledreasoner,\n  title         = {Self-Distilled Reasoner: On-Policy Self-Distillation for Large Language Models},\n  author        = {Zhao, Siyan and Xie, Zhihui and Liu, Mengchen and Huang, Jing and Pang, Guan and Chen, Feiyu and Grover, Aditya},\n  year          = {2026},\n  eprint        = {2601.18734},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.LG},\n  url           = {https://arxiv.org/abs/2601.18734}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        },
+        {
+          "section_id": "sec-experimental-setting",
+          "text": "#### Benchmarks. We evaluate [Seed]{.smallcaps} across three complementary forms of long-horizon agency. *ALFWorld* [shridhar2021alfworld] casts household tasks as text-based embodied interaction, requiring an agent to interpret observations and execute extended action sequences. We consider six"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare [Seed]{.smallcaps} against three categories of baselines: prompting-only methods, outcome-based reinforcement learning methods, and self-distillation or skill-distillation methods. Unless a method is marked with an asterisk, evaluation is conducted using only the standard task prompt and"
+        }
+      ]
+    },
+    {
+      "key": "zhong2026sod",
+      "title": "SOD : Step-wise On-policy Distillation for Small Language Model Agents",
+      "authors": [
+        "Zhong, Qiyong",
+        "Zheng, Mao",
+        "Song, Mingyang",
+        "Lin, Xin",
+        "Sun, Jie",
+        "Jiang, Houcheng",
+        "Wang, Xiang",
+        "Fang, Junfeng"
+      ],
+      "year": 2026,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "2605.07725",
+      "url": "https://arxiv.org/abs/2605.07725",
+      "raw_bibtex": "@misc{zhong2026sod,\n  title         = {{SOD}: Step-wise On-policy Distillation for Small Language Model Agents},\n  author        = {Zhong, Qiyong and Zheng, Mao and Song, Mingyang and Lin, Xin and Sun, Jie and Jiang, Houcheng and Wang, Xiang and Fang, Junfeng},\n  year          = {2026},\n  eprint        = {2605.07725},\n  archivePrefix = {arXiv},\n  primaryClass  = {cs.CL},\n  url           = {https://arxiv.org/abs/2605.07725}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "[]{#sec1_intro label=\"sec1_intro\"} Recent large language model (LLM) systems are moving beyond single-turn response generation toward multi-turn agentic interaction, where a model repeatedly reasons, acts, uses tools, and incorporates feedback from its environment [liu2023agentbench,"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Reinforcement learning for agentic LLMs. LLMs are increasingly trained as interactive agents that reason, use tools, and act over long horizons [liu2023agentbench, schick2023toolformer, patil2024gorilla, luo2025large, xi2025rise, wu2026atlas, xu2026odysseyarena]. Reinforcement learning"
+        }
+      ]
+    },
+    {
+      "key": "zhou2024webarena",
+      "title": "WebArena : A Realistic Web Environment for Building Autonomous Agents",
+      "authors": [
+        "Zhou, Shuyan",
+        "Xu, Frank F.",
+        "Zhu, Hao",
+        "Zhou, Xuhui",
+        "Lo, Robert",
+        "Sridhar, Abishek",
+        "Cheng, Xianyi",
+        "Ou, Tianyue",
+        "Bisk, Yonatan",
+        "Fried, Daniel",
+        "Alon, Uri",
+        "Neubig, Graham"
+      ],
+      "year": 2024,
+      "venue": "International Conference on Learning Representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://arxiv.org/abs/2307.13854",
+      "raw_bibtex": "@inproceedings{zhou2024webarena,\n  title     = {{WebArena}: A Realistic Web Environment for Building Autonomous Agents},\n  author    = {Zhou, Shuyan and Xu, Frank F. and Zhu, Hao and Zhou, Xuhui and Lo, Robert and Sridhar, Abishek and Cheng, Xianyi and Ou, Tianyue and Bisk, Yonatan and Fried, Daniel and Alon, Uri and Neubig, Graham},\n  booktitle = {International Conference on Learning Representations},\n  year      = {2024},\n  url       = {https://arxiv.org/abs/2307.13854}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "zhou2026confabulations",
+      "title": "Can LLMs Detect Their Confabulations? Estimating Reliability in Uncertainty-Aware Language Models",
+      "authors": [
+        "Zhou, Tianyi",
+        "Medina, Johanne",
+        "Chawla, Sanjay"
+      ],
+      "year": 2026,
+      "venue": "Proceedings of the AAAI Conference on Artificial Intelligence",
+      "doi": "10.1609/aaai.v40i44.41155",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{zhou2026confabulations,\n  title={Can LLMs Detect Their Confabulations? Estimating Reliability in Uncertainty-Aware Language Models},\n  author={Zhou, Tianyi and Medina, Johanne and Chawla, Sanjay},\n  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},\n  volume={40},\n  pages={38164--38172},\n  year={2026},\n  doi={10.1609/aaai.v40i44.41155}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-additional-discussion",
+          "text": "{Seed} treats completed on-policy experience as an evolving source of supervision. Our experiments cover several forms of long-horizon interaction, but broader benchmarks such as DeepPlanning [zhang2026deepplanning], Long-Horizon-Terminal-Bench [li2026longhorizonterminal], OdysseyArena"
+        }
+      ]
+    }
+  ]
+}

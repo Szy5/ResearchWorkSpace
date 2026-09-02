@@ -1,0 +1,70 @@
+{
+  "figures": [
+    {
+      "id": "fig-radar",
+      "label": "fig:radar",
+      "caption": "Performance comparison of against baselines on QA benchmarks. Our method achieves the highest average accuracy across all datasets on both (a) Qwen2.5-7B and (b) Qwen2.5-3B models.",
+      "source_path": "figures/radar_comparison.pdf",
+      "asset_path": "assets/figures/radar.jpg",
+      "section_id": "sec-abstract",
+      "status": "rendered",
+      "source_sha256": "f9c4848b01fbc42e99d02d3b8b330ac829cfaf10c36cdebe60c3461477c62b11",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-main",
+      "label": "fig:main",
+      "caption": "Overview of framework. Our approach introduces path-centric reward shaping for agentic RAG training, comprising: (1) Dual-Track Path Scoring that evaluates trajectories from both self-consistency and reference-alignment perspectives, and (2) Soft Outcome Scoring that extracts training signals even from incorrect answers.",
+      "source_path": "ACL2026_main.pdf",
+      "asset_path": "assets/figures/main.jpg",
+      "section_id": "sec-methodology",
+      "status": "rendered",
+      "source_sha256": "6b7631a99aa1a70b934fd388fa943fdeb63d02ebf04fdae02d325f33c64f8431",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-format-reward",
+      "label": "fig:format_reward",
+      "caption": "Training dynamics comparison of different format reward strategies. Soft Format (our buffered design) achieves faster ACC improvement and higher stable rewards compared to Strict Format (zero reward for invalid format) and Without Format baseline.",
+      "source_path": "figures/format_reward_convergence.pdf",
+      "asset_path": "assets/figures/format-reward.jpg",
+      "section_id": "sec-ablation-study",
+      "status": "rendered",
+      "source_sha256": "617ce06281706f4c329b30f9e998973ace7cc23c05d96789c7d442ecc9b54657",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-outcome-analysis",
+      "label": "fig:outcome_analysis",
+      "caption": "Effect of soft outcome scoring across datasets. Gray bars show accuracy without soft scoring (binary outcome), blue bars show accuracy with soft scoring. Per-dataset results are in Appendix~sec:appendix soft outcome.",
+      "source_path": "figures/outcome_reward_analysis.pdf",
+      "asset_path": "assets/figures/outcome-analysis.jpg",
+      "section_id": "sec-ablation-study",
+      "status": "rendered",
+      "source_sha256": "692f7514a8ea92a8e24987453ce852b1cfa7deb135ec22efaaa4e172f3b7be76",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-hyperparameter",
+      "label": "fig:hyperparameter",
+      "caption": "Hyperparameter sensitivity analysis. All rewards are averaged over steps 195--205. (a) Effect of path reward weight p . (b) Effect of accuracy weight a . Per-dataset results are in Appendix~sec:appendix hyperparameter.",
+      "source_path": "figures/hyperparameter_analysis.pdf",
+      "asset_path": "assets/figures/hyperparameter.jpg",
+      "section_id": "sec-hyperparameter-sensitivity",
+      "status": "rendered",
+      "source_sha256": "00232af96e546a895252830db8e7337645490ce36e6965eccc1f476615463f4b",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-efficiency-analysis",
+      "label": "fig:efficiency_analysis",
+      "caption": "Efficiency analysis. (a) Training efficiency: accuracy and interaction turns comparison between and Search-R1 during training. (b) Inference efficiency: turns by outcome across dataset types.",
+      "source_path": "figures/efficiency_analysis.pdf",
+      "asset_path": "assets/figures/efficiency-analysis.jpg",
+      "section_id": "sec-efficiency-analysis",
+      "status": "rendered",
+      "source_sha256": "60e45a17f080f2c2acba8854aff4b0c421cac584c3516b9c56871feb5849ed94",
+      "media_type": "pdf"
+    }
+  ]
+}

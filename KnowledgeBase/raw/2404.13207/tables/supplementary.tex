@@ -1,0 +1,922 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers, compress, sort}{natbib}
+% ready for submission
+% \usepackage{neurips_2023}
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+% \usepackage[preprint]{neurips_data_2024}
+\usepackage[final]{neurips_data_2024}
+
+% HUMAN EVAL ON THE QUERIES
+% 100 EACH DATASET
+
+% QUERIES: FAILURE PATTERNS
+% CORRELATION BETWEEN QUERY LENGTH AND FAILURE/SUCCESS
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[hidelinks]{hyperref}       % hyperlinks
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage[dvipsnames, table]{xcolor}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{titlesec}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage[utf8]{inputenc}
+\let\Bbbk\relax\usepackage{amssymb,amsmath,caption}
+\usepackage[hang,flushmargin]{footmisc}
+\usepackage{lipsum}
+\usepackage{listings}
+\usepackage{extarrows}
+\usepackage{subfigure}
+\usepackage{xspace}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{ifthen}
+\usepackage{xifthen}
+\usepackage{wrapfig}
+\usepackage{amsthm}
+\usepackage{stmaryrd}
+\usepackage{threeparttable}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{bbold}
+\usepackage{tabularx}
+\usepackage[framemethod=TikZ]{mdframed}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  columns=flexible,
+  breaklines=true,
+  postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+}
+\newtheorem{problem}{Definition}%[section] 
+\newtheorem{motivation}{Observation}%[section]
+\newtheorem{theorem}{Theorem}%[section]
+\newtheorem{proposition}{Proposition}%[section]
+\newcommand{\Centaur}{\fontspec{Centaur}}
+
+\newcommand{\solution}[0]{\textrm{MasKG}\xspace}
+\newcommand{\vpara}[1]{\vspace{0.07in}\noindent\textbf{#1}\xspace}
+\newcommand{\beq}[1]{{\small \begin{equation}#1\end{equation}}}
+\newcommand{\beqn}[1]{{\small\begin{eqnarray}#1\end{eqnarray}}}
+\newcommand{\besp}[1]{\begin{split}#1\end{split}}
+\newcommand{\trieq}[0]{\triangleq}
+\newcommand*{\iidsim}{\overset{\text{i.i.d.}}{\sim}}
+
+\newcommand{\james}[1]{\textcolor{blue}{(James: #1)}}
+\newcommand{\shirley}[1]{\textcolor{purple}{(Shirley: #1)}}
+\newcommand{\jure}[1]{\textcolor{blue}{(Jure: #1)}}
+\newcommand{\kexin}[1]{\textcolor{blue}{(Kexin: #1)}}
+\newcommand{\michi}[1]{\textcolor{pink}{(Michi: #1)}}
+\newcommand{\qian}[1]{\textcolor{cyan}{(Qian: #1)}}
+\newcommand{\shiyu}[1]{\textcolor{brown}{(Shiyu: #1)}}
+\newcommand{\karthik}[1]{\textcolor{red}{(Karthik: #1)}}
+\newcommand{\hw}[1]{\textcolor{black}{#1}} % human written 
+
+\newcommand{\revision}[1]{\textcolor{black}{#1}}
+
+\newcommand{\method}{Agent Retriever } 
+\newcommand{\methodt}{Agent Retriever} 
+\newcommand{\kbs}{knowlege bases } 
+\newcommand{\kbst}{knowlege bases} 
+\newcommand{\kb}{knowlege base } 
+\newcommand{\kbt}{knowlege base} 
+% \fontfamily{lmtt}\fontseries{b}\selectfont 
+% STaRK, STaRKRet, SemiRet, RetBench
+\newcommand{\benchmarkt}{\textsc{STaRK}} 
+\newcommand{\benchmarkh}{\textsc{STaRK }}
+\newcommand{\amazont}{\textsc{STaRK-Amazon}}
+\newcommand{\amazonh}{\textsc{STaRK-Amazon }}
+\newcommand{\magt}{\textsc{STaRK-MAG}}
+\newcommand{\magh}{\textsc{STaRK-MAG }}
+\newcommand{\primekgt}{\textsc{STaRK-Prime}}
+\newcommand{\primekgh}{\textsc{STaRK-Prime }}
+\newcommand{\ie}{\textit{i.e., }}
+\newcommand{\eg}{\textit{e.g., }}
+\newcommand{\etal}{\textit{et al.}}
+\newcommand{\st}{\textit{s.t. }}
+\newcommand{\etc}{\textit{etc.}}
+\newcommand{\wrt}{\textit{w.r.t. }}
+\newcommand{\cf}{\textit{cf. }}
+\newcommand{\aka}{\textit{aka. }}
+\newcommand{\xhdr}[1]{{\vspace{-2pt}\noindent\bfseries #1}.}
+
+% my package and commands
+\newcommand\condent{\raisebox{-2pt}{\includegraphics[width=0.8em]{icons/blue.pdf}}}
+\newcommand\interent{\raisebox{-2pt}{\includegraphics[width=0.8em]{icons/gray.pdf}}}
+\newcommand\maskent{\raisebox{-2pt}{\includegraphics[width=0.8em]{icons/green.pdf}}}
+\newcommand{\sectioncolor}{Violet}
+
+% Some math definitions
+\newcommand{\lap}{\mathrm{Lap}}
+\newcommand{\pr}{\mathrm{Pr}}
+
+\newcommand{\Tset}{\mathcal{T}}
+\newcommand{\Dset}{\mathcal{D}}
+\newcommand{\Rbound}{\widetilde{\mathcal{R}}}
+
+% my theorem definition
+\newcommand{\tohide}[1]{} 
+\newcommand*\thankssame[1][\value{footnote}]{\footnotemark[#1]}
+
+
+\title{Supplementary Material of \\\benchmarkt: Benchmarking LLM Retrieval on Textual and Relational Knowledge Bases }
+% \title{Retrieval with Textual and Relational Knowledge: Benchmarks and an Agent-based Approach}
+% STaRK Retrieval + Agent
+% \title{Agent Retriever for Retrieval Tasks on Textual and Relational Knowledge via Contrastive Reasoning}
+% \title{Agent Retriever for Improving Retrieval on Textual and Relational Knowledge Bases}
+% \author{%
+%   Shirley Wu$^{*\S}$,
+%    Shiyu Zhao$^{*\S}$, 
+%    Michihiro Yasunaga$^{\S}$, 
+%   Kexin Huang$^{\S}$, Kaidi Cao$^{\S}$, Qian Huang$^{\S}$, \\
+%   \textbf{Vassilis N. Ioannidis}$^{\dag}$, \textbf{Karthik Subbian}$^{\dag}$, \textbf{James Zou}$^{\ddag\S}$, \textbf{Jure Leskovec}$^{\ddag\S}$\\
+%   % \\
+%   $^{\S}$Department of Computer Science, Stanford University\ \ \ $^{\dag}$Amazon\\
+%   {\textcolor{cyan}{\url{https://stark.stanford.edu/}}}
+%   % $^{\S}$\texttt{\{shirwu,shiyuz,myasu,kexinh,kaidicao,qhwang\}}\\
+%   % \texttt{\{jamesz,jure\}@cs.stanford.edu}, $^{\dag}$\texttt{\{vasilei,ksubbian\}@amazon.com}
+%   }
+
+
+
+\begin{document}
+
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+% Associate the asterisk with the desired footnote text
+% \footnotetext{$^{*\ddag}$Equal contribution. Correspondence: \texttt{\{shirwu, jamesz, jure\}@cs.stanford.edu}.}
+% \footnotetext{\ \ The work of Vassilis N. Ioannidis and Karthik Subbian does not relate to their position at Amazon.}
+
+\maketitle
+\vspace{-10pt}
+
+% \section*{\LARGE Supplementary Material}
+
+\xhdr{Website/Platform and Hosting} 
+\vspace{-5pt}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Data downloading}: We host our retrieval dataset and knowledge base data in both Hugging Face dataset repository: \href{https://huggingface.co/datasets/snap-stanford/stark/tree/main}{\textcolor{Violet}{https://huggingface.co/datasets/snap-stanford/stark}} and project website under Stanford Computer Science Server: \href{https://stark.stanford.edu/datasets.html}{\textcolor{Violet}{https://stark.stanford.edu/datasets.html}}. 
+    \item \textbf{Code}: We release a PyPI package, \texttt{stark-qa} (\href{https://pypi.org/project/stark-qa/}{\textcolor{Violet}{https://pypi.org/project/stark-qa/}}). This package automatically downloads and loads our query and semi-structured datasets. Additionally, we host our developer code on GitHub at \href{https://github.com/snap-stanford/stark}{\textcolor{Violet}{https://github.com/snap-stanford/stark}}, allowing users to submit issues and pull requests.
+    \item \textbf{Interactive platform}: We build a platform, \benchmarkh Semi-structured Knowledge Base (SKB) Explorer, for users to inspect our SKB schema: \href{https://stark.stanford.edu/skb_explorer.html}{\textcolor{Violet}{https://stark.stanford.edu/skb\_explorer.html}}.
+\end{itemize}
+
+\xhdr{Croissant Metadata} The Croissant metadata for our dataset is available for viewing and downloading at \href{https://stark.stanford.edu/files/croissant_metadata.json}{\textcolor{Violet}{https://stark.stanford.edu/files/croissant\_metadata.json}}. 
+
+\xhdr{DOI} We provide a persistent dereferenceable identifier DOI: https://doi.org/10.57967/hf/2530.
+
+\xhdr{Licensing} The \benchmarkh retrieval datasets are under license CC-BY-4.0 as stated in our website. And our released code is under MIT license, as stated in the GitHub repository.
+
+\xhdr{Maintenance Plan} We plan to update our website with the most recent document and Python package. We will maintain our GitHub repository will pull requests and open issues.
+
+\xhdr{Author Statement} We hereby confirm that we bear all responsibility for any violation of rights that may occur in the use or distribution of the data and content presented in this work. We affirm that we have obtained all necessary permissions and licenses for the data and content included in this work. We confirm that the use of this data complies with all relevant laws and regulations, and we take full responsibility for addressing any claims or disputes that may arise regarding rights violations or licensing issues. 
+
+\xhdr{Reproducibility} We make the following efforts to ensure reproducibility:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Code:} We have provided the complete codebase in our GitHub repository. The code includes scripts for data loading, preprocessing, embedding generation, and evaluation. Detailed instructions for setting up the environment and running the code are included to facilitate easy reproduction of the results.
+    \item \textbf{Pre-generated Embeddings:} The original embeddings used in the experiments are available for download from our repository. These embeddings can be used directly to replicate the experiments without the need for re-computation, ensuring consistency in results.
+    \item \textbf{Evaluation Procedures:} All evaluation procedures are thoroughly documented. Users can follow the provided scripts and guidelines to perform evaluations. We have included detailed steps and examples both in the GitHub repository and on our website to guide users through the entire process, helping them achieve reproducible results.
+\end{itemize}
+
+
+
+
+\xhdr{Datasheet for Dataset (Dataset documentation and intended uses)} 
+\small
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{mdframed}
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    MOTIVATION
+}}
+\end{mdframed}
+
+    \textcolor{\sectioncolor}{\textbf{
+    For what purpose was the dataset created?
+    }
+    Was there a specific task in mind? Was there
+    a specific gap that needed to be filled? Please provide a description.
+    } \\
+    %%%
+    The datasets were created to evaluate retrieval tasks on Semi-structured Knowledge Bases (SKB). They are specifically designed to assess the capabilities of current Large Language Models (LLMs) in performing complex retrieval tasks. This initiative aims to address the gap in evaluating how well LLMs can handle retrieval tasks that involve a combination of structured and unstructured data.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Who created this dataset (e.g., which team, research group) and on behalf
+    of which entity (e.g., company, institution, organization)?
+    }
+    } \\
+    %%%
+    The datasets were created by lab members in Leskovec and Zou's groups at Stanford University, in collaboration with scientists from Amazon. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    What support was needed to make this dataset?
+    }
+    (e.g.who funded the creation of the dataset? If there is an associated
+    grant, provide the name of the grantor and the grant name and number, or if
+    it was supported by a company or government agency, give those details.)
+    } \\
+    %%%
+    We acknowledge the support of
+    DARPA under Nos. N660011924033 (MCS);
+    NSF under Nos. OAC-1835598 (CINES), CCF-1918940 (Expeditions), DMS-2327709 (IHBEM);
+    Stanford Data Applications Initiative,
+    Wu Tsai Neurosciences Institute,
+    Stanford Institute for Human-Centered AI,
+    Chan Zuckerberg Initiative,
+    Amazon, Genentech, GSK, Hitachi, SAP, and UCB. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No. \\
+    %%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    COMPOSITION
+}}
+\end{mdframed}
+    \textcolor{\sectioncolor}{\textbf{
+    What do the instances that comprise the dataset represent (e.g., documents,
+    photos, people, countries)?
+    }
+    Are there multiple types of instances (e.g., movies, users, and ratings;
+    people and interactions between them; nodes and edges)? Please provide a
+    description.
+    } \\
+    %%%
+    The retrieval dataset represents queries (textual data) from people. The instances in the underlying knowledge base represent documents and interactions (i.e., relational data). For example, in the Amazon domain, instances may include product descriptions (documents) and the relationships between products and their categories, brand, and colors (relational data). This combination of textual and relational data allows for a comprehensive evaluation of retrieval tasks on semi-structured knowledge bases.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    How many instances are there in total (of each type, if appropriate)?
+    }
+    } \\
+    %%%
+   Please refer to our main paper and appendix for comprehensive statistics. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset contain all possible instances or is it a sample (not
+    necessarily random) of instances from a larger set?
+    }
+    If the dataset is a sample, then what is the larger set? Is the sample
+    representative of the larger set (e.g., geographic coverage)? If so, please
+    describe how this representativeness was validated/verified. If it is not
+    representative of the larger set, please describe why not (e.g., to cover a
+    more diverse range of instances, because instances were withheld or
+    unavailable).
+    } \\
+    %%%
+    We have released the complete datasets, containing all queries and available entities in the knowledge bases. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    What data does each instance consist of?
+    }
+    “Raw” data (e.g., unprocessed text or images) or features? In either case,
+    please provide a description.
+    } \\
+    %%%
+    We have provided the raw data, which includes the raw query data and the original textual and relational information. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Is there a label or target associated with each instance?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    Yes, the answer IDs for each query indicate the ground truth entities or items that satisfy the requirements of the query. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Is any information missing from individual instances?
+    }
+    If so, please provide a description, explaining why this information is
+    missing (e.g., because it was unavailable). This does not include
+    intentionally removed information, but might include, e.g., redacted text.
+    } \\
+    %%%
+    No, we did not omit any information. However, some information in the original public resources might not be complete or up-to-date. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Are relationships between individual instances made explicit (e.g., users’
+    movie ratings, social network links)?
+    }
+    If so, please describe how these relationships are made explicit.
+    } \\
+    %%%
+    Yes. For retrieval datasets, we assume each query is independent. For knowledge base data, relationships between individual entities are made explicit. These relationships are represented through structured data within the knowledge bases, such as entity links and relational attributes. For example, in the Amazon domain, explicit relationships include the connections between products and their categories, brands, and attributes like color. This structured relational data helps in accurately defining the interactions and associations between different entities within the knowledge base. \\
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Are there recommended data splits (e.g., training, development/validation,
+    testing)?
+    }
+    If so, please provide a description of these splits, explaining the
+    rationale behind them.
+    } \\
+    %%%
+    Yes, we have provided the official split for our synthesized queries. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Are there any errors, sources of noise, or redundancies in the dataset?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    The ground truth answers for each synthesized query are filtered automatically through Large Language Models (LLMs). Therefore, there is a possibility of including missing answers or false answers in the ground truth. However, we have devoted great efforts to reduce the errors.   \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Is the dataset self-contained, or does it link to or otherwise rely on
+    external resources (e.g., websites, tweets, other datasets)?
+    }
+    If it links to or relies on external resources, a) are there guarantees
+    that they will exist, and remain constant, over time; b) are there official
+    archival versions of the complete dataset (i.e., including the external
+    resources as they existed at the time the dataset was created); c) are
+    there any restrictions (e.g., licenses, fees) associated with any of the
+    external resources that might apply to a future user? Please provide
+    descriptions of all external resources and any restrictions associated with
+    them, as well as links or other access points, as appropriate.
+    } \\
+    %%%
+    The datasets are self-contained. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset contain data that might be considered confidential (e.g.,
+    data that is protected by legal privilege or by doctor-patient
+    confidentiality, data that includes the content of individuals’ non-public
+    communications)?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    No, the dataset does not contain any data that might be considered confidential. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset contain data that, if viewed directly, might be offensive,
+    insulting, threatening, or might otherwise cause anxiety?
+    }
+    If so, please describe why.
+    } \\
+    %%%
+    No, as far as we are aware, the dataset does not contain any data that might be offensive, insulting, threatening, or cause anxiety. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset relate to people?
+    }
+    If not, you may skip the remaining questions in this section.
+    } \\
+    %%%
+    The query dataset does not target individuals; however, human efforts were involved in creating a small set of queries and filtering ground truth answers. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset identify any subpopulations (e.g., by age, gender)?
+    }
+    If so, please describe how these subpopulations are identified and
+    provide a description of their respective distributions within the dataset.
+    } \\
+    %%%
+    Not applicable. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Is it possible to identify individuals (i.e., one or more natural persons),
+    either directly or indirectly (i.e., in combination with other data) from
+    the dataset?
+    }
+    If so, please describe how.
+    } \\
+    %%%
+    Not applicable.  \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset contain data that might be considered sensitive in any way
+    (e.g., data that reveals racial or ethnic origins, sexual orientations,
+    religious beliefs, political opinions or union memberships, or locations;
+    financial or health data; biometric or genetic data; forms of government
+    identification, such as social security numbers; criminal history)?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    Not applicable. \\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No. \\
+    %%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    COLLECTION
+}}
+\end{mdframed}
+
+    \textcolor{\sectioncolor}{\textbf{
+    How was the data associated with each instance acquired?
+    }
+    Was the data directly observable (e.g., raw text, movie ratings),
+    reported by subjects (e.g., survey responses), or indirectly
+    inferred/derived from other data (e.g., part-of-speech tags, model-based
+    guesses for age or language)? If data was reported by subjects or
+    indirectly inferred/derived from other data, was the data
+    validated/verified? If so, please describe how.
+    } \\
+    %%%
+    The data associated with each instance was acquired through direct observation of raw text data and structured relational data from publicly available sources. Additionally, human evaluators synthesized and validated queries and ground truth answers to ensure accuracy and relevance.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Over what timeframe was the data collected?
+    }
+    Does this timeframe match the creation timeframe of the data associated
+    with the instances (e.g., recent crawl of old news articles)? If not,
+    please describe the timeframe in which the data associated with the
+    instances was created. Finally, list when the dataset was first published.
+    } \\
+    %%%
+    The data was collected over a period of several months in 2023. This timeframe aligns with the creation timeframe of the data associated with the instances. The dataset was first published in Apr 2024.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    What mechanisms or procedures were used to collect the data (e.g., hardware
+    apparatus or sensor, manual human curation, software program, software
+    API)?
+    }
+    How were these mechanisms or procedures validated?
+    } \\
+    %%%
+    The data was collected using a combination of software programs and APIs to gather raw text and relational data. Manual human curation was employed to synthesize and validate the data, ensuring its accuracy and relevance. The procedures were validated through rigorous human evaluation and analysis.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    What was the resource cost of collecting the data?
+    }
+    (e.g. what were the required computational resources, and the associated
+    financial costs, and energy consumption - estimate the carbon footprint.
+    See Strubell \textit{et al.}\cite{strubellEnergyPolicyConsiderations2019} for approaches in this area.)
+    } \\
+    %%%
+    The resource cost of collecting the data included computational resources for running software programs and APIs. API costs are estimated to be around 5k US dollars.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    If the dataset is a sample from a larger set, what was the sampling
+    strategy (e.g., deterministic, probabilistic with specific sampling
+    probabilities)?
+    }
+    } \\
+    %%%
+    The dataset is not a sample; it includes all relevant instances from the collected data sources to ensure comprehensive coverage.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Who was involved in the data collection process (e.g., students,
+    crowdworkers, contractors) and how were they compensated (e.g., how much
+    were crowdworkers paid)?
+    }
+    } \\
+    %%%
+    The data collection process involved lab members from Leskovec and Zou's groups in  research activities.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Were any ethical review processes conducted (e.g., by an institutional
+    review board)?
+    }
+    If so, please provide a description of these review processes, including
+    the outcomes, as well as a link or other access point to any supporting
+    documentation.
+    } \\
+    %%%
+    No specific ethical review processes were conducted for this dataset, as it did not involve sensitive or personal data that required such oversight.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Does the dataset relate to people?
+    }
+    If not, you may skip the remainder of the questions in this section.
+    } \\
+    %%%
+    The dataset does not relate to people directly, but human efforts were involved in creating and validating queries.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Did you collect the data from the individuals in question directly, or
+    obtain it via third parties or other sources (e.g., websites)?
+    }
+    } \\
+    %%%
+    From the individuals in question directlty.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Were the individuals in question notified about the data collection?
+    }
+    If so, please describe (or show with screenshots or other information) how
+    notice was provided, and provide a link or other access point to, or
+    otherwise reproduce, the exact language of the notification itself.
+    } \\
+    %%%
+    Yes. We include the details for human instruction in our Appendix C.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Did the individuals in question consent to the collection and use of their
+    data?
+    }
+    If so, please describe (or show with screenshots or other information) how
+    consent was requested and provided, and provide a link or other access
+    point to, or otherwise reproduce, the exact language to which the
+    individuals consented.
+    } \\
+    %%%
+    Yes. Consent was obtained from the individuals involved in the data collection process. Participants were informed about the purpose and scope of the data collection through detailed instructions provided during the task. Consent was given explicitly by the participants when they agreed to the terms and conditions outlined in the instructions. The exact language of the consent agreement is available in the project's documentation or upon request.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    If consent was obtained, were the consenting individuals provided with a
+    mechanism to revoke their consent in the future or for certain uses?
+    }
+     If so, please provide a description, as well as a link or other access
+     point to the mechanism (if appropriate)
+    } \\
+    %%%
+    No. Participants were not provided with a specific mechanism to revoke their consent in the future or for certain uses. The consent process was designed to be comprehensive at the point of agreement, but no subsequent revocation mechanism was implemented.\\
+    %%% 
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Has an analysis of the potential impact of the dataset and its use on data
+    subjects (e.g., a data protection impact analysis) been conducted?
+    }
+    If so, please provide a description of this analysis, including the
+    outcomes, as well as a link or other access point to any supporting
+    documentation.
+    } \\
+    %%%
+    Not applicable. An analysis of the potential impact of the dataset and its use on data subjects has not been conducted, as the dataset does not contain sensitive or personal data that would typically require such an analysis.\\
+    %%%
+
+    
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No.
+    %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    PREPROCESSING / CLEANING / LABELING
+}}
+\end{mdframed}
+
+    \textcolor{\sectioncolor}{\textbf{
+    Was any preprocessing/cleaning/labeling of the data
+    done(e.g.,discretization or bucketing, tokenization, part-of-speech
+    tagging, SIFT feature extraction, removal of instances, processing of
+    missing values)?
+    }
+    If so, please provide a description. If not, you may skip the remainder of
+    the questions in this section.
+    } \\
+    %%%
+    Yes, preprocessing steps included tokenization, entity extraction, and validation of relational and textual data. Queries were synthesized and verified through human evaluation.
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Was the “raw” data saved in addition to the preprocessed/cleaned/labeled
+    data (e.g., to support unanticipated future uses)?
+    }
+    If so, please provide a link or other access point to the “raw” data.
+    } \\
+    %%%
+    Yes, the raw data has been saved and is available upon request or through the project repository.
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Is the software used to preprocess/clean/label the instances available?
+    }
+    If so, please provide a link or other access point.
+    } \\
+    %%%
+    Yes, the software and scripts used for preprocessing, cleaning, and labeling are available in the project repository.
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No additional comments.
+    %%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    USES
+}}
+\end{mdframed}
+
+    \textcolor{\sectioncolor}{\textbf{
+    Has the dataset been used for any tasks already?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    The retrieval datasets were initially developed by our team. Public resources of the knowledge base data have been utilized for various tasks, including link prediction on knowledge graphs, recommendation systems, and text classification, among others. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Is there a repository that links to any or all papers or systems that use the dataset?
+    }
+    If so, please provide a link or other access point.
+    } \\
+    %%%
+    As stated, the retrieval datasets were initially developed by our team; therefore, this is not applicable currently. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    What (other) tasks could the dataset be used for?
+    }
+    } \\
+    %%%
+    Entity Recognition and Linking, Personalized Search, Query Type Classification, Knowledge Graph Completion.  \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Is there anything about the composition of the dataset or the way it was
+    collected and preprocessed/cleaned/labeled that might impact future uses?
+    }
+    For example, is there anything that a future user might need to know to
+    avoid uses that could result in unfair treatment of individuals or groups
+    (e.g., stereotyping, quality of service issues) or other undesirable harms
+    (e.g., financial harms, legal risks) If so, please provide a description.
+    Is there anything a future user could do to mitigate these undesirable
+    harms?
+    } \\
+    %%%
+    \begin{itemize}[leftmargin=*]
+        \item Accuracy of Ground Truth Answers: The ground truth answers for each synthesized query are filtered automatically through Large Language Models (LLMs). Despite our efforts to ensure high accuracy, there is a possibility of including missing answers or false answers in the ground truth, resulting in mislabeled data. This can impact the reliability of the dataset and any models trained on it.\vspace{3pt}\\
+        Mitigation: Future users should rigorously validate the ground truth answers against additional data sources or through manual verification processes to ensure accuracy and reliability.
+
+        \item Diversity of Queries: The diversity of the queries can be further strengthened to better reflect a broad user group. The current dataset may not fully encompass the variety of queries that different user demographics might generate, potentially leading to biased or non-representative results.\vspace{3pt}\\
+        Mitigation: Enhancing the dataset with queries from a wider range of user groups and demographics can improve its representativeness. Regularly updating the dataset to include new and diverse query types can also help mitigate this issue.
+        
+    \end{itemize}
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Are there tasks for which the dataset should not be used?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    There are no specific forbidden cases based on the creator's knowledge. However, for tasks involving privacy and fairness, users should exercise caution. Ensure compliance with data privacy regulations and implement fairness-aware algorithms to avoid biases. Be mindful of ethical implications and document methods transparently to foster trust and accountability. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No. \\
+    %%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    DISTRIBUTION
+}}
+\end{mdframed}
+
+    \textcolor{\sectioncolor}{\textbf{
+    Will the dataset be distributed to third parties outside of the entity
+    (e.g., company, institution, organization) on behalf of which the dataset
+    was created?
+    }
+    If so, please provide a description.
+    } \\
+    %%%
+    No. But third parties are free to use our public datasets. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    How will the dataset will be distributed (e.g., tarball on website, API,
+    GitHub)?
+    }
+    Does the dataset have a digital object identifier (DOI)?
+    } \\
+    %%%
+    Website: \href{https://stark.stanford.edu/}{\textcolor{Violet}{https://stark.stanford.edu/}},  DOI: https://doi.org/10.57967/hf/2530\\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    When will the dataset be distributed?
+    }
+    } \\
+    %%%
+    The dataset has been made available up to the current date.\\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Will the dataset be distributed under a copyright or other intellectual
+    property (IP) license, and/or under applicable terms of use (ToU)?
+    }
+    If so, please describe this license and/or ToU, and provide a link or other
+    access point to, or otherwise reproduce, any relevant licensing terms or
+    ToU, as well as any fees associated with these restrictions.
+    } \\
+    %%%
+    No. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Have any third parties imposed IP-based or other restrictions on the data
+    associated with the instances?
+    }
+    If so, please describe these restrictions, and provide a link or other
+    access point to, or otherwise reproduce, any relevant licensing terms, as
+    well as any fees associated with these restrictions.
+    } \\
+    %%%
+    No.\\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Do any export controls or other regulatory restrictions apply to the
+    dataset or to individual instances?
+    }
+    If so, please describe these restrictions, and provide a link or other
+    access point to, or otherwise reproduce, any supporting documentation.
+    } \\
+    %%%
+    No. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No. \\
+    %%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{mdframed}[linecolor=\sectioncolor]
+\subsubsection*{\textcolor{\sectioncolor}{
+    MAINTENANCE
+}}
+\end{mdframed}
+
+    \textcolor{\sectioncolor}{\textbf{
+    Who is supporting/hosting/maintaining the dataset?
+    }
+    } \\
+    %%%
+    Stanford Leskovec and Zou's groups. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    How can the owner/curator/manager of the dataset be contacted (e.g., email
+    address)?
+    }
+    } \\
+    %%%
+    \href{stark-qa@cs.stanford.edu}{stark-qa@cs.stanford.edu} \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Is there an erratum?
+    }
+    If so, please provide a link or other access point.
+    } \\
+    %%%
+    Currently, there is no erratum for the dataset. If any errors are identified in the future, an erratum will be provided and made accessible through the official project repository or publication venue. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Will the dataset be updated (e.g., to correct labeling errors, add new
+    instances, delete instances)?
+    }
+    If so, please describe how often, by whom, and how updates will be
+    communicated to users (e.g., mailing list, GitHub)?
+    } \\
+    %%%
+    Yes, by core development team listed in \href{https://stark.stanford.edu/team.html}{https://stark.stanford.edu/team.html}. We will update the dataset with regard to user submitted issues.\\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    If the dataset relates to people, are there applicable limits on the
+    retention of the data associated with the instances (e.g., were individuals
+    in question told that their data would be retained for a fixed period of
+    time and then deleted)?
+    }
+    If so, please describe these limits and explain how they will be enforced.
+    } \\
+    %%%
+    No. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Will older versions of the dataset continue to be
+    supported/hosted/maintained?
+    }
+    If so, please describe how. If not, please describe how its obsolescence
+    will be communicated to users.
+    } \\
+    %%%
+    Yes. They will be made available in our website. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    If others want to extend/augment/build on/contribute to the dataset, is
+    there a mechanism for them to do so?
+    }
+    If so, please provide a description. Will these contributions be
+    validated/verified? If so, please describe how. If not, why not? Is there a
+    process for communicating/distributing these contributions to other users?
+    If so, please provide a description.
+    } \\
+    %%%
+    Yes. They can contribute via 1) GitHub pull request, which will list them as contributors in the GitHub page. 2) Communicate with the core development team for more collaboration. The contact information is available on \href{https://stark.stanford.edu/team.html}{https://stark.stanford.edu/team.html}. \\
+    %%%
+
+    \textcolor{\sectioncolor}{\textbf{
+    Any other comments?
+    }} \\
+    %%%
+    No. \\
+    %%%
+
+\newpage
+
+%%%%%%%%%% ORIGINAL REQUIREMENTS %%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Include extra information in the appendix. This section will often be part of the supplemental material. Please see the call on the NeurIPS website for links to additional guides on dataset publication.
+
+% \begin{enumerate}
+
+% \item Submission introducing new datasets must include the following in the supplementary materials:
+% \begin{enumerate}
+%   \item Dataset documentation and intended uses. Recommended documentation frameworks include datasheets for datasets, dataset nutrition labels, data statements for NLP, and accountability frameworks.
+%   \item URL to website/platform where the dataset/benchmark can be viewed and downloaded by the reviewers.
+%   \item URL to Croissant metadata record documenting the dataset/benchmark available for viewing and downloading by the reviewers. You can create your Croissant metadata using e.g. the Python library available here: https://github.com/mlcommons/croissant
+%   \item Author statement that they bear all responsibility in case of violation of rights, etc., and confirmation of the data license.
+%   \item Hosting, licensing, and maintenance plan. The choice of hosting platform is yours, as long as you ensure access to the data (possibly through a curated interface) and will provide the necessary maintenance.
+% \end{enumerate}
+
+% \item To ensure accessibility, the supplementary materials for datasets must include the following:
+% \begin{enumerate}
+%   \item Links to access the dataset and its metadata. This can be hidden upon submission if the dataset is not yet publicly available but must be added in the camera-ready version. In select cases, e.g when the data can only be released at a later date, this can be added afterward. Simulation environments should link to (open source) code repositories.
+%   \item The dataset itself should ideally use an open and widely used data format. Provide a detailed explanation on how the dataset can be read. For simulation environments, use existing frameworks or explain how they can be used.
+%   \item Long-term preservation: It must be clear that the dataset will be available for a long time, either by uploading to a data repository or by explaining how the authors themselves will ensure this.
+%   \item Explicit license: Authors must choose a license, ideally a CC license for datasets, or an open source license for code (e.g. RL environments).
+%   \item Add structured metadata to a dataset's meta-data page using Web standards (like schema.org and DCAT): This allows it to be discovered and organized by anyone. If you use an existing data repository, this is often done automatically.
+%   \item Highly recommended: a persistent dereferenceable identifier (e.g. a DOI minted by a data repository or a prefix on identifiers.org) for datasets, or a code repository (e.g. GitHub, GitLab,...) for code. If this is not possible or useful, please explain why.
+% \end{enumerate}
+
+% \item For benchmarks, the supplementary materials must ensure that all results are easily reproducible. Where possible, use a reproducibility framework such as the ML reproducibility checklist, or otherwise guarantee that all results can be easily reproduced, i.e. all necessary datasets, code, and evaluation procedures must be accessible and documented.
+
+% % \item For papers introducing best practices in creating or curating datasets and benchmarks, the above supplementary materials are not required.
+% \end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% \renewcommand\refname{REFERENCES}
+% \bibliographystyle{ACM-Reference-Format}
+% \bibliography{ref}
+
+\clearpage
+
+\appendix
+\clearpage
+\end{document}
+
+
+

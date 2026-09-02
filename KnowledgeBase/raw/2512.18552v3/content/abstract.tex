@@ -1,0 +1,11 @@
+\begin{abstract}
+While current software agents powered by large language models (LLMs) and reinforcement learning (RL) can boost programmer productivity, their reliance on human-curated training data and environments creates a fundamental barrier to superintelligence.
+In this paper, we present \mbox{\techfull} (\tech), a first step toward training superintelligent software agents under minimal data assumptions.
+\tech requires only access to sandboxed repositories with source code and dependencies, no need for human-labeled issues or test commands.
+Grounded in real-world codebases, a single LLM agent is trained via RL in a self-play setting to inject and repair increasingly complex bugs.
+The bugs are formally specified by test suite improvements proposed by the agent rather than natural language issue descriptions.
+On the \sbv and \sbp benchmarks, \tech achieves clear self-improvement (+10.4 and +7.8 points) and consistently outperforms the human-data baseline throughout training, generalizing to natural language bug descriptions not seen in training.
+Overall, our results point toward a paradigm where agents autonomously gather extensive learning experiences from real software repositories, ultimately enabling superintelligent systems that exceed human capabilities in understanding, modifying, and creating software from scratch.
+
+
+\end{abstract}

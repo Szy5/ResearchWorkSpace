@@ -1,0 +1,58 @@
+\begin{table}[ht!]
+\centering
+\caption{\textbf{Cross-domain generalization results on ALFWorld Unseen.} Using Qwen2.5-3B-Instruct as the backbone, we evaluate performance on six unseen task categories. SEED outperforms GRPO on five categories and increases the average success rate by 15.3 percentage points.}
+\vspace{0.05in}
+\label{tab:ood_generalization_alfworld}
+\small
+\setlength{\tabcolsep}{9pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{cccccccc}
+\toprule[1.2pt]
+& \multicolumn{7}{c}{\textbf{ALFWorld Unseen}} \\
+\cmidrule(lr){2-8}
+\textbf{Method}
+& \textbf{Pick}
+& \textbf{Look}
+& \textbf{Clean}
+& \textbf{Heat}
+& \textbf{Cool}
+& \textbf{Pick2}
+& \textbf{Avg.} \\
+\midrule
+ReAct
+& 17.4
+& 6.7
+& 8.8
+& 7.4
+& 9.1
+& 0.0
+& 8.2 \\
+GRPO
+& 73.9
+& 60.0
+& \textbf{82.4}
+& 59.3
+& 72.7
+& 76.9
+& 70.9 \\
+\rowcolor{gray!10}
+SEED
+& \textbf{90.4}
+& \textbf{78.3}
+& 79.5
+& \textbf{94.3}
+& \textbf{86.2}
+& \textbf{88.2}
+& \textbf{86.2} \\
+\rowcolor{blue!6}
+$\Delta$
+& +16.5
+& +18.3
+& -2.9
+& +35.0
+& +13.5
+& +11.3
+& +15.3 \\
+\bottomrule[1.2pt]
+\end{tabular}
+\end{table}

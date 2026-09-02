@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P03",
+    "P04"
+  ],
+  "secondary_pattern_names": [
+    "Representation Shift & Primitive Recasting",
+    "Modular Pipeline Composition"
+  ],
+  "confidence": "high",
+  "reasoning": "论文从明确的矛盾出发——在“环境绑定的精确验证”和“开放式自生成功能”之间的缺口，提出将该缺口重构为以技能库为中心的训练约束与接口，典型地属于Gap-Driven Reframing（P01）。同时，作者将散乱执行轨迹重塑为可复用的技能原语，符合Representation Shift（P03）；并以\"Proposer\"、\"Solver\"、\"Controller\"三模块构成可替换的训练流水线，体现Modular Pipeline Composition（P04）。实验证明方法在\"Qwen3-4B-Ins\"及\"API-Bank\"、\"BFCL\"、\"ZebraLogic\"等数据集/基准上有效。"
+}

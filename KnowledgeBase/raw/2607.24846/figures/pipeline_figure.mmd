@@ -1,0 +1,18 @@
+flowchart LR
+    A["Dialogue, user profile, goal"]
+    B["Catalog metadata, tags, external track/artist signals"]
+    C["Interface 1: knowledge-enriched query/doc textualization<br/>Query: recent listens + session summary + goal/cues + current request<br/>Doc: title/artist + release + mood/themes + tags + suitable-for"]
+    D["Hybrid ranker<br/>BM25 + Qwen3 dense + Qwen3-8B two-tower"]
+    E["RRF fusion + LightGBM LambdaRank"]
+    F["Top-20 tracks"]
+    G["Interface 2: evidence-grounded PAS response<br/>Propose evidence groups -> Assign dialogue/track evidence -> Select repair/citations"]
+    H["prediction.json"]
+
+    A --> C
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    A --> G
+    F --> G
+    G --> H

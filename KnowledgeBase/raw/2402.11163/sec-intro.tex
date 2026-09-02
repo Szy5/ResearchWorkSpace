@@ -1,0 +1,23 @@
+\section{Introduction}
+\label{introduction}
+Despite the remarkable performance on various NLP tasks~\cite{brown-NIPS-20,zhao-arxiv-23}, large language models~(LLMs) still have limited capacities in solving complex tasks~\cite{Hu-arxiv-2023-do} solely based on their parametric knowledge, \eg multi-hop and knowledge-intensive reasoning~\cite{Lan-KBQA_survey-2023}.
+Knowledge graph~(KG), which stores massive knowledge triples in a graph-structured format, has been broadly used to complement LLMs with external knowledge~\cite{Pan-arxiv-unifying}.
+
+Due to the large volume and structured format of KG data, it is not easy for LLMs to effectively utilize the information from KG. 
+Recent work mainly adopts \textit{retrieval-augmented}~\cite{RNG-KBQA} or \textit{synergy-augmented}~\cite{Jiang-2023-arxiv-StructGPT} methods to enhance LLMs with KG data.
+The former approach retrieves and serializes the task-related triples as part of the prompt for LLMs, while the latter approach designs an information interaction mechanism between KG and LLMs to iteratively find the solution to the question. 
+In particular, synergy-augmented methods can benefit from the structured search on KG (\eg SPARQL) and the language understanding capacity of LLMs, achieving comparable or even better performance compared with previous state-of-the-art methods~\cite{Gu-ACL-23}. 
+
+However, there are still two major limitations on existing synergy-augmented methods. 
+First, the information interaction mechanism between LLM and KG is often pre-defined (\eg following a human-crafted multi-round plan), which cannot flexibly adapt to various complex tasks~\cite{Luo-arxiv-23-Reasoning, Jiang-2023-arxiv-StructGPT}. For instance, it would become ineffective to handle the unintended requirements in the reasoning process, \eg varied difficulties or constraints.  
+Second, these methods~\cite{wang-arxiv-2023-a} mostly rely on stronger closed-source LLM APIs (\eg ChatGPT and GPT-4) to understand or learn to solve complex tasks. However, the distilled plans or procedures, also limited to special task settings or capacity levels,  may not be best suited for instructing these weaker models. 
+
+To address these issues, in this paper, we propose the \textbf{KG-Agent}, an autonomous LLM-based agent framework for complex reasoning tasks over KG. 
+The motivations are twofold: (1) designing autonomous reasoning approaches that can actively make decisions during reasoning, without human assistance; (2) enabling relatively small models (\eg 7B LLM) to effectively perform complex reasoning,  without reliance on close-sourced LLM APIs. 
+To achieve this, our approach makes three major technical contributions. First, we extend the LLM's capacity to manipulate structured data by curating a multifunctional toolbox, enabling LLM to perform discrete or advanced operations (\eg filtering, counting, and retrieval) on KG data and intermediate results. Second, we leverage existing KG reasoning datasets for synthesizing code-based instruction data to fine-tune the LLM, where we first generate the program according to the reasoning chain on KG and then synthesize the instruction data. 
+Third, we propose an autonomous iteration mechanism based on tool selection and memory updation that integrates the tuned LLM, multifunctional toolbox, KG-based executor, and knowledge memory, for autonomously reasoning over KG.
+ 
+To verify the effectiveness, we evaluate  KG-Agent on both in-domain and out-of-domain tasks including KG-based question answering~(KGQA) and open domain question answering~(ODQA).
+With much fewer training data (\ie 10K samples) for tuning a smaller LLM (\ie LLaMA-7B), our approach can outperform competitive LLM-based baselines on in-domain datasets~(\eg using about 36\% and 23\% of the original training set amount while obtaining 7.5\% and 2.7\% relative improvement of F1 on CWQ and GrailQA respectively).
+On the out-of-domain datasets, the zero-shot performance of our KG-Agent is better than competitive full-data supervised fine-tuning models~(\eg 9.7\% and 8.5\% relative improvement of accuracy on WQ-Freebase and TQ-Wiki, respectively).
+

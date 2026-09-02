@@ -1,0 +1,12 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P03"
+  ],
+  "secondary_pattern_names": [
+    "Representation Shift & Primitive Recasting"
+  ],
+  "confidence": "high",
+  "reasoning": "论文从实证缺口出发——发现并量化了“检索等价崩溃”（retrieval-equivalence collapse），并不是单纯改进奖励而是通过重构策略—环境接口来解决：将自由文本查询重述为基于段落—句子—实体图的有限动作选择（\"Harness-G\"），并借此设计结构化非短视信用分配（\"SNC\"）。这一思路典型地把观察到的限制转化为新的问题表述与约束，符合P01 的核心——Gap-Driven Reframing。作为次要模式匹配P03：方法实质上改变了检索的核心原语（把自由查询表示重铸为图上离散选择），即通过表示/原语转换（paragraph–sentence–entity graph）使问题几何与计算性更易处理（同时对比了\"Graph-R1\"和\"Search-R1\"基线并在\"六个问答基准\"上验证）。"
+}

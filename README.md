@@ -6,7 +6,7 @@
 
 ## 简介
 
-Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `raw/` 下的 LaTeX 论文源码，先构建 deterministic **paper assets**，再按需调用 LLM 生成每篇论文的 **Layer 1 语义产物**，审查通过后可选地把论文、作者、科学范式增量写入 **Layer 2 Neo4j 图谱**。
+Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `KnowledgeBase/raw/` 下的 LaTeX 论文源码，先构建 deterministic **paper assets**，再按需调用 LLM 生成每篇论文的 **Layer 1 语义产物**，审查通过后可选地把论文、作者、科学范式增量写入 **Layer 2 Neo4j 图谱**。
 
 当前已实现：
 
@@ -38,16 +38,16 @@ pip install -r requirements.txt && pip install -e .
 # 2. 配置 LLM（复制模板后填入密钥）
 cp .env.example .env
 
-# 3. 放入论文 LaTeX 到 raw/{paper-slug}/，先解析/构建 assets，再生成语义产物
+# 3. 放入论文 LaTeX 到 KnowledgeBase/raw/{paper-slug}/，先解析/构建 assets，再生成语义产物
 paper-wiki parse GraphWalker
 paper-wiki assets GraphWalker
 paper-wiki ingest GraphWalker --overwrite
 ```
 
-产物输出到 `artifacts/GraphWalker/`：
+产物输出到 `KnowledgeBase/artifacts/GraphWalker/`：
 
 ```
-artifacts/GraphWalker/
+KnowledgeBase/artifacts/GraphWalker/
 ├── manifest.json
 ├── assets/
 │   ├── paper.md
@@ -408,10 +408,11 @@ paper-wiki publish wechat 2406.00552 --html article.html
 
 ```
 Paper-wiki/
-├── raw/{paper-slug}/       # Layer 0：LaTeX 源码（只读）
-├── artifacts/{paper-slug}/ # Layer 1：assets + 语义产物输出
-├── graph_state/            # Layer 2：本地图谱快照（papers/authors/patterns/relations...)
-├── graph_updates/          # Layer 2：增量 JSONL 事件 + apply checkpoint
+├── KnowledgeBase/              # 运行时知识库（下载、产物、图谱；与代码分离）
+│   ├── raw/{paper-slug}/       # Layer 0：LaTeX 源码（只读）
+│   ├── artifacts/{paper-slug}/ # Layer 1：assets + 语义产物输出
+│   ├── graph_state/            # Layer 2：本地图谱快照（papers/authors/patterns/relations...)
+│   └── graph_updates/          # Layer 2：增量 JSONL 事件 + apply checkpoint
 ├── prompts/                # LLM prompt 模板与范式 taxonomy
 ├── src/paper_wiki/         # 核心代码
 │   ├── cli/                # Typer CLI
@@ -432,11 +433,11 @@ Paper-wiki/
 ## 架构概览
 
 ```
-  raw/{slug}/          prompts/
-  LaTeX + figures  +   模板 / taxonomy
-        │                    │
-        └────────┬───────────┘
-                 ▼
+  KnowledgeBase/raw/{slug}/          prompts/
+  LaTeX + figures               +   模板 / taxonomy
+        │                                │
+        └────────────────┬───────────────┘
+                         ▼
           ┌──────────────┐
           │  LaTeX Parser │  Layer 0
           └──────┬───────┘

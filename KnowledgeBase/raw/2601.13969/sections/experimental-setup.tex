@@ -1,0 +1,28 @@
+%!TEX root = ../main.tex
+
+\section{Experimental Setup}
+\label{sec:experiments}
+We measure retrieval performance on STaRK, a benchmark for entity-level retrieval over heterogeneous, text-rich KGs \cite{wu_stark_2024}.
+
+\subsection{Benchmark}
+
+STaRK comprises three large, heterogeneous knowledge graphs. \textbf{AMAZON} is an e-commerce graph with roughly 1M entities and 9.4M relations, constructed from Amazon metadata, reviews \cite{he_ups_2016}, and question--answer pairs \cite{mcauley_inferring_2015}. \textbf{MAG} is a scholarly graph with 1.9M entities and 39.8M relations derived from the Microsoft Academic Graph \cite{wang_microsoft_2020}. \textbf{PRIME} is a biomedical graph built from PrimeKG \cite{chandak_building_2023}, containing 129K entities and 8.1M relations. Each node is associated with text-rich attributes, making STaRK a natural testbed for hybrid retrieval over structured and textual signals. Given a query, the retriever must return a ranked list of nodes that support the answer. We report agent configuration and hyperparameters in Appendix~\ref{app:impl-details}.
+
+\subsection{Baselines and metrics}
+
+We compare with representative retrieval-based and agent-based baselines, focusing on methods that report results on all three graphs, as our goal is to evaluate performance consistently across different regimes and assess generality.
+
+\slimparagraph{Retrieval-based.} \textbf{BM25} \cite{robertson_probabilistic_2009} is the same sparse, lexical retriever used for global search. We also include dense embedding retrievers that rank nodes by cosine similarity, using \textbf{ada-002} and \textbf{GritLM-7B}, an instruction-tuned 7B encoder \cite{muennighoff_generative_2025}. \textbf{mFAR}~\cite{li_multi-field_2025} is a multi-field adaptive retriever that combines keyword matching with embedding similarity to learn query-dependent weights over different node fields. \textbf{KAR}~\cite{xia_knowledge-aware_2025} augments queries with knowledge-aware expansions and applies relation-type constraints during retrieval. \textbf{MoR}~\cite{lei_mixture_2025} is a trained retriever that combines multiple retrieval objectives.
+
+\slimparagraph{Agent-based.} \textbf{Think-on-Graph} \cite{sun_think--graph_2024} is a training-free LLM agent that iteratively expands paths in the graph using beam search. \textbf{GraphFlow} \cite{yu_can_2025} learns a policy for generating multi-hop retrieval trajectories using GFlowNets \cite{bengio_flow_2021}. \textbf{AvaTaR} \cite{wu_avatar_2024} is a tool-using agent that optimizes prompting from positive and negative trajectories.
+
+Results for KAR, mFAR, MoR, AvaTaR, and GraphFlow are reported as in their respective papers, which evaluate on the official STaRK splits and metrics. For Think-on-Graph, we report the numbers provided in the GraphFlow study, which includes a direct comparison to Think-on-Graph under the same STaRK setup \cite{yu_can_2025,sun_think--graph_2024}.
+
+\slimparagraph{Metrics.} We follow the STaRK protocol and report Hit@1, Hit@5, Recall@20 (R@20), and Mean Reciprocal Rank (MRR), which capture top-rank precision, coverage of the ground-truth set, and overall ranking quality. Note that Hit@5 is reported in \cref{tab:full-stark-results} in the Appendix.
+
+\slimparagraph{Backbones.} Our primary configuration uses GPT-4.1 as the backbone LLM throughout the paper. Appendix \Cref{tab:full-stark-results} additionally reports results with GPT-4o for comparability with prior KG retrievers such as KAR and Think-on-Graph, and with GPT-5.2 to verify that the retrieval interface transfers to a newer backbone on the same splits.
+
+\subsection{Distillation Setup}
+\label{sec:distillation-setup}
+
+For each graph, we collect teacher trajectories on the training split to distill \retrieverShort into a smaller, lower-cost model (\Cref{subsec:distill}), offering a viable alternative when under tighter compute budgets. Using GPT-4.1 as the teacher, we run \retrieverShort three times per training query with stochastic decoding (temperature $= 0.7$), producing three trajectories per query. We cap the distillation budget by subsampling up to 6{,}000 training queries per graph, yielding at most 18{,}000 trajectories per graph (full statistics in \cref{tab:traj_counts}) and summing to 94.4 million tokens. Each trajectory is limited to $T_{\max}{=}20$ steps and ends when the agent issues \textsc{finish} or reaches the step limit. We apply no trajectory filtering or rejection sampling, preserving a label-free setting. We then distill a Qwen3-8B \cite{yang_qwen3_2025} student via supervised fine-tuning with LoRA adapters \cite{hu_lora_2021}, using next-token prediction over assistant-authored tokens only. We train for one epoch with a 16{,}384-token context length using AdamW \cite{loshchilov_decoupled_2019} at learning rate $1\times 10^{-5}$, selecting checkpoints via early stopping on the official validation split. Training runs on a single NVIDIA H100 GPU and completes in approximately five hours.

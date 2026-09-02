@@ -1,0 +1,12 @@
+{
+  "primary_pattern": "P04",
+  "primary_pattern_name": "Modular Pipeline Composition",
+  "secondary_patterns": [
+    "P01"
+  ],
+  "secondary_pattern_names": [
+    "Gap-Driven Reframing"
+  ],
+  "confidence": "high",
+  "reasoning": "论文 \"2607.24846\" 明确将检索与生成在系统级别解耦，构建了两个专用检索池（混合词法-密集视图与经过微调的 \"Qwen 8B\" 适配器视图）、用 \"LightGBM\" 做候选校准，并通过证据驱动的 \"PAS\" 框架把生成约束为基于候选和元数据的可验证输出——这是典型的模块化流水线构建（P04）。同时，论文始于对传统单一接口会淡化实体线索这一缺口的诊断并据此改写问题陈述以解耦模块，匹配 Gap-Driven Reframing（P01）。"
+}

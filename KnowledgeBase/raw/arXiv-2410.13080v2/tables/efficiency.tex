@@ -1,0 +1,26 @@
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+% \usepackage{multirow}
+% \usepackage{graphicx}
+\begin{table*}[]
+    \centering
+    \caption{Efficiency and performance comparison of different methods on WebQSP.}
+    \label{tab:efficiency}
+    % \vspace{-0.2cm}
+    \resizebox{0.6\textwidth}{!}{%
+    \begin{tabular}{@{}c|c|c|c|c|c@{}}
+        \toprule
+        Types                            & \multicolumn{1}{c|}{Methods} & Hit           & Avg. Runtime (s) & Avg. \# LLM Calls & Avg. \# LLM Tokens \\ \midrule
+        \multirow{5}{*}{Retrieval-based} & S-Bert                       & 66.9          & 0.87             & 1                 & 293                \\
+                                         & BGE                          & 72.7          & 1.05             & 1                 & 357                \\
+                                         & OpenAI-Emb.                  & 79.0          & 1.77             & 1                 & 330                \\\cmidrule{2-6}
+                                         & GNN-RAG                      & 85.7          & 1.52             & 1                 & 414                \\
+                                         & RoG                          & 85.7          & 2.60             & 2                 & 521                \\ \midrule
+        \multirow{2}{*}{Agent-based}     & ToG                          & 75.1          & 16.14             & 11.6              & 7,069              \\ 
+        & EffiQA                    & 82.9         & -             & 7.3              & -              \\
+        \midrule
+        Ours                             & \ourmethod                   & \textbf{92.6} & 3.60             & 2                 & 231                \\ \bottomrule
+        \end{tabular}%
+    }
+    % \vspace{-0.8cm}
+\end{table*}

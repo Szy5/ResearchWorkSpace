@@ -1,0 +1,20 @@
+% \begin{wraptable}{r}{0.6\textwidth}
+\begin{table}
+    \centering
+    \vspace{-0.4cm}
+    \caption{Ablation studies of \ourmethod on two KGQA datasets.}
+    \label{tab:ablation}
+    % \vspace{-0.3cm}
+    \resizebox{1\columnwidth}{!}{%
+    \begin{tabular}{@{}l|ccc|ccc@{}}
+    \toprule
+    \multicolumn{1}{c|}{\multirow{2}{*}{Variants}} & \multicolumn{3}{c|}{WebQSP}                   & \multicolumn{3}{c}{CWQ}                       \\ \cmidrule(l){2-7} 
+    \multicolumn{1}{c|}{}                          & F1            & Precision     & Recall        & F1            & Precision     & Recall        \\ \midrule
+    \ourmethod (Llama-3.1-8B + ChatGPT)                                    & \textbf{73.2} & \textbf{80.0} & \textbf{76.9} & \textbf{60.9} & \textbf{61.1} & \textbf{66.6} \\
+    \ourmethod $w/o$ KG-specialized LLM            & 52.9          & 66.3          & 50.2          & 37.5          & 40.8          & 37.9          \\
+    \ourmethod $w/o$ General LLM                   & 57.0          & 58.0          & 70.1          & 39.4          & 32.8          & 64.3          \\ \bottomrule
+    \end{tabular}%
+    }
+    % \vspace{-.2cm}
+\end{table}
+    % \end{wraptable}

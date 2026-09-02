@@ -1,0 +1,94 @@
+% \begin{table*}[h]
+%     \centering
+%     \footnotesize 
+%     \setlength{\tabcolsep}{3.0pt} 
+%     % --- Using @{...} to add extra space after the 'Incorr.' columns ---
+%     \begin{tabular}{l|cc@{\hskip 14pt}cc|cc@{\hskip 14pt}cc|cc}
+%     \toprule
+%     \multirow{3}{*}{\makecell[c]{\textbf{Reward}\\\textbf{Combination}}} & \multicolumn{8}{c|}{\textbf{Hallucination}} & \multicolumn{2}{c}{\textbf{Reasoning}} \\
+%     \cmidrule(lr){2-9} \cmidrule(lr){10-11}
+%     & \multicolumn{4}{c|}{\textbf{SimpleQA}} & \multicolumn{4}{c|}{\textbf{ChineseSimpleQA}} & \multirow{2}{*}{\makecell[c]{\small\textbf{GPQA}\\\small\textbf{Diamond}}} & \multirow{2}{*}{\small\textbf{AIME}}\\
+%     \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+%     & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & & \\
+    
+%     \midrule
+%     \rowcolor{lightgray} \multicolumn{11}{c}{\textit{\textbf{DeepSeek-R1-Distill-Qwen-7B}}} \\
+%     \midrule
+%     $R = r_{\text{format}}$ & 2.63 & 74.00 & 24.00 & \underline{2.27} & 7.08 & 74.33 & 20.00 & 6.29 & \underline{39.39} & 30.00  \\
+%     $R = r_{\text{format}} + r_{\text{fact}}$ & 2.42 & \perf{80.67}{+6.67} & 17.33 & 2.19 & 8.87 & \perf{75.33}{+1.00} & 17.33 & \underline{8.03} & \textbf{47.47} & \textbf{40.00} \\
+%     $R = r_{\text{format}} + r_{\text{correct}}$ & \textbf{3.19} & \perf{60.67}{-13.3} & \underline{37.33} & \textbf{2.46} & \underline{8.89} & \perf{41.00}{-33.3} & \textbf{55.00} & 5.52 & 38.89 & \textbf{40.00} \\
+%     $R = R_{total}$ (\textbf{KnowRL}) & \underline{2.81} & \perf{57.67}{-16.3} & \textbf{40.67} & 2.09 & \textbf{10.26} & \perf{58.33}{-16.0} & \underline{35.00} & \textbf{8.08} & 37.37 & \underline{33.33} \\
+%     \addlinespace[0.5pt] % Adjust the space here
+%     KnowRL ($R_{refusal}=-1$) & 1.26 & \perf{78.67}{+4.67} & 20.33 & 1.11 & 7.66 & \perf{84.33}{+10.0} & 8.67 & 7.32 & 34.85 & 30.00 \\
+    
+%     \bottomrule
+%     \end{tabular}
+%     \caption{\textbf{Ablation Study.} Ablation study on different reward combinations for the DeepSeek-R1-Distill-Qwen-7B model. The best results are marked in \textbf{bold}, and the second-best results are \underline{underlined}.}
+%     \vspace{-3ex}
+%     \label{tab:ablation}
+% \end{table*}
+
+%$R_{correct}(o=refusal)=-1$
+
+
+
+
+\begin{table*}[h]
+    \centering
+    \footnotesize 
+    \setlength{\tabcolsep}{3.0pt} 
+    % --- Using @{...} to add extra space after the 'Incorr.' columns ---
+    \begin{tabular}{l|cc@{\hskip 14pt}cc|cc@{\hskip 14pt}cc|cc}
+    \toprule
+    \multirow{3}{*}{\makecell[c]{\textbf{Method}}} & \multicolumn{8}{c|}{\textbf{Hallucination}} & \multicolumn{2}{c}{\textbf{Reasoning}} \\
+    \cmidrule(lr){2-9} \cmidrule(lr){10-11}
+    & \multicolumn{4}{c|}{\textbf{SimpleQA}} & \multicolumn{4}{c|}{\textbf{ChineseSimpleQA}} & \multirow{2}{*}{\makecell[c]{\small\textbf{GPQA}\\\small\textbf{Diamond}}} & \multirow{2}{*}{\small\textbf{AIME}}\\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+    & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & \small\textbf{PAQ} & \small\textbf{Incorrect} & \small\textbf{Refusal} & \small\textbf{F1} & & \\
+    
+    \midrule
+    \rowcolor{lightgray} \multicolumn{11}{c}{\textit{\textbf{Ablation on Reward Combination (Base Model: DeepSeek-R1-Distill-Qwen-7B)}}} \\
+    \midrule
+    $R = r_{\text{format}}$ & 2.63 & 74.00 & 24.00 & \underline{2.27} & 7.08 & 74.33 & 20.00 & 6.29 & \underline{39.39} & 30.00  \\
+    $R = r_{\text{format}} + r_{\text{fact}}$ & 2.42 & \perf{80.67}{+6.67} & 17.33 & 2.19 & 8.87 & \perf{75.33}{+1.00} & 17.33 & \underline{8.03} & \textbf{47.47} & \textbf{40.00} \\
+    $R = r_{\text{format}} + r_{\text{correct}}$ & \textbf{3.19} & \perf{60.67}{-13.33} & \underline{37.33} & \textbf{2.46} & \underline{8.89} & \perf{41.00}{-33.33} & \textbf{55.00} & 5.52 & 38.89 & \textbf{40.00} \\
+    $R = R_{total}$ (KnowRL) & \underline{2.81} & \perf{57.67}{-16.33} & \textbf{40.67} & 2.09 & \textbf{10.26} & \perf{58.33}{-16.00} & \underline{35.00} & \textbf{8.08} & 36.87 & \underline{33.33} \\
+    \addlinespace[0.5pt] % Adjust the space here
+    KnowRL ($R_{refusal}=-1$) & 1.26 & \perf{78.67}{+4.67} & 20.33 & 1.11 & 7.66 & \perf{84.33}{+10.00} & 8.67 & 7.32 & 34.85 & 30.00 \\
+    
+    \addlinespace[2pt]
+    \midrule
+    \rowcolor{lightgray} \multicolumn{11}{c}{\textit{\textbf{Robustness Analysis (Using GRPO reward, $R = R_{total}$)}}}\\
+    \midrule
+    
+    Zero-shot & 2.09 & 78.00 & 20.33 & 1.86 & 8.07 & 68.33 & 25.67 & 6.88 & 40.91 & 30.00 \\
+    \addlinespace[0.5pt]
+    KnowRL (DAPO) & 1.11 & \perf{59.33}{-18.67} & 40.00 & 0.83 & 9.14 & \perf{59.67}{-8.66} & 34.33 & 7.24 & 41.41 & 43.33 \\
+    KnowRL (BNPO) & 1.61 & \perf{61.00}{-17.00} & 38.00 & 1.23 & 11.48 & \perf{61.67}{-6.66} & 30.33 & 9.43 & 41.41 & 30.00 \\
+    KnowRL (Dr.GRPO) & 3.16 & \perf{61.33}{-16.67} & 36.67 & 2.45 & 11.33 & \perf{60.00}{-8.33} & 32.33 & 9.15 & 38.38 & 43.33 \\
+
+    \bottomrule
+    \end{tabular}
+    \caption{\textbf{Ablation and Robustness Analysis.} Impact of reward components and different RL algorithms for the DeepSeek-R1-Distill-Qwen-7B. In reward ablation section, best results are in \textbf{bold} and second-best are \underline{underlined}.}
+    \vspace{-3ex}
+    \label{tab:ablation}
+\end{table*}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

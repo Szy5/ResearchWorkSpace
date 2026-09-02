@@ -1,0 +1,38 @@
+\begin{table}[htbp]
+\centering
+\footnotesize % 11列指标较多，使用 \footnotesize 确保不超出版宽
+\renewcommand{\arraystretch}{1.3} % 稍微回调一点行高，配合 addlinespace 视觉最舒适
+
+% 定义学术级颜色
+\definecolor{softgreen}{rgb}{0.12, 0.60, 0.12} 
+\definecolor{softred}{rgb}{0.75, 0.25, 0.25} % 温和红色，用于标示消退实验中的性能下降
+
+% 定义不占用宽度的下标宏，保证主数字严格居中对齐
+\newcommand{\gain}[1]{\rlap{\textsubscript{\textcolor{softgreen}{#1}}}} 
+\newcommand{\drop}[1]{\rlap{\textsubscript{\textcolor{softred}{#1}}}} % 消退降幅下标
+\newcommand{\same}[1]{\rlap{\textsubscript{\textcolor{black}{#1}}}}
+
+\begin{tabular*}{1\textwidth}{l @{\extracolsep{\fill}} cccc ccccc c}
+\toprule
+% 表头结构与主表完全对齐，将最后一列改为 Overall 避免与前面的 Avg 混淆
+\multirow{2}{*}{\textbf{Ablation Variant}} & \multicolumn{4}{c}{\textbf{API-Bank}} & \multicolumn{5}{c}{\textbf{BFCL}} & \multirow{2}{*}{\textbf{Overall}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-10}
+ & L1 & L2 & L3 & Avg. & JS & Py & Java & Live & Avg. & \\
+\midrule
+\textbf{Full System} & \textbf{64.6} & \textbf{54.7} & \textbf{44.0} & \textbf{58.9} & \textbf{65.5} & \textbf{96.0} & \textbf{63.5} & \textbf{78.5} & \textbf{75.9} & \textbf{66.7} \\
+\midrule % 使用 midrule 将满血版和消融版隔开，逻辑更清晰
+\addlinespace[0.2em]
+
+\textbf{Unguided SP} & 60.2\drop{-4.4} & 46.3\drop{-8.4} & 40.8\drop{-3.2} & 54.4\drop{-4.5} & 65.8\gain{+0.3} & 95.0\drop{-1.0} & 63.0\drop{-0.5} & 77.9\drop{-0.6} & 75.4\drop{-0.5} & 64.1\drop{-2.6} \\
+\addlinespace[0.2em]
+
+\textbf{Uniform routing} & 60.8\drop{-3.8} & 50.4\drop{-4.3} & 39.7\drop{-4.3} & 55.0\drop{-3.9} & 64.0\drop{-1.5} & 95.9\drop{-0.1} & 64.1\gain{+0.6} & 78.5\same{+0.0} & 75.6\drop{-0.3} & 64.8\drop{-1.9} \\
+\addlinespace[0.2em]
+
+\textbf{Frozen skills} & 61.3\drop{-3.3} & 50.2\drop{-4.5} & 40.2\drop{-3.8} & 55.4\drop{-3.5} & 61.5\drop{-4.0} & 95.5\drop{-0.5} & 63.1\drop{-0.4} & 78.9\gain{+0.4} & 74.8\drop{-1.1} & 64.4\drop{-2.3} \\
+\bottomrule
+\end{tabular*}
+\vspace{1mm}
+\caption{\textbf{Quantitative ablations on the self-play data loop.} All variants are initialized with the Qwen3-4B-Instruct backbone, with each disabling a specific component of the proposal-side orchestration. Subscripts (\textcolor{softred}{\textbf{-Drop}}) indicate the absolute performance degradation compared to the full system.}
+\label{tab:ablations}
+\end{table}

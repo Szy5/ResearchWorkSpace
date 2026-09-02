@@ -1,0 +1,213 @@
+{
+  "figures": [
+    {
+      "id": "fig-intro",
+      "label": "fig:intro",
+      "caption": "",
+      "source_path": "figures/intro.pdf",
+      "asset_path": "assets/figures/intro.jpg",
+      "section_id": "sec-abstract",
+      "status": "rendered",
+      "source_sha256": "42b51a2066b955cede2cd5370cf7a43369436a4d3faafc121cccbc73783e88af",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-intro-radar",
+      "label": "fig:intro_radar",
+      "caption": "Performance footprint. Skill-SP broadly expands Qwen3-4B-Ins capabilities across tool-calling and logical reasoning. Notably, Unguided SP is absent from the latter as it fails to synthesize valid puzzles.",
+      "source_path": "figures/fig_qwen3_4b_performance_radar.pdf",
+      "asset_path": "assets/figures/intro-radar.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "0b802846359e37204b77528b62e902eaaf2714af0c2a90e24e5b5d2bae4af355",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-method",
+      "label": "fig:method",
+      "caption": "Overview of Skill Self-Play. An evolving skill library routes task-generation guidance to the proposer, which generates candidate tasks that undergo validity verification. Valid candidates are ranked by frontier reward to construct the solver curriculum. The resulting signals drive co-evolutionary proposer and solver updates, while validation failures, novel samples, and task-level statistics trigger skill refinement, pruning, and induction, distilling training feedback into reusable skills for subsequent task generation.",
+      "source_path": "figures/method.pdf",
+      "asset_path": "assets/figures/method.jpg",
+      "section_id": "sec-methodology",
+      "status": "rendered",
+      "source_sha256": "8377513b662b3143b998eeec36de387d5955b08a474a608825e709e693480e96",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-toolcall-data-efficiency",
+      "label": "fig:toolcall_data_efficiency",
+      "caption": "Tool-call ablations. Skill-SP improves more steadily than Unguided SP, while skill-only data underperforms the mixed pool.",
+      "source_path": "figures/fig_toolcall_data_efficiency.pdf",
+      "asset_path": "assets/figures/toolcall-data-efficiency.jpg",
+      "section_id": "sec-ablations",
+      "status": "rendered",
+      "source_sha256": "b5d426f212c06a4742fe22a80ae76258fe19ce1568118075aa91f4270b3037d8",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-toolcall-data-efficiency-2",
+      "label": "fig:toolcall_data_efficiency",
+      "caption": "Tool-call ablations. Skill-SP improves more steadily than Unguided SP, while skill-only data underperforms the mixed pool.",
+      "source_path": "figures/fig_skill_only_api_bank.pdf",
+      "asset_path": "assets/figures/toolcall-data-efficiency-2.jpg",
+      "section_id": "sec-ablations",
+      "status": "rendered",
+      "source_sha256": "dfd8d4554cf8d2dcb4eb1212e3f1f3ae8510cee2de60758ea05007a3bbb77200",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-data-loop-frontier-quality",
+      "label": "fig:data_loop_frontier_quality",
+      "caption": "Data-loop diagnostics for Qwen3-4B-Instruct tool-call self-play. Skill-stream records stay closer to the empirical frontier than both the exploration stream and Unguided SP, while the overall Skill-SP pool yields broader task coverage in the question-embedding space, and the skill library is continually induced, updated, and retired across self-play iterations.",
+      "source_path": "figures/fig_frontier_quality_a_frontier.pdf",
+      "asset_path": "assets/figures/data-loop-frontier-quality.jpg",
+      "section_id": "sec-data-loop-diagnostics",
+      "status": "rendered",
+      "source_sha256": "59e270ceb19c0d938df11062278e5e187bc43c638ce4387baf0adccb0d143873",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-data-loop-frontier-quality-2",
+      "label": "fig:data_loop_frontier_quality",
+      "caption": "Data-loop diagnostics for Qwen3-4B-Instruct tool-call self-play. Skill-stream records stay closer to the empirical frontier than both the exploration stream and Unguided SP, while the overall Skill-SP pool yields broader task coverage in the question-embedding space, and the skill library is continually induced, updated, and retired across self-play iterations.",
+      "source_path": "figures/fig_question_distribution.pdf",
+      "asset_path": "assets/figures/data-loop-frontier-quality-2.jpg",
+      "section_id": "sec-data-loop-diagnostics",
+      "status": "rendered",
+      "source_sha256": "cd3d396fa5b1849f722c9cc789700e93e4ef210cf91d46aa92135f27c08d4c5f",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-data-loop-frontier-quality-3",
+      "label": "fig:data_loop_frontier_quality",
+      "caption": "Data-loop diagnostics for Qwen3-4B-Instruct tool-call self-play. Skill-stream records stay closer to the empirical frontier than both the exploration stream and Unguided SP, while the overall Skill-SP pool yields broader task coverage in the question-embedding space, and the skill library is continually induced, updated, and retired across self-play iterations.",
+      "source_path": "figures/fig_frontier_quality_c_skill_lifecycle.pdf",
+      "asset_path": "assets/figures/data-loop-frontier-quality-3.jpg",
+      "section_id": "sec-data-loop-diagnostics",
+      "status": "rendered",
+      "source_sha256": "0101fa247dec0d8516e07f73880ea93d93741ee2a8fbd62cf3d124cc6e3309e2",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-skill-utilization",
+      "label": "fig:skill_utilization",
+      "caption": "Skill utilization. Active and effective skills grow steadily, driving broad curriculum expansion.",
+      "source_path": "figures/fig_skill_router_utilization.pdf",
+      "asset_path": "assets/figures/skill-utilization.jpg",
+      "section_id": "sec-data-loop-diagnostics",
+      "status": "rendered",
+      "source_sha256": "db84454a095830d08832f60c6c203551f22f63d01ce0e43eb6967aa0af5e6b36",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-qwen3-4b",
+      "label": "fig:app_iteration_qwen3_4b",
+      "caption": "Qwen3-4B-Instruct. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/tool-call/fig_iteration_qwen3_4b.pdf",
+      "asset_path": "assets/figures/app-iteration-qwen3-4b.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "f3d6a5195654587ba3b17dbb8d3eb0e7589b5fbcb673c922e21bca85255520ed",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-qwen3-4b-2",
+      "label": "fig:app_iteration_qwen3_4b",
+      "caption": "Qwen3-4B-Instruct. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/logical/fig_iteration_qwen3_4b.pdf",
+      "asset_path": "assets/figures/app-iteration-qwen3-4b-2.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "a22e6c202beb4a7d958783470f30204d4048bad79ef7eca628243a646de5733e",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-qwen3-8b",
+      "label": "fig:app_iteration_qwen3_8b",
+      "caption": "Qwen3-8B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/tool-call/fig_iteration_qwen3_8b.pdf",
+      "asset_path": "assets/figures/app-iteration-qwen3-8b.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "79369b5394a97830db1527473b68bc3c9d72ddcda32f9d3b5c4f7eb58d6db9cf",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-qwen3-8b-2",
+      "label": "fig:app_iteration_qwen3_8b",
+      "caption": "Qwen3-8B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/logical/fig_iteration_qwen3_8b.pdf",
+      "asset_path": "assets/figures/app-iteration-qwen3-8b-2.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "e604a590c644dcc4ebd560218210cfec2d05f437ba4c5151f9e0111ce3ab7353",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-granite-3b",
+      "label": "fig:app_iteration_granite_3b",
+      "caption": "Granite-4.1-3B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/tool-call/fig_iteration_granite_4_1_3b.pdf",
+      "asset_path": "assets/figures/app-iteration-granite-3b.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "a9606c83db0dd0f82326b2ade6e066effc54705852a0a21c35c35390a75b873c",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-granite-3b-2",
+      "label": "fig:app_iteration_granite_3b",
+      "caption": "Granite-4.1-3B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/logical/fig_iteration_granite_4_1_3b.pdf",
+      "asset_path": "assets/figures/app-iteration-granite-3b-2.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "7b10bf007b2cc120720b4d71bf3dcbbbf5cd1a0db863ab8c9095ed5a12d7d6f3",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-ministral-8b",
+      "label": "fig:app_iteration_ministral_8b",
+      "caption": "Ministral-3-8B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/tool-call/fig_iteration_ministral_3_8b.pdf",
+      "asset_path": "assets/figures/app-iteration-ministral-8b.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "44f23a3f1c3ac9df01439b3c383bbb792cedadf800c8024c623830913d700560",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-ministral-8b-2",
+      "label": "fig:app_iteration_ministral_8b",
+      "caption": "Ministral-3-8B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/logical/fig_iteration_ministral_3_8b.pdf",
+      "asset_path": "assets/figures/app-iteration-ministral-8b-2.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "b158f873f6c6911b7387390dcc9b89cfcde9ce64bc546256f7a82bdedd1c9652",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-ministral-14b",
+      "label": "fig:app_iteration_ministral_14b",
+      "caption": "Ministral-3-14B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/tool-call/fig_iteration_ministral_3_14b.pdf",
+      "asset_path": "assets/figures/app-iteration-ministral-14b.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "288bd9bfafc8c4149cee154ec611e48c0b75be1deaf97d0497ea5777c836756b",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-app-iteration-ministral-14b-2",
+      "label": "fig:app_iteration_ministral_14b",
+      "caption": "Ministral-3-14B. Held-out tool-call (left) and logical-reasoning (right) trajectories.",
+      "source_path": "figures/app_iteration/logical/fig_iteration_ministral_3_14b.pdf",
+      "asset_path": "assets/figures/app-iteration-ministral-14b-2.jpg",
+      "section_id": "sec-iteration-wise-evaluation-trajectories",
+      "status": "rendered",
+      "source_sha256": "9a5b4e51df1184b573d3092b839e24c9cabf1273f7786ff52dd0a6959eb9b182",
+      "media_type": "pdf"
+    }
+  ]
+}

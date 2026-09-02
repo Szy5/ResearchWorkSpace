@@ -1,0 +1,330 @@
+\section*{Appendix}
+
+\section{The Use of Large Language Models (LLMs)}
+We acknowledge the use of large language models (LLMs) as assistive tools in this research, with usage limited to refining grammar and improving language clarity in the manuscript, writing utility scripts for data preprocessing and postprocessing, and debugging; all outputs from these models were meticulously reviewed, revised, and verified by the authors, who retain full responsibility for all content presented in this paper.
+
+
+\section{Experiment Details}
+\label{app:traininghyper}
+\subsection{Training Hyperparameter}
+This section summarizes the most critical algorithmic hyperparameters for the Solver and Challenger training stages. All experiments were conducted using BFloat16 (BF16) mixed precision and FlashAttention 2.
+
+\subsubsection{Solver Training}
+\begin{itemize}
+    \item \textbf{Global Batch Size}: 128
+    \item \textbf{Learning Rate}: $1 \times 10^{-6}$
+    \item \textbf{Weight Decay}: $1 \times 10^{-2}$
+    \item \textbf{KL Penalty Coefficient} ($\lambda_{KL}$): $1 \times 10^{-2}$
+    \item \textbf{Max Steps}: 15
+    \item \textbf{Number of Rollouts}: 5
+    \item \textbf{Rollout Temperature}: 1.0
+    \item \textbf{Rollout Top-p}: 0.99
+\end{itemize}
+
+\subsubsection{Challenger Training}
+\begin{itemize}
+    \item \textbf{Global Batch Size}: 128
+    \item \textbf{Learning Rate}: $1 \times 10^{-6}$
+    \item \textbf{Weight Decay}: $1 \times 10^{-2}$
+    \item \textbf{KL Penalty Coefficient} ($\lambda_{KL}$): $1 \times 10^{-2}$
+    \item \textbf{Max Steps}: 5
+    \item \textbf{Number of Rollouts}: 4
+    \item \textbf{Rollout Temperature}: 1.0
+    \item \textbf{Rollout Top-p}: 0.99
+\end{itemize}
+\subsection{Prompt Templates}
+This section presents the exact prompt templates used for the solver and challenger models.
+
+\begin{tcolorbox}[
+  colback=blue!5!white,
+  colframe=blue!75!black,
+  title=\textbf{Solver Prompt Template},
+  fonttitle=\bfseries,
+  sharp corners
+]
+\textbf{System Message:}
+\par % New paragraph
+Please reason step by step, and put your final answer within \textbackslash boxed\{\}.
+
+\textbf{User Message:}
+\par
+\textit{\{problem\_statement\}}
+\par
+\vspace{0.5em}
+\textit{Note: \texttt{\{problem\_statement\}} is a placeholder for the actual math problem.}
+\end{tcolorbox}
+
+\vspace{1em} % Some vertical space between the boxes
+
+\begin{tcolorbox}[
+  colback=blue!5!white,
+  colframe=blue!75!black,
+  title=\textbf{Challenger Prompt Template},
+  fonttitle=\bfseries,
+  sharp corners
+]
+\textbf{System Message:}
+\par
+You are an expert competition-math problem setter. FIRST, in your private scratch-pad, think step-by-step to design a brand-new, non-trivial problem. The problem could come from any field of mathematics, including but not limited to algebra, geometry, number theory, combinatorics, prealgebra, probability, statistics, and calculus. Aim for a difficulty such that fewer than 30\% of advanced high-school students could solve it. Avoid re-using textbook clichés or famous contest problems.
+\par
+THEN, without revealing any of your private thoughts, output \textbf{exactly} the following two blocks:
+\par \vspace{0.5em}
+\texttt{<question>} \par
+\{The full problem statement on one or more lines\} \par
+\texttt{</question>} \par
+\vspace{1em}
+\texttt{\textbackslash boxed\{final\_answer\}} \par
+\vspace{1em}
+Do NOT output anything else—no explanations, no extra markup.
+
+\textbf{User Message:}
+\par
+Generate one new, challenging reasoning question now. Remember to format the output exactly as instructed.
+\end{tcolorbox}
+
+\subsection{GPT-4o Judge Prompt}
+To programmatically evaluate the correctness of answers on mathematical benchmarks where the final answer can be complex (e.g., simplified expressions), we use GPT-4o as a judge. The exact prompt and configuration used for this evaluation are detailed below.
+
+% --- Judge Prompt ---
+\begin{tcolorbox}[
+  colback=blue!5!white,
+  colframe=blue!75!black,
+  title=\textbf{Configuration for GPT-4o as Judge},
+  fonttitle=\bfseries,
+  sharp corners
+]
+\begin{itemize}
+    \item \textbf{Model}: \texttt{gpt-4o}
+    \item \textbf{Temperature}: 0.1
+\end{itemize}
+
+\textbf{System Message:}
+\begin{quote}
+You are a math answer checker.
+\end{quote}
+
+\textbf{User Message Template:}
+\begin{quote}
+Hi, there is an answer: \texttt{\{answer\}},
+
+and the ground truth answer is: \texttt{\{response\}},
+
+please check whether the answer is correct or not, and return the **only** Yes or No.
+\end{quote}
+\textit{Note: \texttt{\{answer\}} is a placeholder for the model-generated solution, and \texttt{\{response\}} is the ground-truth answer from the benchmark.}
+\end{tcolorbox}
+
+\subsection{Repetition Penalty Implementation}
+\label{app:penalty}
+To encourage the Challenger to generate a diverse set of questions within each batch, we apply a repetition penalty, $r_{\text{rep}}$. This penalty is designed to disincentivize the model from producing semantically similar questions in the same batch. The implementation is a multi-step process based on clustering questions by their BLEU score similarity.
+
+\paragraph{1. Pairwise Distance Calculation via BLEU Score}
+First, we compute a pairwise distance matrix for all questions in a batch. The distance $d_{ij}$ between any two questions, $x_i$ and $x_j$, is defined as one minus their BLEU score:
+\[
+d_{ij} = 1 - \text{BLEU}(x_i, x_j)
+\]
+For this calculation, we specifically use the \texttt{sentence\_bleu} function from the NLTK library (\texttt{nltk.translate.bleu\_score}). To ensure numerical stability, especially for shorter questions with limited n-gram overlap, we employ its first smoothing function, \texttt{SmoothingFunction().method1}. The questions are tokenized for the BLEU calculation by splitting on whitespace; no further text normalization, such as lowercasing or punctuation removal, is performed.
+
+\paragraph{2. Agglomerative Clustering}
+With the pairwise distance matrix computed, we then group similar questions using agglomerative hierarchical clustering. This step is performed using the \texttt{Clustering} implementation from the \texttt{scikit-learn} library. The clustering algorithm is configured with the following key parameters:
+\begin{itemize}
+    \item \textbf{Metric}: Set to \texttt{'precomputed'}, indicating that we provide our custom BLEU-based distance matrix instead of having the algorithm compute distances.
+    \item \textbf{Linkage}: Set to \texttt{'average'}. This method defines the distance between two clusters as the average of the distances between all pairs of questions across the two clusters.
+\end{itemize}
+
+\paragraph{3. Final Penalty Calculation}
+Once each question in the batch is assigned to a cluster, the repetition penalty $r_{\text{rep}}(x_i)$ for a given question $x_i$ is determined by the relative size of the cluster $C_k$ to which it belongs. The penalty is calculated as:
+\[
+r_{\text{rep}}(x_i) = \frac{|C_k|}{B}
+\]
+Here, $|C_k|$ represents the number of questions in cluster $C_k$, and $B$ is the total number of questions in the batch (i.e., the batch size). 
+
+% \section{Examples of Generated Questions}
+
+
+
+\section{Evaluation Benchmark}
+\label{sec:tasks_and_evaluation}
+\label{app:tasks_and_evaluation}
+We assess our framework on a comprehensive suite of benchmarks. Although the question-generator prompt for our method is primarily focused on mathematical problem-solving, a key objective of our evaluation is to explore whether the resulting improvements in reasoning ability can generalize to other domains. Therefore, our evaluation is divided into two main categories.
+
+
+\paragraph{Mathematical Reasoning.}
+We use seven challenging benchmarks: AMC, Minerva~\citep{Lewkowycz2022SolvingQR}, MATH-500~\citep{Hendrycks2021MeasuringMP}, GSM8K~\citep{Cobbe2021TrainingVT}, Olympiad-Bench~\citep{He2024OlympiadBenchAC}, AIME-2024, and AIME-2025. For these tasks, where answers can be complex, we employ GPT-4o as a programmatic judge to semantically verify the correctness of the final answer against the ground truth~\citep{Zhao2025OneTT}. For the difficult AMC and AIME benchmarks, we report the \textbf{mean@32} metric. For all other math benchmarks, we report accuracy based on greedy decoding.
+
+\paragraph{General Domain Reasoning.}
+To test for the generalization of reasoning ability, we evaluate the following challenging benchmarks:
+\begin{itemize}
+    \item \textbf{MMLU-Pro}~\citep{Wang2024MMLUProAM}: An enhanced version of the MMLU~\citep{Hendrycks2020MeasuringMM} benchmark, featuring a more challenging suite of multi-task questions designed to provide a stricter evaluation of language model capabilities.
+    \item \textbf{SuperGPQA}~\citep{Team2025SuperGPQASL}: A large-scale benchmark focused on graduate-level reasoning. It comprises questions across 285 distinct disciplines that have been verified as unsearchable on the web, thereby isolating true reasoning ability from simple knowledge recall.
+    \item \textbf{BBEH}~\citep{kazemi2025BIGBenchEH}: This benchmark builds upon the foundation of BIG-Bench Hard~\citep{Suzgun2022ChallengingBT} by incorporating a new selection of tasks specifically engineered to be more difficult, thus providing a more accurate measure of complex reasoning skills.
+\end{itemize}
+For this category, we follow the  experimental setup, prompts, and evaluation codes from \citep{Ma2025GeneralReasonerAL}, reporting Exact Match (EM) accuracy obtained via greedy decoding.
+
+
+\section{Parameter Sharing Between Challenger and Solver}
+\label{app:one_model}
+
+\finding{Separating the Challenger and Solver into two models will be better.}
+\vspace{-10pt}
+\begin{table}[htbp]
+    \small
+    \centering
+    \caption{Comparison of math performance and pseudo-label accuracy between the standard R-Zero (two-model) and Single-R-Zero (unified model, shared parameters) frameworks across iterations.}
+    \vspace{-0.1in}
+    \label{tab:single_vs_two_model}
+    \begin{tabular}{l cc cc}
+        \toprule
+        & \multicolumn{2}{c}{\textbf{R-Zero (ours)}} & \multicolumn{2}{c}{\textbf{Single-R-Zero}} \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+        \textbf{Iteration} & \textbf{Performance} & \textbf{Pseudo-label Acc (\%)} & \textbf{Performance} & \textbf{Pseudo-label Acc (\%)} \\
+        \midrule
+        Step 15 & 48.06 & 71.0 & \textbf{47.31} & 63.4 \\
+        Step 30 & 48.44 & 56.2 & 46.95 & 46.6 \\
+        Step 45 & \textbf{49.12} & 48.8 & 45.57 & 32.6 \\
+        Step 60 & 46.52 & 42.2 & 43.89 & 33.8 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+To investigate whether the separation of the Challenger and Solver into two independent models is a necessary component for the success of \method{}, we conduct an ablation study using a unified model with shared parameters. In this configuration (Single-R-Zero), a single model is tasked with performing both roles, i.e., generating a challenging curriculum and subsequently learning from it. 
+
+The results, presented in Table~\ref{tab:single_vs_two_model}, clearly indicate that separating the Challenger and Solver into two independent models is crucial for both performance and stability. We observe two key findings. First, our standard two-model R-Zero framework not only achieves a higher peak performance (49.12) but also sustains improvement for more iterations, with its collapse occurring after the third iteration. In contrast, the unified Single-R-Zero model's performance peaks after the very first iteration and degrades immediately thereafter.
+Second, the Single-R-Zero model, where the agent must generate and solve its own problems, produces pseudo-labels of significantly lower accuracy at every stage. For example, in the first iteration, its pseudo-label accuracy is already substantially lower than the R-Zero's (63.4\% vs. 71.0\%). We hypothesize that this is because having the problem-setter and solver originate from the same model leads to a form of overconfidence that comes from  internal bias. 
+
+
+\section{Beyond Label Noise: Unpacking the Roots of Instability}
+\label{app:scaling_ana}
+\begin{wraptable}{r}{0.4\textwidth} % r: right alignment, 0.45\textwidth: width
+\vspace{-13pt}
+    \centering
+    \caption{Accuracy of self-generated pseudo-labels (\%), labeled by Gemini. Shaded and bolded values indicate the best checkpoint for each model size.}
+    \label{tab:pseudo_label_accuracy_shaded}
+    \vspace{-0.1in}
+    \begin{tabular}{l c c c}
+        \toprule
+        \textbf{Step} & \multicolumn{3}{c}{\textbf{Model Size}} \\
+        \cmidrule(lr){2-4} % Rule under "Model Size" spanning columns 2-4
+                         & \textbf{0.6B} & \textbf{1.7B} & \textbf{4B} \\
+        \midrule
+        Step 15           & \cellcolor{gray!15}\textbf{70.6} & 69.4          & 71.0          \\
+        Step 30           & 53.4          & \cellcolor{gray!15}\textbf{55.2} & 56.2          \\
+        Step 45           & 50.8          & 52.2          & \cellcolor{gray!15}\textbf{48.8} \\
+        Step 60           & 44.0          & 45.2          & 42.2          \\
+        \bottomrule
+    \end{tabular}
+    \vspace{-0.2in}
+\end{wraptable}
+
+The most immediate hypothesis for this performance collapse is the degradation of pseudo-label quality, a potential failure mode of the self-correction mechanism we discussed in Section~\ref{sec:analysis_difficulty_accuracy}. As the Challenger generates increasingly difficult problems, it is plausible that the Solver's majority vote becomes a less reliable source for ground truth, resulting in a noisy training signal that could ultimately harm performance. To empirically test the extent to which this is the primary cause, we sampled 500 questions from a later training iteration to conduct a more granular investigation into the relationship between pseudo-label fidelity and the observed performance drop.
+
+Although the degradation of pseudo-label accuracy is a consistent trend across iterations, our analysis suggests this is not the primary, nor even the sole, driver of the eventual performance collapse. Table~\ref{tab:pseudo_label_accuracy_shaded} presents the pseudo-label data quality for each model at the onset of its performance collapse. Intriguingly, there appears to be no universal accuracy threshold that triggers this degradation. For instance, the 0.6B model begins to decline when data accuracy is still as high as 70.6\% (Step 15), whereas the 4B model tolerates an accuracy as low as 48.8\% (Step 45) before its performance drops.
+
+This suggests that the absolute percentage of label noise is not the sole determinant of instability. Another potential, and perhaps more fundamental, reason is a form of model collapse that can be introduced when training exclusively on self-synthesized data~\citep{tan2024large,Shumailov2024AIMC,Dohmatob2024ATO,zhou2025dissecting,Seddik2024HowBI,Dohmatob2024StrongMC,Briesch2023LargeLM,zheng2025learning}. A model can enter a degenerative feedback loop, suffering from a loss of diversity or an amplification of its own biases, which presents a significant challenge.
+
+\section{Theoretical Analysis}
+\label{sec:theoretical_analysis}
+
+In this section, we provide a theoretical motivation for our uncertainty reward function, $r_{\text{uncertainty}} \propto 1 - 2|\hat{p}(x; S_{\phi}) - \tfrac{1}{2}|$, which is maximized when the Solver's success probability, $\hat{p}$, is 50\%. Our analysis is grounded in recent work that formally establishes that the most efficient training occurs when a learner is exposed to tasks at the frontier of its capabilities~\citep{Shi2025EfficientRF, Bae2025OnlineDF}.
+
+The core insight from these studies is that the learning potential of the current Solver, with policy $S_\phi$, can be quantified by the KL divergence to an optimal policy $S^*$. This divergence, $\mathbb{D}_{KL}(S_\phi || S^*)$, is lower-bounded by the variance of the Solver's reward. For the binary reward signal used in our framework, the success probability is $\hat{p}$. This leads to the specific lower bound:
+\[
+\mathbb{D}_{KL}(S_\phi || S^*) \ge \frac{\hat{p}(1 - \hat{p})}{2\beta^2}
+\]
+where $\beta$ is the temperature parameter that controls entropy regularization. The right-hand side of the inequality, which is proportional to the reward variance, is maximized precisely when $\hat{p} = 0.5$. 
+% \todo[inline]{HM: one different factor here is that we are using majority voting results as an estimation of true $\hat{p}$, not sure how can we integrate this diff into this equation.}
+Therefore, by designing the Challenger's reward to incentivize questions that push the current Solver towards this point of maximum uncertainty, our framework is theoretically motivated to generate a maximally efficient curriculum in each iteration of the co-evolutionary process.
+\newpage
+\section{Algorithm of \method{}}
+Here, we provide the pseudocode for our method.
+
+\begin{algorithm}[H]
+\color{black}
+\caption{\method{}: Self-Evolving Challenger-Solver Framework}
+\label{alg:self_play}
+\SetAlgoLined
+\textbf{Input:}{Initial models $Q_\theta, S_\phi$; Group size $G$; Solver samples $m$; Dataset size $N$; Filtering threshold $\delta$; Repetition threshold $\tau_{\text{BLEU}}$.}
+\textbf{Output:}{Evolved models $Q_\theta$ and $S_\phi$.}
+
+\For{each self-play iteration}{
+    \tcp{--- Phase 1: Challenger Training (Sec~\ref{sec:challenger_training}) ---}
+    \For{each Challenger training step}{
+        Sample question group $\{x_i\}_{i=1}^G \sim Q_\theta(\cdot)$\;
+        \For{each question $x_i$}{
+            \If{FormatCheck($x_i$) is invalid \textnormal{(e.g., missing tags)}}{
+                $r_i \leftarrow 0$\;
+            }
+            \Else{
+                Sample $m$ answers $\{y_j\}_{j=1}^m \sim S_{\phi}(\cdot \mid x_i)$\;
+                Get pseudo-label $\tilde{y}_i \leftarrow \text{MajorityVote}(\{y_j\}_{j=1}^m)$\;
+                Compute correctness $\hat{p}_i \leftarrow \frac{1}{m} \sum_{j=1}^{m} \mathbbm{1}\{y_j = \tilde{y}_i\}$\;
+                Compute uncertainty reward $r_{\text{uncertainty}} \leftarrow 1 - 2|\hat{p}_i - \tfrac{1}{2}|$\;
+                Compute repetition penalty $r_{\text{rep}}(x_i)$ via BLEU clustering (Sec~\ref{sec:challenger_training})\;
+                Final reward: $r_i \leftarrow \max\bigl(0, r_{\text{uncertainty}} - r_{\text{rep}}(x_i)\bigr)$\;
+            }
+        }
+        Update $Q_\theta$ via GRPO using rewards $\{r_i\}_{i=1}^G$\;
+    }
+    
+    \tcp{--- Phase 2: Solver Dataset Construction (Sec~\ref{sec:data_gen}) ---}
+    Initialize curated dataset $\mathcal{S} \leftarrow \emptyset$\;
+    Sample $N$ candidate questions $\{x_k\}_{k=1}^N \sim Q_\theta(\cdot)$\;
+    \For{each candidate $x_k$}{
+        Sample $m$ answers $\{y_j\}_{j=1}^m \sim S_{\phi}(\cdot \mid x_k)$\;
+        Get pseudo-label $\tilde{y}_k \leftarrow \text{MajorityVote}(\{y_j\})$\;
+        Compute correctness $\hat{p}_k \leftarrow \frac{1}{m} \sum_{j=1}^{m} \mathbbm{1}\{y_j = \tilde{y}_k\}$\;
+        \If{$|\hat{p}_k - \tfrac{1}{2}| \le \delta$}{
+            Add $(x_k, \tilde{y}_k)$ to $\mathcal{S}$\;
+        }
+    }
+    
+    \tcp{--- Phase 3: Solver Training (Sec~\ref{sec:solver_training}) ---}
+    \For{each minibatch $(x, \tilde{y}) \in \mathcal{S}$}{
+        Sample $G$ answers $\{y_j\}_{j=1}^G \sim S_\phi(\cdot \mid x)$\;
+        Compute binary rewards $r_j \leftarrow \mathbbm{1}(y_j = \tilde{y})$\;
+        Update $S_\phi$ via GRPO using rewards $\{r_j\}_{j=1}^G$\;
+    }
+}
+\end{algorithm}
+
+\section{\textcolor{black}{Generalizing Beyond the Math Domain}}
+
+\textcolor{black}{
+To further evaluate the generality of our proposed approach, we conduct an additional experiment in which the model is no longer instructed to generate exclusively mathematical problems during data construction. Instead, we remove the math-specific constraint from the prompting stage, allowing the model to produce a broader mixture of questions, including commonsense, logical reasoning, and other non-mathematical categories. This setup enables us to examine whether the improvements observed in earlier experiments are merely a consequence of alignment with math-heavy benchmarks or whether our method can maintain (or even enhance) performance under a more domain-general training regime.
+}
+
+\textcolor{black}{
+The motivation behind introducing this experiment stems from concerns that many mathematical benchmarks contain well-structured and heavily studied problem formats. If the training data is restricted to similar mathematical tasks, it may artificially inflate performance gains while providing limited evidence regarding the method’s real-world applicability. By diversifying the data generation process, we aim to assess whether the model can benefit from richer and more heterogeneous supervision signals.
+}
+
+\textcolor{black}{
+The experimental results, summarized in Table~\ref{tab:math_reasoning_results}, demonstrate that when the base model has sufficient capacity (e.g., the 8B variant), training on more general data leads to further improvements in both math and non-math benchmarks. Notably, the ``R-Zero (remove math prompt)'' setting exhibits the highest performance on the general benchmarks for the 8B model, suggesting that our approach effectively transfers to broader reasoning tasks beyond pure mathematics.
+}
+
+\begin{table*}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{1.5mm}{
+\caption{Results of different models and prompting strategies on mathematics and reasoning benchmarks.}
+\label{tab:math_reasoning_results}
+\scalebox{0.85}{
+\begin{tabular}{@{}lcccccccccc@{}}
+\toprule
+\textbf{} & \textbf{AMC} & \textbf{Minerva} & \textbf{MATH} & \textbf{GSM8K} & \textbf{Olympiad} & \textbf{AIME25} & \textbf{AIME24} & \textbf{SuperGPQA} & \textbf{MMLU-Pro} & \textbf{BBEH} \\
+\midrule
+Qwen3-4B & 45.7 & 38.24 & 68.2 & 87.79 & 41.04 & 10.3 & 6.7 & 20.88 & 37.38 & 7.57 \\
+R-Zero & 57.27 & 52.94 & 79.6 & 92.12 & 44.59 & 9.6 & 13.4 & 27.55 & 55.47 & 10.42 \\
+R-Zero (no math) & 56.27 & 52.56 & 79.2 & 92.56 & 43.56 & 9.9 & 13.2 & 28.14 & 54.75 & 10.31 \\
+\midrule[0.5pt]
+Qwen3-8B & 51.95 & 50 & 78 & 89.08 & 44.74 & 12.1 & 14.6 & 28.33 & 51.8 & 8.63 \\
+R-Zero & 61.67 & 60.66 & 82 & 94.09 & 48.89 & 13.3 & 15.4 & 31.38 & 61.53 & 10.60 \\
+R-Zero (no math) & 65.53 & 61.19 & 81.6 & 93.89 & 49.24 & 13.2 & 15.2 & 32.29 & 61.83 & 10.88 \\
+\bottomrule
+\end{tabular}
+}}
+\end{table*}
+
+\textcolor{black}{
+These findings provide additional evidence that the proposed method is not limited to mathematical domains; rather, it scales effectively with model capacity and supports improved reasoning performance under more diverse training conditions.
+}

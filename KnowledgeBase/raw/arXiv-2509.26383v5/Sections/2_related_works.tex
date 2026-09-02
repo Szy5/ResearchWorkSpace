@@ -1,0 +1,10 @@
+\section{Related Work}
+
+\noindent\textbf{Knowledge Graph Retrieval-Augmented Generation (KG-RAG).}
+KG-RAG augments LLMs with structured KGs to improve quality and compositional reasoning. Early work grounds LLMs' generation by translating natural-language questions into executable graph queries (e.g., SPARQL/Cypher), retrieving relevant subgraphs or answers, and feeding them back to the model~\citep{ouyang2022traininglanguagemodelsfollow, lee2025sparkle}. More recent approaches adopt a modular LLM pipeline over KGs, interleaving natural language reasoning with multi-stage planning, path search, and execution, where each stage uses a prompted or fine-tuned LLM~\citep{Luo2024RoG, Sun2024ToG, Chen2024Pog, Wang2025ReKnoS}. Despite these advances, most systems rely on hand-engineered modules or prompt heuristics tied to a specific KG schema, which induce cost inefficiency and limit generalization. These challenges motivate our \framework{} framework: a single-agent KG-RAG approach that improves efficiency and transfers well to new KGs.
+
+\noindent\textbf{Multi-turn RL for LLMs.}
+Reinforcement learning (RL) has become central to equipping LLMs with step-by-step (chain-of-thought) reasoning behavior~\citep{OpenAI2024o1, DeepSeek2025R1}. RL-enhanced models yield substantial gains in math and coding~\citep{le2022coderl,chervonyi2025goldmedal}, and broader complex reasoning tasks.
+More recently, RL has been applied to agentic LLMs that invoke external tools (e.g., bash terminals and APIs) or interact with knowledge bases, improving tool use~\citep{Qin2023ToolLLM} and retrieval-augmented generation (RAG)~\citep{jin2025searchr1,wang2025otc} to facilitate tool use or RAG. Building on these advances, our work, \framework{} adopts end-to-end RL as the core optimization algorithm for an agentic KG-RAG framework.
+
+

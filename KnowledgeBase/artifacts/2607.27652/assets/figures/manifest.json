@@ -1,0 +1,246 @@
+{
+  "figures": [
+    {
+      "id": "fig-diagnosis",
+      "label": "fig:diagnosis",
+      "caption": "Retrieval-equivalence collapse. (a)~Query-form diversity remains high as retrieval-outcome diversity collapses, producing illusory exploration. (b)~Under matched transitions, the action menu preserves more retrieval-distinct outcomes per rollout group than free querying.",
+      "source_path": "figures/fig1_diagnosis.pdf",
+      "asset_path": "assets/figures/diagnosis.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "ce9d70f5dde8e171f1125db2a9b915e896395df22043a99fcc7ed818a42b2b43",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-intro",
+      "label": "fig:intro",
+      "caption": "Retrieval interface redesign. Left: free-query interface, where the policy generates a query string and receives searched documents. Right: Harness-G interface, where the policy selects a finite action ID from the menu (Select/Lookup/Answer) over a tripartite graph, and the environment constructs queries and updates retrieval state.",
+      "source_path": "figures/fig_intro_interface.png",
+      "asset_path": "assets/figures/intro.png",
+      "section_id": "sec-introduction",
+      "status": "copied",
+      "source_sha256": "cfc79b1cc263cdf8b8183d9313505b411506e492fbeaaa54c360548a499d8d25",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-framework",
+      "label": "fig:framework",
+      "caption": "Harness-G from graph construction to policy optimization. A paragraph--sentence--entity graph supports the online action menu, where the policy selects finite Select/Lookup/Answer actions and the environment performs deterministic retrieval. SNC previews same-state alternatives, scores them with frozen answerer g , and propagates enablement credit along provenance edges; GRPO combines the resulting step advantage with the outcome advantage.",
+      "source_path": "figures/fig2_framework.pdf",
+      "asset_path": "assets/figures/framework.jpg",
+      "section_id": "sec-method",
+      "status": "rendered",
+      "source_sha256": "41d02ed90b7e2366aaf57a6466dcac7c43637c3894098420e50ae4cc99b259b4",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-menu-dynamics",
+      "label": "fig:menu-dynamics",
+      "caption": "Training dynamics of Harness-G (Qwen2.5-3B): (a)~training-batch F1; (b)~gradient norm.",
+      "source_path": "figures/fig_menu_training_dynamics.pdf",
+      "asset_path": "assets/figures/menu-dynamics.jpg",
+      "section_id": "sec-snc-structured-non-myopic-credit",
+      "status": "rendered",
+      "source_sha256": "71b324889edaaf5b854d1849695237f212e812cd83752103f833783de2c8dc1d",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-menu-dynamics-2",
+      "label": "fig:menu-dynamics",
+      "caption": "Training dynamics of Harness-G (Qwen2.5-3B): (a)~training-batch F1; (b)~gradient norm.",
+      "source_path": "figures/fig_harness_vs_searchr1_2wiki.pdf",
+      "asset_path": "assets/figures/menu-dynamics-2.jpg",
+      "section_id": "sec-snc-structured-non-myopic-credit",
+      "status": "rendered",
+      "source_sha256": "030d2e807d906ccf468acffc58b4767c142372e2ad1e2ac508abe0e985e7cbb3",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-menu-dynamics-3",
+      "label": "fig:menu-dynamics",
+      "caption": "Training dynamics of Harness-G (Qwen2.5-3B): (a)~training-batch F1; (b)~gradient norm.",
+      "source_path": "figures/fig_rl_estimators.pdf",
+      "asset_path": "assets/figures/menu-dynamics-3.jpg",
+      "section_id": "sec-snc-structured-non-myopic-credit",
+      "status": "rendered",
+      "source_sha256": "7eb05d5348d75426ea189b9816865996c634df666084b53596e25faabbb6987a",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-zadv",
+      "label": "fig:zadv",
+      "caption": "Zero-advantage groups on 2Wiki (Qwen2.5-3B): (a)~Search-R1; (b)~Harness-G. Stacked regions separate all-wrong from all-correct groups; the curve shows their total.",
+      "source_path": "figures/fig_zero_advantage_compare.pdf",
+      "asset_path": "assets/figures/zadv.jpg",
+      "section_id": "sec-ablation-and-comparative-analysis-rq2",
+      "status": "rendered",
+      "source_sha256": "55a85d01a0179dcb94e2325c7bfcf9a8d34f79d726eef5fe05a0240bc0ce1c0e",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-turns-length",
+      "label": "fig:turns-length",
+      "caption": "Interaction turns (a) and response length (b) during Qwen2.5-3B training on 2Wiki. By late training, Harness-G takes more turns than Search-R1 and Graph-R1 but gives shorter responses.",
+      "source_path": "figures/fig_turns_length_compare.pdf",
+      "asset_path": "assets/figures/turns-length.jpg",
+      "section_id": "sec-ablation-and-comparative-analysis-rq2",
+      "status": "rendered",
+      "source_sha256": "f550aa6776e2ed59f88fa69140756d16dee341b64aee91fd2dc04101e61e5d59",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-ood-f1",
+      "label": "fig:ood-f1",
+      "caption": "F1 comparison across six datasets under O.O.D.\\ cross-validation: (a)~Graph-R1; (b)~Harness-G.",
+      "source_path": "figures/fig_ood_f1.pdf",
+      "asset_path": "assets/figures/ood-f1.jpg",
+      "section_id": "sec-cross-dataset-generalization-rq5",
+      "status": "rendered",
+      "source_sha256": "ff8c2889fb9bd7cbad064a89ec0f3ec6d5dda3354bc10959e5e5aa02516e95a1",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-bridge",
+      "label": "fig:case-bridge",
+      "caption": "2Wiki bridge retrieval: menu shows chosen vs.\\ rejected targets at each hop.",
+      "source_path": "figures/fig_case_bridge.pdf",
+      "asset_path": "assets/figures/case-bridge.jpg",
+      "section_id": "sec-menu-navigation-process-and-effectiveness",
+      "status": "rendered",
+      "source_sha256": "711769e70c0466b451f5ea55b3ee2d1bde5190f20679cd8335a0758b8d7e904f",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-compare",
+      "label": "fig:case-compare",
+      "caption": "2Wiki comparison: both operands committed without Lookup.",
+      "source_path": "figures/fig_case_compare.pdf",
+      "asset_path": "assets/figures/case-compare.jpg",
+      "section_id": "sec-menu-navigation-process-and-effectiveness",
+      "status": "rendered",
+      "source_sha256": "801d25c2bb7bb02da0e13e83b870c6d04693fcef14df1fefa3b7474f3600d7b4",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-compose",
+      "label": "fig:case-compose",
+      "caption": "MuSiQue composition: two committed premises, no extra search.",
+      "source_path": "figures/fig_case_compose.pdf",
+      "asset_path": "assets/figures/case-compose.jpg",
+      "section_id": "sec-menu-navigation-process-and-effectiveness",
+      "status": "rendered",
+      "source_sha256": "8de9f47c0d4939504ad833654d7e603324e9e1b72f84446d259d16a876b0aaa2",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-birth",
+      "label": "fig:case-birth",
+      "caption": "2Wiki birth-date comparison: both DOBs exposed as typed menu targets.",
+      "source_path": "figures/fig_case_birth_compare.pdf",
+      "asset_path": "assets/figures/case-birth.jpg",
+      "section_id": "sec-menu-navigation-process-and-effectiveness",
+      "status": "rendered",
+      "source_sha256": "d2a4f00881670f3f21e6b46e036a5ddb1a672105f3b406e50fa9a1ae92bad70f",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-country",
+      "label": "fig:case-country",
+      "caption": "2Wiki country comparison: two nationality commits, zero lookups.",
+      "source_path": "figures/fig_case_country_compare.pdf",
+      "asset_path": "assets/figures/case-country.jpg",
+      "section_id": "sec-menu-navigation-process-and-effectiveness",
+      "status": "rendered",
+      "source_sha256": "8ba81c97386d4910acaeebb5fa0dab72aed19925f31dc9fa79e14976d68866d7",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-freequery",
+      "label": "fig:case-freequery",
+      "caption": "Same 2Wiki bridge question: free-query failure vs.\\ menu success.",
+      "source_path": "figures/fig_case_freequery_fail.pdf",
+      "asset_path": "assets/figures/case-freequery.jpg",
+      "section_id": "sec-interface-contrast-free-query-vs-menu",
+      "status": "rendered",
+      "source_sha256": "c5dbe01c739934a3458a6a13516129742ebc301b367fa8451e92d36d07a45ec9",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-snc-fr",
+      "label": "fig:case-snc-fr",
+      "caption": "SNC frontier term on the bridge Lookup: gain bars vs.\\ same-state alternatives.",
+      "source_path": "figures/fig_case_snc_frontier.pdf",
+      "asset_path": "assets/figures/case-snc-fr.jpg",
+      "section_id": "sec-snc-frontier-enablement-and-credit-comparison",
+      "status": "rendered",
+      "source_sha256": "ca21bff09d12ee4ec22a3ed6dd8aea0a075fd35ad54626b3be609fce1369ed26",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-snc-en",
+      "label": "fig:case-snc-en",
+      "caption": "SNC enablement term: downstream DOB gain flows back to the bridge Select.",
+      "source_path": "figures/fig_case_snc_enable.pdf",
+      "asset_path": "assets/figures/case-snc-en.jpg",
+      "section_id": "sec-snc-frontier-enablement-and-credit-comparison",
+      "status": "rendered",
+      "source_sha256": "c030f03c4f2da18a282f9707d1a5788a2706fa22d0be9b2c8d6fbb8e45cf9059",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-snc-myopic",
+      "label": "fig:case-snc-myopic",
+      "caption": "Same bridge trajectory under outcome-only, myopic, and SNC credit.",
+      "source_path": "figures/fig_case_snc_vs_myopic.pdf",
+      "asset_path": "assets/figures/case-snc-myopic.jpg",
+      "section_id": "sec-snc-frontier-enablement-and-credit-comparison",
+      "status": "rendered",
+      "source_sha256": "95e9d33a50cf9b15dae199be9585ca8dd5ed07e1e9f9d4fa4d1a4055cfda5981",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-fail-attr",
+      "label": "fig:case-fail-attr",
+      "caption": "HotpotQA failure case: Answer\\ With on a birth-year-matched candidate; gold scorer is not yet among menu targets.",
+      "source_path": "figures/fig_case_fail_attr.pdf",
+      "asset_path": "assets/figures/case-fail-attr.jpg",
+      "section_id": "sec-additional-failure-cases",
+      "status": "rendered",
+      "source_sha256": "3764a4402f752d275217e6357101ab4ff1ab94a034f37048c6a774bd6dc000c3",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-fail-bridge",
+      "label": "fig:case-fail-bridge",
+      "caption": "HotpotQA failure case: anime-side bridge Lookup among two typed alternatives; gold animator is not on the menu of this trajectory.",
+      "source_path": "figures/fig_case_fail_bridge.pdf",
+      "asset_path": "assets/figures/case-fail-bridge.jpg",
+      "section_id": "sec-additional-failure-cases",
+      "status": "rendered",
+      "source_sha256": "86e4dd3892a999d077cc56ec4cd588e49db22b68267d88c4f3ae780cb892047a",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-case-fail-coref",
+      "label": "fig:case-fail-coref",
+      "caption": "HotpotQA failure case: gold name and Answer\\ With are available on the opening menu; the emitted answer string still mismatches C T .",
+      "source_path": "figures/fig_case_fail_coref.pdf",
+      "asset_path": "assets/figures/case-fail-coref.jpg",
+      "section_id": "sec-additional-failure-cases",
+      "status": "rendered",
+      "source_sha256": "036c8ca826646e41230efa787a8582b3e6b9871134c4c2df2679eca3a3c58c4d",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-prompt-stack",
+      "label": "fig:prompt-stack",
+      "caption": "Prompt stack for the full Harness-G configuration.",
+      "source_path": "figures/fig_prompt_stack.pdf",
+      "asset_path": "assets/figures/prompt-stack.jpg",
+      "section_id": "sec-environment-protocol-and-prompts",
+      "status": "rendered",
+      "source_sha256": "5bf49585079cfea060756a14b8b3245216a6ba430c8c184d7576b615977a4196",
+      "media_type": "pdf"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "ReAct 将链式思考与动作（工具调用）结合的范式直接启发了 GraphWalker 的代理化交互设计，使模型同时生成内部推理（<think>）与外部 KG 操作，从而形成交互式轨迹式训练数据格式。"
+    },
+    {
+      "title": "Think-on-Graph: Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+      "authors": "Jiashuo Sun, Chengjin Xu, Lumingyuan Tang, Saizhuo Wang, Chen Lin, Yeyun Gong, Lionel M. Ni, Heung-Yeung Shum, Jian Guo",
+      "year": 2023,
+      "arxiv_id": "2307.07697",
+      "role": "Baseline",
+      "relationship_sentence": "ToG 作为基于提示的迭代图遍历 KGQA 系统代表，被 GraphWalker 作为直接比较对象；GraphWalker 针对 ToG 在缺乏自主导航训练和受限工作流上的局限提出了合成轨迹与分阶段 SFT 的解决方案。"
+    },
+    {
+      "title": "Generate-on-Graph: Treat LLM as both Agent and KG in Incomplete Knowledge Graph Question Answering",
+      "authors": "Yao Xu, Shizhu He, Jiabei Chen, Zihao Wang, Yangqiu Song, Hanghang Tong, Guang Liu, Kang Liu, Jun Zhao",
+      "year": 2024,
+      "arxiv_id": "2404.14741",
+      "role": "Baseline",
+      "relationship_sentence": "GoG 代表了另一类依赖强提示或封闭模型的图遍历方法，GraphWalker 明确针对其在可训练性与泛化（对长尾/未见路径）的不足，通过自动合成结构多样的轨迹建立探索先验以超越该类方法。"
+    },
+    {
+      "title": "Efficient and Transferable Agentic Knowledge Graph RAG via Reinforcement Learning",
+      "authors": "Junhong Lin, Shicheng Liu, Jinyeop Song, Song Wang, Julian Shun, Yada Zhu",
+      "year": 2025,
+      "arxiv_id": "2509.26383",
+      "role": "Gap Identification",
+      "relationship_sentence": "KG-R1 使用预提取子图进行端到端 RL 优化，暴露了对简化环境的依赖與探索瓶颈，GraphWalker 便是为了解决这一问题：通过在全局 KG 上构建合成多样轨迹来建立有效的探索先验，克服 KG-R1 的局限。"
+    },
+    {
+      "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models",
+      "authors": "Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, Y.K. Li, Y. Wu, Daya Guo",
+      "year": 2024,
+      "arxiv_id": "2402.03300",
+      "role": "Foundation",
+      "relationship_sentence": "GRPO 提供了分组归一化的重要性比与 KL 约束的策略优化框架，GraphWalker 在其 RL 阶段直接采用 GRPO 作为优化器並以两阶段 SFT 模型作为参考策略，从而实现稀疏 EM 奖励下的稳健提升。"
+    },
+    {
+      "title": "The Web as a Knowledge-base for Answering Complex Questions",
+      "authors": "Alon Talmor, Jonathan Berant",
+      "year": 2018,
+      "arxiv_id": "1803.06643",
+      "role": "Foundation",
+      "relationship_sentence": "CWQ 定义并提供了复杂、多跳问题的评测分布与金标话题实体，GraphWalker 直接以 CWQ 作为训练/评估基准并在合成轨迹构造时基于其谓词与种子实体集合进行受限随机游走抽样。"
+    },
+    {
+      "title": "Relation-Aware Question Answering for Heterogeneous Knowledge Graphs",
+      "authors": "Haowei Du, Quzhe Huang, Chen Li, Chen Zhang, Yang Li, Dongyan Zhao",
+      "year": 2016,
+      "arxiv_id": "2312.11922v1",
+      "role": "Foundation",
+      "relationship_sentence": "WebQSP 提供了可执行的问答–SPARQL 格式与评测协议，GraphWalker 在全球 KG 设置下对比并报告在 WebQSP 上的 EM/F1，並以其数据分布为检验跨任务迁移与泛化能力的基准。"
+    }
+  ],
+  "synthesis_narrative": "近年的研究为代理化 KGQA 奠定了三类关键基础：一类是将“思考+行动”融入单步交互的 ReAct 范式，它具体说明了在生成内部推理同时调用工具以获得外部证据的可行性；另一类是若干提示式图遍历系统（如 ToG、GoG），它们展示了基于提示的迭代检索在生成性推理上的优势但也暴露出对封闭模型与固定工作流的依赖；第三类则是基于强化学习的 KGQA（如 KG‑R1）和相应的策略优化技术（如 GRPO），它们证明了策略优化能进一步提升长期决策，但在依赖预提取子图时容易陷入探索瓶颈。与此同时，CWQ 与 WebQSP 等数据集确立了复杂多跳、可执行 SPARQL 的评价范式并为构造轨迹提供了谓词与种子实体的资源。綜合这些工作，可以看出一個明显的机会：将“可训练的代理式交互范式”与“结构多样化的轨迹监督”以及“稳健的策略优化器”结合，能同时解决提示方法的不可训练性、RL 方法的探索局限与数据稀缺问题。GraphWalker 正是在此脉络下的自然延续：它借鉴 ReAct 的交互格式、以 ToG/GoG 与 KG‑R1 揭示的局限为改进目标，利用受限随机游走合成大规模结构多样轨迹作为 SFT 阶段的探索先验，并以 GRPO 为 RL 基础在两阶段 SFT 提供的先验上进一步提升性能。"
+}

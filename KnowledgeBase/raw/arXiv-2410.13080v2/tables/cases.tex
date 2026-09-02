@@ -1,0 +1,25 @@
+\begin{table*}[]
+    \centering
+    \caption{Examples of the faithful reasoning conducted by \ourmethod. \textcolor{red}{Red} denotes the incorrect reasoning paths and answers, while \textbf{bold} denotes the correct paths and answers.}
+    % \vspace{-0.3cm}
+    \label{tab:cases}
+    \resizebox{.82\textwidth}{!}{%
+    \begin{tabular}{@{}c|p{5in}@{}}
+        \toprule
+        \multicolumn{2}{l}{\textbf{Case 1}: Incorrect answers and hallucinated reasoning paths without constraints.}\\
+        \midrule
+        Question             & Who is niall ferguson 's wife?                                                                                                                                                                                                                                                                                             \\ \midrule
+        Answer               & Ayaan Hirsi Ali                                                                                                                                                                                                                                                                                                                                \\ \midrule
+        \ourmethod   $w/o$ constraint        & \begin{tabular}[c]{@{}p{5in}@{}}\# Reasoning Path: \textcolor{red}{Niall Ferguson $\to$ people.person.children $\to$ Mabel Rose Ferguson $\to$ people.person.parents $\to$ Alyssa Mastromonaco} \\ \#Answer: \textcolor{red}{Alyssa Mastromonaco}\end{tabular} \\\midrule
+        \ourmethod                                   & \begin{tabular}[c]{@{}p{5in}@{}}\# Reasoning Path: Niall Ferguson $\to$ people.person.children $\to$ Thomas Ferguson $\to$ people.person.parents $\to$ \textbf{Ayaan Hirsi Ali} \\ \#Answer: \textbf{Ayaan Hirsi Ali} \end{tabular} \\ \midrule\midrule
+        \multicolumn{2}{l}{\textbf{Case 2}: Correct answers but hallucinated reasoning paths without constraints.}\\\midrule
+        Question             & Where is jamarcus russell from?                                                                                                                                                                                                                                                                                 \\ \midrule
+        Answer               & Mobile                                                                                                                                                                                                                                                                                                                                                \\ \midrule
+        \ourmethod   $w/o$ constraint        & \begin{tabular}[c]{@{}p{5in}@{}}\# Reasoning Path: \textcolor{red}{JaMarcus Russell $\to$ people.person.place\_of\_birth $\to$ Tampa} \\ \#Answer: \textbf{Mobile, Alabama} \end{tabular} \\\midrule
+        \ourmethod                                   & \begin{tabular}[c]{@{}p{5in}@{}}\# Reasoning Path: JaMarcus Russell $\to$ people.person.place\_of\_birth $\to$ \textbf{Mobile} \\ \#Answer: \textbf{Mobile} \end{tabular} \\ 
+        \bottomrule
+    \end{tabular}}
+    % \vspace{-0.5cm}
+\end{table*}
+
+

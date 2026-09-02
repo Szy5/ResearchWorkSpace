@@ -1,0 +1,23 @@
+% \begin{table}[]
+\begin{wraptable}{r}{.6\columnwidth}
+    \centering
+    \vspace{-5mm}
+    \caption{Ablation studies of \ourmethod.}
+      \vspace{-3mm}
+    \label{tab:ablation}
+    \resizebox{.6\columnwidth}{!}{%
+    \begin{tabular}{@{}l|ccc|ccc@{}}
+        \toprule
+        \multirow{2}{*}{Method}    & \multicolumn{3}{c|}{WebQSP} & \multicolumn{3}{c}{CWQ}                                                                     \\ \cmidrule(l){2-7}
+                                   & Precision                   & Recall                  & F1             & Precision      & Recall         & F1             \\ \midrule
+        \ourmethod                 & \textbf{74.77}              & 75.84                   & \textbf{70.81} & \textbf{57.69} & 58.19          & \textbf{56.17} \\ \midrule
+        \ourmethod w/o planning    & 57.26                       & 50.16                   & 49.69          & 35.35          & 34.77          & 33.76          \\
+        \ourmethod w/o reasoning   & 46.90                       & \textbf{79.85}          & 49.56         & 18.88         & \textbf{67.89} & 22.26          \\\midrule
+        \ourmethod w/ random plans & 38.66                       & 38.31                   & 35.24          & 38.99          & 39.29          & 37.64          \\ 
+        \ourmethod w/ vote reasoning & 54.80	& 60.44	& 47.96	& 22.92	& 47.98	& 26.52 \\ 
+        \bottomrule
+    \end{tabular}%
+    }
+    \vspace{-4mm}
+\end{wraptable} 
+% \end{table}

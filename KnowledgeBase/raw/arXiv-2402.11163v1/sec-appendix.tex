@@ -1,0 +1,192 @@
+\clearpage
+\appendix
+\label{appendix}
+
+\section{Experiment Setup}
+\label{sec:app-experiment}
+\subsection{Datasets} 
+We select four popular complex KGQA datasets as in-domain datasets, \ie \textit{WebQuestionsSP (WebQSP)}~\cite{WebQSP}, \textit{Complex WebQuestions 1.1 (CWQ)}~\citep{CWQ}, and \textit{GrailQA}~\citep{GrailQA}, which are based on Freebase, and \textit{KQA Pro}~\cite{KQA-Pro}, which is based on Wikidata.
+And we select three representative ODQA datasets as out-domain datasets, which are \textit{WebQuestions~(WQ)}~\cite{Berant-WQ-ACL-13}, \textit{Natural Questions~(NQ)}~\cite{Chen-NQ-ACL-17}, and \textit{TriviaQA~(TQ)}~\cite{Joshi-TQ-ACL-17}. Since we only rely on the KG to answer questions, we filter the questions in ODQA datasets that can not be linked to any entity in KG, denoted as \textit{WQ-Freebase}, \textit{NQ-Wiki}, and \textit{TQ-Wiki}, respectively.
+Besides, we further select the \textit{MetaQA}~\cite{zhang-aaai-18}, which is based on a domain-specific movie KG, to evaluate the generalibility of our method.
+The detail description of these selected datasets is as follows:
+
+$\bullet$ \textbf{WebQSP} consists of 4,737 questions. The answer entities are within a maximum of 2 hops from the topic entity on the Freebase KG. We adopt the train/valid/test splits from GraftNet~\citep{GraftNet} for consistency.
+
+$\bullet$ \textbf{CWQ} is constructed based on WebQSP, which is more challenging. It complicates WebQSP by extending the question entities or adding constraints to restrict the answers. The answer entities are within a maximum of 4 hops from the topic entity on the Freebase KG.
+
+$\bullet$ \textbf{GrailQA} consists of 64,331 questions. Compared to WebQSP and CWQ, it focuses on a more comprehensive generalization capability evaluation from three levels~(\ie i.i.d, compositional, and zero-shot).
+
+$\bullet$ \textbf{KQA Pro} consists of 117,970 questions. The above three datasets are based on Freebase, and it is based on Wikidata, and require multiple reasoning capabilities including compositional reasoning, multi-hop reasoning, quantitative comparison, set operations, and etc.
+
+$\bullet$ \textbf{MetaQA} comprises over 400,000 questions based on a movie domain KG, with answer entities located up to three hops away from
+the topic entities. Based on the number of hops, the dataset is divided into three sub-datasets: MetaQA-1hop, MetaQA-2hop, and MetaQA-3hop. Following existing work~\cite{NSM}, we randomly sample just one training case for each question template from the original training set, to form a one-shot training dataset.
+
+$\bullet$ \textbf{WQ} consists of 6,642 questions. The questions are mostly centered around a single named entity and are supposed to be answerable by Freebase KG. We extract xx questions from the original test set to compose the WQ-freebase subset.
+
+$\bullet$ \textbf{NQ} consists of 323,045 questions. Each example contains a question from the Google search and the corresponding answers, which are text spans on the Wikipedia page. Following existing work~\cite{pack-knowledge}, we use the open version of this dataset which discards answers with more than 5 tokens. We extract xx questions from the original test set to compose the NQ-Wiki subset.
+
+$\bullet$ \textbf{TQ} consists of 110K questions. Each example contains a question authored by trivia enthusiasts, and the answers are text spans from the Web or Wikipedia. Following existing work~\cite{pack-knowledge}, we use its unfiltered version for evaluation. We extract xx questions from the original test set to compose the TQ-Wiki subset.
+
+\subsection{Evaluation Protocol} For KGQA, following existing work~\cite{GraftNet}, we use Hits@1 and F1 metrics for WebQSP and CWQ datasets, F1 metric for GrailQA dataset, and Hits@1 for MetaQA. The Hits@1 evaluates the correctness of the top-ranked answer while F1 considers coverage of all the predicted answers.
+It's worth noting that some baselines and our approach would return all the unordered answers at the end, which is not suitable for the Hist@1 metric. For a comprehensive comparison, we randomly select one answer per question as the top-ranked answer and then calculate the average Hits@1 result by repeating this process 100 times following existing work~\cite{TIARA}.
+For ODQA, following existing work~\cite{pack-knowledge}, we report the EM metric, which evaluates whether the predicted answer is the same as the gold one after performing normalization.
+
+\subsection{Baselines for Comparison} 
+For KGQA, we consider the following three types of baseline methods for performance comparison:
+
+$\bullet$ \textbf{subgraph-based reasoning} methods which perform answer reasoning in a retrieval subgraph form KG, including GrafeNet~\cite{GraftNet}, NSM~\cite{NSM}, SubgraphRetrieval~\cite{Zhang-ACL-22}, UniKGQA~\cite{jiang-arxiv-22}, and ReasoningLM~\cite{ReasoningLM} for datasets on Freebase, and KVMemNet~\cite{miller-EMNLP-16}, EmbedKGQA~\cite{Saxena-ACL-20}, and RGCN~\cite{RGCN} for datasets on Wikidata;
+
+$\bullet$ \textbf{LM-based seq2seq generation} methods which generate the final SPARQL query by fine-tuning a sequence-to-sequence language model, including RNG-KBQA~\cite{RNG-KBQA}, Uni-Parser~\cite{UniParser}, ArcaneQA~\cite{ArcaneQA}, PanGu w/ T5-3B~\cite{Gu-ACL-23}, TIARA~\cite{TIARA}, and FC-KBQA~\cite{FC-KBQA} for datasets on Freebase, and RNN SPARQL and BART SPARQL~\cite{KQA-Pro} for datasets on Wikidata;
+
+$\bullet$ \textbf{LLM-based} methods which utilize the powerful zero-shot or few-shot capabilities of LLMs to answer the question without fine-tuning, including ROG~\cite{Luo-arxiv-23-Reasoning}, StructGPT~\cite{Jiang-2023-arxiv-StructGPT}, gpt-3.5-turbo-instruct~(Davinvi-003)~\footnote{https://platform.openai.com/docs}, gpt-3.5-turbo~(ChatGPT)~\footnote{https://platform.openai.com/docs}, and gpt-4~(GPT-4)~\footnote{https://platform.openai.com/docs} for both in-domain datasets.
+
+For ODQA, we focus on the closed-book setting where no documents are provided and consider the following two types of baseline methods:
+
+$\bullet$ \textbf{Fine-tune based} methods which learn to predict the answers, including T5-Base, T5-Large, BART-base, and BART-Large from ~\citep{pack-knowledge};
+
+$\bullet$ \textbf{LLM-based} methods which directly answer the questions in zero-shot setting, including gpt-3.5-turbo-instruct~(Davinvi-003) and gpt-3.5-turbo~(ChatGPT).
+
+\subsection{Implementation Details}
+For instruction tuning data construction, we randomly sample a total of 10,000 training data from in-domain datasets in a ratio of 1:5:5:10 for WebQSP, KQA Pro, GrailQA, and CWQ according to some prior empirical studies.
+Since we focus on the reasoning process over KG, we suppose the entities have been given for each question following existing work~\cite{GraftNet, NSM, Jiang-2023-arxiv-StructGPT}.
+For instruction tuning, we use the LLaMA2-7B~\cite{LLaMA2} as our backbone LLM. We use a cosine learning rate schedule with an initial learning rate of \text{2e-5}, a weight decay of 0.1, a batch size of 256, a maximum length of 1500, and finally fine-tune the model for 3 epochs. 
+For the relation retrieval model and entity disambiguation model in the semantic tool, we build them following the existing work~\cite{Zhang-ACL-22, TIARA}.
+
+After instruction tuning, for in-domain datasets, we evaluate the performance of our KG-Agent on the test set of CWQ, WebQSP, KQA Pro, and the dev set of GrailQA.
+For out-domain datasets, we evaluate the zero-shot performance of our KG-Agent on the NQ-Wiki, TQ-Wiki, and WQ-Freebase.
+For the domain specific dataset, \ie MetaQA, we follow existing work~\cite{NSM, Jiang-2023-arxiv-StructGPT} to extract the one-shot tuning subset from the original training set and fine-tune our KG-Agent with it.
+When evaluating the performance of Davinci-003, ChatGPT, and GPT4, we use the latest February version of APIs from OpenAI. And for in-domain datasets, we provide six demonstrations for each test question and parse the prediction results following existing work~\cite{ToG,Jiang-2023-arxiv-StructGPT}, we show the prompt with demonstration for each dataset in Table~\ref{tab:icl_example}.
+For the selection of demonstrations, we randomly sample from the corresponding training set for each dataset.
+For out-domain datasets, since they are open-domain question answering tasks, we directly input the question to LLMs with proper prompt, as shown in Table~\ref{tab:icl_example}.
+
+
+
+
+\begin{table*}[t]
+    \small
+    \centering
+    \begin{tabular}{c | l}
+    \toprule
+    \textbf{Dataset} & \textbf{Prompt} \\
+    \midrule
+    \multirow{20}{*}{\textbf{WebQSP}}  & Question: where is the syracuse university? \\
+    & Answer: [New York | Syracuse | United States of America].\\
+    & Question: where is the mtv headquarters?\\
+    & Answer: [New York City].\\
+    & Question: what are the 3 official languages of spain?\\
+    & Answer: [Spanish Language].\\
+    & Question: what timezone is new england usa in?\\
+    & Answer: [Eastern Time Zone].\\
+    & Question: who started southwest airlines?\\
+    & Answer: [Herb Kelleher | Rollin King].\\
+    & Question: what was irving langmuir famous for?\\
+    & Answer: [Scientist].\\
+    & Question: \{test question\} \\
+    & Answer:\\
+    \midrule
+    \multirow{20}{*}{\textbf{CWQ}}  & Question: Who is the president in the place where the government of Peru is located? \\
+    & Answer: [Ollanta Humala].\\
+    & Question: Where did Martin Luther King attend university, that has less than 2,586 undergraduates?\\
+    & Answer: [Morehouse College].\\
+    & Question: What movie produced by the company New Line Cinema was Taylor Lautner in?\\
+    & Answer: [Valentine's Day].\\
+    & Question: Which year did the team that plays at Turner Field win the World Series?\\
+    & Answer: [1995 World Series].\\
+    & Question: Which airports are in the circulation area of Il Manifesto?\\
+    & Answer: [Leonardo da Vinci–Fiumicino Airport | Ciampino–G. B. Pastine International Airport].\\
+    & Question: What were the professions held by the publisher of "The Awakening?"?\\
+    & Answer: [Businessperson | Novelist | Writer | Author].\\
+    & Question: \{test question\} \\
+    & Answer:\\
+    \midrule
+    \multirow{20}{*}{\textbf{GrailQA}}  & Question: what does the thiokol rocket do? \\
+    & Answer: [Launch vehicle].\\
+    & Question: what is the club interest of inverness yacht club?\\
+    & Answer: [Sailing].\\
+    & Question: who is the tour operator of kiribati?\\
+    & Answer: [Fly Water Adventures | Kiribati Holidays | Otintaai Tours | Molloy's Tours].\\
+    & Question: 1998 marsala vergine terre arse contains what type of grapes?\\
+    & Answer: [Catarratto | Grillo | Ansonica].\\
+    & Question: \makecell[l]{how many ice hockey coaches have coached the team \\that is currently coached by the eisbaren berlin?}\\
+    & Answer: [1].\\
+    & Question: court of appeal of sri lanka has what inferior court?\\
+    & Answer: [Supreme Court of Sri Lanka].\\
+    & Question: \{test question\} \\
+    & Answer:\\
+    \midrule
+    \multirow{20}{*}{\textbf{KQA Pro}}  & Question: Which website officially represents Morgan Creek Productions? \\
+    & Answer: [http://www.morgancreek.com/].\\
+    & Question: \makecell[l]{Which is shorter: The Killers, with a story set in Los Angeles, \\or Sherlock Holmes, produced by 20th Century Fox?}\\
+    & Answer: [Sherlock Holmes].\\
+    & Question: What is the street address for the University of San Diego?\\
+    & Answer: [5998 Alcala Park, San Diego, CA, 92110-2492].\\
+    & Question: How is the Francis Bacon who died in New Haven related to the Yale School of Medicine?\\
+    & Answer: [educated at].\\
+    & Question: For the film titled Aladdin, where is it published on its publication date of 2019-05-24?\\
+    & Answer: [United States of America].\\
+    & Question: Who wrote The Postman which was published in 1985?\\
+    & Answer: [David Brin].\\
+    & Question: \{test question\} \\
+    & Answer:\\
+    \midrule
+    \textbf{\makecell{NQ-Wiki \\ TQ-Wiki \\WQ-Freebase}} & Answer the following question with one or few words. Question: \{test question\}\\
+    \bottomrule
+    \end{tabular}
+    \caption{The prompts used for each dataset when evaluating the ChatGPT, Davinci-003, and GPT-4 models. When performing evaluation, just replace the ``\{test question\}'' with the test question.}
+    \label{tab:icl_example}
+\end{table*}
+
+\begin{table*}[t]
+    \small
+    \centering
+    \begin{tabular}{c l c}
+    \toprule
+    \textbf{Type} & \textbf{Tool}  & \textbf{Description}\\
+    \midrule
+    \multirow{18}{*}{\makecell{Extraction \\ Tool}} & \multirow{2}{*}{get$\_$relation} & Input: entity set $\{e\}$ $\rightarrow$ Output: one-hop relations $R_{\{e\}}$ \\
+    & & Return the incoming and outgoing relations of the given entity set $\{e\}$ on KG. \\
+    \cmidrule[0.001pt]{2-3}
+    & \multirow{2}{*}{get$\_$head$\_$entity} & Input: entity set $\{e\}$, relation $r$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the head entity set of the given tail entity set $\{e\}$ along the relation $r$. \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{get$\_$tail$\_$entity} & Input: entity set $\{e\}$, relation $r$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the tail entity set of the given head entity set $\{e\}$ along the relation $r$. \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{get$\_$entity$\_$by$\_$type} & Input: string type $t$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the entity set belonging to the given type $t$. \\
+    \cmidrule{2-3}
+    & \multirow{6}{*}{get$\_$entity$\_$by$\_$constraint} & Input: entity set $\{e\}$, relation $r$, operator $o$, string value $v$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & \makecell[c]{Return the new entity set whose tail entity along $r$ satisfies the constraint condition. \\If $v$ is not empty, the $o$ should be one of \{``='',``>'',``>='',``<'',``<=''\}, which means \\the comparison between the tail entity and string value should satisfy the operator. \\Else, the $o$ should be one of \{``argmax'',``argmin''\}, which means the tail entity \\should be the maximum or minimum value.}\\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{get$\_$candidate$\_$entity} & Input: string entity mention $m$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the candidate linked entity set on the KG for the given entity mention $m$. \\
+    \midrule
+    \multirow{13}{*}{\makecell{Logic \\ Tool}} & \multirow{2}{*}{count} & Input: entity set $\{e\}$ $\rightarrow$ Output: integer \\
+    & & Return the number of entities in the given entity set $\{e\}$. \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{intersect} & Input: entity set list $[\{e\}]$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the intersection of the given list of entity sets.  \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{union} & Input: entity set list $[\{e\}]$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the union of the given list of entity sets.  \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{judge} & Input: entity set $\{e\}$, relation $r$, operator $o$, string value $v$ $\rightarrow$ Output: boolean \\
+    & & \makecell[c]{Return a boolean value indicating whether the comparison between the tail entity of \\the given entity set $\{e\}$ along relation $r$ and the given value $v$ satisfies the operator $o$.} \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{end} & Input: entity set $\{e\}$ $\rightarrow$ Output: entity set $\{e\}$ \\
+    & & Return the entity set as the final answer and end the reasoning process. \\
+    \midrule
+    \multirow{7}{*}{\makecell{Semantic \\ Tool}} & \multirow{3}{*}{retrieve\_relation} & Input: relation set $\{r\}$ $\rightarrow$ Output: relation set $\{r\}$ \\
+    & & \makecell[c]{Retrieve relations from the given relation set $\{r\}$ that are \\semantically relevant to the question through neural network.}  \\
+    \cmidrule{2-3}
+    & \multirow{2}{*}{disambiguate\_entity} & Input: entity set $\{e\}$ $\rightarrow$ Output: entity $e$ \\
+    & & \makecell[c]{Disambiguate the candidate linked entity $\{e\}$ based on the question semantics \\and entity information on KG~(\eg one-hop relations) through neural network.} \\
+    \bottomrule
+    \end{tabular}
+    \caption{The detailed definition and usage of all the tools.}
+    \label{tab:toolbox}
+\end{table*}
+
+\section{Summary of Toolbox}
+\label{sec:app-tool}
+We summarize the tool name, tool description, and the input argument and output of tools in Table~\ref{tab:toolbox}.

@@ -1,0 +1,36 @@
+\subsection{\revision{Benchmark Construction: Human-Generated Queries}}
+\label{sec:human_generated}
+To enhance our benchmark's practical relevance, we engaged 31 participants (22 native English speakers) to generate 263 queries across three SKBs following the detailed instructions (Appendix~\ref{app:instruction}) along with our interactive platform. We manually verified and filtered the ground truth answers to ensure the answer correctness. Table~\ref{tab:benchmark_stats} shows the statistics of the human-generated datasets. Finally, we analyzed the commonalities and differences between synthesized and human-generated queries. 
+
+
+% To enhance the practical relevance of our benchmark dataset, we engaged 31 participants, 22 of whom are native English speakers, to generate a total of 274 queries across three SKBs. The participants were given a list of entity IDs, randomly selected from the entire entity set. They followed detailed instructions (see Appendix~\ref{app:instruction}) using our interactive platform to explore the SKB data. Subsequently, we manually filtered the ground truth answers, ensuring their accuracy through human verification. We then analyze the commonality and difference between synthesized and human-generated queries.
+
+
+\begin{table}[h]
+\centering
+\vspace{-13pt}
+\caption{Comparison of Human-generated and Synthesized Queries}
+\label{tab:comparison_queries}
+\begin{tabularx}{\textwidth}{|c|X|X|}
+\hline
+\footnotesize \textbf{Query Type} & \footnotesize \textbf{Human-generated Query} & \footnotesize \textbf{Synthesized Query} \\
+\hline
+\footnotesize Short and Direct & \footnotesize \textit{Red sweatshirt for proud Montreal Canadiens} & \footnotesize \textit{Suggestions for a Suunto bike mount?} \\
+\hline
+\makecell{\footnotesize Specific \\ \footnotesize Author \& Field}  & \textit{\footnotesize \makecell[l]{Find me papers that discuss improving\\ condenser performance authored by \\Stojan Hrnjak}} & \textit{\footnotesize \makecell[l]{Show me papers by Seung-Hyeok Kye that \\discuss separability criteria.}} \\
+\hline
+\footnotesize \multirow{6}{*}{Complex Context} & \textit{\footnotesize Help me. I am trying to diagnose a patient with persistent joint pain, and I suspect a condition where the bone is dying due to compromised blood supply, often linked to factors like steroid use, ... what's the name of this \textbf{sneaky bone-killing culprit}?} & \textit{\footnotesize I'm experiencing joint pain accompanied by swelling... I'm concerned about medications aggravating my fuzzy eyesight and potential blood clotting complications. Could you recommend treatments while minimizing these side effects?} \\
+\hline
+\end{tabularx}
+\vspace{-6pt}
+\end{table}
+
+
+
+
+\xhdr{Commonality}
+The number of answers of synthesized and human-generated queries are comparable, indicating a similar level of query ambiguity. Moreover, we observe that most styles of human-generated queries are covered in the synthesized dataset. For example, Table~\ref{tab:comparison_queries} highlights their similarities in short product queries, specific author/field inquiries, and complex contextual queries.
+
+\xhdr{Difference}
+We find that human-generated queries often exhibit more unique expressions compared to synthesized ones, such as "\textit{Give me a \textbf{fat cross} and road tire that works with my Diamondback bicycle tube}" and "\textbf{\textit{this sneaky bone-killing culprit}}". This discovery suggests a future direction for our benchmark to incorporate modern and dynamic language nuances.
+

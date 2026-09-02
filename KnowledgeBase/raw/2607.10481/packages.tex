@@ -1,0 +1,139 @@
+\usepackage{graphicx}
+
+
+% For theorems and such
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+
+% \usepackage{tikz,lipsum,lmodern}
+\usepackage[most]{tcolorbox}  % takeaway box
+\tcbuselibrary{skins}
+
+
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{makecell}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% % THEOREMS
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \theoremstyle{plain}
+% \newtheorem{theorem}{Theorem}[section]
+% \newtheorem{proposition}[theorem]{Proposition}
+% \newtheorem{lemma}[theorem]{Lemma}
+% \newtheorem{corollary}[theorem]{Corollary}
+% \theoremstyle{definition}
+% \newtheorem{definition}[theorem]{Definition}
+% \newtheorem{assumption}[theorem]{Assumption}
+% \theoremstyle{remark}
+% \newtheorem{remark}[theorem]{Remark}
+% \newtheorem*{remark*}{Remark}
+% \newtheorem{example}[theorem]{Example}
+
+\usepackage{multirow}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[table]{xcolor}
+\usepackage[normalem]{ulem}
+\usepackage{pifont}
+\useunder{\uline}{\ul}{}
+
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{array}
+\usepackage{tabulary}
+\usepackage{tabularx}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\definecolor{mygreen}{HTML}{6AA66E}
+\definecolor{myblue}{HTML}{5471AB}
+\definecolor{myred}{HTML}{B65655}
+\definecolor{myorange}{HTML}{D1885C}
+\definecolor{mypurple}{HTML}{7F73AF}
+\definecolor{mybrown}{HTML}{8F7963}
+
+% 定义上标样式的命令
+% \up
+\newcommand{\up}[1]{$^{\textcolor{RoyalBlue}{+#1}}$} 
+% \down
+\newcommand{\down}[1]{$^{\textcolor{gray}{-#1}}$}
+
+\lstdefinestyle{mystyle}{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true, % Automatically break lines in the listings
+    columns=flexible, % Adjust the column width for better formatting
+    captionpos=b,
+}
+\lstset{style=mystyle}
+
+\usepackage{subcaption}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}} 
+\newcommand{\ie}{\emph{i.e., }}
+\newcommand{\eg}{\emph{e.g., }}
+\newcommand{\etal}{\emph{et al.}}
+\newcommand{\st}{\emph{s.t. }}
+\newcommand{\etc}{\emph{etc.}}
+\newcommand{\wrt}{\emph{w.r.t. }}
+\newcommand{\cf}{\emph{cf. }}
+\newcommand{\aka}{\emph{aka. }}
+% \newcommand{\vs}{\emph{v.s. }}
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+\newcommand{\boldcmark}{\ding{52}}%
+\newcommand{\boldxmark}{\ding{56}}%
+
+\newcommand{\kxnote}[1]{\textcolor{orange}{#1}}
+
+\newcommand{\updated}[1]{\textcolor{Blue}{#1}}
+
+
+\newcommand{\methodname}{method name}
+\newcommand{\MethodName}{Method Name}
+
+% %%% 调间距用的 %%%
+% \setlength{\abovecaptionskip}{5pt}
+% \setlength{\belowcaptionskip}{0pt}
+% \setlength{\textfloatsep}{5pt}
+
+% \newlength{\origtextfloatsep}
+% \setlength{\origtextfloatsep}{\textfloatsep}
+
+% 定义名为 'paperbox' 的新环境
+% [1] 表示有1个参数
+% [Summary] 表示参数的默认值是 Summary
+\newtcolorbox{paperbox}[1][Summary]{
+    enhanced,
+    colback=blue!3,
+    colframe=NavyBlue,
+    % 标题挂载设置
+    attach boxed title to top left={xshift=2mm, yshift=-3mm},
+    boxed title style={
+        colback=NavyBlue,
+        rounded corners, % 如果想要完全圆角去掉这行
+        arc=3pt,
+        top=0pt, bottom=0pt, left=2pt, right=2pt
+    },
+    % 字体与标题内容
+    fonttitle=\bfseries\small, % 保持和正文一致的粗体
+    title={#1}, % #1 代表传入的标题参数
+    % 内部边距
+    top=10pt,
+    bottom=6pt,
+    left=4pt,
+    right=4pt,
+    boxsep=1pt,
+    % 边框样式
+    arc=3pt,
+    boxrule=0.8pt,
+    % 外部间距
+    before skip=5pt,
+    after skip=5pt,
+    % 如需要阴影可注释下面这行
+    drop fuzzy shadow
+}

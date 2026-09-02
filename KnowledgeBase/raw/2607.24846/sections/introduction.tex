@@ -1,0 +1,128 @@
+% Introduction의 기본 flow
+% 1. 기술적 배경 및 보편성
+% 2. 전통적 방식의 한계와 비효율성
+% 3. 새로운 패러다임의 필요성
+% 4. 대회 배경 및 구체적 목표 연계
+% 5. 우승 솔루션 발표 및 핵심 기술적 기여
+
+% 현재 flow
+% 대화형 추천의 특징을 짚은 뒤 바로 실제 케이스와 시스템 구조로 들어가는 직진형 구조
+% 1문단: 도메인 정의 및 대회 제약 조건과 팀의 핵심 전략 선언
+% - 대화형 음악 추천이 가진 두 가지 상반된 역량(검색 vs 답변)을 기존 연구(JAM, RA-Rec, PC-CRS)를 인용하며 정의함.  
+% - RecSys Challenge 2026의 특징(Top-20 랭킹과 자연어 답변 동시 평가)을 소개하며, 이에 대응하기 위해 검색과 답변을 독립된 인터페이스로 분리(Decouple)하겠다는 팀의 핵심 전략을 곧바로 선언함
+% 2문단: 대화 인지형 검색의 필요성을 보여주는 모티베이션 사례
+% - 공개 테스트 세트의 실제 유저 턴(Turn 4~6) 예시를 들어, 유저가 이전 대화 맥락(과거 엔티티)과 새로운 요구사항(현재 정제 언어)을 섞어 말할 때 검색이 얼마나 까다로워지는지 보여줌.  
+% - 제안 시스템의 파이프라인(BM25 ➔ 8B Pool ➔ RRF ➔ LightGBM)을 거치며 정답 트랙의 순위가 20위에서 1위로 상승하는 과정을 통해 본인들 방식의 유효성을 간접 증명함.  
+% 3문단: 제안 시스템의 3대 디자인 원칙 및 오픈소스 공개
+% - 시스템을 관통하는 세 가지 설계 원칙을 요약 제시함: (i) 하이브리드 어휘-밀집 검색 및 대화형 브리프 활용, (ii) LightGBM 기반의 증거 융합 및 캘리브레이션, (iii) PAS 구조를 통한 증거 기반 답변 생성. 
+% - 코드 및 데이터 아티팩트 공개 선언으로 마무리함.
+
+% 수정 flow
+% 1문단: 배경 ➔ 기존 한계 ➔ 패러다임 전환 ➔ 대회 연계
+% - 기술적 배경 및 보편성: 최근 대화형 음악 추천(CRS)은 사용자의 자연어 질의와 장기 선호도를 매칭하는 기술(JAM)과 대화 상태를 추적하는 기술(RA-Rec)을 중심으로 크게 발전해 옴. 
+% - 전통적 방식의 한계와 비효율성: 그러나 기존 연구들은 이 두 가지 상이한 성격의 작업을 '단일 공유 텍스트 인터페이스(single shared text interface)' 안에서 한 번에 해결하려 함. 이는 정확한 카탈로그 엔티티(곡명/가수) 매칭과 끊임없이 변하는 유저의 대화 의도 포착 사이에 치명적인 트레이드오프를 발생시키고, 답변의 신뢰성마칠 떨어뜨림.  
+% - 새로운 패러다임의 필요성: 따라서 카탈로그 검색과 대화 맥락 추적을 독립적인 인터페이스로 완전히 분리(Decouple)하고, 오직 추천 트랙과 메타데이터 증거로만 파이프라인을 유기적으로 연결하는 새로운 모델링 구조가 필요함.  
+% - 대회 배경 및 구체적 목표 연계: 바로 이 패러다임 전환을 정조준한 것이 ACM RecSys Challenge 2026이며, 본 대회는 Top-20 랭킹 정확도와 명시적 증거 기반 자연어 생성을 동시에 요구함.  
+% 2문단: 구체적 실패 사례 ➔ 솔루션 작동 ➔ 극적 성능 도약 (사례 기반 검증)
+% - 전통 방식 한계의 구체적 증명 (Turn 4~6 케이스): 유저가 이전 턴에서 언급한 특정 아티스트 맥락('Switchblade Symphony')을 유지하면서, 현재 턴(Turn 6)에서 새로운 스타일 요구사항('gothic rock', 'heavier beat')을 덧붙이는 실제 복잡한 대화 시나리오를 제시함.
+% - 기존 단일 인터페이스의 실패: 이 상황에서 과거 엔티티와 현재 자연어 요구사항을 정교하게 분리하지 못하는 기존의 단순 텍스트 검색(\texttt{bm25_qmr})을 사용하면, 정답 트랙이 20위라는 하위권에 머무는 치명적인 비효율성이 발생함. 
+% - 새로운 패러다임의 실효성 검증: 우리는 이 문제를 해결하기 위해 정확한 매칭을 위한 '하이브리드 어휘-밀집 풀'과 대화 흐름을 추적하기 위해 파인튜닝된 'Qwen 8B 대화형 풀'을 독립적으로 구축함. 이 분리된 뷰의 지원(Evidence)을 받아 LightGBM 캘리브레이션을 거쳤을 때, 정답 트랙이 20위에서 최종 1위로 극적으로 상승함을 보여줌으로써 대화 인지형 다중 검색 뷰의 강력한 성능을 증명함.  
+% 3문단: 답변 생성 구조 요약 ➔ 5. 수상 솔루션 발표 및 핵심 기술적 기여
+% - 생성단 기술 요약: 추천 트랙이 고정된 후에는, 단순히 목록을 문장으로 나열하는 기존 방식 대신, 모델 불가지론적인 PAS(Propose-Assign-Select) 프로시저를 적용하여 표면적인 문장 생성 이전에 명시적인 증거 할당과 제약을 가해 답변의 신뢰성을 보장함.  
+% 5. 수상 솔루션 발표 및 핵심 기술적 기여: 결과적으로 본 시스템을 통해 대회 Blind-B 산업 트랙에서 최종 3위(Third-place)를 달성했음을 선언
+% - 기여 1: 검색과 답변의 목적에 맞춘 전용 텍스트 인터페이스 분리를 통해 카탈로그 큐와 대화 의도를 동시에 보존.  
+% - 기여 2: 하이브리드 풀과 Qwen 8B 어댑터 풀을 LightGBM 기반으로 성공적으로 융합하는 캘리브레이션 아키텍처 제시.  
+% - 기여 3: 생성 전 단계에서 증거를 구조적으로 바인딩하는 PAS 프레임워크 제안 및 재현 가능한 전체 코드/데이터 아티팩트 오픈소스 공개.  
+
+
+\section{Introduction}
+
+% 원본
+% Conversational music recommendation requires two related but operationally
+% distinct capabilities. JAM maps natural-language music queries and long-term
+% profiles into a shared retrieval space~\cite{melchiorre2025jam}, while RA-Rec
+% maintains a semi-structured natural-language dialogue state for conversational
+% retrieval~\cite{kemper2024rarec}. Retrieval in our setting must preserve both
+% exact catalog entities and evolving intent. On the response side, PC-CRS uses
+% strategy-guided generation and post-hoc refinement to improve explanation
+% credibility~\cite{qin2024credible}. Our setting fixes the ranking first and
+% restricts the response to its supplied evidence. The ACM RecSys Challenge
+% 2026\footnote{\url{https://www.recsyschallenge.com/2026/}} evaluates both the
+% top-20 ranking and its natural-language response. We therefore optimize
+% retrieval and response through separate interfaces, connecting them only by
+% the ranked tracks and their supporting evidence.
+
+% A case from the public test split illustrates why dialogue-aware retrieval matters. At
+% turn 4, the listener cites Switchblade Symphony while describing melancholic
+% darkwave and female vocals. After accepting Ego Likeness at turn 5, the turn-6
+% request adds gothic rock, industrial elements, and a heavier beat without
+% repeating the earlier artist. The ground-truth track, Switchblade Symphony's
+% ``Dollhouse (Razed In Black Mix),'' ranks 20th in \texttt{bm25\_qmr}, fourth in
+% the five-fold 8B pool, second after RRF, and first after LightGBM. This
+% progression shows the value of combining an earlier catalog entity with the
+% listener's latest natural-language refinement.
+
+% Our system follows three design principles, summarized in
+% Figure~\ref{fig:pipeline}. First, enriched lexical matching and untrained 0.6B
+% dense retrieval use catalog-oriented text, whereas a task-adapted two-tower
+% model uses conversational briefs. Second,
+% each retrieval pool retains its own ranks and scores until the LightGBM ranker
+% combines their evidence. Third, PAS makes response generation a structured
+% selection over fixed evidence rather than merely verbalizing the ranked list.
+% We release the code and artifacts for
+% reproduction.\footnote{\url{https://github.com/yoobros/music-crs-challenge}}
+
+% flow 상세 버전
+% In recent years, conversational music recommendation (CRS) has emerged as a fundamental technology across digital media platforms, bridging user preferences and massive catalogs. Existing state-of-the-art approaches like JAM map natural-language music queries and long-term profiles into a shared retrieval space~\cite{melchiorre2025jam}, while frameworks like RA-Rec track fluid dialogue states to enable conversational search~\cite{kemper2024rarec}. Traditionally, these systems are engineered around a single shared text interface that attempts to handle both dialogue context tracking and item matching simultaneously. However, this unified approach creates a critical bottleneck, forcing a severe trade-off between preserving exact catalog entities and capturing fluidly evolving conversational intent, which ultimately compromises response and explanation credibility~\cite{qin2024credible}. To overcome these limitations, there is an urgent need for a new paradigm that completely decouples retrieval and response into operationally distinct interfaces, connecting them strictly through the finalized recommendation candidates and supporting metadata evidence. In this context, the ACM RecSys Challenge 2026\footnote{\url{https://www.recsyschallenge.com/2026/}} formalizes this paradigm by requiring systems to optimize both top-20 track ranking accuracy and evidence-grounded natural-language response generation over dynamic conversational trajectories.
+
+% A concrete case from the public test split highlights the vulnerability of traditional single-interface text matching when encountering complex dialogue histories. At turn 4, a listener requests ``melancholic darkwave and female vocals,'' explicitly citing the entity \textit{Switchblade Symphony}. Following an intermediate turn, the turn-6 request adds ``gothic rock, industrial elements, and a heavier beat'' without repeating the original artist. Under a conventional keyword-focused query interface (\texttt{bm25\_qmr}), the ground-truth track---Switchblade Symphony's ``Dollhouse (Razed In Black Mix)''---is severely penalized, ranking only 20th due to the lack of explicit entity recurrence. To resolve such inefficiencies, we implement a multi-view retrieval architecture that processes text through decoupled, specialized interfaces: an enriched hybrid lexical-dense pool tailored for exact metadata matching, and a task-adapted conversational pool driven by fine-tuned Qwen 8B adapters optimized for evolving dialogue context. When these distinct pools cooperate, the target track's rank advances dramatically to fourth in the five-fold Qwen 8B pool, second after Reciprocal Rank Fusion (RRF), and achieves first place after LightGBM calibration. This progression empirically validates the real-world efficacy of separating catalog-oriented retrieval from dialogue-aware tracking.
+
+% Once the top-20 ranking is established, generating a fluent yet trustworthy explanation introduces another operational challenge. Rather than merely verbalizing the ranked list, our system employs a model-agnostic Propose-Assign-Select (PAS) response generation procedure that structures the final text as a strict selection over verified, fixed metadata evidence. This integrated framework achieved robust generalization across diverse music request categories, earning our team, \textit{swyoo}, third place in the competitive Blind-B industry track. The entire system pipeline is summarized in Figure~\ref{fig:pipeline}, and we open-source our code and artifacts for full reproduction\footnote{\url{https://github.com/yoobros/music-crs-challenge}}. In summary, the main technical contributions of this paper are as follows:
+% \begin{itemize}
+%     \item We introduce an operationally decoupled architecture for conversational recommendation, deploying specialized, independent text interfaces to balance exact catalog retrieval and fluid intent tracking.
+%     \item We present a multi-view calibration pipeline that effectively merges distinct scoring signals from a hybrid lexical-dense pool and a task-adapted Qwen 8B adapter pool via LightGBM.
+%     \item We propose the PAS response framework to strictly ground dialogue generation in retrieved evidence prior to surface realization, significantly enhancing explanation reliability and interpretability.
+% \end{itemize}
+
+% figure 참고 + flow 축약버전 
+Conversational music recommendation (CRS) must balance precise catalog entity retrieval with fluid dialogue tracking~\cite{melchiorre2025jam,kemper2024rarec}. Traditional architectures rely on a single text interface for both tasks, creating a bottleneck that forces a severe trade-off between tracking evolving intent and preserving exact entities, which compromises explanation credibility~\cite{qin2024credible}. To resolve this, we propose an operationally decoupled architecture that separates retrieval and response. As shown in Figure~\ref{fig:pipeline}, these pipelines connect strictly via ranked candidates and metadata evidence, directly aligning with the ACM RecSys Challenge 2026\footnote{\url{https://www.recsyschallenge.com/2026/}} objectives of top-20 ranking and evidence-grounded response generation.
+
+Figure~\ref{fig:textviews}b illustrates this single-interface vulnerability. At turn 4, a listener requests ``melancholic darkwave'' citing \textit{Switchblade Symphony}; by turn 6, they add ``gothic rock'' and a ``heavier beat'' without repeating the artist. A keyword baseline (\texttt{bm25\_qmr}) drops the ground-truth track---``Dollhouse (Razed In Black Mix)''---to 20th place due to this entity shift. To fix this inefficiency, Figure~\ref{fig:textviews}a shows how our system pipelines a hybrid lexical-dense pool for exact matching alongside a conversational pool driven by fine-tuned Qwen 8B adapters. Merging these independent views advances the target track's rank from 20th to fourth in the 8B pool, second after reciprocal rank fusion (RRF), and first after LightGBM calibration.
+
+After ranking, generating explanations requires strict factual grounding. Instead of relying on free-form generation, Figure~\ref{fig:pas} illustrates our PAS framework for evidence-guided reasoning and deterministic validation. PAS converts response generation into a joint reasoning step conditioned on candidate-level evidence and a matched demonstration, followed by deterministic validation to anchor outputs to verified catalog attributes. This framework secured third place for team \textit{swyoo} in the Blind-B industry track, and we open-source our code\footnote{\url{https://github.com/yoobros/music-crs-challenge}}. Our main technical contributions are:
+\begin{itemize}
+    \item An operationally decoupled CRS framework separating catalog retrieval from intent tracking.
+    \item A multi-view calibration pipeline merging hybrid and Qwen 8B adapter pools via LightGBM.
+    \item The PAS response architecture enforcing structural evidence assignment to maximize explanation reliability.
+\end{itemize}
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[node distance=3.5mm,figure-readable]
+    \node[figinput,align=center] (input)
+      {\textbf{Dialogue + catalog}\\request + history\\external metadata};
+    \node[figinterface,align=center,right=3.5mm of input] (pools)
+      {\textbf{Two retrieval views}\\
+       hybrid lexical--dense\\
+       task-adapted conversational};
+    \node[figprocess,align=center,right=3.5mm of pools] (merge)
+      {\textbf{Merge + LightGBM}\\separate ranks + scores};
+    \node[figoutput,align=center,right=3.5mm of merge] (top)
+      {\textbf{Top 20}\\tracks + evidence};
+    \node[figinterface,align=center,right=3.5mm of top] (pas)
+      {\textbf{PAS}\\commit, then write};
+    \node[figoutput,align=center,right=3.5mm of pas] (out)
+      {\textbf{Ranked tracks}\\+ evidence-grounded response};
+
+    \draw[figarrow] (input.east) -- (pools.west);
+    \draw[figarrow] (pools.east) -- (merge.west);
+    \draw[figarrow] (merge.east) -- (top.west);
+    \draw[figarrow] (top.east) -- (pas.west);
+    \draw[figarrow] (pas.east) -- (out.west);
+  \end{tikzpicture}
+  \caption{System overview. Two retrieval views merge only at calibration;
+  PAS grounds the response in the fixed top 20.}
+  \Description{Conversation and externally enriched catalog inputs feed the bm25 qmr and qemb two-tower 8B pools. Their candidates are merged and calibrated by LightGBM, after which the top 20 and evidence flow through PAS to the ranked tracks and response.}
+  \label{fig:pipeline}
+  \vspace{-2mm}
+\end{figure*}

@@ -173,6 +173,9 @@ describe('App', () => {
             sections_count: 3
           })
         }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
+        }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
     )
@@ -294,6 +297,9 @@ describe('App', () => {
             sections_count: 3
           })
         }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
+        }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
     )
@@ -351,6 +357,9 @@ describe('App', () => {
             figures_count: 0,
             sections_count: 3
           })
+        }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
         }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
@@ -421,6 +430,9 @@ describe('App', () => {
             figures_count: 0,
             sections_count: 3
           })
+        }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
         }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
@@ -545,6 +557,9 @@ describe('App', () => {
             figures_count: 0,
             sections_count: 3
           })
+        }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
         }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
@@ -672,12 +687,18 @@ describe('App / generation tray', () => {
         if (path.startsWith('/api/papers?') || path === '/api/papers') {
           return Response.json([])
         }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
+        }
         if (path === '/api/papers/batch-ingest' && init?.method === 'POST') {
           return Response.json([jobResponse({ status: 'pending' })])
         }
         if (path === '/api/jobs/job-1' && onJobPoll) {
           jobPolls += 1
           return onJobPoll()
+        }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([])
         }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
@@ -728,9 +749,59 @@ describe('App / generation tray', () => {
     await waitFor(() => expect(screen.getAllByText(/已暂存 1 篇/).length).toBeGreaterThan(0))
 
     await user.click(await screen.findByText('全部论文'))
+    await user.click(await screen.findByRole('button', { name: '任务' }))
     expect(screen.getAllByText(/已暂存 1 篇/).length).toBeGreaterThan(0)
 
     await user.click(await screen.findByText('首页'))
+    await user.click(await screen.findByRole('button', { name: '任务' }))
     expect(screen.getAllByText(/已暂存 1 篇/).length).toBeGreaterThan(0)
+  })
+
+  test('active server jobs remain visible after switching pages', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: RequestInfo | URL) => {
+        const path = String(url)
+        if (path.startsWith('/api/recommendations/today')) {
+          return Response.json({
+            date: '2026-07-14',
+            generated_at: '2026-07-14T00:00:00+00:00',
+            corpus_size: 1,
+            candidate_pool_size: 1,
+            candidates: [stagingCandidate],
+            degraded: false
+          })
+        }
+        if (path.startsWith('/api/papers?') || path === '/api/papers') {
+          return Response.json([])
+        }
+        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
+          return Response.json([
+            jobResponse({
+              job_id: 'job-html-active',
+              slug: 'demo-paper',
+              target: 'render_blog_html',
+              status: 'running',
+              started_at: '2026-07-14T00:00:01+00:00',
+              progress: '正在渲染公众号 HTML...'
+            })
+          ])
+        }
+        return Response.json({ detail: 'not found' }, { status: 404 })
+      })
+    )
+
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(await screen.findByRole('button', { name: '任务' }))
+    expect(await screen.findByText('1 个任务进行中')).toBeInTheDocument()
+    expect(screen.getAllByText(/生成 HTML/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/正在渲染公众号 HTML/).length).toBeGreaterThan(0)
+
+    await user.click(await screen.findByText('全部论文'))
+    await user.click(await screen.findByRole('button', { name: '任务' }))
+    expect(await screen.findByText('1 个任务进行中')).toBeInTheDocument()
+    expect(screen.getAllByText(/demo-paper/).length).toBeGreaterThan(0)
   })
 })

@@ -1,0 +1,122 @@
+\vspace{-2pt}
+\section{Experiments}
+\label{sec:exp}
+\vspace{-2pt}
+
+% In this section, we aim to explore the following questions:
+% \begin{itemize}[leftmargin=12pt]
+% \item \textbf{Q1}: How well do current retrieval approaches perform on our benchmark datasets?
+% \item \textbf{Q2}: What challenges are revealed by the experiments, and more importantly, what are the potential future directions for improvement?
+% \end{itemize}
+
+
+% \begin{itemize}[leftmargin=*]
+%     \item \xhdr{Vector Similarity Search (ada-002)} 
+%     ada-002 embeds the query and the concatenated textual and relational information of each candidate entity, then computes similarity scores between query and candidate embeddings. We use OpenAI's \texttt{text-embedding-ada-002} model for generating embeddings.
+
+%     \item \xhdr{Multi-Vector Similarity Search (multi-ada-002)}
+%     It represents each entity with multiple embeddings from chunks of its textual and relational information. We compute similarities between the query and chunk embeddings, then aggregate them by averaging the top-$k$ values as the final similarity.
+
+%     \item \xhdr{Finetuned DPR} We finetunes query and document encoders using training query-answer pairs, optimizing with contrastive loss. Positive pairs are training questions and their ground truth answers; 20 hard negatives are top false positives from ada-002. We use \texttt{roberta-base} and finetune on the entire training split for each dataset.
+
+%     \item \textbf{QAGNN}~\cite{qagnn}. 
+%     QAGNN constructs a graph with nodes from candidate entities and entities mentioned in the question, including their neighbors for a rich context. It integrates semantic embeddings from a language model, jointly modeling relational and semantic information for retrieval.
+
+%     \item \textbf{LLM Reranker}~\cite{abs-2306-04757, abs-2310-14122}. 
+%     It improves the precision of the top-$k$ ada-002 results by reranking them with LLMs. We use GPT-4-turbo (\texttt{gpt-4-1106-preview}) and Claude3 (\texttt{claude-3-opus}), setting $k=20$ for synthesized and $k=10$ for human-generated queries. Given a query, the LLMs assign each candidate entity a satisfaction score from 0 to 1 based on their textual and relational information. 
+%     We evaluate on a random 10\% sample of testing queries due to high retrieval costs.
+%     \vspace{-5pt}
+% \end{itemize}
+\subsection{Baseline Retrieval Models and Evaluation Metrics}
+
+We extensively evaluate five classes of retrieval models described below.
+\vspace{-5pt}
+\begin{itemize}[leftmargin=*]
+    \vspace{-1pt}   
+    \item \textbf{Sparse Retriever}: \textbf{BM25}~\cite{bm25} is a traditional yet powerful sparse retrieval method based on term frequency-inverse document frequency (TF-IDF). It computes relevance scores by considering the frequency of query terms in documents, adjusted for term rarity and document length.
+    
+    \vspace{-1pt}   
+    \item \textbf{Small Dense Retrievers}: \textbf{DPR}~\cite{dpr}, \textbf{ANCE}~\cite{ance}, and \textbf{QAGNN}~\cite{qagnn}. These compact models generate dense embeddings for both queries and documents, computing retrieval scores based on embedding similarities. They serve as baselines for comparison with LLM-based dense retrievers.
+    
+    \vspace{-1pt}   
+    \item \textbf{LLM-based Dense Retrievers}: \textbf{text-embedding-ada-002 (abbrev. ada-002)}~\cite{oai}, \textbf{voyage-large-2-instruct (abbrev. voyage-l2-instruct)}~\cite{voyage}, \textbf{LLM2Vec-Meta-Llama-3-8B-Instruct-mntp (abbrev. LLM2Vec)}~\cite{llm2vec}, and \textbf{GritLM-7b}~\cite{GritLM}. These models leverage LLMs to generate dense embeddings that are more contextually expressive.
+    
+    \vspace{-1pt}   
+    \item \textbf{Multivector Retrievers}: \textbf{multi-ada-002}~\cite{oai} and \textbf{ColBERTv2}~\cite{ColBERTv2}. Beyond ada-002 which represents a document as an embedding, \textbf{multi-ada-002} splits each document into overlapping chunks and embeds them using the same encoder as the query. Similarity scores between the query and chunks are aggregated using the average of the top-3 similarities, which we found to perform best. \textbf{ColBERTv2} represents each document as multiple token-level embeddings for fine-grained matching, capturing richer semantic information.
+    
+    \vspace{-1pt}   
+    \item \textbf{LLM Rerankers}: \textbf{Claude3} and \textbf{GPT-4} rerankers~\cite{abs-2306-04757, abs-2310-14122}. These models improve the precision of top-$k$ ada-002 results by reranking them using large language models. We employ GPT-4-turbo (\texttt{gpt-4-1106-preview}) and Claude3 (\texttt{claude-3-opus}), setting $k=20$ for synthesized queries and $k=10$ for human-generated queries. Given a query, the LLMs assign a satisfaction score from 0 to 1 to each candidate entity based on textual and relational information. Due to high computational costs, we evaluate these rerankers on a random 10\% sample of test queries.
+\end{itemize}
+
+The performance of these models are measured using standard retrieval metrics below.
+
+% We use metrics including Hit@1, Hit@5, Mean Reciprocal Rank (MRR), and Recall@20. See Appendix~\ref{app:metrics} for details.
+
+% \subsection{Evaluation Metrics}
+% \label{app:metrics}
+
+% We use the following metrics to holistically evaluate the model performance.
+
+\vspace{-5pt}
+\begin{itemize}[leftmargin=*]
+
+    \vspace{-1pt}   
+    \item \textbf{Hit@$k$} assesses whether the correct item is among the top-$k$ results from the model. We used $k=1$ and $k=5$ for evaluation. At $k=1$, it evaluates the accuracy of the top recommendation; at $k=5$, it examines the model's precision in a wider recommendation set.  
+    % It's a straightforward yet effective way to measure the immediate relevance of answers.
+
+    \vspace{-1pt}   
+    \item \textbf{Recall@$k$} measures the proportion of relevant items in the top-$k$ results. For synthesized queries, $k=20$ is used, as the answer length of all of the queries in our benchmarks are equal or smaller then $20$. 
+    % For human-generated queries, Recall@20 is not reported as the number of responses in the human-generated subset may exceed 20. 
+    This metric offers insight into the model's ability to identify all relevant items, particularly in scenarios where missing any could be critical. 
+
+    \vspace{-1pt}   
+    \item \textbf{Mean Reciprocal Rank (MRR)} is a statistic for evaluating the average effectiveness of a predictive model. It calculates the reciprocal of the rank at which the first relevant item appears in the list of predictions. 
+    % MRR is particularly useful for understanding the model's performance at presenting the correct item at an early stage, without the need for a predefined $k$. 
+    This metric emphasizes the importance of the rank of the first correct answer, which is crucial in many practical applications where the first correct answer is often the most impactful.
+\end{itemize}
+
+\subsection{Results and Analysis}
+\vspace{-2pt}
+
+\input{tables/main_exp}
+\input{tables/human_generated}
+
+\textbf{Results on synthesized queries.} 
+Table~\ref{tab:results} presents the results on both the full synthesized test sets and random 10\% samples from these sets. In both cases, \textbf{BM25}, despite its simplicity, proves to be a strong baseline, outperforming the dense retrieval models such as \textbf{ANCE}. We observe that finetuned \textbf{DPR} and \textbf{QAGNN}, exhibit insufficient performance. This underperformance is likely due to their relatively small model sizes and the risk of overfitting during training. These issues present challenges in effectively training the models on SKBs, where the entity documents can be hard to differentiate without capturing detailed information.
+
+Among the larger models, \textbf{ada-002} benefits from superior pretrained embeddings and significantly outperforms \textbf{LLM2Vec} by a large margin. \textbf{GritLM-7b} delivers excellent performance, surpassing the ada-002 model overall. In contrast, LLM2Vec underperforms due to its limited context length, which is insufficient for encoding the lengthy documents in the SKBs. For multivector retrievers, we found that \textbf{multi-ada-002} generally outperforms ada-002, indicating that using multiple vectors per document enhances retrieval effectiveness. Similarly, fine-grained representation allows \textbf{ColBERTv2} to capture subtle semantic nuances between queries and documents, leading to largely improved retrieval accuracy. 
+
+However, both GritLM-7b and ColBERTv2 generally underperform compared to the rerankers on the random split, especially in terms of Hit@k metrics. This suggests that while these dense retriever models effectively capture semantic information, they may not fully grasp the nuanced relevance judgments required for top-tier retrieval performance. The rerankers, utilizing powerful LLMs like \textbf{GPT-4 (gpt-4-1106-preview)} and \textbf{Claude3 (claude-3-opus)}, excel by re-evaluating the top candidates and assigning satisfaction scores based on a deeper understanding of the query and document content. This process allows them to better discern subtle contextual cues and relational information that dense retrievers might overlook. Consequently, LLM rerankers enhance retrieval precision at the top ranks.
+
+Finally, regardless of the higher computational costs of the rerankers, their performance remains suboptimal. For instance, the Hit@1 scores for the GPT-4 reranker are only about 18\% on \primekgt and 41\% on \magt, indicating that the top-ranked answers are frequently incorrect. Similarly, the Recall@20 metrics are below 60\% across all datasets, with the GPT-4 reranker achieving Recall@20 scores of 55\% on \amazont, 49\% on \magt, and 34\% on \primekgt. This suggests that the ranking results miss a significant portion of relevant answers. The MRR scores are also relatively low, especially for \primekgt, where the GPT-4 reranker attains an MRR of only around 27\%. 
+
+The insufficient performances may be attributed to the complexity and diversity of queries in SKBs, where nuanced understanding and detailed contextual information are crucial.
+These findings highlight significant room for improvement in the ranking process.
+
+
+\xhdr{Results on human-generated dataset}  
+Table~\ref{tab:results-human} presents the testing results on the human-generated datasets. For example, the rerankers consistently outperform others, showing their reasoning and context understanding ability. Compared to the synthesized datasets, the performance on human-generated queries is generally higher for most models, but the overall trends remain consistent. This indicates that synthesized datasets may be more challenging, highlighting the complexity of the tasks on our synthesized queries. 
+
+Another interesting observation is that the performance of the rerankers is particularly strong on human-generated queries, which may contain more nuanced language and diverse expressions. This suggests that rerankers excel in interpreting and leveraging the richness of human language to improve retrieval accuracy.
+
+
+\input{tables/latency}
+% On the other hand, this suggests the complexities of 
+% for our benchmark and demonstrates the value of a double-checking process due to the complexities of our text and relational data requirements.
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1\textwidth]{figs/case_updated}
+    \caption{
+    A case study on \magh shows that ada-002 overranks non-ground truth papers $C$ and $D$ due to repeated keywords in the relational information ``cites paper''. After reranking with Claude3, it correctly prioritizes ground truth papers $A$ and $B$ with accurate reasoning and analysis.}
+    \vspace{-10pt}
+    \label{fig:case}
+\end{figure}
+
+\xhdr{Retrieval latency} Latency is crucial for practical retrieval systems, as users expect quick responses. As shown in Table~\ref{tab:latency}, we evaluated the latency of various models using a single NVIDIA A100-SXM4-80GB GPU. We observed that the DPR and QAGNN models exhibit lower average latency, making them suitable for time-sensitive applications. In contrast, the ada-002 and multi-ada-002 models have moderate latency due to multiple API calls. However, when combined with LLM rerankers, the latency increases significantly due to the computational demands of these large models. Therefore, it is important to balance accuracy and latency, especially for complex queries that require advanced reasoning capabilities. 
+
+
+\xhdr{Case study} 
+To highlight the importance of reasoning ability for achieving good performance on our benchmark, we present a case study in Figure~\ref{fig:case}, comparing the ada-002 model with the Claude3 Reranker. In this example, the query requests papers from a specific institution on a particular topic. The ada-002 model fails to address the relational aspect of the query because it embeds entire documents without detailed analysis. This leads to high relevance scores for irrelevant papers that frequently mention keywords like "nonlinear modeling" and "piezoelectric elements" but do not satisfy the relational requirement. In contrast, the LLM reranker significantly improves the results by reasoning about the relationship between the query and each paper, resulting in scores that more accurately reflect relevance. This underscores the need for reasoning ability to grasp query complexities. 
+

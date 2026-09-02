@@ -1,0 +1,98 @@
+\section{Experiments}
+\label{sec:experiments}
+
+We evaluate \framework{} through two research questions: \textbf{RQ1} (Effectiveness and Efficiency): \emph{Can \framework{} learn an effective and efficient KG-RAG policy when trained on a target KG?}; \textbf{RQ2} (Cross-KG Transferability): \emph{Does \framework{} generalize to unseen KGs without additional training?}
+For both research questions, we compare against established LLM-only and LLM+KG baselines to assess effectiveness, efficiency, and transferability.
+
+\subsection{Experimental Setup}
+
+\noindent \textbf{Models.}
+We use Qwen2.5-3B-it~\citep{qwen2025qwen25technicalreport} as our base model. For the other baseline methods, we use Qwen2.5-7B-it, Qwen2.5-72B-it, Qwen3-235B-A22B-Instruct-2507~\citep{yang2025qwen3}, and Llama2-7B-it (only for the fine-tuned planning in RoG~\citep{Luo2024RoG}), following the setups used in prior work.
+
+\noindent \textbf{Datasets.}
+We mainly evaluate \framework{} in-domain on (1) \dataset{WebQSP}~\citep{Yih2016WebQSP}: natural-language questions over Freebase, mostly 1–2 hop questions, using the official 3{,}098/1{,}639 train/test QA split; and (2) \dataset{ComplexWebQuestions (CWQ)}~\citep{Talmor2018CWQ}: compositional, multi-hop questions over Freebase with a 24{,}649/3{,}531 train/test QA split. For scalability, we extract 2-hop subgraphs for each question as in RoG~\citep{Luo2024RoG}. See Appendix~\ref{appendix:datasets} for detailed sources.
+We evaluate the plug-and-play approach on diverse KGQA benchmarks spanning two categories of KGs: (1) \emph{Freebase} type---\dataset{SimpleQA}~\citep{bordes2015simplequestions} and \dataset{GrailQA}~\citep{gu2021grailqa}, which share the Freebase KG but differ in question complexity and reasoning path distributions; and (2) \emph{Wikidata} type---\dataset{T-REx}~\citep{elsahar2018trex} and \dataset{QALD-10en}~\citep{usbeck2023qald10} for cross-schema generalization. Appendix~\ref{appendix:datasets} provides a summary of dataset sources, schema, and evaluation splits.
+
+\noindent \textbf{Metrics.} Following prior works~\citep{Luo2024RoG, Sun2024ToG, Chen2024Pog, park2026prograg} to evaluate KGQA performance, we use \textit{Hits@1} (1 if the ground-truth answer appears in the single search, and 0 otherwise). For efficiency, we report \emph{total tokens} and \emph{generated tokens} (completion-only), measured end-to-end per query, aggregated across all turns. 
+This serves as a proxy for inference time and compute cost. For fair comparison, all token counts are computed with the Qwen2.5 tokenizer. We also report the \emph{number of modules} to compare workflow complexity, and we analyze single-query latency and batched throughput on a single NVIDIA H100 GPU.
+
+
+\noindent \textbf{Baselines.}
+We compare three classes of approaches: (1) \emph{LLM-only} methods that do not access an external KG: IO~\citep{brown2020gpt3} and Chain-of-Thought (CoT)~\citep{wei2022chain} prompting; (2) \emph{prior KG-augmented} pipelines: \textsc{RoG}~\citep{Luo2024RoG}, which uses a \emph{fine-tuned} modular workflow with LLaMA2-7B-it as the planner and we use the Qwen family as reasoner, and \textsc{ToG}~\citep{Sun2024ToG} and \textsc{ReKnoS}~\citep{Wang2025ReKnoS}, which use a \emph{prompt-based} modular workflow; and (3) our method \framework{}. For LLM-only baselines, we employ LLM-as-Judge~\citep{zheng2023llmasajudge} using gpt-4o-mini~\citep{openai2024gpt4omini} to semantically match predicted answers to ground truth. We report the average and standard deviation over 5 runs for all models and baselines. Full details for the baselines are provided in Appendix~\ref{appendix:baselines}. 
+
+\noindent\textbf{Implementation details.} \label{sec:kg_r1_implementation}
+We use VERL~\citep{sheng2024hybridflow} and vLLM-backed decoding~\citep{kwon2023efficient} for implementing the \framework{} agent. Training uses distributed optimization with gradient checkpointing and offloading. Unless stated otherwise, we set \(H=5\) as the maximum number of turns and \(N=16\) rollouts per query. %
+Additional implementation details (e.g., hyperparameters) are provided in Appendix~\ref{appendix:implementation_details}.
+
+\begin{wrapfigure}{t}{.5\textwidth}
+  \vspace{-4em}
+  \centering
+  \includegraphics[width=\linewidth]{Figures/hits1_train_vs_validation.pdf}
+  \captionof{figure}{Hits@1 over \framework{} training on \dataset{WebQSP} and \dataset{CWQ} for Qwen2.5-3B-it. %
+  }
+  \label{fig:training_main}
+  \vspace{-2em}
+\end{wrapfigure}
+\subsection{Training Stability and Effectiveness}
+Figure~\ref{fig:training_main} shows steady improvements in Hits@1 that gradually plateau as training converges for \framework{} on both \dataset{WebQSP} and \dataset{CWQ}. The validation Hits@1 closely follows the training curve, indicating that the learned policy generalizes well to unseen data in the validation set without significant overfitting. Overall, \framework{} training achieves stable and consistent gains in end-to-end KG-RAG performance.
+
+
+
+\subsection{RQ1: Effectiveness and Efficiency Results}
+\label{sec:exp1}
+
+\input{Sections/table/performance_efficiency_table}
+
+\noindent \textbf{\framework{} demonstrates strong accuracy on trained KGs.}
+Table~\ref{tab:webqsp_cwq_performance_efficiency_comparison_colored} reports Hits@1 and token efficiency on \dataset{WebQSP} and \dataset{CWQ}. Despite being trained from a lightweight Qwen2.5-3B base model, \framework{} achieves the strongest overall performance among all compared methods on \dataset{WebQSP}, reaching a Hits@1 of \textbf{82.75}, outperforming RoG built on Qwen2.5-7B (79.89), Qwen2.5-72B (81.63), and even Qwen3-235B (81.68). It also exceeds or is comparable to stronger multi-module baselines such as ToG (75.67), PoG (79.13), and ReKnoS (84.73) while using a substantially smaller backbone.
+On the more compositional \dataset{CWQ}, \framework{} achieves a Hits@1 of \textbf{65.31}, improving over RoG by a large margin across all scales (46.32--48.94), and surpassing ReKnoS built on Qwen2.5-7B (53.45), Qwen2.5-72B (60.88), and Qwen3-235B (55.63). Notably, \framework{} remains highly competitive with ReKnoS built on Qwen3-235B (65.31 vs.\ 65.63 on \dataset{CWQ}), despite using a Qwen2.5-3B backbone that is nearly two orders of magnitude smaller. This highlights that reinforcement learning over structured KG actions can substantially improve reasoning effectiveness beyond what is achievable by model scaling alone.
+
+\noindent \textbf{\framework{} achieves efficient inference with reduced generation cost.}
+Table~\ref{tab:webqsp_cwq_performance_efficiency_comparison_colored} also reports total and generated tokens. On \dataset{WebQSP}, \framework{} uses only \textbf{308.67} generation tokens, which is 3.05$\times$ fewer than ToG (941.52) and 1.81$\times$ fewer than ReKnoS (592.38), while achieving higher Hits@1 than ToG and comparable performance to ReKnoS. On \dataset{CWQ}, \framework{} generates \textbf{311.14} tokens, reducing generation cost by 2.58$\times$ compared to ToG (802.97) and 2.20$\times$ compared to ReKnoS (684.38), while achieving comparable answer accuracy to ReKnoS and outperforming ToG. Compared with the most token-efficient KG baseline RoG, \framework{} uses moderately more generation tokens (308.67 vs.\ 254.31 on WebQSP; 311.14 vs.\ 252.45 on CWQ), but delivers substantially higher answer accuracy (+1.07 to +20.26 absolute Hits@1 depending on model scale and dataset). This indicates a favorable effectiveness-efficiency tradeoff: \framework{} preserves competitive token efficiency while substantially improving reasoning quality.
+
+\noindent \textbf{Single-agent design reduces system complexity.} Beyond token efficiency, \framework{} simplifies the KG-RAG pipeline into a single-agent architecture. Prior methods typically require 2--5 modules (e.g., retrieval, planning, verification, and answering), whereas \framework{} performs retrieval and reasoning within a unified policy using only one module. This reduces deployment complexity and avoids error propagation across stages. Despite this simplification, \framework{} remains competitive or superior to multi-module systems across both datasets, showing that structured RL can effectively consolidate KG interaction and reasoning into a lightweight unified agent.
+
+\noindent \textbf{Latency and throughput analysis.} 
+On a single NVIDIA H100 GPU, we measure (i) single-query end-to-end latency and (ii) batched throughput. The single-query latency averages \(6.4\pm1.5\) s per question, and the batched throughput reaches \(3.7\) samples per second with a batch size of 64. The results suggest the feasibility of \framework{}'s single-node deployment. See Appendix~\ref{appendix:latency_memory_delopyment} for the full results.
+
+
+
+
+
+
+
+
+
+\subsection{RQ2: Cross-KG Transferability}
+\label{sec:exp2}
+
+\input{Sections/table/generalization_table}
+\noindent\textbf{Zero-shot transfer across unseen KGs.}
+Table~\ref{tab:generalization_kgqa} reports zero-shot \emph{plug-and-play} results, where the learned policy is directly applied to unseen KGs by swapping only the backend graph. For comparability, we report \textbf{AVG}, the Hits@1 averaged across all evaluation QA samples.
+\framework{} demonstrates strong cross-KG transferability across both Freebase- and Wikidata-based benchmarks. When trained on \dataset{WebQSP}, \framework{} achieves an average Hits@1 of \textbf{77.50}, substantially outperforming LLM-only baselines (IO: 18.84, CoT: 14.82, SC: 16.93) and surpassing prior KG-augmented methods, including ToG (56.84), PoG (72.28), and ReKnoS (72.21). The gains are consistent across all transfer benchmarks, with particularly strong improvements on \dataset{T-REx} (83.38 vs.\ 78.17 for ReKnoS). 
+
+When trained on \dataset{CWQ}, \framework{} achieves \textbf{72.82} Hits@1, remaining clearly above LLM-only baselines and competitive with strong KG-RAG methods built on much larger foundation models. In particular, the WebQSP-trained \framework{} also outperforms ToG, PoG, and ReKnoS when these methods use Qwen3-235B backbones (77.50 vs.\ 68.01, 75.97, and 73.92, respectively), demonstrating that learned KG interaction policies can generalize better than simply scaling model size.
+
+Notably, transfer gains are especially pronounced on Wikidata-based benchmarks (\dataset{T-REx} and \dataset{QALD-10en}), where schema differences are larger. This suggests that the schema-agnostic action design of \framework{} enables robust generalization across diverse KG structures.
+
+
+
+
+\subsection{Ablation Studies}
+\label{sec:exp3}
+
+We ablate four key components of \framework{}: reward design, RL algorithm, retrieval format, and model scale. We train on \dataset{WebQSP} and \dataset{CWQ} with turn number $H=5$ and report final Hits@1 and retrieval success rate (Ret.\ Rate), defined as the fraction of queries where any ground-truth answer entity appears in the retrieved entities, in Table~\ref{tab:ablation_study_colored}. The training curves are shown in Figure~\ref{fig:ablation_training_curve_webqsp}. 
+
+
+\input{Sections/table/ablation_studies_table}
+
+\noindent \textbf{Reward Design.}
+Removing turn rewards causes the largest performance drop on both \dataset{WebQSP} (82.75$\rightarrow$69.29, $-13.46\%$) and \dataset{CWQ} (65.31$\rightarrow$52.03, $-13.28\%$), showing the importance of per-step supervision. Removing turn-level advantage yields smaller but consistent degradation (\dataset{WebQSP}: $-3.32\%$, \dataset{CWQ}: $-1.26\%$), validating the benefit of turn-level credit assignment. Removing retrieval reward causes a modest Hits@1 drop (\dataset{WebQSP}: $-4.03\%$, \dataset{CWQ}: $-2.68\%$) but significantly lowers retrieval success (77.51$\rightarrow$65.35 and 52.14$\rightarrow$45.01), showing that retrieval reward mainly improves exploration quality.
+
+\noindent\textbf{RL Algorithm and Retrieval Format.}
+Replacing GRPO with PPO~\citep{ouyang2022traininglanguagemodelsfollow} substantially degrades performance (\dataset{WebQSP}: 82.75$\rightarrow$59.62, \dataset{CWQ}: 65.31$\rightarrow$35.66), confirming that relative advantage optimization is more stable for multi-turn KG interaction. Under PPO, we observe \emph{reward hacking} (see examples in Appendix \ref{appendix:reward_hacking_ppo}): the agent fabricates "retrieved" content matching expected formats to earn reward. We also test hierarchical relation retrieval to compress retrieved relations into a tree structure (see Appendix~\ref{appendix:hiearchical retreival}). This hurts performance on both datasets (\dataset{WebQSP}: $-5.87\%$, \dataset{CWQ}: $-4.05\%$), suggesting that exposing relations in a flat format provides more direct and informative retrieval signals despite higher token cost.
+
+
+
+\noindent \textbf{Model Scale.} Scaling the base model from Qwen2.5-3B to 7B does not improve performance (WebQSP: 82.75 vs.\ 82.44; CWQ: 65.31 vs.\ 65.85), indicating that \framework{}'s gains mainly come from reinforcement-learned retrieval policies rather than model size alone.
+

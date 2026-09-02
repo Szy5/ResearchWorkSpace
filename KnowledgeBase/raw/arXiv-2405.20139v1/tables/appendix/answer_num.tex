@@ -1,0 +1,20 @@
+\captionsetup{width=\columnwidth}
+\begin{table}[h]
+	\centering
+	\caption{Performance analysis (F1) based on the number of answers (\#Ans).}
+	\label{tab:answer_num}%
+	\resizebox{\columnwidth}{!}{
+		\begin{tabular}{@{}l|cccc|cccc@{}}
+			\toprule
+            \multirow{2}{*}{Method} & \multicolumn{4}{c|}{\textbf{WebQSP}} & \multicolumn{4}{c}{\textbf{CWQ}} \\ \cmidrule(l){2-5 } \cmidrule(l){6-9 } 
+			 & \#Ans=1 & 2$\leq$\#Ans$\leq$4 & 5$\leq$\#Ans$\leq$9 & \#Ans$\geq$10  & \#Ans=1 & 2$\leq$\#Ans$\leq$4 & 5$\leq$\#Ans$\leq$9 & \#Ans$\geq$10  \\
+            \midrule
+            RoG & 67.89 & 79.39 & 75.04 & 58.33 & 56.90 & 53.73 &  58.36 &  43.62 \\
+			\midrule
+            \grag & 71.24 & 76.30 & 74.06 & 56.28 & 60.40 & 55.52 & 61.49 & 50.08\\
+            \grag+RA & 71.16 & 82.31 & 77.78 & 57.71 & 62.09 & 56.47 & 62.87 & 50.33\\
+            
+			\bottomrule
+		\end{tabular}%
+		}
+\end{table}%

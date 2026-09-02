@@ -1,0 +1,18 @@
+\captionsetup{width=0.7\columnwidth}
+\begin{table}[tb]
+	\centering
+	\caption{Datasets statistics. ``avg.$|\gV_q|$'' denotes average number of entities in subgraph, and “coverage” denotes the ratio of at least one answer in subgraph.}
+	\label{tab:data}%
+	\resizebox{0.7\columnwidth}{!}{
+		\begin{tabular}{@{}l|rrr|rr@{}}
+			\toprule
+			Datasets & Train & Dev  & Test & avg. $|\gV_q|$ & coverage (\%) \\
+			
+			\midrule
+			WebQSP & 2,848 & 250 & 1,639 & 1,429.8 & 94.9\\
+			CWQ &  27,639 & 3,519 & 3,531 & 1,305.8 & 79.3 \\
+			MetaQA-3 &  114,196 & 14,274 & 14,274 & 497.9 & 99.0 \\
+			\bottomrule
+		\end{tabular}%
+		}
+\end{table}%

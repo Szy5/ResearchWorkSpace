@@ -1,0 +1,32 @@
+\begin{wraptable}{R}{0.4\textwidth}
+\vspace{-0.2in}
+	\centering
+	\caption{Efficiency vs. effectiveness trade-off of LLM-based retrieval.}
+	\label{tab:analysis_retrieval_app}%
+	\resizebox{\linewidth}{!}{
+	\begin{threeparttable}
+		\begin{tabular}{@{}l|cc@{}}
+			\toprule
+			 \multirow{2}{*}{\textbf{Retrieval}} & 
+            \#LLM Calls & Answer Hit (\%) \\
+            & (efficiency) & (effectiveness) \\
+            
+            \midrule
+            \multirow{2}{*}{RoG~\citep{luo2024rog}} & 3 & 85.7 \\
+            & 1 & \textcolor{red}{77.2}\\
+            \midrule
+            \multirow{2}{*}{ToG~\citep{sun2024tog}} & \textcolor{red}{up to 21} & 76.2 \\
+            & 3 & \textcolor{red}{66.3} \\
+            \midrule 
+            \grag  & \textcolor{teal}{\textbf{0}} & \textcolor{teal}{\textbf{87.2}} \\
+			
+			\bottomrule
+		\end{tabular}%
+		\begin{tablenotes}
+        \item \#LLM Calls are controlled by the hyperparameter $k$ (number of beams) during beam-search decoding.
+        \end{tablenotes}
+		\end{threeparttable}
+}
+
+\vspace{-0.2in}
+\end{wraptable}%

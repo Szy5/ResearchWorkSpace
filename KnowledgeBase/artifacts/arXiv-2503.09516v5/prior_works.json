@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "DeepSeek-R1 (Zero)",
+      "authors": "Guo et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Extension",
+      "relationship_sentence": "本文将 DeepSeek-R1 Zero 中以结果回报（outcome-based reward）驱动的强化学习用于提升参数化推理的思想直接扩展为检索增强的场景，Search-R1 在其基础上把检索引擎建模为环境、加入多轮检索-推理交替与检索 token masking，从而实现对检索行为的端到端 RL 优化。"
+    },
+    {
+      "title": "Toolformer: Language Models Can Teach Themselves to Use Tools",
+      "authors": "Schick et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "Toolformer 演示了通过自监督/监督微调使 LLM 学会调用工具（包括检索），但依赖高质量轨迹与标注，暴露出可扩展性和泛化的局限，Search-R1 正是为了解决这一依赖而采用以结果为导向的 RL 来自动学习多轮检索策略。"
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Yao et al.",
+      "year": 2023,
+      "arxiv_id": "arXiv:2210.03629",
+      "role": "Inspiration",
+      "relationship_sentence": "ReAct 将推理步与行动（工具/检索调用）交织在提示级别上，展示了交互式检索能提升复杂任务求解，Search-R1 继承了交替推理-检索的设计思路，但用强化学习代替提示式或监督式策略以学习更优的检索决策。"
+    },
+    {
+      "title": "IRCoT / Interleaving Retrieval and Chain-of-Thought",
+      "authors": "Trivedi et al.",
+      "year": 2022,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "IRCoT 提出多轮多查询的检索与链式思考交替流程，但主要依赖提示生成，指出模型未在训练中学习如何最优交互；Search-R1 针对这一短板，通过把检索纳入 RL 环境并用回报学习检索触发与查询生成策略。"
+    },
+    {
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP",
+      "authors": "Lewis et al.",
+      "year": 2020,
+      "arxiv_id": "arXiv:2005.11401",
+      "role": "Baseline",
+      "relationship_sentence": "RAG 提供了以一次检索将相关段落并入上下文再进行生成的标准流水线，構成 Search-R1 对比的核心基线；Search-R1 在相同检索器与检索量条件下，展示了通过多轮检索与 RL 优化显著超越一次性 RAG 的能力。"
+    },
+    {
+      "title": "HotpotQA: A Dataset for Multi-Hop Question Answering",
+      "authors": "Yang et al.",
+      "year": 2018,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "HotpotQA 定义了需要跨文档、多跳证据聚合的问答评测范式，为评估多轮检索與推理的能力提供了标准化任务，Search-R1 把该类多跳需求作为设计多轮检索-推理交替与奖励评估的重要驱动。"
+    }
+  ],
+  "synthesis_narrative": "这些工作共同构成了 Search-R1 的直接思想谱系：DeepSeek-R1 展示了以结果回报驱动 LLM 学习复杂推理的可行性，表明无需逐步监督即可通过 RL 获得高级推理行为；ReAct 与 IRCoT 则从交互式设计上表明将推理步与工具/检索调用交替能提升复杂任务的求解，但它们更多依赖提示或监督生成、并未在训练中直接优化检索决策；Toolformer 证明了让模型学会调用工具能带来收益，但同时暴露出依赖高质量轨迹与标注所导致的可扩展性瓶颈；RAG 确立了把外部段落并入上下文的标准流水线，成为对比基准并明确了一次检索-生成的局限；HotpotQA 等多跳数据集提供了需要多次检索并聚合证据的评测场景。把这些具体细节综合起来，显现出一个自然缺口：需要一种能在训练中直接学习何时以及如何发起检索、多轮交替地利用检索结果且不依赖人工轨迹的方法。Search-R1 就是在此背景下的下一步——它把搜索建模为 RL 环境、支持多轮检索-推理交替、引入检索 token masking 以稳定训练，并用简单的 outcome-based reward 学习高效的检索策略，从而直接针对上述方法的局限实现实证改进。"
+}

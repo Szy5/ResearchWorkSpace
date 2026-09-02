@@ -1,0 +1,39 @@
+\definecolor{claudesdkcolor}{HTML}{FFE0CC}   %
+\definecolor{openaisdkcolor}{HTML}{FFF2CC}    %
+\definecolor{googleadkcolor}{HTML}{D6EAF8}   %
+\definecolor{openclawcolor}{HTML}{D5F5E3}    %
+
+\begin{table}[h]
+\centering
+\caption{\small Model performance ranked by Paired accuracy. Scores are rounded to three decimal places. Best result in each column is \textbf{bolded}. Model name shading indicates harness:
+\colorbox{claudesdkcolor}{Claude SDK},
+\colorbox{openaisdkcolor}{OpenAI SDK},
+\colorbox{googleadkcolor}{Google ADK},
+\colorbox{openclawcolor}{OpenClaw}.}
+\label{tab:ranked_by_paired}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}clcccc@{}}
+\toprule
+\textbf{Rank} & \textbf{Model} & \textbf{Act Acc.} & \textbf{Abstain Acc.} & \textbf{Paired Acc.} & \textbf{CAR} \\
+\midrule
+1  & \cellcolor{googleadkcolor}Gemini 3.1 Pro    & 0.905 & 0.654 & \textbf{0.595} & 0.657 \\
+2  & \cellcolor{claudesdkcolor}Claude Opus 4.7   & 0.765 & \textbf{0.790} & 0.594 & \textbf{0.776} \\
+3  & \cellcolor{claudesdkcolor}Claude Sonnet 4.6 & 0.831 & 0.664 & 0.534 & 0.654 \\
+4  & \cellcolor{openaisdkcolor}GPT-5.5           & 0.874 & 0.611 & 0.525 & 0.598 \\
+5  & \cellcolor{claudesdkcolor}Claude Haiku 4.5  & 0.805 & 0.656 & 0.497 & 0.618 \\
+6  & \cellcolor{openaisdkcolor}GPT-5             & 0.746 & 0.698 & 0.496 & 0.665 \\
+7  & \cellcolor{openaisdkcolor}GPT-5.4           & 0.769 & 0.678 & 0.487 & 0.640 \\
+8  & \cellcolor{openclawcolor}GLM-5              & 0.825 & 0.618 & 0.478 & 0.591 \\
+9  & \cellcolor{openclawcolor}GPT-OSS 120B       & 0.783 & 0.595 & 0.462 & 0.582 \\
+10 & \cellcolor{openaisdkcolor}GPT-5.2           & 0.747 & 0.631 & 0.429 & 0.592 \\
+11 & \cellcolor{openclawcolor}MiniMax M2.5        & 0.838 & 0.501 & 0.419 & 0.496 \\
+12 & \cellcolor{openclawcolor}DeepSeek V3.2      & 0.824 & 0.521 & 0.414 & 0.502 \\
+13 & \cellcolor{openaisdkcolor}GPT-5.1           & 0.750 & 0.607 & 0.406 & 0.532 \\
+14 & \cellcolor{googleadkcolor}Gemini 3 Flash    & \textbf{0.917} & 0.436 & 0.397 & 0.434 \\
+15 & \cellcolor{openclawcolor}DeepSeek V4 Pro    & 0.870 & 0.428 & 0.369 & 0.423 \\
+16 & \cellcolor{openclawcolor}Kimi K2.5          & 0.639 & 0.520 & 0.334 & 0.532 \\
+17 & \cellcolor{openaisdkcolor}GPT-4o            & 0.821 & 0.442 & 0.330 & 0.409 \\
+\bottomrule
+\end{tabular}
+\end{table}

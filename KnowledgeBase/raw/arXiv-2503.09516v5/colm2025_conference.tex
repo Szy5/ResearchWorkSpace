@@ -1,0 +1,148 @@
+
+\documentclass{article} % For LaTeX2e
+\usepackage[final]{colm2025_conference}
+
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{lineno}
+\usepackage{xspace}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{arydshln}
+\usepackage{wrapfig}
+\usepackage{caption}
+
+% \usepackage{array}   % Optional: Improves table column alignment
+
+% \usepackage{array}       % Enhances table formatting, allowing p{} column definitions
+% \usepackage{xcolor}      % Allows color customization for text
+
+\usepackage{subfigure}  % Deprecated but still functional
+
+\definecolor{darkblue}{rgb}{0, 0, 0.5}
+\hypersetup{colorlinks=true, citecolor=darkblue, linkcolor=darkblue, urlcolor=darkblue}
+
+\newcommand{\think}[1]{\textcolor{blue}{\texttt{<think>}} #1 \textcolor{blue}{\texttt{</think>}}}
+\newcommand{\search}[1]{\textcolor{cyan}{\texttt{<search>}} #1 \textcolor{cyan}{\texttt{</search>}}}
+\newcommand{\info}[1]{\textcolor{brown}{\texttt{<information>}} #1 \textcolor{brown}{\texttt{</information>}}}
+\newcommand{\answer}[1]{\textcolor{purple}{\texttt{<answer>}} #1 \textcolor{purple}{\texttt{</answer>}}}
+
+\title{Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \colmfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+
+\author{Bowen Jin$^1$, Hansi Zeng$^2$, Zhenrui Yue$^1$, Jinsung Yoon$^3$, Sercan Ö. Arık$^3$, Dong Wang$^1$, \\
+\textbf{Hamed Zamani}$^2$, \textbf{Jiawei Han}$^1$ \\
+$^1$ Department of Computer Science, University of Illinois at Urbana-Champaign\\
+$^2$ Center for Intelligent Information Retrieval, University of Massachusetts Amherst\\
+$^3$ Google Cloud AI Research\\
+% Pittsburgh, PA 15213, USA \\
+\texttt{\{bowenj4,zhenrui3,dwang24,hanj\}@illinois.edu, \{hzeng, zamani\}@cs.umass.edu} \\
+\texttt{\{jinsungyoon,soarik\}@google.com}
+}
+
+% \author{Antiquus S.~Hippocampus, Natalia Cerebro \& Amelie P. Amygdale \thanks{ Use footnote for providing further information
+% about author (webpage, alternative address)---\emph{not} for acknowledging
+% funding agencies.  Funding acknowledgements go at the end of the paper.} \\
+% Department of Computer Science\\
+% Cranberry-Lemon University\\
+% Pittsburgh, PA 15213, USA \\
+% \texttt{\{hippo,brain,jen\}@cs.cranberry-lemon.edu} \\
+% }
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\newcommand{\Ours}{\textsc{Search-R1}\xspace}
+\definecolor{cvprblue}{rgb}{0.21,0.49,0.74}
+\newcommand{\hamed}[1]{\textcolor{red}{[Hamed: #1]}}
+\newcommand{\jh}[1]{\textcolor{purple}{[jiawei: #1]}}
+
+
+\newcommand{\se}{\mathcal{R}}
+
+\begin{document}
+
+\ifcolmsubmission
+\linenumbers
+\fi
+
+\maketitle
+
+\begin{abstract}
+Efficiently acquiring external knowledge and up-to-date information is essential for effective reasoning and text generation in large language models (LLMs). 
+Prompting advanced LLMs with reasoning capabilities to use search engines during inference is often suboptimal, as the LLM might not fully possess the capability on how to interact optimally with the search engine. 
+% This paper introduces \Ours, an extension of the DeepSeek-R1 model where the LLM learns---solely through reinforcement learning (RL)---to autonomously generate (multiple) search queries during step-by-step reasoning with real-time retrieval. 
+This paper introduces \Ours, an extension of reinforcement learning (RL) for reasoning frameworks where the LLM learns to autonomously generate (multiple) search queries during step-by-step reasoning with real-time retrieval.
+\Ours optimizes LLM reasoning trajectories with multi-turn search interactions, leveraging retrieved token masking for stable RL training and a simple outcome-based reward function.
+Experiments on seven question-answering datasets show that \Ours improves performance by 24\% (Qwen2.5-7B) and 20\% (Qwen2.5-3B) over various RAG baselines under the same setting. This paper further provides empirical insights into RL optimization methods, LLM choices, and response length dynamics in retrieval-augmented reasoning.
+The code and model checkpoints are available at \url{https://github.com/PeterGriffinJin/Search-R1}.
+% \hamed{abstract needs major revisions. I'll get back to it after reading the rest of the paper.}
+\end{abstract}
+
+\input{1.introduction}
+\input{2.related_work}
+\input{3.methodology}
+\input{4.evaluation}
+\input{5.analysis}
+
+% \vspace{-0.1in}
+\section{Conclusions}
+In this work, we introduced \Ours, a novel RL framework that enables LLMs to interleave self-reasoning with real-time search engine interactions. 
+Unlike existing RAG-like approaches, which relies on extensive prompting for multi-turn retrieval, or tool-use methods that require large-scale supervised training data, \Ours optimizes LLM rollouts through RL, allowing autonomous query generation and strategic utilization of retrieved information.
+Through extensive experiments on seven datasets, we demonstrated that \Ours significantly enhances LLMs' ability to tackle complex reasoning tasks requiring real-time external knowledge. 
+% By leveraging specialized token structures and a rule-based reward function, \Ours effectively guides LLMs to structure their reasoning, execute multi-turn search interactions, and integrate retrieved information for informed decision-making. 
+Our analysis also provides key insights into RL training strategies for search-augmented reasoning.
+Looking ahead, future work can explore expanding \Ours to support broader search strategies, including more sophisticated reward mechanisms, dynamic retrieval adjustments based on uncertainty, combining with diverse set of tools and integration with diverse information sources beyond search. 
+It is also promising to investigate its applicability to multimodal reasoning tasks.
+
+
+% \section*{Author Contributions}
+% If you'd like to, you may include a section for author contributions as is done
+% in many journals. This is optional and at the discretion of the authors.
+
+\section*{Acknowledgments}
+This research was supported in part by Apple PhD Fellowship, in part by US DARPA INCAS Program No. HR0011-21-C0165 and BRIES Program No. HR0011-24-3-0325, in part by the Office of Naval Research contract number N000142412612, in part by NSF grant numbers IIS-19-56151 and 2402873, in part by the Molecule Maker Lab Institute: An AI Research Institutes program supported by NSF under Award No. 2019897 and the Institute for Geospatial Understanding through an Integrative Discovery Environment (I-GUIDE) by NSF under Award No. 2118329, in part by Cisco, and in part by the Center for Intelligent Information Retrieval. Any opinions, findings, and conclusions or recommendations expressed herein are those of the authors and do not necessarily represent the views, either expressed or implied, of the sponsors or the U.S. Government.
+
+% \section*{Ethics Statement}
+% Authors can add an optional ethics statement to the paper. 
+% For papers that touch on ethical issues, this section will be evaluated as part of the review process. The ethics statement should come at the end of the paper. It does not count toward the page limit, but should not be more than 1 page. 
+
+
+
+\bibliography{colm2025_conference}
+\bibliographystyle{colm2025_conference}
+
+\appendix
+\input{6.appendix}
+
+% \appendix
+% \section{Appendix}
+% You may include other additional sections here.
+
+\end{document}
+
+
+
+% Jinsung comments
+% In the appendix, can we add the distribution of "# of search"? This will clearly show how many search call is done after the training (multi-turn capability). Also, maybe for multi-hop problem, the number of search call would be higher which would be also an interesting result.
+% Table 1 is very nice. can we add one more column at the left and add the baseline group (explained in 4.1)? Also, at the top, we add one more row and group datasets into single-hot and multi-hop? 

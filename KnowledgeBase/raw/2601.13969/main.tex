@@ -1,0 +1,121 @@
+\documentclass[11pt]{article}
+
+% Use ACL style: review, preprint, or final
+% \usepackage[preprint]{acl}
+\usepackage[final]{acl}
+
+% Standard packages from ACL template
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{caption}
+
+% Additional packages used by the ICML version
+\usepackage{subfigure}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{cuted} % strip: full-width blocks in twocolumn without a separate float page
+\usepackage{xspace}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+% Math and theorems
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage[capitalize,noabbrev]{cleveref}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+% Extra formatting
+\usepackage{soul}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{colortbl}
+\usepackage{setspace}
+
+\usepackage{wasysym} % provides \Letter
+\usepackage{orcidlink}
+\usepackage{xurl} % better link breaking
+
+\setlist[itemize]{noitemsep, topsep=0pt, leftmargin=*}
+\setlist[enumerate]{noitemsep, topsep=0pt, leftmargin=*}
+
+% Reuse macros from the ICML paper
+\input{macros.tex}
+\input{figures}
+\input{tables}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THEOREMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{
+Autonomous Knowledge Graph Exploration \\ with Adaptive Breadth-Depth Retrieval
+}
+\author{
+\textbf{Joaqu\'in~Polonuer\textsuperscript{1,2,$\ast$}}~\orcidlink{0009-0007-8613-6126}, 
+\textbf{Lucas~Vittor\textsuperscript{1,$\ast$}}~\orcidlink{0009-0002-6978-0482},
+\textbf{I\~naki~Arango\textsuperscript{1,$\ast$}}~\orcidlink{0009-0002-1443-2325},
+\textbf{Ayush~Noori\textsuperscript{1,3,$\ast$}}~\orcidlink{0000-0003-1420-1236},\\
+\textbf{David~A.~Clifton\textsuperscript{3,4}}~\orcidlink{0000-0002-9848-8555},
+\textbf{Luciano~Del~Corro\textsuperscript{5,6,$\dagger$,$\ddagger$}},
+\textbf{Marinka~Zitnik\textsuperscript{1,6,7,8,$\dagger$,$\ddagger$}}~\orcidlink{0000-0001-8530-7228} \\[1mm]
+\textsuperscript{1}Department of Biomedical Informatics, Harvard Medical School, Boston, MA, USA \\
+\textsuperscript{2}Departamento de Computaci\'on, FCEyN, Universidad de Buenos Aires, Buenos Aires, Argentina \\
+\textsuperscript{3}Department of Engineering Science, University of Oxford, Oxford, UK \\
+\textsuperscript{4}Oxford Suzhou Centre for Advanced Research, University of Oxford, Suzhou, Jiangsu, China \\
+\textsuperscript{5}ELIAS Lab, Departamento de Ingenier\'ia, Universidad de San Andr\'es, Victoria, Argentina \\
+\textsuperscript{6}Kempner Institute for the Study of Natural and Artificial Intelligence, Allston, MA, USA \\
+\textsuperscript{7}Broad Institute of MIT and Harvard, Cambridge, MA, USA \\
+\textsuperscript{8}Harvard Data Science Initiative, Cambridge, MA, USA \\
+\textsuperscript{$\ast$}Equal contribution\; \textsuperscript{$\dagger$}Co-senior authors\\
+\textsuperscript{$\ddagger$}Correspondence: \href{mailto:delcorrol@udesa.edu.ar}{delcorrol@udesa.edu.ar}, \href{mailto:marinka@hms.harvard.edu}{marinka@hms.harvard.edu}
+}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\FigMain
+\input{sections/introduction}
+\input{sections/related-work}
+\input{sections/graph-agent}
+\TabStarkResults
+\input{sections/experimental-setup}
+\input{sections/results}
+\input{sections/conclusion}
+\input{sections/limitations}
+\input{sections/code-availability}
+\input{sections/acknowledgments}
+
+% ACL-style bibliography (uses acl_natbib.bst via the acl package)
+\bibliography{custom, zotero}
+
+\clearpage
+\appendix
+\input{sections/appendix}
+
+\end{document}
+

@@ -1,0 +1,324 @@
+% \FloatBarrier   
+% \onecolumn
+
+\section{Training example from different iterations}
+\label{tab:reasoning_progression}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.4\textwidth]{images/training_iteration_ex.jpeg}
+  % \caption{Example}
+  \label{fig:your_label}
+\end{figure}
+
+
+
+\begin{table*}[h!]
+\centering
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}p{12cm}}
+\toprule
+\textbf{Component} & \textbf{Content} \\
+\midrule
+\textbf{Response A} & The image shows a blue double-decker bus driving down a street in a town or city. The bus is in the center of the image and has a large front window and a sign on the top that reads Brighton Open Top in yellow letters. The bus is driving away from the camera, and there are people standing on the sidewalk next to it. In the background, there are several buildings lining the street, including a row of shops and a few houses. The sky is overcast, and the overall atmosphere of the image is one of a quiet, everyday scene in a small town or city. \\
+\midrule
+\textbf{Response B} & The image shows a red double-decker bus driving down a street in a town, surrounded by tall buildings and parked cars. The bus has a red color and features a large front window, with the words "Brighton Open Top" written in yellow on the front. The bus appears to be in motion, with the front wheels turned to the left as it navigates the street. In the background, the buildings are tall and white, with many windows and balconies. Some of the buildings have signs or advertisements on them, but they are not clearly visible. The sky above is blue and cloudy, adding to the overall atmosphere of the scene. Overall, the image captures a typical urban scene, with the red bus being the main focus of attention. The surrounding buildings and parked cars add depth and context to the image, while the cloudy sky provides a sense of atmosphere and mood. \\
+\midrule
+\textbf{Iteration 1 Reasoning} & Both responses aim to describe the image, but they differ in their level of detail, accuracy, and relevance to the user's question. Assistant A's response provides a clear and concise description, accurately identifies the bus as blue, and notes people on the sidewalk. Assistant B's response provides more detailed description including the bus's color (red) and parked cars, and describes the surrounding buildings' height and signs. While both provide accurate information, Assistant B's response is more detailed and engaging, making it a better choice. \\
+\midrule
+\textbf{Iteration 2 Reasoning} & The two responses have similarities but notable differences. Assistant A's response is more detailed and descriptive, highlighting the red double-decker bus, tall buildings, and cloudy sky with simple, accessible language. Assistant B's response is more concise and lacks detail, only mentioning the blue double-decker bus and surrounding buildings without additional context. \\
+\midrule
+\textbf{Iteration 3 Reasoning} & The two responses differ significantly in accuracy, relevance, and depth. Assistant A's response is more accurate and relevant, correctly identifying the bus as red and describing features like the large front window and "Brighton Open Top" text. It provides detailed description of surrounding buildings and parked cars, adding context. Assistant B's response is less accurate, incorrectly identifying the bus as blue and failing to mention the red color. It lacks detailed description of surroundings, making it less informative. \\
+\bottomrule
+\end{tabular}
+\caption{Comparison of assistant responses and judge reasoning across training iterations for the double-decker bus image example. Response A describes a blue bus while Response B describes a red bus. The judge's reasoning improves from iteration 1 (focusing on detail and engagement) to iteration 3 (explicitly identifying factual accuracy errors).}
+\end{table*}
+
+\newpage
+\section{Judge Prompt}
+\begin{verbatim}
+Please act as an impartial judge and evaluate the quality of the 
+responses provided by two AI assistants to the user question displayed 
+below. You should choose the assistant that follows the user's 
+instructions and answers the user's question better. Your evaluation 
+should consider factors such as the helpfulness, relevance, accuracy, 
+depth, creativity, and level of detail of their responses. Begin your 
+evaluation by comparing the two responses and provide a short 
+explanation. Avoid any position biases and ensure that the order in 
+which the responses were presented does not influence your decision. 
+Do not allow the length of the responses to influence your evaluation. 
+Do not favor certain names of the assistants. Be as objective as 
+possible. After providing your explanation, output your final verdict 
+by strictly following this format: '[[A]]' if assistant A is better, 
+'[[B]]' if assistant B is better.
+
+[User Question]
+{q}
+
+[The Start of Assistant A's Answer]
+{r1}
+[The End of Assistant A's Answer]
+
+[The Start of Assistant B's Answer]
+{r2}
+[The End of Assistant B's Answer]
+
+YOU MUST STRICTLY FOLLOW THE FORMAT BELOW. Start with **EVALUATION** 
+and make sure to add double brackets around the final answer.
+
+**EVALUATION**: Provide a detailed comparison of both responses, 
+analyzing their strengths and weaknesses based on the above factors. 
+Be specific about why one response better serves the user's needs.
+
+**FINAL ANSWER**: '[[A]]' if assistant A is better, '[[B]]' if 
+assistant B is better.
+\end{verbatim}
+
+
+\section{Detail Alternation Prompts}
+\label{app:alter_prompts}
+
+\begin{verbatim}
+INSTRUCTION="Below is a text (description, reasoning, explanation, etc.). 
+Your task is to generate a version that incorporates alternative details 
+while keeping original style and adhering to the following guidelines: 
+1. Detail Modifications: Replace exactly TWO specific details (e.g., visual 
+elements, facts, examples, reasoning steps, methods, premises) with 
+alternative details, or change the perspective on TWO features. 2. Length, 
+Structure and Style: Keep the overall length, structure, and style identical 
+to the original. 3. Core Identity & Function: Ensure the main subject's 
+identity and function remain unchanged. 4. Tone & Detail Level: Maintain the 
+original tone and level of detail. 5. Style Mimicry: Mirror the exact writing 
+style, vocabulary choices, sentence patterns, and linguistic quirks of the 
+original text.; Below is a text (description, reasoning, explanation, etc.). 
+Your task is to generate a reinterpreted version that incorporates ONE 
+alternative detail while adhering to the following guidelines: 1. Detail 
+Modifications: Replace exactly ONE specific detail (e.g., visual element, 
+fact, example, reasoning step, method, premise) with alternative details, or 
+change the perspective on ONE feature. 2. Length, Structure and Style: Keep 
+the overall length, structure, and style identical to the original. 3. Core 
+Identity & Function: Ensure the main subject's identity and function remain 
+unchanged. 4. Tone & Detail Level: Maintain the original tone and level of 
+detail. 5. Style Mimicry: Mirror the exact writing style, vocabulary choices, 
+sentence patterns, and linguistic quirks of the original text.; Below is a 
+text (description, reasoning, explanation, etc.). Your task is to generate a 
+reinterpreted version that incorporates TWO alternative details while 
+adhering to the following guidelines: 1. Detail Modifications: Replace 
+exactly TWO specific details (e.g., visual elements, facts, examples, 
+reasoning steps, methods, premises) with alternative details, or change the 
+perspective on TWO features. 2. Length, Structure and Style: Keep the overall 
+length, structure, and style identical to the original. 3. Core Identity & 
+Function: Ensure the main subject's identity and function remain unchanged. 
+4. Tone & Detail Level: Maintain the original tone and level of detail. 
+5. Style Mimicry: Mirror the exact writing style, vocabulary choices, 
+sentence patterns, and linguistic quirks of the original text.; Below is a 
+text (description, reasoning, explanation, etc.). Your task is to generate a 
+reinterpreted version that incorporates 1-2 alternative details while 
+adhering to the following guidelines: 1. Detail Modifications: Replace 
+exactly 1-2 specific details (e.g., visual elements, facts, examples, 
+reasoning steps, methods, premises) with alternative details, or change the 
+perspective on 1-2 features. 2. Length, Structure and Style: Keep the overall 
+length, structure, and style identical to the original. 3. Core Identity & 
+Function: Ensure the main subject's identity and function remain unchanged. 
+4. Tone & Detail Level: Maintain the original tone and level of detail. 
+5. You MUST make the required modifications at the beginning of the text. 
+5. Style Mimicry: Mirror the exact writing style, vocabulary choices, 
+sentence patterns, and linguistic quirks of the original text.; Below is a 
+text (description, reasoning, explanation, etc.). Your task is to generate a 
+reinterpreted version that incorporates 1-2 alternative details while 
+adhering to the following guidelines: 1. Detail Modifications: Replace 
+exactly 1-2 specific details (e.g., visual elements, facts, examples, 
+reasoning steps, methods, premises) with alternative details, or change the 
+perspective on 1-2 features. 2. Length, Structure and Style: Keep the overall 
+length, structure, and style identical to the original. 4. Tone & Detail 
+Level: Maintain the original tone and level of detail. 5. You MUST make the 
+required modifications close to the END of the text. 5. Style Mimicry: Mirror 
+the exact writing style, vocabulary choices, sentence patterns, and 
+linguistic quirks of the original text.; Below is a text (description, 
+reasoning, explanation, etc.). Your task is to generate a reinterpreted 
+version that incorporates 1-2 alternative details while adhering to the 
+following guidelines: 1. Detail Modifications: Replace exactly 1-2 specific 
+details (e.g., visual elements, facts, examples, reasoning steps, methods, 
+premises) with alternative details, or change the perspective on 1-2 
+features. 2. Length, Structure and Style: Keep the overall length, structure, 
+and style identical to the original. 3. Core Identity & Function: Ensure the 
+main subject's identity and function remain unchanged. 4. Tone & Detail 
+Level: Maintain the original tone and level of detail. 5. You MUST make the 
+required modifications close to the MIDDLE of the text, instead of at the 
+beginning or the end. 5. Style Mimicry: Mirror the exact writing style, 
+vocabulary choices, sentence patterns, and linguistic quirks of the original 
+text."
+\end{verbatim}
+
+
+\section{Generation Meta Prompt for Captions}
+\label{app:generation_prompt_caption}
+
+\begin{verbatim}
+    {
+    "llava_image_description_prompts": {
+        "concise": [
+            "Describe the image concisely.",
+            "Provide a brief description of the given image.",
+            "Offer a succinct explanation of the picture presented.",
+            "Summarize the visual content of the image.",
+            "Give a short and clear explanation of the subsequent image.",
+            "Share a concise interpretation of the image provided.",
+            "Present a compact description of the photo's key features.",
+            "Relay a brief, clear account of the picture shown.",
+            "Render a clear and concise summary of the photo.",
+            "Write a terse but informative summary of the picture.",
+            "Create a compact narrative representing the image presented."
+        ],
+        "detailed": [
+            "Describe the following image in detail",
+            "Provide a detailed description of the given image",
+            "Give an elaborate explanation of the image you see",
+            "Share a comprehensive rundown of the presented image",
+            "Offer a thorough analysis of the image",
+            "Explain the various aspects of the image before you",
+            "Clarify the contents of the displayed image with great detail",
+            "Characterize the image using a well-detailed description",
+            "Break down the elements of the image in a detailed manner",
+            "Walk through the important details of the image",
+            "Portray the image with a rich, descriptive narrative",
+            "Narrate the contents of the image with precision",
+            "Analyze the image in a comprehensive and detailed manner",
+            "Illustrate the image through a descriptive explanation",
+            "Examine the image closely and share its details",
+            "Write an exhaustive depiction of the given image"
+        ]
+    }
+}
+\end{verbatim}
+
+\begin{verbatim}
+{
+    "caption_styles": {
+        "concise":{
+            "chatgpt": "The image shows a golden retriever sitting 
+in a sunny park with green grass and trees in the background. 
+The dog appears happy and is looking directly at the camera 
+with its tongue out. There are some fallen leaves scattered 
+around, suggesting it might be autumn. The lighting is natural 
+and warm, creating a pleasant, cheerful atmosphere.",
+            "claude": "A golden retriever sits attentively in a 
+park setting, its mouth open in what appears to be a content 
+pant. The warm lighting and scattered autumn leaves create a 
+peaceful scene, with the dog positioned centrally against a 
+backdrop of grass and mature trees. The composition suggests a 
+casual outdoor moment captured during a walk or play session.",
+            "qwen": "Golden retriever dog sitting on grass in park 
+environment. Autumn season indicated by fallen leaves on ground. 
+Natural daylight illumination. Dog exhibits typical friendly 
+expression with open mouth. Background contains trees and 
+vegetation. Image quality appears high resolution with good 
+color saturation.",
+            "llama": "This image depicts a golden retriever in an 
+outdoor setting. The dog is positioned on grass with trees 
+visible in the background. The scene appears to be during 
+daytime with natural lighting. The dog's posture suggests it 
+is alert and engaged. The presence of fallen leaves indicates 
+the photograph was likely taken during autumn months.",
+            "gemini": "A beautiful golden retriever enjoys a moment 
+in the park! The friendly pup is sitting on the grass, 
+surrounded by the warm colors of fall. With its tongue happily 
+hanging out, this good boy seems to be having a wonderful time 
+outdoors. The natural lighting and peaceful setting make for a 
+heartwarming scene that captures the joy of spending time with 
+our four-legged friends."
+        }
+    }
+}
+\end{verbatim}
+
+
+\section{Hyperparameters}
+\label{app:hyperparameters}
+
+% hyperparameters, sampling numbers, majority voting N = 16
+In data generation, we use a temperature of 0.6, top\_k=50, top\_p=0.9.
+
+In data sampling for majority voting (Section~\ref{sec:method}), we set N = 16 to generate 
+16 candidate responses per closed-ended question. We experimented with different 
+majority thresholds and found that requiring at least 5 identical responses 
+(out of 16) provides the best balance between data quality and quantity. Lower 
+thresholds (e.g., 3) produce more training data but include less reliable 
+majorities, while higher thresholds (e.g., 8) overly restrict the dataset. 
+We selected the threshold of 5 after empirically comparing thresholds of 3 and 5: 
+both achieved similar final performance, but the threshold of 5 required less 
+training data, suggesting better sample efficiency and filtering quality. This 
+threshold effectively filters out cases with greater response diversity where 
+the model's uncertainty is higher, retaining only examples where the model 
+shows reasonable consensus.
+
+In training, we use the default training setup in llama-cookbook which has a learning rate of 1e-5, we train for 5 epochs.
+
+The data generation and model training were conducted on H100 GPUs, with approximately 400 GPUs hours. This represents a cost-efficient alternative to human 
+annotation (~\$500K-1M for equivalent data) or GPT-4 distillation 
+(~\$5K-10K in API costs).
+
+\newpage
+\section{Correctness Filter Negative Example}
+\label{tab:counter_example}
+
+
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.2\textwidth]{images/counter_example.png}
+  \label{fig:your_label}
+\end{figure}
+
+\begin{table*}[h!]
+\centering
+\small
+\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}p{12cm}}
+\toprule
+\textbf{Component} & \textbf{Content} \\
+\midrule
+\textbf{Response A} & The image contains a series of numbers, specifically ``20000700000010''. \\
+\midrule
+\textbf{Response B} & The image contains the text ``2000070000010'' in a purple, pixelated font. The text is centered at the top of the image and spans the entire width. It appears to be a numerical code or identifier, but without more context, it's difficult to determine its meaning or significance. \\
+\midrule
+\textbf{Evaluation} & Both responses attempt to decipher the content of the image, but they differ in their approach and level of detail.
+
+Assistant A's response is concise and straightforward, simply stating the numbers visible in the image. However, it lacks context and fails to provide any additional information about the meaning or significance of these numbers.
+
+Assistant B's response provides more detailed observations, including information about the font style, color, and layout of the text. It also acknowledges the limitations of interpretation without additional context.
+
+\textbf{FINAL ANSWER}: [[B]] \\
+\bottomrule
+\end{tabular}
+\caption{Example of judge getting the correct answer but providing incorrect reasoning. Even though the final answer is correct, the reasoning failed to point out that the number in Response A has an extra 0 and it is a wrong answer.}
+\label{tab:counter_example}
+\end{table*}
+
+
+While our filtering mechanism successfully removes many incorrect judgments, 
+we acknowledge it is not perfect. This section illustrates a case where correctness-
+based filtering can retain problematic examples: the judge selects the correct 
+answer (Response B) but fails to identify the specific transcription error in 
+Response A (an extra digit "20000700000010" vs. "2000070000010"). Instead, the 
+reasoning focuses on superficial features—Response B's additional descriptive 
+details and contextual observations—rather than the factual discrepancy that 
+should determine the judgment.
+
+This example suggests why filtering based on ground-truth correctness alone may 
+be insufficient--even when the final judgment is correct, the reasoning may 
+prioritize stylistic features over factual accuracy. This observation partially 
+motivates our majority voting approach (Section~\ref{sec:analysis_reasoning}), which filters training 
+data based on the model's own consistency rather than relying solely on external 
+correctness labels. We hypothesize that by requiring the judge to correctly 
+identify preferences across multiple synthetically generated pairs with diverse 
+error types, majority voting may implicitly filter for more robust reasoning 
+patterns rather than spurious correlations with superficial features. A judgment 
+that succeeds consistently across varied synthetic contrasts could provide 
+stronger evidence of genuine understanding than a single correct answer that 
+might result from incidental heuristics.
+
+We include this example not as definitive evidence of a fundamental flaw, but 
+as an illustrative case that helps explain our design rationale. While we cannot 
+conclusively verify that majority voting eliminates all imperfect reasoning, 
+the empirical advantages shown in Section~\ref{sec:analysis_reasoning} suggest that consistency-based 
+filtering may provide more robust supervision than correctness checking alone 
+for learning generalizable judgment criteria.

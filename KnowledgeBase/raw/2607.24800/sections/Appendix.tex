@@ -1,0 +1,233 @@
+\appendix
+\onecolumn
+\section*{Appendix}
+
+
+\begin{table*}[h]
+\centering
+\caption{\textbf{Failure taxonomy induced by trace diagnostics.} ``Trigger'' is computed from the trajectory. ``Effect'' describes how the failure can damage ranking. ``Policy target'' states what a learned controller should decide, rather than what a static prompt should always instruct.}
+\label{tab:taxonomy}
+\resizebox{0.8\textwidth}{!}{%
+\begin{tabular}{lcc}
+\toprule
+Failure class & Observable trigger & Policy target \\
+\midrule
+Wrong anchor & many neighborhoods after weak global hit & re-anchor before deeper traversal \\
+Empty branch & zero-result neighborhood calls & relax relation/type or backtrack \\
+Looping & repeated global/neighborhood call & suppress duplicate action; stop or reset \\
+Over-broad search & many candidates, low rank movement & tighten answer type or facet \\
+Premature repair & trace hint changes a good path & delay intervention until failure confidence is high \\
+Budget drift & many steps without candidate gain & stop, rerank, or restart from a new anchor \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{From trace diagnostics to policy-learning targets.} Each row maps an observable state signal to a decision that a future controller should learn. The table is not a new result; it distills the empirical failure analysis into implementable policy targets for personalized reasoned retrieval.}
+\label{tab:policy_targets}
+\resizebox{0.8\columnwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+State signal & Risk exposed by this paper & Decision to learn \\
+\midrule
+Profile conflicts with graph type & wrong anchor & downweight profile; search by type \\
+Repeated call appears & loop or stagnation & suppress duplicate; reset or answer \\
+Zero-result branch appears & empty traversal & relax relation or backtrack \\
+Candidate set grows without rank gain & over-broad evidence & tighten facets or rerank \\
+Budget nearly exhausted & late noisy repair & stop or return best supported list \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Implementation invariants.} The left column lists components that remain unchanged across all controller variants. The right column lists the only components modified by \tb. This separation is important because the work studies controller behavior, not a new graph index or new metric.}
+\label{tab:invariants}
+\resizebox{0.57\columnwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Component & Fixed across variants & Added by \tb \\
+\midrule
+Graph data & Same \stark SKB and node IDs & none \\
+Gold labels & Same answer sets & none \\
+Tools & Global search; neighborhood explore & no new tool \\
+Evaluator & \hit{1}, \hit{5}, \recall{20}, \mrr & no metric change \\
+Controller context & Original query and observations & profile block; trace hint \\
+Logs & final answer list & trajectory counters \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textbf{Profile and trace fields exposed to the controller.} These fields are derived from the query and trajectory, not from gold labels. ``Purpose'' states the intended control role. The results show that exposing these fields is not sufficient; the controller must also learn when to trust or ignore them.}
+\label{tab:schema}
+\resizebox{0.66\columnwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Field group & Example fields & Intended control role \\
+\midrule
+Answer profile & entity type; query facets & decide broad search anchors \\
+Relation hints & relation words; type constraints & choose neighborhood expansion \\
+Trace counters & zero calls; repeats; budget & detect loops and empty branches \\
+Candidate summary & candidate count; recent movement & stop, rerank, or restart \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Qualitative reading of the held-out effects.} This table translates the paired numeric deltas into the retrieval behavior they indicate. It is not a separate metric, it is more of a guide to interpreting Tables~\ref{tab:heldout} and~\ref{tab:paired}.}
+\label{tab:effect_reading}
+\resizebox{0.8\columnwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Graph & Observed pattern & Interpretation \\
+\midrule
+PRIME & moderate \mrr loss; high zero calls & biomedical anchoring often enters empty or wrong neighborhoods \\
+MAG & largest \mrr and recall loss & wrong paper/entity anchors compound through dense relations \\
+Amazon & smaller \mrr loss; recall loss remains & top plausible products survive, broader candidate coverage degrades \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Constrained-budget \tb probe.} The probe uses a lower step budget and stricter call caps. ``Steps'' is the average number of controller iterations actually used. The probe reduces interaction length but does not recover the unconditioned ranking quality, so the failure is not explained only by excessive trajectory length.}
+\label{tab:budget}
+\resizebox{0.52\columnwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Graph & $n$ & \hit{1} & \hit{5} & \recall{20} & \mrr & Steps \\
+\midrule
+PRIME & 150 & .1200 & .2067 & .1857 & .1556 & 5.493 \\
+MAG & 150 & .2800 & .4867 & .4020 & .3727 & 4.860 \\
+Amazon & 150 & .4133 & .5000 & .2879 & .4511 & 4.927 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{\textbf{Recommended reporting checklist for adaptive retrieval.} Standard rank metrics remain necessary, but they should be paired with process metrics that reveal why an agent succeeded or failed. This table summarizes the minimal diagnostics that made the \tb result interpretable.}
+\label{tab:reporting}
+\resizebox{0.7\columnwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Reported quantity & What it measures & Failure exposed \\
+\midrule
+Paired \mrr delta & rank movement on same IDs & hidden aggregate artifacts \\
+Zero-result calls & empty branch frequency & bad anchoring or relation mismatch \\
+Repeated calls & loop tendency & stalled controller state \\
+Search/explore counts & breadth-depth allocation & budget misallocation \\
+Constrained-budget score & robustness to shorter traces & length vs. action-quality failure \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+
+\section{Graph-Level Validation Details}
+Table~\ref{tab:app_validation_graph} reports selected graph-level validation cells. The table is included to make the averages in the main text auditable. ``Global'' and ``Zero'' are trace counters and are zero for conditions without trace instrumentation.
+\begin{table*}[h]
+\centering
+\caption{Graph-level validation details for representative controller variants.}
+\label{tab:app_validation_graph}
+\resizebox{0.7\columnwidth}{!}{%
+\begin{tabular}{lllrrrrrrr}
+\toprule
+Graph & Controller & Steps & $n$ & \hit{1} & \hit{5} & \recall{20} & \mrr & Global & Zero \\
+\midrule
+ & Uncond. & 12 & 100 & .2100 & .3500 & .3489 & .2736 & .000 & .000 \\
+PRIME & Profile & 16 & 100 & .1300 & .3600 & .3545 & .2350 & .000 & .000 \\
+ & Trace & 16 & 100 & .1500 & .2600 & .2262 & .1957 & 2.260 & 1.620 \\
+ & \tb & 16 & 100 & .1300 & .2000 & .1945 & .1619 & 2.130 & 1.860 \\
+\midrule
+ & Uncond. & 16 & 100 & .3900 & .5700 & .5127 & .4683 & .000 & .000 \\
+MAG & Trace & 16 & 100 & .2900 & .4800 & .4196 & .3611 & 1.770 & 1.240 \\
+ & \tb & 16 & 100 & .2500 & .4400 & .3835 & .3234 & 1.870 & 1.350 \\
+\midrule
+ & Uncond. & 16 & 100 & .4200 & .6300 & .4338 & .5165 & .000 & .000 \\
+Amazon & Profile & 16 & 100 & .4000 & .6100 & .4149 & .4930 & .000 & .000 \\
+ & \tb & 16 & 100 & .3900 & .5300 & .3214 & .4456 & 1.710 & 2.230 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\section{Held-Out Delta Tables}
+Table~\ref{tab:app_deltas} gives the held-out metric deltas used in Figure~\ref{fig:heldout_delta}. Each value is \tb minus the unconditioned agent; negative values indicate lower retrieval quality after profile/trace conditioning.
+
+\begin{table*}[h]
+\centering
+\caption{Held-out aggregate deltas.}
+\label{tab:app_deltas}
+\resizebox{0.5\columnwidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Graph & $\Delta\hit{1}$ & $\Delta\hit{5}$ & $\Delta\recall{20}$ & $\Delta\mrr$ \\
+\midrule
+PRIME & -.0566 & -.0607 & -.0384 & -.0619 \\
+MAG & -.2991 & -.2428 & -.2477 & -.2737 \\
+Amazon & -.0406 & -.0561 & -.0950 & -.0438 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\section{Win, Tie, and Loss Counts}
+Table~\ref{tab:app_wtl} complements the paired deltas by counting whether \tb wins, ties, or loses against the unconditioned agent on each shared query.
+
+\begin{table*}[h]
+\centering
+\caption{Paired win/tie/loss counts for \tb versus the unconditioned agent. Counts are computed on the same shared logged query IDs as Table~\ref{tab:paired}.}
+\label{tab:app_wtl}
+\resizebox{0.5\columnwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Graph & MRR win & MRR tie & MRR loss & H1 win & H1 tie & H1 loss \\
+\midrule
+PRIME & 38 & 192 & 61 & 21 & 232 & 38 \\
+MAG & 29 & 138 & 133 & 21 & 169 & 110 \\
+Amazon & 43 & 190 & 64 & 25 & 235 & 37 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\section{Trace Schema}
+Each trajectory log contains the query identifier, graph name, controller variant, final answer list, tool-call sequence, observation summaries, and aggregate counters. The counters used in the main paper are computed from the raw sequence after the run; they are not hand-labeled. This schema is sufficient to reproduce per-query paired deltas, conditional repeated-call analysis, and budget-consumption summaries.
+
+
+
+\section{Prompt Skeletons}
+The exact prompts are implementation artifacts, but the following skeleton captures the logical fields used by \tb. The profile block is created before retrieval. The trace block is refreshed after each action and is intentionally limited to observable trajectory facts.
+
+{\footnotesize
+\begin{verbatim}
+[QUERY]
+{natural_language_question}
+
+[QUERY PROFILE]
+- predicted answer type: {entity_type}
+- key facets: {facet_1, facet_2, ...}
+- relation hints: {relation_words}
+- retrieval risks: {ambiguity_or_missing_filter}
+
+[TRACE SUMMARY]
+- global searches used: {g_t}
+- neighborhood calls used: {n_t}
+- zero-result calls: {z_t}
+- repeated calls: {r_t}
+- remaining budget: {b_t}
+- current candidate summary: {c_t}
+
+[CONTROL INSTRUCTION]
+Choose exactly one: Search, Explore, Answer, or Backtrack.
+Do not repeat an earlier call unless it is necessary.
+Prefer answering when additional calls are unlikely to improve rank.
+\end{verbatim}}
+
+\section{Metric Definitions}
+For completeness, this section states the metric interpretation used throughout the paper. \hit{1} is one when a correct answer appears at rank one. \hit{5} is one when a correct answer appears in the top five. \recall{20} is the fraction of gold answers retrieved in the first twenty positions. \mrr is the reciprocal rank of the first correct answer. For paired deltas, each metric is computed for \tb and for the unconditioned agent on the same query ID, and then subtracted as \tb minus unconditioned.
