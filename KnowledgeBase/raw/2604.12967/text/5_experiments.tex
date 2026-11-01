@@ -1,0 +1,32 @@
+\section{Experiments}
+\label{sec:experiments}
+\input{table/main}
+% \vspace{-0.1in}
+We empirically evaluate Cycle-Consistent Search (CCS) across a diverse range of knowledge-intensive tasks. The experimental design is structured to assess the framework's efficacy in both multi-hop and general question-answering scenarios against established baselines.
+
+\subsection{Datasets and Models} 
+% \vspace{-0.1in}
+To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following \citet{search-r1}. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA \citep{hotpotqa}, 2WikiMQA \citep{2wikimqa}, MuSiQue \citep{musique}, and Bamboogle \citep{bamboogle}. For general question answering, we utilize Natural Questions (NQ) \citep{nq}, TriviaQA \citep{triviaqa}, and PopQA \citep{popqa}.
+We select policy models from the Qwen family \citep{yang2025qwen3} to evaluate performance across different parameter scales and both base and instruct variants: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B. All evaluations are conducted using Gemini 2.5 Flash \citep{comanici2025gemini} as the evaluator model to ensure consistent assessment of answer accuracy (see \Cref{appendix:evaluator_prompt}).
+
+
+\subsection{Baselines} 
+% \vspace{-0.1in}
+We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision.
+
+\textbf{Model Inference:} We include Direct inference, zero-shot Chain-of-Thought (CoT) \citep{cot}, Interleaved Retrieval CoT (IRCoT) \citep{ircot}, Retrieval-Augmented Generation (RAG) \citep{rag}, and Search-o1 \citep{search-o1}, which represent prompting-based or retrieval-based approaches without additional training.
+
+\textbf{With Gold Supervision:} We include Supervised Fine-Tuning (SFT), which trains the model to generate ground-truth answers, and Search-R1 \citep{search-r1}, which optimizes search agents with reinforcement learning using rewards derived from ground-truth answers.
+
+\textbf{Without Gold Supervision:} We compare against RLIF \citep{rlif}, which derives reward signals from the model's internal confidence; Constitutional Judge (CJ) \citep{geval}, which derives reward signals from a rubric-based LLM judge using predefined evaluation criteria; and TTRL \citep{ttrl}, which uses agreement among multiple sampled rollouts as a proxy reward signal.
+
+
+\subsection{Setup} 
+% \vspace{-0.1in}
+Our experimental protocol is informed by the configuration used in Search-R1 \citep{search-r1}. We utilize the same search engine interface for all methods employing tool use. For the RAG baseline, we employ E5 \citep{e5} as the dense retriever, indexing a 2018 Wikipedia dump \citep{wikidump} as the knowledge source. The training corpus consists of a mixture of the NQ and HotpotQA training sets. Agents are trained for 300 steps with a global batch size of 512. Please refer to \Cref{appendix:implementaion_details} for more details.
+
+
+\subsection{Results}
+% \vspace{-0.1in}
+We present the main results in \Cref{tbl:main}. Across all three models, CCS achieves the best average performance among methods that do not rely on gold supervision, consistently outperforming both model inference baselines and prior gold-free training methods. In particular, CCS improves over the strongest competing non-gold baseline by 4.5\%, 9.8\%, and 6.1\% on Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B, respectively. These results indicate that cycle-consistency provides an effective training signal for search-agent optimization without access to ground-truth answers.
+Notably, CCS is also competitive with gold-supervised training. On Qwen2.5-7B-Instruct and Qwen3-32B, CCS achieves the best overall average performance in the table, surpassing Search-R1 by 0.5 and 1.3 points, respectively. On Qwen3-4B-Instruct-2507, Search-R1 achieves the highest average score, while CCS also delivers strong overall performance. At the dataset level, the strongest method varies across benchmarks, but CCS remains consistently strong across both general QA and multi-hop QA, yielding the most robust overall performance among gold-free methods. Overall, these results show that CCS substantially narrows---and in some settings reverses---the gap between gold-free and gold-supervised search-agent training.

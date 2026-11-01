@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>article_排版_摸鱼绿(moyu-green) · 公众号排版预览</title>
+<style>
+  body{margin:0;background:#eef0f2;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;-webkit-text-size-adjust:100%;}
+  .gzh-toolbar{position:fixed;top:0;left:0;right:0;height:54px;background:#ffffff;box-shadow:0 1px 10px rgba(0,0,0,.08);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:99;}
+  .gzh-hint{font-size:13px;color:#6b7280;line-height:1.4;}
+  .gzh-hint b{color:#111827;}
+  .gzh-copy{background:#059669;color:#fff;border:0;border-radius:9px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(5,150,105,.28);white-space:nowrap;transition:transform .08s,background .15s;}
+  .gzh-copy:hover{background:#047857;}
+  .gzh-copy:active{transform:translateY(1px);}
+  .gzh-toast{position:fixed;top:66px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 20px;border-radius:10px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:88vw;text-align:center;}
+  .gzh-toast.show{opacity:1;}
+  .gzh-stage{max-width:700px;margin:78px auto 64px;padding:0 8px;}
+  @media(max-width:520px){.gzh-hint{max-width:150px;}}
+</style>
+</head>
+<body>
+<div class="gzh-toolbar">
+  <span class="gzh-hint">👇 下方是排版效果 · 点右侧 <b>复制</b> 直接粘到公众号</span>
+  <button class="gzh-copy" id="gzhCopyBtn" onclick="gzhCopy()">📋 复制到公众号</button>
+</div>
+<div class="gzh-toast" id="gzhToast"></div>
+<div class="gzh-stage">
+  <div id="gzh-content">
+<section style="max-width:677px;margin:0 auto;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;color:#374151;line-height:1.75;letter-spacing:0.5px;overflow-x:hidden;">
+<section style="margin:0 20px 20px;">
+<section style="margin:0;"><section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin:0 0 8px;"><section style="margin:0;border-radius:8px;overflow:hidden;"><span leaf=""><img src="images/02_ccs-main.jpg" alt="图 2：Cycle-Consistent Search 框架总览——智能体生成搜索轨迹，经过信息瓶颈模块处理后，由冻结的重建器尝试恢复原问题" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span></section></section><p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;"><span leaf="">— 图 2：Cycle-Consistent Search 框架总览——智能体生成搜索轨迹，经过信息瓶颈模块处理后，由冻结的重建器尝试恢复原问题</span></p></section>
+</section>
+
+<section style="margin:0 20px 28px;padding:16px 18px;background:#F0FDF4;border-radius:10px;border-left:4px solid #059669;"><p style="font-size:12px;color:#059669;font-weight:700;margin:0 0 2px;line-height:1.6;"><span leaf="">标题</span></p><p style="font-size:14px;font-weight:700;color:#111827;margin:0 0 10px;line-height:1.7;"><span leaf="">Cycle-Consistent Search: Question Reconstructability as a Proxy Reward for Search Agent Training</span></p><p style="font-size:12px;color:#059669;font-weight:700;margin:0 0 2px;line-height:1.6;"><span leaf="">作者</span></p><p style="font-size:12px;color:#4B5563;margin:0 0 10px;line-height:1.7;"><span leaf="">Sohyun An，Shuibenyang Yuan，Hayeon Lee，Cho-Jui Hsieh，Alexander Min</span></p><p style="font-size:12px;color:#059669;font-weight:700;margin:0 0 2px;line-height:1.6;"><span leaf="">单位</span></p><p style="font-size:12px;color:#4B5563;margin:0 0 10px;line-height:1.7;"><span leaf="">1. Meta Superintelligence Labs</span></p><p style="font-size:12px;color:#059669;font-weight:700;margin:0 0 2px;line-height:1.6;"><span leaf="">来源</span></p><p style="font-size:12px;color:#4B5563;margin:0;line-height:1.7;"><span leaf="">2026 | arXiv:2604.12967</span></p></section>
+
+<section style="padding:0 20px;">
+
+<section style="margin:0 0 24px;background:#ECFDF5;border-radius:0 10px 10px 0;border-left:4px solid #059669;padding:16px 20px;"><p style="font-size:15px;font-weight:700;color:#065F46;margin:0;line-height:1.8;"><strong style="color:#059669;"><span leaf="">一句话导读</span></strong><span leaf="">：本文提出 </span><strong style="color:#059669;"><span leaf="">Cycle-Consistent Search (CCS)</span></strong><span leaf=""> 框架，通过引入</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">循环一致性和信息瓶颈</span></span><span leaf="">，无需人工标准答案即可训练多步搜索智能体，在 Qwen2.5-7B-Instruct 模型上将平均准确率提升至 </span><strong style="color:#059669;"><span leaf="">60.6%</span></strong><span leaf="">。</span></p></section>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">01</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">三句话看懂</span></span></section>
+<p style="margin:0 0 12px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span style="display:inline-block;background:#ECFDF5;color:#059669;border-radius:5px;padding:1px 9px;margin-right:8px;font-weight:900;font-size:12px;"><span leaf="">问题</span></span><span leaf="">现有的搜索智能体强化学习依赖标准答案作为奖励信号，在专业或快速演化领域</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">成本高昂且难以获取</span></span><span leaf="">。</span></p>
+<p style="margin:0 0 12px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span style="display:inline-block;background:#ECFDF5;color:#059669;border-radius:5px;padding:1px 9px;margin-right:8px;font-weight:900;font-size:12px;"><span leaf="">方法</span></span><span leaf="">本文提出</span><strong style="color:#059669;"><span leaf="">循环一致性搜索</span></strong><span leaf="">方法，把搜索轨迹看作原问题的编码，通过</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">重建原问题的质量</span></span><span leaf="">来提供无监督的代理奖励。</span></p>
+<p style="margin:0 0 24px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span style="display:inline-block;background:#ECFDF5;color:#059669;border-radius:5px;padding:1px 9px;margin-right:8px;font-weight:900;font-size:12px;"><span leaf="">结果</span></span><span leaf="">在七个问答基准和一个深度研究基准上，Qwen2.5-7B-Instruct 模型的平均准确率达到 </span><strong style="color:#059669;"><span leaf="">60.6%</span></strong><span leaf="">，表现超越所有无监督基线并可媲美有监督方法。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">02</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">为什么要做这件事</span></span></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">随着大语言模型的发展，搜索智能体需要通过迭代规划和工具调用来解决复杂的多跳问题。目前的强化学习优化严重依赖正确答案来定义奖励，这导致了一个根本性的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">可扩展性瓶颈</span></span><span leaf="">。如果在缺乏标准答案的场景下盲目训练，智能体往往无法获得可靠的反馈信号。</span></p>
+<section style="margin:0;"><section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin:0 0 8px;"><section style="margin:0;border-radius:8px;overflow:hidden;"><span leaf=""><img src="images/01_ccs-ex.jpg" alt="图 1：不同质量搜索轨迹的对比——左侧的高质量轨迹能完整保留问题意图，而中间和右侧存在步骤缺失或偏移的轨迹无法重建原问题" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span></section></section><p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;"><span leaf="">— 图 1：不同质量搜索轨迹的对比——左侧的高质量轨迹能完整保留问题意图，而中间和右侧存在步骤缺失或偏移的轨迹无法重建原问题</span></p></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">如图 1 所示，作者观察到优质的搜索轨迹能够完整保留问题所需的全部信息，而低质量轨迹则会遗漏关键步骤或</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">漂移到无关信息</span></span><span leaf="">。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">03</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">核心思路</span></span></section>
+<section style="background:#FFF;border:1px dashed #BBF7D0;border-radius:8px;padding:14px 16px;margin-bottom:24px;text-align:center;"><p style="font-size:12px;color:#9CA3AF;margin:0 0 6px;line-height:1.5;"><span leaf="">关键观察</span></p><p style="margin:0;line-height:1.6;"><span style="font-size:15px;color:#059669;font-weight:bold;border-bottom:3px solid #FDE68A;padding-bottom:2px;"><span leaf="">优质搜索轨迹应是原问题的无损编码</span></span></p></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">作者的核心观察来自无监督机器翻译中的</span><strong style="color:#059669;"><span leaf="">循环一致性</span></strong><span leaf="">思想：如果一个转换过程足够好，那么它应该包含足够的信息，使得原始输入能够通过逆向映射被恢复。</span></p>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">作者可以把这个直觉类比为一个侦探破案：如果搜集到的线索和行动过程是完整且正确的，那么仅凭这些记录就能反推出最初遭遇的悬案是什么。如果中间偷懒抄了捷径或者查错了方向，就</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">无法完美还原原貌</span></span><span leaf="">。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">04</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">方法怎么做</span></span></section>
+<section style="margin:0;"><section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin:0 0 8px;"><section style="margin:0;border-radius:8px;overflow:hidden;"><span leaf=""><img src="images/02_ccs-main.jpg" alt="图 2：Cycle-Consistent Search 框架总览——智能体生成搜索轨迹，经过信息瓶颈模块处理后，由冻结的重建器尝试恢复原问题" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span></section></section><p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;"><span leaf="">— 图 2：Cycle-Consistent Search 框架总览——智能体生成搜索轨迹，经过信息瓶颈模块处理后，由冻结的重建器尝试恢复原问题</span></p></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">如图 2 所示，CCS 整体流程为：智能体针对问题生成搜索轨迹，轨迹经过信息瓶颈处理后，输入到一个固定的预训练重建器中恢复出重建问题，最后通过计算重建问题与原问题的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">语义相似度</span></span><span leaf="">来给出轨迹奖励。</span></p>
+
+<p style="margin:28px 0 14px;font-size:16px;font-weight:800;color:#1C1917;line-height:1.5;border-left:4px solid #059669;padding-left:12px;"><span leaf="">循环一致性建模</span></p>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">作者将问题视为语义意图，搜索轨迹视为该意图的动态展开。在最优策略下，搜索轨迹应当是对源问题的</span><strong style="color:#059669;"><span leaf="">无损编码</span></strong><span leaf="">，即问题能够通过轨迹再重建回原问题，重建的相似度直接作为中间轨迹质量的代理指标。</span></p>
+
+<p style="margin:28px 0 14px;font-size:16px;font-weight:800;color:#1C1917;line-height:1.5;border-left:4px solid #059669;padding-left:12px;"><span leaf="">战略信息瓶颈</span></p>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">为了防止智能体通过表面词汇的直接复制来实现重建，作者引入了两个信息瓶颈：一是排除包含复述上下文的最终回答，二是利用命名实体识别对搜索动作中的专有名词进行泛化标签替换，迫使重建过程必须依赖</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">检索到的实际观察结果</span></span><span leaf="">。</span></p>
+
+<p style="margin:28px 0 14px;font-size:16px;font-weight:800;color:#1C1917;line-height:1.5;border-left:4px solid #059669;padding-left:12px;"><span leaf="">策略优化</span></p>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">通过群体相对策略优化算法，智能体对每个问题采样一组轨迹，分别计算它们重建原问题的语义相似度得分并归一化为优势值，以此引导智能体倾向于生成能够更好保留</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">搜索结构与信息支撑</span></span><span leaf="">的高质量轨迹。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">05</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">效果如何</span></span></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">作者在 HotpotQA、2WikiMQA、Musique、Bamboogle、NQ、TriviaQA 和 PopQA 共七个数据集上进行了评估，对比了模型直接推理、有监督微调以及多种</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">无监督方法</span></span><span leaf="">。</span></p>
+<section style="margin:0;"><section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin:0 0 8px;"><section style="margin:0;border-radius:8px;overflow:hidden;"><span leaf=""><img src="images/03_qualitative-analysis.jpg" alt="图 3：搜索轨迹的定性分析——展示了信息空白和搜索深度不足的轨迹如何导致重建失败并获得低奖励" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span></section></section><p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;"><span leaf="">— 图 3：搜索轨迹的定性分析——展示了信息空白和搜索深度不足的轨迹如何导致重建失败并获得低奖励</span></p></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">如消融实验和定性分析如图 3 所示，去除信息瓶颈或暴露原始词汇会导致性能显著下降。实验证明，</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">掩码动作与观察结果的结合</span></span><span leaf="">能够有效剔除表面捷径，并保留对重建至关重要的结构信号。</span></p>
+<section style="margin:0;"><section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin:0 0 8px;"><section style="margin:0;border-radius:8px;overflow:hidden;"><span leaf=""><img src="images/04_researchrubrics.jpg" alt="图 4：开放式深度研究任务的性能评估——展示了 CCS 在多个领域上的综合表现" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span></section></section><p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;"><span leaf="">— 图 4：开放式深度研究任务的性能评估——展示了 CCS 在多个领域上的综合表现</span></p></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">在开放式深度研究任务中，如图 4 所示，CCS 在多个领域上取得了最佳的综合性能，表现</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">超越了传统的有监督基线</span></span><span leaf="">。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">06</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">值得关注的点</span></span></section>
+<section style="background:#F9FAFB;border:1px dashed #D1D5DB;border-radius:8px;padding:12px 16px;margin-bottom:24px;text-align:justify;"><p style="font-size:13px;color:#374151;margin:0;line-height:1.6;"><span leaf="">最大亮点：把多步搜索智能体的强化学习从标准答案中解放出来，用</span><strong style="color:#059669;"><span leaf="">循环一致性 ＋ 信息瓶颈</span></strong><span leaf="">堵住无监督训练的信息泄漏。</span></p></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">这篇论文最大的亮点在于将多步搜索智能体的强化学习彻底从标准答案中解放出来，利用循环一致性和信息瓶颈解决了无监督场景下的「信息泄漏」漏洞。不过读者也需要留意，该方法在计算奖励时需要依赖一个额外的重建模型，这会带来一定的</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">额外开销</span></span><span leaf="">。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">07</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">读后小结</span></span></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">本文针对搜索智能体严重依赖标准答案的痛点，创新性地引入了</span><strong style="color:#059669;"><span leaf="">循环一致性搜索框架</span></strong><span leaf="">，通过设计信息瓶颈并以问题重建质量作为代理奖励。实验表明该方法在多个问答和深度研究基准上取得了优异效果，为</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">无监督大模型智能体训练</span></span><span leaf="">开辟了新途径。</span></p>
+
+<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;"><span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">08</span></span><span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">先前工作分析</span></span></section>
+<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;"><span leaf="">在自然语言处理和计算机视觉领域，</span><strong style="color:#059669;"><span leaf="">循环一致性</span></strong><span leaf="">（cycle-consistency）原则通过对偶学习与图像到图像转换等开创性工作得到了广泛发展，其核心思想是利用逆向映射来重构原始输入，以此作为评估前向转换质量的有效代理。与此同时，大语言模型驱动的搜索智能体通过诸如「ReAct」等多步推理与工具调用框架，将知识检索成功演变为复杂的顺序决策过程。然而，现有的强化学习方法高度依赖昂贵的黄金标准答案监督，这构成了严重的</span><span style="border-bottom:2px solid #A7F3D0;font-weight:600;"><span leaf="">可扩展性瓶颈</span></span><span leaf="">。先前诸如「IRCoT」等交织检索方法虽然提升了多步查询表现，但并未摆脱对外部强监督的依赖。为了弥合这一缺口，当前研究巧妙地将传统跨域翻译中的循环一致性思想引入搜索领域，将搜索轨迹视为源问题的某种信息保持编码。然而，直接应用该机制会面临由于表面词汇重叠导致的严重</span><span style="border-bottom:2px solid #FECACA;"><span leaf="">信息泄漏问题</span></span><span leaf="">。为此，论文结合了类似「LUKE」中针对实体处理的洞见，引入了最终响应排除和命名实体识别掩码等战略性信息瓶颈。通过将这些技术进行创新性融合，当前工作成功构建了一个无需黄金监督、仅依赖问题重构度作为代理奖励的可扩展搜索智能体训练框架「</span><strong style="color:#059669;"><span leaf="">Cycle-Consistent Search</span></strong><span leaf="">」，从而在多个基准测试上实现了与监督方法相媲美的优异性能。</span></p>
+
+</section>
+</section>
+  </div>
+</div>
+<script>
+  function gzhShowToast(msg){
+    var t=document.getElementById('gzhToast');
+    t.textContent=msg;t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer=setTimeout(function(){t.classList.remove('show');},2800);
+  }
+  function gzhCopy(){
+    var el=document.getElementById('gzh-content');
+    // 选中渲染后的富文本节点并复制（等价于手动 Ctrl+A / Ctrl+C，保留全部样式）
+    var range=document.createRange();
+    range.selectNodeContents(el);
+    var sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    var ok=false;
+    try{ok=document.execCommand('copy');}catch(e){ok=false;}
+    sel.removeAllRanges();
+    var btn=document.getElementById('gzhCopyBtn');
+    if(ok){
+      gzhShowToast('✅ 已复制！去公众号编辑器按 Ctrl/⌘+V 粘贴即可');
+      var old=btn.textContent;btn.textContent='✅ 已复制';
+      setTimeout(function(){btn.textContent=old;},2200);
+    }else{
+      gzhShowToast('⚠ 自动复制失败，请手动全选(Ctrl/⌘+A)再复制(Ctrl/⌘+C)');
+    }
+  }
+</script>
+</body>
+</html>

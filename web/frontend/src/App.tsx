@@ -6,7 +6,7 @@ import Dashboard from './pages/Dashboard'
 import PaperDetail from './pages/PaperDetail'
 import Home from './pages/Home'
 import Management from './pages/Management'
-import MarkdownPublisher from './pages/MarkdownPublisher'
+import WeChatStudio from './pages/WeChatStudio'
 import SideNav from './components/SideNav'
 import ActivityDrawer from './components/ActivityDrawer'
 import { useBatchGeneration } from './hooks/useBatchGeneration'
@@ -25,6 +25,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [activityOpen, setActivityOpen] = useState(false)
+  const [publishSlug, setPublishSlug] = useState<string | null>(null)
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const { staged, stagedKeys, jobStatus, generating, stage, unstage, generate } = useBatchGeneration()
   const { activeJobs, recentJobs, dismissJob, dismissAllRecent, refresh: refreshJobs } = useActivityJobs()
@@ -93,6 +94,12 @@ export default function App() {
     setActivityOpen(false)
     setLibraryFilter(filter)
     setView('papers')
+  }
+
+  function openPublish(slug: string) {
+    setActivityOpen(false)
+    setPublishSlug(slug)
+    setView('publish')
   }
 
   async function onLibraryChanged() {
@@ -190,7 +197,7 @@ export default function App() {
                 </Panel>
                 <Separator className="resize-handle" />
                 <Panel id="paper-detail" className="h-full overflow-hidden" minSize={640}>
-                  <PaperDetail slug={selectedSlug} onChanged={onLibraryChanged} />
+                  <PaperDetail slug={selectedSlug} onChanged={onLibraryChanged} onOpenPublish={openPublish} />
                 </Panel>
               </Group>
             ) : (
@@ -204,11 +211,11 @@ export default function App() {
                   reviewedFilter={libraryFilter}
                   onReviewedFilter={setLibraryFilter}
                 />
-                <PaperDetail slug={selectedSlug} onChanged={onLibraryChanged} />
+                <PaperDetail slug={selectedSlug} onChanged={onLibraryChanged} onOpenPublish={openPublish} />
               </div>
             )
           ) : null}
-          {view === 'publish' ? <MarkdownPublisher /> : null}
+          {view === 'publish' ? <WeChatStudio initialSlug={publishSlug} /> : null}
           {view === 'manage' ? (
             <Management
               onChanged={() => void loadReviewCount()}

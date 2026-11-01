@@ -1,0 +1,64 @@
+\begin{figure}[t]
+\centering
+\begin{minipage}[t]{0.55\textwidth}
+    \begin{algorithm}[H]
+    \caption{GEPA: Reflective Evolutionary Prompt Optimizer}
+    \label{alg:gepa_optimizer}
+    \begin{algorithmic}[1]
+    \small
+    \Require Inputs: System $\Phi$, dataset $\mathcal{D}_{\text{train}}$, eval metric $\mu$, feedback function $\mu_f$, budget $B$
+    \Require Hyperparams: minibatch size $b$, Pareto set size $n_{pareto}$
+    \State Split $\mathcal{D}_{\text{train}}$ into $\mathcal{D}_{\text{feedback}}$, $\mathcal{D}_{\text{pareto}}$, s.t. $|D_{pareto}| = n_{pareto}$
+    \State Initialize candidates $\mathcal{P} \gets [\Phi]$, parents $\mathcal{A} \gets [\text{None}]$
+    \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+        \State $S_{\Phi}[i] \gets \mu(\Phi(x_i), m_i)$
+    \EndFor
+    \While{budget $B$ not exhausted}
+        \State $k \gets$ \textsc{SelectCandidate}($\mathcal{P}, S$)
+        \State $j \gets$ \textsc{SelectModule}($\Phi_k$)
+        \State $\mathcal{M} \gets$ minibatch of size $b$ from $\mathcal{D}_{\text{feedback}}$
+        \State Gather feedback, scores, traces for $\Phi_k[j]$ on $\mathcal{M}$ using $\mu_f$
+        \State $\pi_j' \gets$ \textsc{UpdatePrompt}($\pi_j$, feedbacks, traces[j])
+        \State $\Phi' \gets$ Copy of $\Phi_k$ w/ module $j$ updated by $\pi_j'$
+        \State $\sigma$, $\sigma'$ $\gets$ avg score on $\mathcal{M}$ (before, after)
+        \If{$\sigma'$ improved}
+            \State Add $\Phi'$ to $\mathcal{P}$; Add $k$ to $\mathcal{A}$
+            \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+                \State $S_{\Phi'}[i] \gets \mu(\Phi'(x_i), m_i)$
+            \EndFor
+        \EndIf
+    \EndWhile
+    \State \Return $\Phi^*$ maximizing average score on $\mathcal{D}_{\text{pareto}}$
+    \end{algorithmic}
+    \end{algorithm}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.44\textwidth}
+    \begin{algorithm}[H]
+    \caption{Pareto-based candidate selection}
+    \label{alg:select_candidate}
+    \begin{algorithmic}[1]
+    \small
+    \Function{SelectCandidate}{$\mathcal{P}, S$}
+        \State // Build instance-wise Pareto sets
+        \For{each $i$}
+            \State $s^*[i] \gets \max_{k} S_{\mathcal{P}[k]}[i]$
+            \State $\mathcal{P}^*[i] \gets \{\mathcal{P}[k] : S_{\mathcal{P}[k]}[i] = s^*[i]\}$
+        \EndFor
+        \State $\mathcal{C} \gets$ unique candidates in $\bigcup_i \mathcal{P}^*[i]$
+        \State $D \gets \emptyset$
+        \While{there exists $\Phi \in \mathcal{C} \setminus D$ dominated by another in $\mathcal{C} \setminus D$}
+            \State $D \gets D \cup \{\Phi\}$
+        \EndWhile
+        \State Remove $D$ from each $\mathcal{P}^*[i]$ to get $\hat{\mathcal{P}}^*[i]$
+        \State Let $f[\Phi]=$ number of $i$ for which $\Phi \in \hat{\mathcal{P}}^*[i]$
+        \State Sample $\Phi_k$ from $\hat{\mathcal{C}}$ with probability $\propto f[\Phi_k]$
+        \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+    \EndFunction
+    \end{algorithmic}\label{alg:pareto_selection}
+    \end{algorithm}
+\end{minipage}
+\caption{(\textbf{Left}) GEPA's core algorithm for reflective prompt evolution. GEPA works iteratively, in each iteration, selecting some of the current candidates to evolve (line 7), executing the identified candidate on a minibatch of rollouts, while utilizing a special \textit{feedback function} $\mu_f$ to gather module specific feedback when available (lines 9-10, described in detail in Section~\ref{sec:reflective_prompt_mutation}), using an LLM to reflectively update the prompt (line 11), and evaluating whether the system instantiated with the new prompt improved the performance on the minibatch (line 14). If improved, GEPA then proceeds to evaluate the new system candidate on the full $D_{pareto}$ set, adding it to the list of candidates tracked and marking the new system's parent.
+(\textbf{Right}) The SelectCandidate subprocedure used by GEPA's core algorithm is tasked with identifying the best candidate to evolve in the next optimization iteration. GEPA's chief candidate selection strategy is to find non-dominated candidates in the Pareto frontier (of all task instances), and stochastically select one of them based on their appearance frequency in the Pareto front.}\label{fig:gepa_pseudocode}
+\vspace{-3mm}
+\end{figure}

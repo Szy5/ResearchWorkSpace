@@ -1,15 +1,77 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from html import escape
 from pathlib import Path
+import re
 from urllib.parse import urlparse
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 
 from paper_wiki.publishing.exceptions import HTMLValidationError
 from paper_wiki.publishing.models import ProcessedHTML
 
 SUPPORTED_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".gif"}
+_SCROLL_STYLE_RE = re.compile(r"overflow-x\s*:\s*scroll", re.IGNORECASE)
+
+
+def sanitize_wechat_blog_html(html: str) -> str:
+    """Strip gzh-design extras that do not fit paper-skim WeChat posts.
+
+    Removes the horizontal toc-scroll strip (📦 Highlights/Parts + 👉 滑动) and
+    rewrites magazine-style ``PART 01`` chapter headers into the compact
+    ``01 章节名`` form used by the deterministic markdown renderer.
+    """
+    if not html or not html.strip():
+        return html
+    soup = BeautifulSoup(html, "html.parser")
+    _remove_toc_scroll(soup)
+    _simplify_part_chapter_titles(soup)
+    return str(soup)
+
+
+def _remove_toc_scroll(soup: BeautifulSoup) -> None:
+    victims: list[Tag] = []
+    for section in soup.find_all("section"):
+        style = section.get("style") or ""
+        if not _SCROLL_STYLE_RE.search(style):
+            continue
+        text = section.get_text(" ", strip=True)
+        if "PART" not in text and "Highlights" not in text and "Parts" not in text:
+            continue
+        parent = section.parent if isinstance(section.parent, Tag) else None
+        victims.append(parent if parent is not None and parent.name == "section" else section)
+    for node in victims:
+        if node.parent is not None:
+            node.decompose()
+
+
+def _simplify_part_chapter_titles(soup: BeautifulSoup) -> None:
+    for header in list(soup.find_all("section")):
+        style = header.get("style") or ""
+        if "display:flex" not in style.replace(" ", "") and "display: flex" not in style:
+            continue
+        texts = [t.strip() for t in header.stripped_strings if t.strip()]
+        if len(texts) < 2 or texts[1] not in {"PART", "LAST"}:
+            continue
+        number = texts[0]
+        title = next((t for t in texts[2:] if t and "·" not in t and not t.isascii()), None)
+        if title is None:
+            title = next((t for t in texts[2:] if t and t not in {"PART", "LAST"}), None)
+        if not number or not title:
+            continue
+        replacement = BeautifulSoup(
+            (
+                '<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;">'
+                f'<span style="font-size:22px;font-weight:900;color:#059669;line-height:1;">'
+                f'<span leaf="">{escape(number)}</span></span>'
+                f'<span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;">'
+                f'<span leaf="">{escape(title)}</span></span>'
+                "</section>"
+            ),
+            "html.parser",
+        ).section
+        header.replace_with(replacement)
 
 
 def validate_wechat_html(html: str) -> None:

@@ -1,0 +1,295 @@
+\appendix
+
+\section{Proofs}
+\label{app:proofs}
+Throughout the proofs, a logical form $\ell$ is a conjunctive query: a set of triple patterns over entities and variables with one answer variable, optionally with filters on bound values. For a triple set $\mathcal{S}$, $\operatorname{SPARQL}(\ell,\mathcal{S})$ is the set of values of the answer variable over all assignments that map every pattern of $\ell$ to a triple in $\mathcal{S}$ and satisfy the filters. Such queries are monotone: $\mathcal{S}\subseteq\mathcal{S}'$ implies $\operatorname{SPARQL}(\ell,\mathcal{S})\subseteq\operatorname{SPARQL}(\ell,\mathcal{S}')$. Following Definition 2, $\mathcal{S}$ \emph{supports} $(\ell,y)$ if $y\in\operatorname{SPARQL}(\ell,\mathcal{S})$, and a trajectory $\tau$ is \emph{evidence-covered} if $\operatorname{Cov}(\tau,\mathcal{S}^{*}_{q})=1$, as defined in Equation~\ref{eq:cov}.
+
+\subsection{Proof of Proposition 1}
+\label{app:proof1}
+\textbf{Proposition 1.} \textit{Backward expansion preserves the answer and yields triples that support it.}\vspace{-2mm}
+\begin{proof}
+We show by induction that, for every $n\ge 1$, the triple set $\mathcal{S}^{(n)}\subseteq\mathcal{T}$ supports $(\ell^{(n)},y)$.
+
+\textit{Base case.} A seed is retained only if its supporting triples exist in the KG and instantiate $\ell^{(1)}$ with the answer variable bound to $y$. Hence $\mathcal{S}^{(1)}$ supports $(\ell^{(1)},y)$ under some assignment $\mu$.
+
+\textit{Inductive step.} Assume that $\mathcal{S}^{(n)}$ supports $(\ell^{(n)},y)$ under an assignment $\mu$. An expansion selects an entity $u$ in $\ell^{(n)}$ and a verified sub-question with logical form $\tilde{\ell}$, answer variable $x$, and triples $\tilde{\mathcal{S}}\subseteq\mathcal{T}$ that support $(\tilde{\ell},u)$ under an assignment $\tilde{\mu}$ with $\tilde{\mu}(x)=u$. With variables renamed apart, the expanded logical form is
+\begin{equation}
+    \ell^{(n+1)} = \ell^{(n)}[u\mapsto x]\;\cup\;\tilde{\ell},
+\end{equation}
+where $[u\mapsto x]$ replaces every occurrence of $u$ with the variable $x$. Consider the assignment $\mu\cup\tilde{\mu}$. Every pattern of $\tilde{\ell}$ is mapped into $\tilde{\mathcal{S}}$, and every pattern of $\ell^{(n)}[u\mapsto x]$ is mapped to the same triple of $\mathcal{S}^{(n)}$ as under $\mu$, since $\tilde{\mu}(x)=u$. The answer variable is still bound to $y$, which gives
+\begin{equation}
+    y\in\operatorname{SPARQL}\bigl(\ell^{(n+1)},\,\mathcal{S}^{(n+1)}\bigr),
+\end{equation}
+where $\mathcal{S}^{(n+1)}=\mathcal{S}^{(n)}\cup\tilde{\mathcal{S}}$, so $\mathcal{S}^{(n+1)}$ supports $(\ell^{(n+1)},y)$. Since $\mathcal{S}^{(n+1)}\subseteq\mathcal{T}$, monotonicity also gives $y\in\operatorname{SPARQL}(\ell^{(n+1)},\mathcal{T})$, so the answer is preserved over the full KG. Each expansion replaces one entity with a variable, so $N$ expansions hide $N$ intermediate entities.
+
+The proof guarantees that the accumulated triples are sufficient for the answer, not that they are the only triples that support it. In the special case where the sub-question has answers other than $u$, the result set of $\ell^{(n+1)}$ may grow, but the executability check bounds it by $K_{\text{ans}}$.
+
+In conclusion, every expansion keeps $y$ in the result set over the full KG, and the accumulated triples alone support the expanded logical form. Therefore, backward expansion preserves the answer and yields triples that support it.
+\end{proof}
+
+\subsection{Proof of Proposition 2}
+\label{app:proof2}
+\textbf{Proposition 2.} \textit{ECPR is maximized only by supported answers and rewards each triple once.}\vspace{-2mm}
+\begin{proof}
+Let $R=R_{\text{out}}+R_{\text{step}}+R_{\text{ecpr}}$ be the composite reward with $\lambda_{\text{ecpr}}>0$, and let $\mathcal{S}^{*}_{q}$ be the supporting triples of a question $q$, which support $(\ell_q,y_q^{*})$ by Proposition 1.
+
+\textit{Supported maximizers.} Since $\operatorname{F1}\le 1$, $R_{\text{step}}\le\lambda_{\text{step}}$, and $\operatorname{Cov}\le 1$, the composite reward is bounded as
+\begin{equation}
+    R(\tau)\le\lambda_{\text{f1}}+\lambda_{\text{ret}}+\lambda_{\text{step}}+\lambda_{\text{ecpr}},
+\end{equation}
+where equality holds if and only if every term attains its maximum, in particular only if $\operatorname{Cov}(\tau,\mathcal{S}^{*}_{q})=1$. Assume that an evidence-covered trajectory with a correct answer and only valid actions is feasible within the turn limit. The bound is then attained, so every trajectory $\tau$ that maximizes $R$ satisfies $\mathcal{S}^{*}_{q}\subseteq\mathcal{T}(\tau)$, and monotonicity gives
+\begin{equation}
+    y_q^{*}\in\operatorname{SPARQL}\bigl(\ell_q,\,\mathcal{T}(\tau)\bigr),
+\end{equation}
+which means that the answer of $\tau$ is supported.
+
+For outcome rewards alone, $R_{\text{out}}$ in Equation~\ref{eq:rout} depends on $\tau$ only through the prediction $\hat{y}$ and the returned entities $\mathcal{E}(\tau)$. A shortcut trajectory $\tau_s$ that predicts and reaches $y_q^{*}$ with $\operatorname{Cov}(\tau_s,\mathcal{S}^{*}_{q})<1$ therefore attains the maximum $\lambda_{\text{f1}}+\lambda_{\text{ret}}$ of $R_{\text{out}}$. Under the composite reward, it loses at least $\lambda_{\text{ecpr}}\bigl(1-\operatorname{Cov}(\tau_s,\mathcal{S}^{*}_{q})\bigr)>0$ against the bound and is no longer optimal.
+
+\textit{One reward per triple.} Let $U_t=\bigl(\bigcup_{i\le t}\mathcal{T}_i\bigr)\cap\mathcal{S}^{*}_{q}$ be the gold triples retrieved up to step $t$, with $U_0=\emptyset$. The step reward of ECPR is then
+\begin{equation}
+    r^{\text{ecpr}}_{t}=\lambda_{\text{ecpr}}\,\frac{|U_t|-|U_{t-1}|}{|\mathcal{S}^{*}_{q}|},
+\end{equation}
+where $U_{t-1}\subseteq U_t$, so $r^{\text{ecpr}}_{t}\ge 0$ and the sum over steps telescopes to $\lambda_{\text{ecpr}}|U_T|/|\mathcal{S}^{*}_{q}|=R_{\text{ecpr}}(\tau)$. If step $t$ returns only triples that were already retrieved, then $U_t=U_{t-1}$ and $r^{\text{ecpr}}_{t}=0$. In contrast, every-match attribution pays $\lambda_{\text{ecpr}}|\mathcal{T}_t\cap\mathcal{S}^{*}_{q}|/|\mathcal{S}^{*}_{q}|$ at each step. Repeating a query that returns $m\ge 1$ gold triples for $T$ steps thus earns $\lambda_{\text{ecpr}}\,Tm/|\mathcal{S}^{*}_{q}|$, which grows with $T$ while the coverage stays at $m/|\mathcal{S}^{*}_{q}|$.
+
+The statement concerns the maximizers of the trajectory-level reward and does not guarantee that policy optimization reaches them. Covering $\mathcal{S}^{*}_{q}$ is sufficient but not necessary for a supported answer, since a question may admit other supporting sets. In the special case where no shortcut trajectory exists for the question, the maximizers of $R_{\text{out}}$ are already evidence-covered, so the two rewards share the same maximizers.
+
+In conclusion, the composite reward attains its maximum only when the retrieved triples support the answer, and first-match attribution never pays a triple twice. Therefore, ECPR is maximized only by supported answers and rewards each triple once.
+\end{proof}
+
+\section{FoG Algorithm Detail}
+\label{app:redcheck}
+\textbf{Redundancy Check.}
+To provide a clear overview of the non-redundancy check in Section~\ref{sec:synthesis}, we present its procedure in the form of pseudocode. As shown in Algorithm~\ref{alg:redcheck}, we first build a support graph from the supporting triples and extract the shortest path from each topic entity to the answer node. We then enumerate proper subsets of topic entities in increasing size and execute one SPARQL query per subset. If any subset yields an answer set no larger than that of the full query, the question admits a shortcut and is discarded.
+
+\begin{algorithm}[t]
+\small
+\caption{Redundancy Check}
+\label{alg:redcheck}
+\KwIn{\(\mathcal{S}^{(n)}\): supporting triples; \(E_q\): topic entities; \(\mathcal{Y}^{(n)}\): full answer set.}
+\KwOut{Redundancy flag \(\textsc{IsRedundant}\in\{\text{True},\text{False}\}\).}
+
+Build an undirected graph \(G\) from \(\mathcal{S}^{(n)}\); label topic-entity nodes with their Wikidata IDs, the answer node with \texttt{?answer}, and intermediates with fresh variables.\par
+
+\For{each \(e \in E_q\)}{
+    Compute shortest path \(\mathcal{P}(e)\) in \(G\) from \(e\) to the answer node.\par
+    Derive SPARQL triple pattern \(\phi(e)\) from triples along \(\mathcal{P}(e)\).\par
+}
+
+\For{\(k = 1\) \textbf{to} \(|E_q|-1\)}{
+    \For{each \(Z\subseteq E_q\) with \(|Z|=k\)}{
+        \(Q_Z \leftarrow \texttt{SELECT\;?answer\;WHERE\;}\{\bigcup_{e\in Z}\phi(e)\}\)\par
+        Execute \(Q_Z\) on the KG \(\rightarrow\) answer set \(\mathcal{Y}^{(n)}_Z\).\par
+        \If{\(|\mathcal{Y}^{(n)}_Z|\le|\mathcal{Y}^{(n)}|\)}{
+            \Return{\(\textsc{True}\)}
+        }
+    }
+}
+
+\Return{\(\textsc{False}\)}
+\end{algorithm}
+
+\textit{Complexity Analysis.}
+Given a question with $|E_q|$ topic entities and $|\mathcal{S}^{(n)}|$ supporting triples, extracting the shortest paths by BFS takes $\mathcal{O}(|E_q|\cdot|\mathcal{S}^{(n)}|)$ time. The subset enumeration issues at most $2^{|E_q|}-2$ SPARQL queries and stops at the first redundant subset. Using only the shortest path per topic entity is an approximation, which we audit on 200 candidate questions against an exhaustive enumeration of all path combinations under the same hop limit. The shortest-path check misses a shortcut in 1.5\% of the candidates, while issuing 5.1 rather than 48.6 SPARQL queries per question.
+
+In summary, the redundancy check is dominated by SPARQL execution, and the shortest-path approximation reduces the number of queries by 9.5$\times$ while missing few shortcuts.
+
+\section{Synthetic Data Construction}
+\label{app:data}
+
+\subsection{Topic Domains}
+\label{app:data_stats}
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1.0\linewidth]{figures/data_dist.pdf}
+    \caption{\textbf{Topic-domain distribution of the synthetic questions.} The questions are drawn from major Wikidata domains.}
+    \label{fig:data_dist}
+\end{figure}
+As shown in Figure~\ref{fig:data_dist}, the synthetic questions used for FoG training span seven named Wikidata domains. Entertainment is the largest (39.7\%), reflecting the density of film, television, and music entities in Wikidata, followed by history (12.6\%), society (11.4\%), geography (9.6\%), transportation (6.6\%), sports (6.5\%), and politics (5.7\%); the remaining 7.9\% fall into other domains.
+
+\subsection{Query-Graph Topologies}
+\label{app:iso_dist}
+\input{tables/tab_iso_distribution}
+To construct questions with diverse reasoning structures, we label each synthetic question with the isomorphism type of its query graph. As shown in Table~\ref{tab:distribution}, the 6,588 questions that pass all checks span nine chain and tree structures from 1 to 3 hops. All verified seeds enter backward expansion, and the 1-hop questions are seeds retained at depth one. Overall, 35.1\%, 40.0\%, and 24.9\% of the questions have 1, 2, and 3 hops. The most frequent types are the three-branch star \texttt{(1)(1)(1)} (18.38\%) and the 3-hop chain \texttt{(3)} (16.48\%), and 67.6\% of the questions have a multi-branch query graph rather than a single chain.
+
+\subsection{Synthesis Cost and Retention}
+\label{app:synth_cost}
+\input{tables/app_synth_cost}
+As shown in Table~\ref{tab:synth_cost}, we report the candidates retained, the rejection rate, and the teacher calls at each synthesis stage, all of which use the same teacher model, Kimi-K2~\citep{kimi}. Of 20,000 sampled seed entities, 14,400 yield a verified seed question, 8,784 candidates remain after backward expansion, and 6,588 questions pass all filters, an end-to-end rejection rate of 67.1\%. The pipeline uses 115,184 teacher calls, about 17.5 per retained question, and backward expansion accounts for three quarters of them.
+
+\subsection{Data Leakage Check}
+\label{app:leakage}
+To ensure that the synthetic questions do not overlap with the test sets, we encode each question with BGE-M3 and compute the cosine similarity between every test question and its most similar synthetic question. The similarity stays below 0.85 for all test questions. On QALD10-en and WikiWebQuestions, no test question exceeds 0.75, and on GTSQA only 6 questions (0.37\%) fall in the 0.80--0.85 range.
+
+\section{KG Interaction Operations}
+\label{app:kg_ops}
+\input{tables/tab_kg_operations}
+As shown in Table~\ref{tab:kg_operations}, the \texttt{kg-query} action in Section~\ref{sec:agent} is instantiated with seven operations in four categories: relation search, neighborhood expansion, constraint filtering, and set combination. The table lists the name, description, input parameters, and output of every operation.
+
+\section{Benchmark Datasets}
+\label{app:datasets}
+\label{app:datasets_detail}
+The benchmarks used for FoG evaluation cover two knowledge graphs, with data sourced as follows:
+
+\textbf{WikiWebQuestions:} Ported from WebQuestions and re-annotated with SPARQL queries over Wikidata~\cite{wikiwebQuestions}, consisting of real-world natural language questions.
+
+\textbf{QALD10-en:} Derived from the English subset of the tenth QALD challenge~\cite{qald10en}, the first edition to adopt Wikidata, covering 394 expert-written test questions with multi-hop and qualifier constraints.
+
+\textbf{GTSQA:} Built over Wikidata with 30,144 training and 1,622 test questions~\cite{GTSQA}, each annotated with a gold answer subgraph and a query-graph isomorphism label.
+
+\textbf{WebQSP:} Sourced from Freebase~\cite{webqsp} and used only for the zero-shot cross-KG transfer experiment.
+
+\section{Evaluation Details}
+\label{app:evaluation}
+
+\subsection{Evaluation Metrics}
+\label{app:metrics}
+We evaluate model performance using four complementary metrics that assess two aspects of KGQA: answer accuracy (Hit@1 and F1) and evidence coverage (Cov and RetQ).
+
+\textbf{(i) Hit@1.}
+Hit@1 quantifies whether the predicted answer is correct. For each question, we check whether the normalized prediction matches any gold answer, and then average over all evaluated questions:
+\begin{equation}
+\begin{aligned}
+    \mathrm{Hit@1} = \frac{1}{M}\sum_{i=1}^{M}
+        \mathbb{I}\bigl[&\exists y \in Y_i^{*}: \\
+        &\mathrm{norm}(\hat{y}_i) = \mathrm{norm}(y)\bigr],
+\end{aligned}
+\end{equation}
+where $\hat{y}_i$ and $Y_i^{*}$ denote the prediction and the gold answer set of the $i$-th question, $\mathrm{norm}(\cdot)$ removes superficial differences such as case and punctuation, and $M$ is the total number of evaluated questions in the benchmark.
+
+\textbf{(ii) Token-level F1.}
+F1 quantifies the token-level overlap between the predicted and gold answers. For each question, we compute the harmonic mean of token precision and recall, and then average:
+\begin{equation}
+\small
+    \mathrm{F1} = \frac{1}{M}\sum_{i=1}^{M}
+        \dfrac{2\cdot\left|\mathrm{tokens}(\hat{y}_i) \cap \mathrm{tokens}(Y_i^{*})\right|}
+             {\left|\mathrm{tokens}(\hat{y}_i)\right| + \left|\mathrm{tokens}(Y_i^{*})\right|},
+\end{equation}
+where $\mathrm{tokens}(\cdot)$ normalizes each answer in a list, splits it on whitespace, and takes the union of the resulting tokens over the list.
+
+\textbf{(iii) Evidence Coverage (Cov).}
+Cov quantifies how much of the gold supporting evidence the agent retrieves along its trajectory. For each question, we compute the fraction of gold supporting triples returned by its KG queries, and then average over all questions:
+\begin{equation}
+    \mathrm{Cov} = \frac{1}{M}\sum_{i=1}^{M}
+        \frac{|\mathcal{T}(\tau_i) \cap \mathcal{S}^{*}_{i}|}
+             {|\mathcal{S}^{*}_{i}|},
+\end{equation}
+where $\mathcal{T}(\tau_i)$ denotes the set of triples returned by all \texttt{kg-query} actions in the trajectory $\tau_i$, and $\mathcal{S}^{*}_{i}$ denotes the gold supporting triples of the $i$-th question. This metric reflects whether an answer is backed by the complete evidence path.
+
+\textbf{(iv) Retrieval Grounding (RetQ).}
+RetQ quantifies whether the gold answer is retrieved from the KG rather than produced from parametric memory. For each question, we check whether any gold answer appears among the entities returned by its KG queries, and then average over all questions:
+\begin{equation}
+    \mathrm{RetQ} = \frac{1}{M}\sum_{i=1}^{M}
+        \mathbb{I}\!\left[\exists y \in Y_i^{*},\; y \in \mathcal{E}(\tau_i)\right],
+\end{equation}
+where $\mathcal{E}(\tau_i)$ denotes the set of entities returned by all KG queries in the trajectory $\tau_i$.
+
+\subsection{Gold Supporting Triples}
+\label{app:gold_supporting_triples}
+The gold supporting triples used for evaluation are distinct from those produced by synthesis, which serve only as ECPR supervision during training. GTSQA provides gold answer subgraphs natively. For WikiWebQuestions, which has no such annotation, we follow EoG~\cite{EoG} and construct them in two stages. We first enumerate candidate paths from each topic entity to each answer entity by BFS under a maximum-hop constraint. An LLM verifier then judges whether each candidate path supports all constraints of the question, and the union of triples on the accepted paths forms the gold supporting triples.
+
+\subsection{Human Validation of Constructed Paths}
+\label{app:human_audit}
+\input{tables/app_rejected_paths}
+To validate the constructed paths independently of the LLM verifier, we sample 200 candidate paths from WikiWebQuestions, 100 accepted and 100 rejected by the verifier. Three graduate annotators independently judge whether each path supports all constraints of its question, without seeing the verifier decision. The annotators reach Fleiss' $\kappa=0.91$, and the human--verifier agreement is 93.0\%, with a verifier precision of 0.94 and a recall of 0.92. Table~\ref{tab:rejected_paths} shows two representative rejected paths.
+
+\section{Baseline Details}
+\label{app:baselines}
+We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms:
+
+\textbf{IO Prompt}~\cite{gpt-4,qwen,deepseekv3} is a KG-free baseline where the LLM directly answers the question from its parametric knowledge. This serves as a lower bound for KG-augmented reasoning.
+
+\textbf{CoT}~\cite{CoT} elicits step-by-step reasoning before the final answer, still without any access to the KG.
+
+\textbf{Self-Consistency}~\cite{Self-Consistency} samples multiple CoT chains and aggregates their answers by majority voting.
+
+\textbf{RoG}~\cite{RoG} generates relation paths as plans, retrieves reasoning paths along them, and answers from the retrieved paths.
+
+\textbf{SubGraphRAG}~\cite{SubGraphRAG} retrieves a subgraph with a lightweight MLP that scores triples in parallel, and feeds it to an LLM reader.
+
+\textbf{GCR}~\cite{GCR} encodes KG paths into a Trie index and constrains LLM decoding with the graph structure.
+
+\textbf{ToG}~\cite{ToG} is a training-free agent that performs beam search over entities and relations through multi-turn KG interaction.
+
+\textbf{PoG}~\cite{PoG} decomposes the question into sub-objectives and explores paths with memory updating and self-reflection.
+
+\textbf{KG-R1}~\cite{KG-R1} trains a single KG agent end-to-end with GRPO under outcome and turn-level action-validity rewards.
+
+\textbf{Adaptation to Wikidata.}
+RoG, SubGraphRAG, and GCR were proposed on Freebase and rely on dataset-specific supervision, so they cannot be transferred to a new KG without retraining. We therefore retrain each of them on the training split of every Wikidata benchmark. KG-R1 was also proposed on Freebase. We retrain it on Wikidata with the same training data as FoG.
+
+\label{app:inference_setting}
+To ensure fairness, all methods, including FoG, are evaluated under identical conditions with a single inference run per question, and no multi-run aggregation is used. The backbone of each method is listed in Table~\ref{tab:main_result}.
+
+\section{Hyperparameter Settings}
+\label{app:training}
+\textbf{Supervised Fine-Tuning.}
+\label{app:sft}
+For SFT, we adopt LLaMA-Factory~\cite{zheng2024llamafactory} and apply LoRA to all linear layers. The training trajectories are distilled from the same teacher model used in synthesis, Kimi-K2~\cite{kimi}, with the prompt in Table~\ref{tab:traj_gen_prompt}. Training runs on a single NVIDIA A100 GPU.
+
+\input{tables/tab_sft_hyperparams}
+
+\textbf{Reinforcement Learning.}
+\label{app:rl}
+For RL, we adopt Verl~\cite{sheng2025hybridflow} and initialize the policy from the SFT checkpoint. Training runs on a single node with 4$\times$NVIDIA A100 (40\,GB) GPUs, using FSDP with parameter and optimizer CPU offloading, and rollouts are executed with vLLM. For each question, the agent samples $N{=}4$ trajectories with at most 10 KG interaction turns. KL regularization uses the $k_3$ estimator with coefficient 0.03, anchored to the SFT model. Table~\ref{tab:sft_hyperparams} and Table~\ref{tab:rl_hyperparams} summarize the detailed hyperparameter configurations used throughout our experiments, and Table~\ref{tab:reward_weights} lists the coefficients of the composite reward in Section~\ref{sec:training}.
+
+\textbf{Advantage Computation.}
+\label{app:advantage}
+The turn-level advantage in Section~\ref{sec:training} is computed as follows.
+\textit{(i) Return.} The return $G_{i,t}$ in Equation~\ref{eq:turn_return} adds the immediate process rewards of turn $t$ to the outcome reward of the trajectory. We use neither discounting nor a reward-to-go, so the evidence reward of a turn is credited to that turn only.
+\textit{(ii) Normalization.} The mean $\mu_q$ and standard deviation $\sigma_q$ are computed over all (trajectory, turn) pairs of the $N$ rollouts of the same question. Trajectories of different lengths need no padding, since each contributes as many returns as it has turns.
+\textit{(iii) Token mask.} The advantage of a turn is broadcast to the tokens that the policy generates in that turn, i.e., its reasoning and its tool call or answer. Tool observations are part of the context but are masked out of the policy loss and the KL term.
+\textit{(iv) Objective.} The policy maximizes
+\begin{equation}
+\small
+\begin{aligned}
+&\mathcal{J}(\theta)
+= \mathbb{E}_{q,\{\tau_i\}}
+\Bigg[
+\frac{1}{N}\sum_{i=1}^{N}\frac{1}{|\tau_i|}\sum_{j=1}^{|\tau_i|}
+\min \Big(
+\rho_{i,j}\hat{A}_{i,t(j)}, \\
+&\quad\operatorname{clip}(\rho_{i,j}, 1-\epsilon, 1+\epsilon)\hat{A}_{i,t(j)}
+\Big)
+\Bigg]
+- \beta \,\mathbb{D}_{\mathrm{KL}}(\pi_{\theta}\,\|\,\pi_{\text{ref}}),
+\end{aligned}
+\end{equation}
+where $j$ ranges over the $|\tau_i|$ policy-generated tokens, $t(j)$ is the turn of token $j$, $\rho_{i,j}$ is the probability ratio, and $\pi_{\text{ref}}$ is the SFT model.
+\textit{(v) Difference from trajectory-level credit.} When the coverage reward is credited only to the final turn, the turns that actually retrieved the evidence receive the same return as the turns that did not, so the update cannot distinguish them. With first-match attribution, two trajectories with the same coverage still produce different per-turn returns, and the advantage concentrates on the queries that first reach gold triples.
+
+\input{tables/tab_rl_hyperparams}
+\input{tables/tab_reward_weights}
+
+\section{Case Study}
+\label{app:casestudy}
+To better understand how much of the supporting evidence different methods retrieve from the KG, we present a case study on the question: \textit{``Which airline flies the Embraer 195 and is based at the airport named after Margaret Kenyatta's father?''} As shown in Tables~\ref{tab:fogcase}, \ref{tab:togcase}, and~\ref{tab:pogcase}, this question requires resolving the father, the airport named after him, and the airline that is based there and flies the aircraft. All three methods predict the correct answer, but they differ in how much of the evidence chain they recover.
+
+\textbf{FoG} recovers the complete gold evidence. It issues nine KG turns and grounds each hop in the triples returned by the previous one, so every link of the chain can be read from the trajectory.
+
+In contrast, \textbf{ToG} performs four rounds of beam search but recovers only one relevant triple, missing the links for airport naming and airline hub, so its answer relies mainly on parametric knowledge. \textbf{PoG} answers after a single retrieval step, leaving an evidence chain that cannot be audited from the trajectory. This case highlights the strength of FoG in reaching the answer through evidence that is fully retrieved from the KG.
+
+\input{tables/app_FoG_case}
+\input{tables/app_ToG_case}
+\input{tables/app_PoG_case}
+
+\section{Prompts Used in FoG}
+\label{app:prompts}
+
+\subsection{Seed Question Generation Prompt}
+As shown in Table~\ref{tab: seedquestion}, this prompt is designed for generating seed questions from a sampled subgraph. It guides the teacher to return a question, its logical form, and its supporting triples, which corresponds to $\pi_{\text{gen}}$ in Equation~\ref{eq:seed}.
+
+\subsection{Backward Expansion Prompt}
+As shown in Table~\ref{tab:complex_question_gen_prompt}, this prompt is used by the backward-expansion agent. The agent is instructed to select an anchor entity, retrieve its neighborhood, generate a sub-question whose answer is the anchor, and verify the result, retrying on failure.
+
+\subsection{Trajectory Distillation Prompt}
+\label{app:prompts_traj}
+As shown in Table~\ref{tab:traj_gen_prompt}, this prompt is used to distill the teacher trajectories for SFT. The teacher is instructed to explore the KG only through the provided tools, explain each call, and answer with entities that appear in the tool responses.
+
+\subsection{Agent Prompt}
+\label{app:prompts_train}
+As shown in Table~\ref{tab:kgqa_prompt}, this prompt is used by the FoG agent in both training and evaluation. It guides the agent to analyze the question, call the KG operations, and answer from the returned triples.
+
+\input{tables/app_seedquestion_gen}
+\input{tables/app_complex_question_gen}
+\input{tables/app_traj_distill}
+\input{tables/app_fog_train_eval}

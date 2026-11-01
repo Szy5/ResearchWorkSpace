@@ -1,0 +1,297 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{\textbf{Societal Impact.}}
+\framework{} aims to improve knowledge-grounded reasoning by enabling language models to interact with structured knowledge graphs through learned retrieval policies. This may benefit applications requiring factual consistency and traceable reasoning, such as question answering, scientific knowledge access, and enterprise knowledge systems. By reducing reliance on complex multi-module pipelines, \framework{} may also improve the accessibility and deployment efficiency of knowledge-grounded reasoning systems.
+
+\paragraph{\textbf{Potential Negative Impact.}}
+Like other retrieval-augmented systems, \framework{} may propagate incorrect or outdated knowledge if the underlying knowledge graph is incomplete, noisy, or maliciously manipulated. In high-stakes domains such as medicine or finance, such errors could lead to misleading outputs. Additionally, improved knowledge-grounded reasoning may be misused to automate large-scale misinformation generation with higher factual coherence.
+
+\paragraph{\textbf{Limitations.}}
+\framework{} assumes access to a reasonably structured and queryable knowledge graph, which may not be available in all domains. Its performance depends on the quality and schema consistency of the KG, and transferability may degrade under severe schema mismatch or noisy graph structures. Furthermore, while \framework{} improves inference efficiency through structured interaction, reinforcement learning training remains computationally expensive compared to standard supervised fine-tuning.
+
+\input{Sections/theoretical_proof}
+
+\section{Datasets}
+\label{appendix:datasets}
+
+\subsection{KGQA Datasets}
+Here, we list the KGQA datasets used in this paper.
+
+\paragraph{Freebase-based Datasets}
+
+\begin{itemize}[topsep=1pt,itemsep=2pt,parsep=0pt,leftmargin=10pt]
+\item \textbf{WebQSP}~\citep{Yih2016WebQSP} (1,639 test QA pairs)
+Open-domain questions with mostly 1--2 hop reasoning over Freebase MIDs and SPARQL annotations.
+
+\item \textbf{ComplexWebQuestions (CWQ)}~\citep{Talmor2018CWQ} (3,531 test QA pairs)
+Compositional multi-hop questions generated from SPARQL templates that stress longer chains and constraint composition are used to probe multi-turn retrieval quality and robustness without dataset-specific rules.
+
+\item \textbf{SimpleQuestions (SimpleQA)}~\citep{bordes2015simplequestions} (1,000 sampled test QA pairs)
+Single-relation 1-hop questions over Freebase serve as a retrieval-fidelity and token-efficiency baseline for \framework{}. We randomly sample 1{,}000 QA from the original test split (21{,}687).
+
+\item \textbf{GrailQA}~\citep{gu2021grailqa} (1,000 sampled test QA pairs)
+Diverse compositional questions emphasizing generalization under Freebase; handled with the same minimal action interface and no hand-crafted schemas. We randomly sample 1{,}000 from the original test split (13{,}231).
+\end{itemize}
+
+\paragraph{Wikidata-based Datasets}
+
+\begin{itemize}[topsep=1pt,itemsep=2pt,parsep=0pt,leftmargin=10pt]
+\item \textbf{T-REx}~\citep{elsahar2018trex} (5,000 test QA pairs)
+Large-scale slot-filling–style QA grounded in Wikidata triples; used to assess scalability and coverage under a different KG schema. We randomly sample 5{,}000 from the corpus (\(\sim\)2.2M).
+
+\item \textbf{QALD-10en}~\citep{usbeck2023qald10} (333 test QA pairs)
+Manually curated, linguistically varied questions over Wikidata; useful for evaluating precision on a small but challenging set. We evaluate on 333 examples.
+\end{itemize}
+
+
+
+
+\subsection{Dataset Pre-processing}
+
+\paragraph{Two-hop Subgraph Extraction Methodology.}
+Following the subgraph pre-processing practice RoG~\citep{Luo2024RoG}, we build a question-specific near subgraph to shrink the search space and suppress spurious matches: starting from the linked anchor entities \(e_q\) and gold answers \(A_q\), it performs a breadth-first expansion over the KG \(G\) up to the dataset’s maximum 2-hop radius \(h\). The processed subgraph for each question is cached and used for the KG retrieval server in \framework{}.
+
+\subsection{Freebase and Wikidata Schema Comparison}
+
+The following tables show the different schemas of Freebase and Wikidata.
+\label{tab:datasets}
+\input{Sections/Table_datasets}
+
+
+
+
+
+
+
+\section{Baselines}
+\label{appendix:baselines}
+
+
+\subsection{LLM-only Methods}
+\textbf{Setup.} We evaluate IO, CoT, and SC in a zero-shot setting without access to the KG retrieval server (i.e., no KG augmentation). All baselines run on Qwen2.5-7B-it, Qwen2.5-72B-it, Qwen3-235B-A22B-Instruct-2507 with temperature=0 and top\_p=50.
+
+\noindent\textbf{Prompts.}
+We use the following prompt templates for IO and CoT baselines (the SC baseline performs majority voting over CoT results and hence uses the same prompt as CoT).
+\input{Sections/prompts_boxes/io_prompt}
+\input{Sections/prompts_boxes/cot_prompt}
+
+\noindent\textbf{Evaluation.} Baseline outputs (IO and CoT) differ in format from the KGQA gold answer set, so we employ an LLM-as-judge to align them. For each question, \texttt{gpt-5-mini} (OpenAI API) is given the question, the ground-truth answer set $A_q$, and parsed predicted entities $\hat{A}_q$ from the base model’s output with a concise semantic-entity-matching prompt (shown in the box below); it returns only a binary vector indicating, for each gold entity in order, whether the prediction refers to the same real-world entity at the same specificity (1 for exact/equivalent matches, e.g., “Apple Inc.” = “Apple”; 0 for overly general predictions, e.g., “Islam” vs [“Shia Islam”, “Sunni Islam”]). We report Pass@K (K=1,2,3,4), F1, precision, recall, and generation-token usage.
+
+
+\input{Sections/prompts_boxes/llmasjudge_prompt}
+
+\subsection{KG-augmented Baselines}
+
+\noindent \textbf{RoG}~\citep{Luo2024RoG}
+\emph{Reasoning on Graphs (RoG)} couples LLMs with KGs via a \emph{planning–retrieval–reasoning} pipeline: the LLM first proposes KG-grounded relation paths as faithful plans, uses them to retrieve valid paths from the KG, and then performs stepwise reasoning to produce an answer. This yields interpretable multi-hop reasoning and reduces hallucinations by constraining reasoning to the KG structure. 
+
+\noindent \textbf{ToG}~\citep{Sun2024ToG}
+\emph{Think-on-Graph (ToG)} treats the LLM as an agent that \emph{iteratively explores} the KG: it performs beam search over entities/relations, expands promising paths, and alternates retrieval with reasoning until a final path/answer is selected. Compared to prompt-only baselines, ToG improves deep, compositional reasoning by explicitly navigating the KG during multi-hop search. 
+
+\noindent \textbf{PoG}~\citep{Chen2024Pog}
+\emph{Plan-on-Graph (PoG)} extends agentic KG reasoning with \emph{adaptive planning and self-correction}. It decomposes a question into sub-objectives and iteratively performs path exploration, memory updating, and reflection to dynamically adjust reasoning trajectories. Through guidance, memory, and reflection mechanisms, PoG enables flexible exploration breadth and backtracking over erroneous paths, improving both reasoning accuracy and efficiency compared to fixed exploration strategies.
+
+\noindent \textbf{ReKnoS}~\citep{Wang2025ReKnoS}
+\emph{Reasoning with Knowledge Super-relations (ReKnoS)} introduces \emph{super-relations} that summarize and connect multiple relational paths, enabling both forward and backward reasoning while expanding the search space that the LLM can traverse. By reasoning over these super-relations (rather than isolated edges), ReKnoS boosts retrieval success and multi-hop accuracy, especially on complex queries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{\framework{} details}
+\label{sec:kgr1_details}
+
+\subsection{Training algorithm}
+
+The following pseudocode outlines the training procedure for \texttt{\framework{}}. 
+
+\input{Sections/a_algorithm}
+
+\subsection{Server Instruction Prompt}
+The server instruction template consists of a set of query actions and descriptions. We use the same server instructions for both training and evaluation across experiments. 
+\input{Sections/prompts_boxes/server_instruction_prompt}
+
+\subsection{Reward Weights}
+Our RL objective combines per-turn and episode-level signals with fixed weights. 
+Per-turn rewards encourage well-structured interaction and effective retrieval:
+$r_t^{\mathrm{turn}}=w_{\mathrm{fmt}}\,s_{\mathrm{fmt}}+
+w_{\mathrm{kg}}\,s_{\mathrm{kg}}+
+w_{\mathrm{ans}}\,s_{\mathrm{ans}}$,
+where $s_{\mathrm{fmt}}$ scores output structure/format validity, 
+$s_{\mathrm{kg}}$ rewards schema-valid, non-empty KG queries, 
+and $s_{\mathrm{ans}}$ checks final-answer formatting/consistency. 
+Episode-level reward emphasizes answer correctness and retrieval coverage:
+$R^{\mathrm{global}}=w_{\mathrm{F1}}\cdot \mathrm{F1}(\hat A_q,A_q)+
+w_{\mathrm{ret}}\cdot v_{\mathrm{ret}}$, 
+with $v_{\mathrm{ret}}\in\{0,1\}$ indicating adequate retrieval coverage. 
+Unless otherwise noted, we use the default values listed in Table~\ref{tab:reward_weights}.
+\input{Sections/table/reward_weights}
+
+\subsection{RL Implementation and Hyperparameters}
+\label{appendix:implementation_details}
+
+\input{Sections/RL_appendix}
+
+
+\subsection{\framework{} Retreival Server Details}
+\noindent\textbf{Setup.}
+We implemented the \framework{} retrieval server with FastAPI~\citep{fastapi} and Uvicorn~\citep{uvicorn} to support (i) a schema-free 1-hop KG query API, (ii) high-throughput async batch execution, and (iii) robust validation and observability (regex action parsing, standardized \texttt{<information>} wrapping with auto-closure, and final-turn safeguards).
+After the \framework{} agent generates a response, the parsed \texttt{<kg-query>} action is sent to the server, which performs exact string matching over the per-question knowledge graph to resolve entities and relations and returns the retrieved information.
+If the call is invalid—one of: \texttt{KG\_SERVER\_ERROR: Invalid Action; KG\_FORMAT\_ERROR: Missing Required Fields; KG\_FORMAT\_ERROR: Wrong Argument Count; KG\_SAMPLE\_NOT\_FOUND: Sample Missing; KG\_ENTITY\_NOT\_FOUND: Entity Not in KG; KG\_RELATION\_NOT\_FOUND: Invalid Relation; KG\_NO\_RESULTS: No Relations Found; KG\_NO\_RESULTS: No Entities Found}—the server responds with a descriptive error message (see box below).
+
+\label{Appendix:server_error_messages}
+\input{Sections/prompts_boxes/kg_server_errors}
+
+\newpage
+
+
+
+
+\section{Supplementary Experimental Results}
+\label{appendix:supplementary_experimental_results}
+
+
+
+
+
+\subsection{Latency and Throughput Analysis}
+\label{appendix:latency_memory_delopyment}
+
+\noindent \textbf{Single-Query Latency}
+We measured end-to-end wall-clock latency on 500 randomly sampled \dataset{WebQSP} queries. The mean latency is \(6.38\)\,s with a standard deviation of \(\approx 1.0\)\,s (i.e., mean\(\pm 1\sigma = 5.39\text{–}7.36\) s). Figure~\ref{fig:latency_histogram} shows the distribution and the per-turn timing breakdown; cumulative time grows approximately linearly with turn number, and the average maximum turn count is \(4.2\).
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.43\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/fig2_single_query_histogram.pdf}
+    \caption{Histogram of end-to-end latency per question.}
+    \label{fig:latency_hist}
+  \end{subfigure}
+  \begin{subfigure}{0.43\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{Figures/fig2_turn_time_scatter.pdf}
+    \caption{Cumulative time by agent turn within a query.}
+    \label{fig:turn_time_scatter}
+  \end{subfigure}
+
+  \caption{Single-query latency of \framework{} on an NVIDIA H100. 
+  (a) Distribution of end-to-end latency; the dashed line marks the mean \(6.38\)\,s, and dotted lines indicate mean\(\ \pm\  1\sigma\) (\(5.39\)–\(7.36\) s). 
+  (b) Cumulative time versus turn number across 500 queries; diamonds show per-turn means and the dashed trend denotes the average time per turn. The average maximum turn count is \(4.2\), and the near-linear growth indicates predictable per-turn costs suitable for interactive KGQA.}
+  \label{fig:latency_histogram}
+\end{figure}
+
+\noindent \textbf{Batched Throughput}
+We evaluate batched inference at batch size \(64\) on a single NVIDIA H100 (Table~\ref{tab:batched_throughput}). 
+LLM-only baselines (no KG calls) achieve high throughput—\(81.8\) (IO) and \(70.1\) (CoT) samples/s—driven by short generation (43.0/206.0 tokens per sample).
+\framework{} incurs KG-server retrieval, reducing throughput but remaining practical for offline processing: the single-run setting reaches \(3.7\) samples/s (\(1205.9\) gen tokens/s) with \(4.4\) KG calls per query, while the \(N{=}4\) runs setting trades throughput for more KG interaction (\(17.5\) calls per query), yielding \(2.0\) samples/s (\(612.1\) gen tokens/s).
+Overall, \framework{} sustains batch processing on one H100 while supporting KG-grounded reasoning.
+
+\begin{table}[ht]
+\centering
+\caption{Batched throughput on one NVIDIA H100 (256 queries; batch size 64).
+\emph{Samples}: total queries. \emph{Batch}: batch size. \emph{KG Calls}: total KG-server requests.
+\emph{Calls/Sample}: average KG requests per query. \emph{Total (s)}: end-to-end wall-clock time.
+\emph{Gen Tok./Sample}: generated tokens per query. \emph{Samples/s}: queries per second.
+\emph{Gen Tok./s}: generated tokens per second.}
+\label{tab:batched_throughput}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{adjustbox}{width=0.9\linewidth}
+\begin{tabular}{@{}l|r|r|r|r|r|r|r|r@{}}
+\toprule
+\textbf{Configuration} & \textbf{Samples} & \textbf{Batch} & \textbf{KG Calls} & \textbf{Calls/Sample} & \textbf{Total (s)} & \textbf{Gen Tok./Sample} & \textbf{Samples/s} & \textbf{Gen Tok./s} \\
+\midrule
+IO              & 256 & 64 & 0    & 0.0  & 12.4  & 43.0  & 81.8 & 887.7 \\
+CoT                   & 256 & 64 & 0    & 0.0  & 14.1  & 206.0 & 70.1 & 3740.1 \\
+\framework{} (single run)   & 256 & 64 & 1127 & 4.4  & 73.2  & 345.0 & 3.7  & 1205.9 \\
+\framework{} ($N{=}4$ runs) & 256 & 64 & 4478 & 17.5 & 142.2 & 340.0 & 2.0  & 612.1 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+
+
+\subsection{Ablation Studies}
+\label{appendix:ablations}
+All ablations in Table~\ref{tab:ablation_study_colored} evaluate \framework{} with Qwen-2.5-3B-it trained on \dataset{WebQSP} and \dataset{CWQ} using a maximum turn budget of \(H{=}5\).
+We report the full ablation table in Table~\ref{tab:ablation_study_colored} and training curves in Figures~\ref{fig:ablation_training_curve_webqsp}.
+
+\noindent \textbf{Turn Reward.} We vary the turn-level reward by setting the weights to \(w_{\text{fmt}}{=}0\), \(w_{\text{kg}}{=}0\), and \(w_{\text{ans}}{=}0\) (the default is \(0.5\) for all weights).
+
+\noindent \textbf{Turn-level Advantage.} Instead of computing the turn-level group advantage \(A_t^{(n)}\) in Sec.~\ref{sub:kg_r1_rl}, we compute a trajectory-wise group advantage
+\[
+A_t^{(n)} \;=\; \frac{G^{(n)}-\bar{G}}{\sigma_{G}+\epsilon},\qquad
+G^{(n)} \;=\; \frac{1}{T}\sum_{t} r_{t}^{\text{turn},(n)} \;+\; R^{\text{global},(n)},
+\]
+and use it for token-level credit assignment.
+
+\noindent \textbf{Retrieval Reward.} We ablate the retrieval component by setting the weight \(w_{\text{ret}}{=}0\) (the default is \(1\)).
+
+\noindent \textbf{RL Algorithm: GRPO vs.\ PPO.} We replace GRPO with vanilla PPO (VERL~\citep{sheng2024hybridflow} defaults), and set the turn-reward mixture weight \(w_{\text{turn}}{=}0\) (default: \(0.5\)). Advantage estimation is performed by a learned value critic (Qwen-2.5-3B-it).
+
+\noindent \textbf{Hierarchical Relation Retrieval.} We change the KG-server retrieval format from a flat list to a hierarchical format that mirrors ``domain.type.property'' (see Table~\ref{tab:hierarchical_relation_format}).
+
+\noindent \textbf{Base LLM Parameter Size (7B).} We swap the backbone from \textbf{Qwen-2.5-3B-it} to \textbf{Qwen-2.5-7B-it} while keeping data, rewards, and budgets fixed.
+
+\subsubsection{Training curves}
+
+\begin{figure}[H]
+    \centering
+
+    \begin{subfigure}{1.0\textwidth}
+        \includegraphics[width=\linewidth]{Figures/ablation_curve.png}
+    \end{subfigure}
+
+    \caption{Training curves of ablation studies, reporting Hits@1 across training steps.}
+    \label{fig:ablation_training_curve_webqsp}
+\end{figure}
+
+
+\subsubsection{Hierachical Retrieval Format}
+\label{appendix:hiearchical retreival}
+
+Hierarchical retrieval format groups Freebase relations by their dot-notation structure (e.g., domain → type → property), presenting them as a compact tree instead of a flat comma-separated list. In the example (see Table~\ref{tab:hierarchical_relation_format}), this formatting preserves the same information while reducing verbosity—79 tokens vs.\ 156 tokens ($\approx$49\% fewer tokens).
+
+\input{Sections/prompts_boxes/hiearchical}
+
+
+\subsubsection{PPO Reward Hacking }
+The following \Cref{tab:fake_kg_information} shows the PPO reward hacking examples.
+\label{appendix:reward_hacking_ppo}
+
+\input{Sections/table/PPO_response_example}
+
+
+
+
+
+
+
+\newpage
+\section{Examples of Responses}
+
+\label{Appendix:responses}
+\input{Sections/prompts}
+
+

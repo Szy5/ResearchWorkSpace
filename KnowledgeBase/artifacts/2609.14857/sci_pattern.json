@@ -1,0 +1,16 @@
+{
+  "primary_pattern": "P04",
+  "primary_pattern_name": "Modular Pipeline Composition",
+  "secondary_patterns": [
+    "P01",
+    "P05",
+    "P12"
+  ],
+  "secondary_pattern_names": [
+    "Gap-Driven Reframing",
+    "Data & Evaluation Engineering",
+    "Mechanistic Decomposition & Causal Localization"
+  ],
+  "confidence": "high",
+  "reasoning": "论文的核心是将agent harness分解为五个功能模块并独立进化后集成，符合P04的模块化流水线组合；同时把generalizable harness RSI重新表述为benchmark-disjoint two-level credit assignment，对应P01的问题重构；构建2,000个evolution tasks与benchmark-disjoint协议属于P05的数据与评估工程；对比成功/失败轨迹以定位模块缺陷并聚合证据，带有P12的机制分解与因果定位色彩。"
+}

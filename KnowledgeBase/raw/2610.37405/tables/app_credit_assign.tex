@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Credit assignment} & \textbf{Hit@1} & \textbf{Cov} & \textbf{Dup.\ rate} \\
+\midrule
+Trajectory-level & 46.69 & 54.29 & 11.8\% \\
+Every-match      & 47.01 & 52.21 & 29.4\% \\
+\rowcolor{lightblue}
+\textbf{First-match (ours)} & 50.52 & 58.64 & 8.6\% \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Credit-assignment strategies for ECPR on GTSQA.} Dup.\ rate is the fraction of KG queries that re-retrieve an already retrieved gold triple.}
+\label{tab:credit_assign}
+\vspace{-5mm}
+\end{table}

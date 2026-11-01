@@ -1,0 +1,29 @@
+\begin{table}[t]
+  \centering
+  \small
+  
+  \begin{tabular}{clrr}
+  \toprule
+  \textbf{Hops} & \textbf{Isomorphism Type} & \textbf{Questions} & \textbf{Proportion} \\
+  \midrule
+  \multirow{3}{*}{1 hop}
+    & \texttt{(1)}           & 500 & 7.59\% \\
+    & \texttt{(1)(1)}        & 600 & 9.11\% \\
+    & \texttt{(1)(1)(1)}     & 1,211 & 18.38\% \\
+  \midrule
+  \multirow{4}{*}{2 hop}
+    & \texttt{(2)}           & 550 & 8.35\% \\
+    & \texttt{(2)(1)}        & 853 & 12.95\% \\
+    & \texttt{((1)(1))}      & 700 & 10.63\% \\
+    & \texttt{(2)(1)(1)}     & 533 & 8.09\% \\
+  \midrule
+  \multirow{2}{*}{3 hop}
+    & \texttt{(3)}           & 1,086 & 16.48\% \\
+    & \texttt{((2)(1))}      & 555 & 8.42\% \\
+  \midrule
+  \textbf{Total} & - & \textbf{6,588} & \textbf{100.00\%} \\
+  \bottomrule
+  \end{tabular}
+\caption{\textbf{Topology distribution of the synthetic questions.} Query-graph isomorphism types are grouped by hop count, the longest path from a topic entity to the answer.}
+\label{tab:distribution}
+  \end{table}

@@ -1,0 +1,49 @@
+\begin{table}[!h]
+\caption{\textbf{Basic logic query patterns.} $v_a$: anchor entity; $x$: answer variable; $y_i$: intermediate variables; $r_i$: relations.}
+\label{tab:patterns}
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.1}
+\newcommand{\patternimg}[1]{%
+  \raisebox{-0.5\height}{\includegraphics[scale=0.9]{#1}}%
+}
+
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{c c l}
+\toprule
+\textbf{Pattern} & \textbf{Structure}
+& \textbf{Logical query} \\
+\midrule
+
+$1p$ &
+\patternimg{figures/1P.pdf} &
+$\phi(x)=r_1(v_a,x)$ \\[2pt]
+
+$2p$ &
+\patternimg{figures/2P.pdf} &
+$\phi(x)=\exists y:\ r_1(v_a,y)\wedge r_2(y,x)$ \\[2pt]
+
+$3p$ &
+\patternimg{figures/3P.pdf} &
+$\phi(x)=\exists y_1,y_2:\ r_1(v_a,y_1)\wedge r_2(y_1,y_2)
+\wedge r_3(y_2,x)$ \\[2pt]
+
+$2i$ &
+\patternimg{figures/2i.pdf} &
+$\phi(x)=r_1(v_{a_1},x)\wedge r_2(v_{a_2},x)$ \\[2pt]
+
+$ip$ &
+\patternimg{figures/IP.pdf} &
+$\phi(x)=\exists y:\ r_1(v_{a_1},y)\wedge r_2(v_{a_2},y)
+\wedge r_3(y,x)$ \\[2pt]
+
+$pi$ &
+\patternimg{figures/PI.pdf} &
+$\phi(x)=\exists y:\ r_1(v_{a_1},y)\wedge r_2(y,x)
+\wedge r_3(v_{a_2},x)$ \\[2pt]
+
+\bottomrule
+\end{tabular}%
+}
+\end{table}

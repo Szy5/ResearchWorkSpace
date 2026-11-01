@@ -1,0 +1,211 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2610.37405",
+  "created_at": "2026-10-28T02:06:28.913065+00:00",
+  "updated_at": "2026-10-28T02:15:40.079867+00:00",
+  "paper": {
+    "title": "Clearing the FoG: Training KG Agents  to Retrieve the Evidence Behind Their Answers",
+    "authors": [
+      "Zongyuan Sun",
+      "Shuai Zhao",
+      "Ke Shu",
+      "Yingjun Du",
+      "Ziyue Zhu",
+      "Haoran Luo"
+    ],
+    "affiliations": [
+      "Beijing University of Posts and Telecommunications, Beijing, China",
+      "University of Helsinki, Helsinki, Finland",
+      "University of Amsterdam, Amsterdam, Netherlands",
+      "Nanyang Technological University, Singapore"
+    ],
+    "abstract": "Large language models (LLMs) can answer many factual questions correctly, but a correct answer is not necessarily a supported one. For an LLM agent, a knowledge graph (KG) plays two roles: as a source of answers, it supplies facts that the model lacks; as a source of evidence, it supplies the supporting triples that make an answer traceable and auditable. However, existing KG agents treat the KG only as a source of answers: their training data carries answers but not evidence, and their training rewards check the answer but not the retrieved evidence, so agents often answer correctly without retrieving the supporting triples. We propose FoG, a framework that trains KG agents to retrieve the evidence behind their answers. FoG consists of evidence-grounded synthesis, a KG interaction agent, and an evidence-coverage process reward (ECPR): the synthesis recursively hides explicit entities behind verifiable sub-questions, so that every question carries its supporting triples by construction; the agent records the triples returned by the KG; and ECPR credits each supporting triple to the turn that first retrieves it. Experiments on three KGQA benchmarks demonstrate that FoG enables 3B--4B open-source agents to outperform substantially larger baselines in answer accuracy and evidence coverage, with zero-shot cross-KG transfer.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "2610.37405",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": true,
+    "meta_reviewed": true,
+    "prior_works_reviewed": true,
+    "added_date": "2026-10-28",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2610.37405",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "bf45c6d7ca78237ec4ea17e54793009458d75a47ce566d2a5e67e0f189e87f02",
+        "bytes": 3157
+      },
+      {
+        "path": "sections/0_abstract.tex",
+        "sha256": "20205e95c0778dd37f6814c8d48c2082b824064c13d23574fc1a8fde766d16a2",
+        "bytes": 1383
+      },
+      {
+        "path": "sections/1_intro.tex",
+        "sha256": "89c17758d68917d915a1018047277193bb3c4f69a5b2cceb355f216f0b3f31f7",
+        "bytes": 4797
+      },
+      {
+        "path": "sections/5_relaed.tex",
+        "sha256": "7244f9bfeec79af36bd6b06ff5ed670ca6588d1a9b43790234af10b8d28c0c56",
+        "bytes": 2099
+      },
+      {
+        "path": "sections/3_methods.tex",
+        "sha256": "75fe4fb87c5829c8bcb558773cfdccfb7725ba0ff8e77dc0372cd0cd81a20d25",
+        "bytes": 11204
+      },
+      {
+        "path": "sections/4_experiments.tex",
+        "sha256": "ac0510ea225d84467cbae748548fe2fc22248486564c28bb0944551a142448ea",
+        "bytes": 9890
+      },
+      {
+        "path": "tables/main_result.tex",
+        "sha256": "2498985bdd71a9fa690b27bacc1b5ea49ddb1191655647dadc595abd515bb6b1",
+        "bytes": 2680
+      },
+      {
+        "path": "tables/rq4_ecpr_ablation.tex",
+        "sha256": "1cedfbe33b36e557998e80cb86ebda3be92ac07f70398d08e5880b8c5cc12799",
+        "bytes": 1625
+      },
+      {
+        "path": "tables/rq3_synth_data.tex",
+        "sha256": "b4fd3bcc09864df2b30dd405517a661e5cd2046ca8cef9f72a13f0b7723b7848",
+        "bytes": 808
+      },
+      {
+        "path": "tables/rq_2_faithful.tex",
+        "sha256": "9b909192d3ee2f9ceedbaa7c6efbf67866ec63bab7fbda75c324bf01c7387842",
+        "bytes": 880
+      },
+      {
+        "path": "tables/app_credit_assign.tex",
+        "sha256": "d59a6c6af2258554c56088bb260d251620421d10c2c514daf7972ec27ce5ceb5",
+        "bytes": 562
+      },
+      {
+        "path": "tables/rq5_crosskg.tex",
+        "sha256": "f5597b36b874bca597e9a3b07f5048f5c76cb794118c6dbeaddce44c7a17adb7",
+        "bytes": 1021
+      },
+      {
+        "path": "sections/6_conclusion.tex",
+        "sha256": "3122569ba1c4d4149ef7f87551c4f6d237db94b3f6cd744362b9f0c5e9e894dd",
+        "bytes": 458
+      },
+      {
+        "path": "sections/7_limitations.tex",
+        "sha256": "8ae24ff7ca76aa276023832fbefc5cd34b7338347487dec8157408aeeb72a3e0",
+        "bytes": 1476
+      },
+      {
+        "path": "sections/ethical_considerations.tex",
+        "sha256": "8067da29faa241a2dfbf9c313d7da99bc22f9782c320a2954acb12ca7a103d09",
+        "bytes": 1187
+      },
+      {
+        "path": "sections/Appendix.tex",
+        "sha256": "ccaf21861afe100760e57c7a79af2b9e22f3456aa44291d527e5289c5354f297",
+        "bytes": 25853
+      },
+      {
+        "path": "tables/tab_iso_distribution.tex",
+        "sha256": "a0cee547b2bd1ce98fb205bb9d81f1928c517d5e26ec990a499556bdae2514f4",
+        "bytes": 1024
+      },
+      {
+        "path": "tables/app_synth_cost.tex",
+        "sha256": "3b12c1b353201fea0feb52e5ad09d8ed0a4a4434cd4d9673fc2455402b5dfcec",
+        "bytes": 609
+      },
+      {
+        "path": "tables/tab_kg_operations.tex",
+        "sha256": "e302d399c7a628910b78819d2790e643d6241dfeec622fafa143323714d052d3",
+        "bytes": 1931
+      },
+      {
+        "path": "tables/app_rejected_paths.tex",
+        "sha256": "192f1696cedbb6970666d4dced498e7b2262b4cf1c2d8dd89956351905eb3062",
+        "bytes": 806
+      },
+      {
+        "path": "tables/tab_sft_hyperparams.tex",
+        "sha256": "7ade0327d7fff8afb919fc29233ef67fe3f61c8c57390527b4d99e482efe3e19",
+        "bytes": 671
+      },
+      {
+        "path": "tables/tab_rl_hyperparams.tex",
+        "sha256": "d95f24dce7dac230337cdbeb7633c51e34a0d5f4a1b9685625ebbf5721d272ac",
+        "bytes": 807
+      },
+      {
+        "path": "tables/tab_reward_weights.tex",
+        "sha256": "2cae8bd2ddd50017ee621359a34d3db31612437eabca100caa5e122022da7016",
+        "bytes": 631
+      },
+      {
+        "path": "tables/app_FoG_case.tex",
+        "sha256": "77cff939026a8e34681160d63ae188ceb3aed460fd622be01de127340b8185cc",
+        "bytes": 6190
+      },
+      {
+        "path": "tables/app_ToG_case.tex",
+        "sha256": "5f1e2f70b69201cec18f469c4ad6b626d4fc9492145f6b0a7c82ddb3bae5784f",
+        "bytes": 1941
+      },
+      {
+        "path": "tables/app_PoG_case.tex",
+        "sha256": "b9ed0dd376ad7b607ef047c1908a7849b414a99886075c8b681c0260d673ba62",
+        "bytes": 869
+      },
+      {
+        "path": "tables/app_seedquestion_gen.tex",
+        "sha256": "8240ced67bef13b588a2c723ec3cafb3b293d749855b7871f9a2dd77a354a390",
+        "bytes": 4396
+      },
+      {
+        "path": "tables/app_complex_question_gen.tex",
+        "sha256": "40fea55d5db13482a52cf110fc88a2ac26b10b3260d7ccfc84990d12e407de65",
+        "bytes": 3457
+      },
+      {
+        "path": "tables/app_traj_distill.tex",
+        "sha256": "aca01ec0457808fcdd4c47c89551a898d7b20fd6a06478edcf7c3780ebf4cdc3",
+        "bytes": 4459
+      },
+      {
+        "path": "tables/app_fog_train_eval.tex",
+        "sha256": "3905c142e045055f8280d3b06554aaec8e3e73e1e7669a3e855a7e261a81199d",
+        "bytes": 2612
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 41,
+    "figures": 12,
+    "references": 54
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 22, column 1):\nunexpected Tok (line 22, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 22, column 1):\nunexpected Tok (line 22, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

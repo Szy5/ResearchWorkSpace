@@ -1,0 +1,45 @@
+{
+  "prior_works": [
+    {
+      "title": "Think-on-Graph: Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+      "authors": "Jiashuo Sun et al.",
+      "year": 2024,
+      "arxiv_id": "2307.07697",
+      "role": "Baseline",
+      "relationship_sentence": "\"ToG\" 的多轮 think-act-observe KG 交互为 FoG 的 KG interaction agent 提供了直接框架，但它只以最终答案为目标而不奖励证据覆盖，FoG 通过 ECPR 要求 agent 检索支持答案的三元组。"
+    },
+    {
+      "title": "Efficient and Transferable Agentic Knowledge Graph RAG via Reinforcement Learning",
+      "authors": "Junhong Lin",
+      "year": 2025,
+      "arxiv_id": "2509.26383v5",
+      "role": "Gap Identification",
+      "relationship_sentence": "\"KG-R1\" 用最终答案的结果奖励训练 KG agent，暴露出奖励只检查答案、不检查检索证据的缺口，FoG 的 ECPR 将奖励细化到首次检索某个 supporting triple 的轮次。"
+    },
+    {
+      "title": "Reasoning on Graphs: Faithful and Interpretable Large Language Model Reasoning",
+      "authors": "Linhao Luo et al.",
+      "year": 2024,
+      "arxiv_id": "2310.01061",
+      "role": "Gap Identification",
+      "relationship_sentence": "\"RoG\" 检索推理路径并据此回答，但其路径检索服务于答案而非完整证据覆盖，FoG 用 evidence-grounded synthesis 让每个问题自带 gold supporting triples 来训练全覆盖检索。"
+    },
+    {
+      "title": "SubGraphRAG: Towards Flexible and Scalable Retrieval-Augmented Generation with Subgraph Retrieval",
+      "authors": "Miao et al.",
+      "year": 2024,
+      "arxiv_id": "2410.20724",
+      "role": "Baseline",
+      "relationship_sentence": "\"SubGraphRAG\" 以子图检索为 LLM 提供答案依据，但单步子图不一定覆盖答案的全部 supporting triples，FoG 用多轮 KG 交互和 ECPR 显式优化 evidence coverage。"
+    },
+    {
+      "title": "GraphWalker: An Autonomous Graph Reasoning Agent for Knowledge Graph Question Answering",
+      "authors": "Shuwen Xu, Yao Xu, Jiaxiang Liu, Chenhao Yuan, Wenshuo Peng, Jun Zhao, Kang Liu",
+      "year": 2025,
+      "arxiv_id": "2603.28533",
+      "role": "Inspiration",
+      "relationship_sentence": "\"GraphWalker\" 用 KG 合成数据训练/驱动 agent，但合成问题只作为额外训练样例而不自带证据监督，FoG 将其扩展为 evidence-grounded synthesis，使每个问题由构造携带 supporting triples。"
+    }
+  ],
+  "synthesis_narrative": "现有 KG 推理工作大致沿两条路线展开：\"ToG\" 把 LLM 与 KG 的交互组织成多轮 think-act-observe，使 agent 能逐步探索图结构，但训练/提示目标仍是最终答案；\"KG-R1\" 进一步用强化学习训练 KG agent，却只以答案结果作为奖励，轨迹只要抵达答案就可能得到高分。\"RoG\" 与 \"SubGraphRAG\" 则从检索侧提供路径或子图作为答案依据，然而单步检索到的路径/子图并不保证覆盖答案所需的全部 supporting triples。\"GraphWalker\" 表明可从 KG 合成问题来驱动 agent 训练，但合成数据主要作为额外样例，问题本身不携带可验证的证据监督。这些工作共同暴露了一个机会：答案正确与证据完整是两种目标，而证据在问题写定后难以恢复、在训练奖励中也未被显式检查。FoG 因而把证据前移到数据构造阶段，用 evidence-grounded synthesis 让每个合成问题自带支持三元组，再用 KG interaction agent 记录检索三元组，并以 ECPR 对首次检索到 supporting triple 的轮次给予稠密奖励；这样无需 LLM judge 或逐题 gold path 恢复，就把 KG 从答案来源扩展为证据来源。"
+}

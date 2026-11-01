@@ -1,0 +1,66 @@
+
+
+\begin{table*}[t]
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{6pt}
+    \renewcommand{\arraystretch}{1.0}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{l l l cc cc cc}
+    \toprule
+    \multirow{2}{*}{\textbf{Category}} 
+    & \multirow{2}{*}{\textbf{Methods}} 
+    & \multirow{2}{*}{\textbf{Backbone}}
+    & \multicolumn{2}{c}{\textbf{WikiWebQuestions}}
+    & \multicolumn{2}{c}{\textbf{QALD10-en}}
+    & \multicolumn{2}{c}{\textbf{GTSQA}} \\
+    \cmidrule(lr){4-5} \cmidrule(lr){6-7} \cmidrule(l){8-9}
+    & & & \textbf{F1} & \textbf{Hit@1} & \textbf{F1} & \textbf{Hit@1} & \textbf{F1} & \textbf{Hit@1}\\
+    \midrule
+    
+    \multirow{7}{*}{LLM Reasoning}
+    & IO Prompt~\cite{qwen} & Qwen2.5-7B-Instruct
+    & 28.24	&44.43	&11.05	&12.30	&9.62	&10.23\\
+    & IO Prompt~\cite{gpt-4} & GPT-4o-mini
+    & 40.31 & 68.10 & 15.34 & 18.78 & 15.37 & 16.46 \\
+    & CoT~\cite{CoT} & GPT-4o-mini
+    & 41.66 & 58.42 & 22.68 & 26.81 & 18.87 & 20.12 \\
+    & Self-Consistency~\cite{Self-Consistency} & GPT-4o-mini
+    & 46.34 & 65.20 & 24.27 & 28.57 & 19.07 & 20.21 \\
+    & IO Prompt~\cite{deepseekv3} & DeepSeek-V3
+    & 42.36 & 59.89 & 18.97 & 21.77 & 24.77 & 26.20 \\
+    & CoT~\cite{CoT} & DeepSeek-V3
+    & 45.91 &64.60 & 19.02 & 25.28 & 27.66 & 29.41 \\
+    & Self-Consistency~\cite{Self-Consistency} & DeepSeek-V3
+    & 49.72	&66.79 & 26.25 & 29.97 & 33.59 & 35.82 \\
+    \midrule
+    
+    \multirow{3}{*}{Retrieval-based}
+    & RoG~\cite{RoG} & Qwen2.5-7B-Instruct
+    & 53.27 & 68.71 & \na & \na & 41.10 & 42.48 \\
+    & SubGraphRAG-100~\cite{SubGraphRAG} & Qwen2.5-7B-Instruct
+    & 56.84 & 72.36 & \na & \na & 44.27 & 45.93 \\
+    & GCR~\cite{GCR} & GPT-4o-mini
+    & 55.33 & 71.27 & \na & \na & 32.61 & 37.48 \\
+    \midrule
+    
+    \multirow{5}{*}{Agent-based}
+    & ToG~\cite{ToG} & GPT-4o-mini
+    & 58.55	&72.75	&30.63	&32.18	&41.08	&42.36 \\
+    & PoG~\cite{PoG} & GPT-4o-mini
+    & 57.32 & 71.89 & 30.68 & 34.07 & 37.77 & 39.33 \\
+    & KG-R1~\cite{KG-R1} & Qwen3-4B-Instruct
+    & 64.49  &73.01  &44.07	&45.41	&46.14 &47.73\\
+    \rowcolor{lightblue}
+    & \textbf{FoG-3B} & Qwen2.5-3B-Instruct
+    & \second{66.28} & \second{75.43}& \second{45.63} & \second{48.92} & \second{48.25} & \second{49.20}\\
+    \rowcolor{lightblue}
+    & \textbf{FoG-4B} & Qwen3-4B-Instruct
+    & \best{66.41} &\best{76.93} &\best{47.80} & \best{49.01} &\best{48.66} &\best{50.52} \\
+    \bottomrule
+    \end{tabular}
+    }
+    \caption{\textbf{Main results on three KGQA benchmarks.} 
+    Best results are shown in \textbf{bold}, and second-best results are \underline{underlined}. Our methods are highlighted in blue. }
+    \label{tab:main_result}
+    \end{table*}

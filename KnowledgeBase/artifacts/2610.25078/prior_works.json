@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "Co-Harness",
+      "authors": "Chen et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "该工作把 \"Co-Harness\" 的已验证 harness patch 与改进 scaffold 轨迹上的微调交替循环作为主要改进对象，当前论文针对其缺少独立历史 checkpoint 选择而引入双向历史继承以缓解 brain–body mismatch。"
+    },
+    {
+      "title": "WHALE",
+      "authors": "Kim et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "该工作将 \"WHALE\" 的拒绝采样微调与可执行 harness 搜索交替进行，当前论文沿用其 SFT 式自我改进但增加从 evolutionary archive 选择或合并历史 checkpoint 的机制。"
+    },
+    {
+      "title": "HarnessForge",
+      "authors": "Chen et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "该工作以 \"HarnessForge\" 的故障引导 harness 裁剪和 harness 条件化策略对齐代表现有协同演化，当前论文指出其从最新代际或父分支初始化会放大 mismatch，并以历史继承替代这种单一路径。"
+    },
+    {
+      "title": "Meta-Harness",
+      "authors": "Lee et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "该工作让 \"Meta-Harness\" 的 proposer 访问早期源码、分数和执行轨迹，直接启发当前论文用 shared evolutionary archive 保存 harness 设计历史与执行结果而非仅依赖标量反馈。"
+    },
+    {
+      "title": "Darwin Gödel Machine: Open-Ended Evolution of Self-Improving Agents",
+      "authors": "Jenny Zhang et al.",
+      "year": 2025,
+      "arxiv_id": "2505.22954",
+      "role": "Inspiration",
+      "relationship_sentence": "该工作以 \"Darwin Gödel Machine\" 维护自我修改 agent 档案并把早期分支作为后续改进踏脚石，直接启发当前论文的 evolutionary archive 与历史 harness/checkpoint 继承机制。"
+    },
+    {
+      "title": "SkillRL",
+      "authors": "Xia et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Related Problem",
+      "relationship_sentence": "该工作让 \"SkillRL\" 联合演化分层技能库与 agent 策略，显示模型侧能力抽象可与执行经验共同更新，当前论文据此把模型 checkpoint 的历史选择/合并纳入与 harness 对齐的协同演化。"
+    },
+    {
+      "title": "HASE",
+      "authors": "Luo et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Related Problem",
+      "relationship_sentence": "该工作让 \"HASE\" 中的策略参与自身支持系统的编辑，启发了当前论文由 meta-agent 协调 harness editors 从历史设计出发并同时选择模型继承的双向 agent-driven 继承。"
+    }
+  ],
+  "synthesis_narrative": "在模型—执行框架协同演化方向，\"Co-Harness\" 以验证后的 harness patch 与由改进 scaffold 生成轨迹上的微调交替推进，\"WHALE\" 将拒绝采样微调与可执行 harness 搜索交替进行，\"HarnessForge\" 则把故障引导的 harness 裁剪与 harness 条件化的策略对齐结合。这些工作证明同时调整 body 与 brain 有效，却通常从最新一代或父分支初始化，模型侧没有独立检索或合并历史 checkpoint 的机制，因而容易在 harness 需求变化后出现接口与能力错配。\"Meta-Harness\" 让 proposer 访问早期源码、分数和执行轨迹，\"Darwin Gödel Machine\" 维护自我修改 agent 的档案并把早期分支作为后续改进的踏脚石，二者共同表明丰富历史可保留单一标量分数遗漏的证据并支撑继承。\"SkillRL\" 联合演化分层技能库与 agent 策略，\"HASE\" 让策略参与自身支持系统的编辑，进一步显示模型能力与执行支持可以相互塑造。由此浮现的缺口是：已有协同演化缺少把 harness 历史设计与模型 checkpoint 历史统一起来、按执行反馈双向继承的机制。当前论文正据此提出共享 evolutionary archive 和 meta-agent 协调的 bidirectional historical inheritance，在选定 harness 下选择或合并 checkpoint 并做 SFT，从而把 brain–body alignment 变成演化循环的显式决策。"
+}

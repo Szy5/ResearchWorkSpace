@@ -1,0 +1,62 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2609.30541",
+  "created_at": "2026-11-01T05:54:57.228663+00:00",
+  "updated_at": "2026-11-01T06:02:58.718472+00:00",
+  "paper": {
+    "title": "AutoResearch at Production Scale: Failure Modes and a Multi-Agent Framework",
+    "authors": [
+      "Aparajith Chandran",
+      "Juwon Kim",
+      "Saurav Jha",
+      "Pablo Castells",
+      "Florian Hottier"
+    ],
+    "affiliations": [
+      "Amazon"
+    ],
+    "abstract": "Optimizing embedding systems for production recommendation pipelines demands systematic exploration that consumes disproportionate engineering effort at scale. We apply Andrej Karpathy's AutoResearch paradigm~[karpathy2026autoresearch]---a large language model that iteratively edits a training script and retains modifications that improve a held-out scalar metric---to automate this exploration. We report on twelve weeks of running this paradigm at production scale, where iterations consume hours of multi-GPU compute, evaluation involves competing criteria, and campaigns span weeks across many training jobs. Across two independently developed representation-learning systems for a book recommendation pipeline, we ran 220+ experiments and observed five recurring failure modes absent from the original setting: infrastructure fragility, agent memory decay, search-direction stagnation, iteration-cost asymmetry, and metric fixation. We contribute a three-principle scaffolding design---prevent, persist, redirect---that maps each failure mode to a structural remedy and whose instantiation scales with iteration cost. The framework produced a 1.82 Recall@6 lift and a 2.1 coherence lift over hand-tuned baselines, and the agent autonomously designed a text-only fallback that expanded catalog coverage by 5.8 . The two systems span nearly three orders of magnitude in per-iteration cost yet exhibit the same failure modes, suggesting these are structural properties of production-scale autonomous research rather than artifacts of either application.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "2609.30541",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": true,
+    "prior_works_reviewed": false,
+    "added_date": "2026-11-01",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2609.30541",
+    "entry_file": "AutoResearch_at_Production_Scale_ICDM2026_CR.tex",
+    "source_files": [
+      {
+        "path": "AutoResearch_at_Production_Scale_ICDM2026_CR.tex",
+        "sha256": "0cdd92bb7cf6b8a3e072b7da88cea0604d119a50f9cef7129933f0a71433a0b8",
+        "bytes": 55592
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 28,
+    "figures": 3,
+    "references": 26
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 8, column 1):\nunexpected Tok (line 8, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 8, column 1):\nunexpected Tok (line 8, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

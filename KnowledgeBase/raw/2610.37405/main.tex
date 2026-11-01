@@ -1,0 +1,142 @@
+\documentclass[11pt]{article}
+
+\usepackage[preprint]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}  
+
+\usepackage[T1]{fontenc}
+
+\usepackage[utf8]{inputenc}
+\usepackage{subfigure}
+\usepackage{enumitem}
+\usepackage{stfloats}
+\usepackage{mdframed}
+\usepackage{listings}
+\usepackage{booktabs} 
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{cuted}
+\usepackage{capt-of}
+\usepackage{multicol}
+\usepackage{graphicx} 
+
+\usepackage[ruled]{algorithm2e}
+\usepackage{silence}
+\usepackage{float}   
+
+\usepackage{microtype}
+\raggedbottom
+\setlength{\emergencystretch}{3em}
+\hbadness=10000
+\vbadness=10000
+\hfuzz=60pt
+\vfuzz=60pt
+
+\WarningFilter{lineno}{Line number reference failed}
+
+\lstdefinestyle{inlinecode}{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  keepspaces=true,
+  frame=none,
+  aboveskip=0pt,
+  belowskip=0pt,
+}
+ 
+\mdfdefinestyle{subframe}{
+  linewidth=0.5pt,
+  linecolor=black!30,
+  backgroundcolor=black!3,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  skipabove=4pt,
+  skipbelow=4pt,
+  roundcorner=3pt,
+}
+ 
+\mdfdefinestyle{outerframe}{
+  linewidth=0.8pt,
+  linecolor=black!50,
+  backgroundcolor=white,
+  innerleftmargin=10pt,
+  innerrightmargin=10pt,
+  innertopmargin=8pt,
+  innerbottommargin=8pt,
+  skipabove=0pt,
+  skipbelow=0pt,
+}
+
+\usepackage{colortbl}
+\usepackage{pifont}
+\usepackage{makecell}
+
+\definecolor{lightblue}{RGB}{235,243,255}
+\definecolor{headerblue}{RGB}{220,232,250}
+\definecolor{midgray}{RGB}{120,120,120}
+
+\newcommand{\best}[1]{\textbf{#1}}
+\newcommand{\second}[1]{\underline{#1}}
+\newcommand{\na}{\textcolor{midgray}{--}}
+
+\definecolor{sevenclr}{RGB}{0,100,210}
+\newcommand{\pending}[1]{\textcolor{red}{#1}}
+\newcommand{\sd}[1]{$_{\pm\text{#1}}$}
+\newcommand{\pendingseven}[1]{\textcolor{sevenclr}{#1}}
+
+\usepackage{inconsolata}
+
+\title{Clearing the FoG: Training KG Agents \\ to Retrieve the Evidence Behind Their Answers}
+
+\author{
+  \textbf{Zongyuan Sun\textsuperscript{1,*}},
+  \textbf{Shuai Zhao\textsuperscript{1,$\dagger$}},
+  \textbf{Ke Shu\textsuperscript{2,*}},
+  \textbf{Yingjun Du\textsuperscript{3}},
+  \textbf{Ziyue Zhu\textsuperscript{1}},
+  \textbf{Haoran Luo\textsuperscript{4,$\dagger$}}
+\\
+  \textsuperscript{1}Beijing University of Posts and Telecommunications, Beijing, China \\
+  \textsuperscript{2}University of Helsinki, Helsinki, Finland \quad
+  \textsuperscript{3}University of Amsterdam, Amsterdam, Netherlands \\
+  \textsuperscript{4}Nanyang Technological University, Singapore
+\\
+  \small{\textsuperscript{*}Equal contribution.\quad \textsuperscript{$\dagger$}Corresponding authors.}
+}
+
+\begin{document}
+\maketitle
+
+\input{sections/0_abstract}
+
+\input{sections/1_intro}
+
+\input{sections/5_relaed}
+
+\input{sections/3_methods}
+
+\input{sections/4_experiments}
+
+\input{sections/6_conclusion}
+
+\input{sections/7_limitations}
+
+\input{sections/ethical_considerations}
+
+\bibliography{refs}
+\clearpage
+
+\input{sections/Appendix}
+
+\end{document}

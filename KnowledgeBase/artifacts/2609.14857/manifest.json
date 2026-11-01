@@ -1,0 +1,80 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2609.14857",
+  "created_at": "2026-10-24T14:06:31.559163+00:00",
+  "updated_at": "2026-10-24T14:06:31.559163+00:00",
+  "paper": {
+    "title": "ModularRSI: Modular and Generalizable Recursive Harness Self-Improvement",
+    "authors": [
+      "Siwei Wu",
+      "Jincheng Ren",
+      "Yizhi Li",
+      "Haau-Sing Li",
+      "Chengran Yang",
+      "Xudong Ma",
+      "Yuxuan Zhang",
+      "Weicheng Gu",
+      "Jian Yang",
+      "Riza Batista-Navarro",
+      "Chuanyi Zhang",
+      "Xianglong Liu",
+      "Ming Zhou",
+      "Bryan Dai",
+      "Chenghua Lin"
+    ],
+    "affiliations": [
+      "Beihang University",
+      "University of Manchester",
+      "IQuest Research",
+      "Hohai University"
+    ],
+    "abstract": "Recent work extends Recursive Self-Improvement (RSI) to agent harnesses for long-horizon coding and terminal tasks, enabling agents to improve their execution mechanisms from experience. However, achieving generalizable harness RSI faces two challenges: evolution on downstream benchmarks makes transferable improvements difficult to distinguish from benchmark-specific adaptation, while coarse task-level outcomes provide limited guidance on where that change should be implemented and what execution behavior should change in the harness. We propose ModularRSI, a modular framework for generalizable harness self-evolution that addresses both mechanism-level localization and behavioral-level attribution in credit assignment. ModularRSI decomposes the harness into five functional modules, including Agent Loop, Tool Use, Observation Management, Context Management, and Task Completion Detection, and evolves each module independently to enable localized mechanism improvement. Within each module, ModularRSI performs contrastive analysis between successful and failed trajectories from the same task and aggregates evidence across tasks to identify recurring execution deficiencies. Finally, the independently evolved modules are integrated to construct the final harness. We further curate 2,000 executable evolution tasks from external sources that are disjoint from downstream evaluation benchmarks. Experiments on TerminalBench (TB) 2.0 and SWE-Bench-Verified demonstrate consistent generalization across unseen tasks, evolution domains, and foundation models. Using DeepSeek-V4-Flash-Preview, in-domain evolution improves accuracy from 47.57\\% to 52.43\\% on TB 2.0 and from 73.40\\% to 76.40\\% on SWE-Bench-Verified. Beyond in-domain settings, the evolved harness also transfers effectively across evolution domains and foundation models, yielding approximately 2\\%--5\\% performance gains. Under a unified benchmark-disjoint protocol and matched evolution budgets, ModularRSI achieves 52.43\\% accuracy on TerminalBench 2.0, outperforming Meta-Harness at 49.44\\% and AHE at 49.81\\%. Ablation studies further confirm that both modular evolution and contrastive analysis contribute to these improvements. All code and datasets are available at https://github.com/IQuestLab/ModularRSI.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-24",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2609.14857",
+    "entry_file": "iclr2027_conference.tex",
+    "source_files": [
+      {
+        "path": "iclr2027_conference.tex",
+        "sha256": "14528dcccdde764a82a2ff195047eed07c5108b194fd483c9bf09dfded1d776b",
+        "bytes": 144567
+      },
+      {
+        "path": "math_commands.tex",
+        "sha256": "90473c4d0542070db244cea73ef962d6cddc5b2a746757e6a40ddf5fdfb90ba9",
+        "bytes": 12284
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 48,
+    "figures": 6,
+    "references": 27
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 22, column 1):\nunexpected Tok (line 22, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 22, column 1):\nunexpected Tok (line 22, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

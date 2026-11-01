@@ -1,0 +1,8 @@
+\begin{tcolorbox}[colback=white, colframe=black, title=Prompt template for \texttt{KG-R1}, boxrule=0.5pt, left=2mm, right=2mm, top=0mm, bottom=0.5mm]
+\footnotesize
+\label{tab:instruction_prompt}
+You are a helpful assistant. Answer the given question. You can query from knowledge base provided to you to answer the question. You can query knowledge up to [H] times. You must first conduct reasoning inside \textcolor{bluetext}{$<$think$>$...$<$/think$>$}. If you need to query knowledge, you can set a query statement between \textcolor{orangetext}{$<$kg-query$>$...$<$/kg-query$>$} to query from knowledge base after \textcolor{bluetext}{$<$think$>$...$<$/think$>$}. When you have the final answer, you can output the answer inside \textcolor{redtext}{$<$answer$>$...$<$/answer$>$}. \\
+KG Query Server Instruction : [{KG\_query\_server\_instruction}] \\
+Question: [question]. \\
+Assistant:
+\end{tcolorbox}

@@ -1,0 +1,48 @@
+\begin{table*}[htp]
+\centering
+\caption{Benchmark results for different optimizers evaluated on GPT-4.1 Mini. As a prompt-optimization system, GEPA works off-the-shelf on \textit{closed-source} models as well, outperforming state-of-the-art prompt optimizers including MIPROv2 \added{(in 2 settings: Instruction-only optimization (``MIPROv2-No-Demos'') as well as joint instruction and few-shot optimization (``MIPROv2'')), Trace (with its OptoPrime optimizer), and TextGrad}. \added{Additionally, GEPA-optimized prompts demonstrate strong cross-model generalization: ``GEPA-Qwen-Opt''—optimized entirely for (and using) the weaker Qwen3-8B—achieves a +9\% gain when evaluated on GPT-4.1-Mini without modification, notably outperforming all baselines (MIPROv2, TextGrad, Trace) that optimized directly for (and using) GPT-4.1-Mini.}}
+% Additionally, GEPA-optimized prompts generalize across models. ``GEPA-Qwen-Opt'' reports results of evaluating prompts optimized by GEPA for (and using) Qwen3-8B (config GEPA from table~\ref{tab:main-results}) but evaluated without modification on GPT-4.1-Mini.  Although the whole optimization process (including the reflection language model, and the rollout model for training and validation) used the less capable Qwen3 8B model, optimized prompts still show significant improvement (+9\%) over the baseline and even outperform other optimizers, all of which optimize for (and using) GPT-4.1-Mini
+\label{tab:main-results-gpt}
+\resizebox{0.96\textwidth}{!}{
+% \begin{tabular}{lcccccccc}
+% \toprule
+% \textbf{GPT-4.1 Mini} & \textbf{AIME-2025} & \textbf{LiveBench-Math} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% % \midrule
+% % \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% \midrule
+% Baseline         & 49.33 & 58.20 & 38.00 & 47.79 & 46.33 & 78.57 & 53.03 & --- \\
+% \added{Trace (OptoPrime)}  & \added{45.33} & \added{60.74} & \added{60.33} & \added{51.19} & \added{46.00} & \added{74.18} & \added{56.30} & \added{+3.27} \\
+% \added{MIPROv2-No-Demos} & \added{48.67} & \added{60.97} & \added{38.00} & \added{52.04} & \added{51.33} & \added{91.85} & \added{57.14} & \added{+4.11} \\
+% MIPROv2          & 51.33 & 61.84 & 58.00 & 49.15 & 48.33 & 83.37 & 58.67 & +5.64 \\
+% \added{TextGrad}  & \added{46.67} & \added{63.84} & \added{62.33} & \added{48.64} & \added{47.67} & \added{85.68} & \added{59.14} & \added{+6.11} \\ 
+% GEPA             & \textbf{59.33} & \textbf{64.13} & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 65.22 & +12.19 \\
+% GEPA+Merge       & \textbf{59.33}* & \textbf{64.13}* & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{66.36} & +\textbf{13.33} \\
+% \midrule
+% \multicolumn{9}{l}{\added{Optimized with Qwen3-8B, evaluated on GPT-4.1-Mini}} \\
+% \midrule
+% \added{GEPA-Qwen-Opt}  & \added{52.67} & \added{59.31} & \added{65.67} & \added{49.83} & \added{54.67} & \added{90.05} & \added{62.03} & \added{+9.00} \\
+% \bottomrule
+% \end{tabular}
+% }
+\begin{tabular}{lcccccccc}
+\toprule
+\textbf{GPT-4.1 Mini} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{AIME-2025} & \textbf{LiveBench-Math} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+\midrule
+Baseline & 38.00 & 47.79 & 46.33 & 78.57 & 49.33 & 58.20 & 53.03 & --- \\
+\added{Trace (OptoPrime)} & \added{60.33} & \added{51.19} & \added{46.00} & \added{74.18} & \added{45.33} & \added{60.74} & \added{56.30} & \added{+3.27} \\
+\added{MIPROv2-No-Demos} & \added{38.00} & \added{52.04} & \added{51.33} & \added{91.85} & \added{48.67} & \added{60.97} & \added{57.14} & \added{+4.11} \\
+MIPROv2 & 58.00 & 49.15 & 48.33 & 83.37 & 51.33 & 61.84 & 58.67 & +5.64 \\
+\added{TextGrad} & \added{62.33} & \added{48.64} & \added{47.67} & \added{85.68} & \added{46.67} & \added{63.84} & \added{59.14} & \added{+6.11} \\ 
+GEPA & \textbf{69.00} & 52.72 & 51.67 & 94.47 & \textbf{59.33} & \textbf{64.13} & 65.22 & +12.19 \\
+\textbf{GEPA+Merge} & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{59.33} & \textbf{64.13} & \textbf{66.36} & +\textbf{13.33} \\
+\midrule
+\multicolumn{9}{l}{\added{Optimized with Qwen3-8B, evaluated on GPT-4.1-Mini}} \\
+\midrule
+\added{GEPA-Qwen-Opt} & \added{65.67} & \added{49.83} & \added{54.67} & \added{90.05} & \added{52.67} & \added{59.31} & \added{62.03} & \added{+9.00} \\
+\bottomrule
+\end{tabular}
+}
+\vspace{-4mm}
+\end{table*}

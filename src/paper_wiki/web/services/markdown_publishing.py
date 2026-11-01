@@ -58,7 +58,11 @@ class MarkdownPublishingService:
             target.write_bytes(cover_content)
             cover_path = str(target)
 
-        rendered = render_markdown_for_wechat(markdown_text, fallback_title=Path(clean_name).stem)
+        rendered = render_markdown_for_wechat(
+            markdown_text,
+            fallback_title=Path(clean_name).stem,
+            asset_dir=document_dir,
+        )
         html_path = document_dir / "article.html"
         html_path.write_text(rendered.html, encoding="utf-8")
         metadata = {

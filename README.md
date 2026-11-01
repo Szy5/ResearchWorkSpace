@@ -16,8 +16,8 @@ Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `Knowledge
 | Layer 1 | deterministic assets +`summary.md` / `prior_works.json` / `sci_pattern.json` | ✅           |
 | 发现层  | Paper2Search / Paper2Recommend：arXiv 检索、按 ID 拉取、Zotero 口味推荐            | ✅ CLI + Web |
 | Layer 2 | Neo4j 科学发现图谱增量入库（Paper / Author / Pattern 三种节点）                    | ✅           |
-| 发布    | Paper HTML 或页面上传的 Markdown 转公众号 HTML，并创建微信公众号草稿               | ✅           |
-| Web v1  | FastAPI + React 工作站：推荐/检索/审查/管理/Markdown 发布/持久任务                   | ✅           |
+| 发布    | 精读笔记一键生成公众号标题/摘要/封面/排版并创建草稿；也支持上传 Markdown 或已有 HTML | ✅           |
+| Web v1  | FastAPI + React 工作站：推荐/检索/审查/管理/Markdown 发布/持久任务                 | ✅           |
 | Layer 3 | 向量检索、图谱查询、HTTP API                                                       | 🚧 规划中    |
 
 **设计灵感：** [LLM Wiki](docs/llm_wiki.md) · [Sci-Reasoning](https://github.com/AmberLJC/Sci-Reasoning)
@@ -96,10 +96,15 @@ MODEL_NAME=your-model-name
 BASE_URL=https://your-api-base-url/v1
 API_KEY=your-api-key
 
+# 可选：精读笔记（summary）输入的最大字符数，默认 60000；只影响 summary，不影响 prior works / pattern
+# SUMMARY_MAX_CONTEXT_CHARS=60000
+
 # 可选：微信公众号草稿发布
 WECHAT_APPID=your-wechat-official-account-appid
 WECHAT_SECRET=your-wechat-official-account-secret
 WECHAT_AUTHOR=Paper-Wiki
+# 可选：出口 IP 不固定时，让微信 API 请求走固定 IP 的代理（该 IP 需加入公众号 IP 白名单）
+# WECHAT_PROXY=http://user:pass@your-fixed-ip-host:3128
 # WECHAT_COVER_PATH=artifacts/GraphWalker/cover.jpg
 # WECHAT_THUMB_MEDIA_ID=already-uploaded-cover-media-id
 
@@ -222,7 +227,7 @@ paper-wiki assets GraphWalker 2508.00719 --overwrite
 | `--overwrite`, `-f`  | flag      | 否   | `False`                          | 允许覆盖所选 Layer 1 语义产物                                                                                 |
 | `--verbose`, `-v`    | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                                                                                     |
 | `--only`               | list[str] | 否   | 不传=全部三个                      | 只生成指定产物，可重复传入：`summary`/`prior_works`/`sci_pattern`（也接受 `prior-works`/`pattern`） |
-| `--summary-prompt`     | str       | 否   | `paper_summary_v3.py`            | 摘要 prompt 文件；可传`prompts/` 下相对路径或绝对路径                                                       |
+| `--summary-prompt`     | str       | 否   | `paper_summary_v5.py`            | 摘要 prompt 文件；可传`prompts/` 下相对路径或绝对路径                                                       |
 | `--prior-works-prompt` | str       | 否   | `prior_work_prompt.py`           | 前作谱系 prompt 文件                                                                                          |
 | `--sci-pattern-prompt` | str       | 否   | `sci_pattern_classify_prompt.py` | 科学范式 prompt 文件                                                                                          |
 
@@ -247,7 +252,7 @@ paper-wiki ingest GraphWalker --overwrite \
 | `--overwrite`, `-f`  | flag      | 否   | `False`                          | 重跑`raw/` 下所有论文；默认只处理缺产物的论文 |
 | `--verbose`, `-v`    | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                       |
 | `--only`               | list[str] | 否   | 不传=全部三个                      | 同`ingest` 的 `--only`                      |
-| `--summary-prompt`     | str       | 否   | `paper_summary_v3.py`            | 同`ingest`                                    |
+| `--summary-prompt`     | str       | 否   | `paper_summary_v5.py`            | 同`ingest`                                    |
 | `--prior-works-prompt` | str       | 否   | `prior_work_prompt.py`           | 同`ingest`                                    |
 | `--sci-pattern-prompt` | str       | 否   | `sci_pattern_classify_prompt.py` | 同`ingest`                                    |
 
@@ -369,6 +374,8 @@ npm run dev
 浏览器打开 Vite 输出的本地地址，默认把 `/api` 代理到 `http://127.0.0.1:8000`。首页展示今日推荐和检索入口；"全部论文/待审查"用于单篇审查，"管理"提供论文表格筛选、批量审查和任务历史，"公众号发布"支持上传 UTF-8 Markdown、可选正文图片/封面、预览摸鱼绿主题 HTML，并提交微信公众号草稿。
 
 推荐刷新、批量 ingest 和 Markdown 发布都由后台 job 执行。任务状态按 job 独立落盘到 `artifacts/.jobs/{job_id}.json`，前端暂存区同时保存在浏览器 `localStorage`；切换页面或刷新浏览器后会从 `GET /api/jobs` 找回并继续展示进度。页面离开不会取消服务端任务；如果服务进程本身在任务完成前退出，重启后该任务会被标记失败并提示重新提交。
+
+**精读笔记一键发布**：在「公众号发布 → 论文精读笔记」选择论文（或在论文详情页点「发布到公众号」），点「一键发布」即可依次完成：LLM 生成公众号标题和摘要 → 配图转 JPG → 公式转图片 → 生成封面 → 上传微信并创建草稿。也可以点「先生成预览」，在页面里修改标题/摘要/作者、上传自定义封面、在手机框里预览，确认后再发布。每个后台任务都会显示步骤条，正在等待 LLM 或微信 API 时会明确标出。产物保存在 `artifacts/{slug}/wechat/`（`article.html`、`images/`、`formulas/`、`cover.jpg`、`package.json`），不会改动 `summary.md`。标题/摘要 prompt 默认 `prompts/wechat_headline_v1.py`，可用 `.env` 的 `WECHAT_HEADLINE_PROMPT_PATH` 覆盖。准备发布时会把精读笔记改写成约 3000 字、无公式的公众号正文（可用 `WECHAT_ARTICLE_PROMPT_PATH` / `WECHAT_ARTICLE_TARGET_CHARS` 调整）；封面优先整张使用方法/框架图（没有方法图时才回退到标题卡片）；文章开头会自动放方法/框架图（方法章节里仍保留同一张图），其下的论文信息卡把标题、作者、单位（逐行列出）和来源分块展示（单位从 raw LaTeX 的 `\affiliations`/`\affiliation`/`\affil`/`\institute`/`\icmlaffiliation` 或 `\author` 块中尽力提取）；正文章节标题自动编号（会去掉笔记里手写的 `1.` 之类编号），列表使用原生缩进列表，支持嵌套；summary 末尾的「科学发现范式」「先前工作分析」也会一起发布。注意：调用微信 API 的服务器出口 IP 必须加入公众号后台的 IP 白名单，否则会报 40164，报错里会给出当前出口 IP；如果出口 IP 经常变化（例如校园网 NAT），在 `.env` 设置 `WECHAT_PROXY` 让微信请求走固定 IP 的代理。
 
 Markdown 发布中间产物保存在 `artifacts/.publishing/{document_id}/`，包括 `source.md`、`article.html`、可选图片与 `meta.json`。生成的 HTML 仅使用公众号兼容的正文片段和内联样式；上传微信前仍会复用现有本地图片上传替换、封面素材和草稿创建逻辑。
 
@@ -522,9 +529,6 @@ conda 使用 `conda-forge` 渠道；pip 可加 `-i https://pypi.org/simple` 使�
 - [X] Paper 管理页：组合筛选、批量审查、后台任务历史
 - [X] 推荐/批量生成任务离页继续执行、任务落盘与页面恢复
 - [X] Layer 2 Neo4j 科学发现图谱增量入库：Paper / Author / Pattern 三种节点，`graph plan --all` 批量入库
-
-
-
 - [ ] Layer 3 向量检索与 API
 
 ---

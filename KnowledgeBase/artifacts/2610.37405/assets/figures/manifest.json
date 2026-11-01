@@ -1,0 +1,136 @@
+{
+  "figures": [
+    {
+      "id": "fig-intro",
+      "label": "fig:intro",
+      "caption": "Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.",
+      "source_path": "figures/overview.pdf",
+      "asset_path": "assets/figures/intro.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "36e8dbbad0f144b86cd85581c361b106bd32a4e9d406d7f8a042997422662be8",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-related-work",
+      "label": "fig:related_work",
+      "caption": "Comparison of KG-augmented reasoning paradigms. All three methods return the correct answer, but retrieval-based methods miss key evidence and agent-based methods answer after the first hop, whereas FoG retrieves every supporting triple of the answer.",
+      "source_path": "figures/related_work.pdf",
+      "asset_path": "assets/figures/related-work.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "2144317c5ea736e7c355f2544d5615a4b62d6d90b7bda26d7939f4a128b7c814",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-methods",
+      "label": "fig:methods",
+      "caption": "The FoG pipeline. Evidence-grounded synthesis produces complex questions with gold supporting triples, the KG interaction agent records the triples that it retrieves, and ECPR rewards the retrieval of the gold supporting triples.",
+      "source_path": "figures/methods.pdf",
+      "asset_path": "assets/figures/methods.jpg",
+      "section_id": "sec-method",
+      "status": "rendered",
+      "source_sha256": "3c0c9bb139fec24aee66fc8fcff65c6d4e4938acbd51100e381e54fb57a207d7",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-model-scale",
+      "label": "fig:model_scale",
+      "caption": "Effect of model scale. F1 and Hit@1 of backbones of different sizes after SFT on the same data.",
+      "source_path": "figures/model_scale_sft_wikiwebquestions.pdf",
+      "asset_path": "assets/figures/model-scale.jpg",
+      "section_id": "sec-ablation-study-rq2",
+      "status": "rendered",
+      "source_sha256": "5e9a2d22bd691f4762bd5ecd0d90b78c61f24e4b1ff3e9a24d9f74cc43c64c94",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-model-scale-2",
+      "label": "fig:model_scale",
+      "caption": "Effect of model scale. F1 and Hit@1 of backbones of different sizes after SFT on the same data.",
+      "source_path": "figures/model_scale_sft_qald10en.pdf",
+      "asset_path": "assets/figures/model-scale-2.jpg",
+      "section_id": "sec-ablation-study-rq2",
+      "status": "rendered",
+      "source_sha256": "1f32d74dfab895b09e6ea4f1c43a4d3b3fc0b9c5e3e502abe39550b1424f19fc",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-model-scale-3",
+      "label": "fig:model_scale",
+      "caption": "Effect of model scale. F1 and Hit@1 of backbones of different sizes after SFT on the same data.",
+      "source_path": "figures/model_scale_sft_gtsqa.pdf",
+      "asset_path": "assets/figures/model-scale-3.jpg",
+      "section_id": "sec-ablation-study-rq2",
+      "status": "rendered",
+      "source_sha256": "0b61f85dcc0b17c5cec5a6a7f72bc31f535f71cd59f86a0eee91c9450c6f57a1",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-complexity",
+      "label": "fig:complexity",
+      "caption": "Performance under structural complexity on GTSQA by reasoning hop and isomorphism type.",
+      "source_path": "figures/complex_reasoning.pdf",
+      "asset_path": "assets/figures/complexity.jpg",
+      "section_id": "sec-analysis-of-kg-interaction-agent-rq4",
+      "status": "rendered",
+      "source_sha256": "b4dd04f5c34a84e260fb931ab051b8d068ba0a88256d4a7572d542b6292c8d38",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-training-dynamics",
+      "label": "fig:training_dynamics",
+      "caption": "Training dynamics of FoG. Rewards rise while interaction turns and response length decline.",
+      "source_path": "figures/training_dynamics_reward.pdf",
+      "asset_path": "assets/figures/training-dynamics.jpg",
+      "section_id": "sec-analysis-of-kg-interaction-agent-rq4",
+      "status": "rendered",
+      "source_sha256": "6987753c59ed22542ba97b963ce4577901d21e2e13c1a376631c0dee3a8a9212",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-training-dynamics-2",
+      "label": "fig:training_dynamics",
+      "caption": "Training dynamics of FoG. Rewards rise while interaction turns and response length decline.",
+      "source_path": "figures/training_dynamics_coverage.pdf",
+      "asset_path": "assets/figures/training-dynamics-2.jpg",
+      "section_id": "sec-analysis-of-kg-interaction-agent-rq4",
+      "status": "rendered",
+      "source_sha256": "cc4a066c2b76c2b77a0d984b61652a155ca5b3b0a3ccfd69f5e497037ab230b6",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-training-dynamics-3",
+      "label": "fig:training_dynamics",
+      "caption": "Training dynamics of FoG. Rewards rise while interaction turns and response length decline.",
+      "source_path": "figures/training_dynamics_turns.pdf",
+      "asset_path": "assets/figures/training-dynamics-3.jpg",
+      "section_id": "sec-analysis-of-kg-interaction-agent-rq4",
+      "status": "rendered",
+      "source_sha256": "0650c06357804f16d1a21a4cb4ffbfa3531cbed31afed100cd37e3ee02ecac0c",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-training-dynamics-4",
+      "label": "fig:training_dynamics",
+      "caption": "Training dynamics of FoG. Rewards rise while interaction turns and response length decline.",
+      "source_path": "figures/training_dynamics_length.pdf",
+      "asset_path": "assets/figures/training-dynamics-4.jpg",
+      "section_id": "sec-analysis-of-kg-interaction-agent-rq4",
+      "status": "rendered",
+      "source_sha256": "357ddf873dd927978338808df5c252b7226d3ad839038255a002f98ad51d16d7",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-data-dist",
+      "label": "fig:data_dist",
+      "caption": "Topic-domain distribution of the synthetic questions. The questions are drawn from major Wikidata domains.",
+      "source_path": "figures/data_dist.pdf",
+      "asset_path": "assets/figures/data-dist.jpg",
+      "section_id": "sec-topic-domains",
+      "status": "rendered",
+      "source_sha256": "bd07fdccb03e47a568f97edd186f64f068bce378df0cd88490e9ba9efddc3a6b",
+      "media_type": "pdf"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+\noindent \textbf{Learning Rates and Optimizer.}
+Both \texttt{Qwen-2.5-3B-it} and \texttt{Qwen-2.5-7B-it} use an identical learning rate of $1\times10^{-6}$ with no warmup. We use the AdamW optimizer with weight decay $0.01$ applied to all parameters except biases and layer-normalization weights, and gradient clipping by global norm set to $1.0$ to prevent gradient explosion during RL training.
+
+\noindent \textbf{Batch Configuration and Gradient Accumulation.}
+The 3B model uses a training batch size of $128$ with a validation batch size of $256$, whereas the 7B model uses a training batch size of $256$ with a validation batch size of $128$. During GRPO rollout, we collect $N=16$ trajectories per prompt for the 3B model and $N=8$ for the 7B model to balance exploration with memory constraints. The mini-batch size is $128$ for both models, with dynamic batch sizing enabled to utilize GPU memory efficiently.
+
+\noindent \textbf{RL Coefficients.}
+RL training uses GRPO (Group Relative Policy Optimization) with multi-turn advantage computation enabled. The KL loss coefficient differs by model: $\beta=0.01$ for 3B and $\beta=0.02$ for 7B, using the K3 KL loss to limit divergence from the reference policy. The entropy coefficient is set to $0$ for both models, favoring exploitation over exploration for multi-turn KG reasoning.
+
+\noindent \textbf{Sampling Configuration.}
+During training, we use sampling temperature $1.0$ with nucleus sampling disabled (\texttt{top\_p}$=1.0$, \texttt{top\_k}$=-1$) to maintain consistent generation. For evaluation, we switch to deterministic decoding with temperature $0.0$ and sampling disabled (\texttt{do\_sample}$=\texttt{false}$) to obtain reproducible measurements.
+
+\noindent \textbf{Hardware Specifications and Training Duration.}
+Training is conducted on $4$ NVIDIA H100 GPUs for both model sizes. For the 3B model, we allow up to $21{,}000$ tokens/GPU for PPO processing and $18{,}384$ max batched tokens for VLLM rollout. For the 7B model, we allocate $12{,}000$ tokens/GPU for PPO and $12{,}288$ max batched tokens for VLLM, using \texttt{FSDP} parameter and optimizer offloading to fit memory constraints. Both configurations use \texttt{bfloat16} precision with chunked prefill enabled. Training runs for $400$ steps with checkpoints saved every $50$ steps (3B) or every $25$ steps (7B).

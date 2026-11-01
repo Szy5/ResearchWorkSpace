@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Check, Edit3, Eye, FileJson, Loader2, Radio, Save, Send, Sparkles, Wand2 } from 'lucide-react'
+import { Check, Edit3, Eye, FileJson, Loader2, Radio, Save, Send, Sparkles } from 'lucide-react'
 import {
   getPaper,
   markPriorWorksReviewed,
   PaperDetail as PaperDetailType,
   pollJob,
   PriorWorksPayload,
-  publishWeChat,
-  renderBlogHtml,
   startIngest,
   updateMeta,
   updatePriorWorks,
@@ -21,6 +19,7 @@ import { normalizeQuotes } from '../utils/textFormat'
 type Props = {
   slug: string | null
   onChanged: () => void
+  onOpenPublish?: (slug: string) => void
 }
 
 type MetaDraft = {
@@ -41,15 +40,12 @@ function draftFromDetail(detail: PaperDetailType): MetaDraft {
   }
 }
 
-export default function PaperDetail({ slug, onChanged }: Props) {
+export default function PaperDetail({ slug, onChanged, onOpenPublish }: Props) {
   const [detail, setDetail] = useState<PaperDetailType | null>(null)
   const [summaryDraft, setSummaryDraft] = useState('')
   const [metaDraft, setMetaDraft] = useState<MetaDraft | null>(null)
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [publishHtml, setPublishHtml] = useState('blog.html')
-  const [publishing, setPublishing] = useState(false)
-  const [htmlProgress, setHtmlProgress] = useState<string | null>(null)
   const [summaryMode, setSummaryMode] = useState<'preview' | 'edit'>('preview')
   const [priorWorksMode, setPriorWorksMode] = useState<'preview' | 'edit'>('preview')
   const [metaMode, setMetaMode] = useState<'preview' | 'edit'>('preview')
@@ -70,7 +66,6 @@ export default function PaperDetail({ slug, onChanged }: Props) {
         setDetail(paper)
         setSummaryDraft(paper.summary)
         setMetaDraft(draftFromDetail(paper))
-        setPublishHtml(paper.meta.blog_html_path || 'blog.html')
         setSummaryMode('preview')
         setPriorWorksMode('preview')
         setMetaMode('preview')
@@ -159,51 +154,6 @@ export default function PaperDetail({ slug, onChanged }: Props) {
     } else {
       setError(settled.error ?? 'Ingest failed')
     }
-  }
-
-  async function publish() {
-    if (!detail) return
-    setPublishing(true)
-    try {
-      await publishWeChat(detail.slug, {
-        html_path: publishHtml,
-        title: detail.meta.title || detail.slug
-      })
-      setStatus('已发布到微信公众号草稿箱')
-    } finally {
-      setPublishing(false)
-    }
-  }
-
-  async function generateBlogHtml() {
-    if (!detail) return
-    setHtmlProgress('正在排版博客 HTML...')
-    try {
-      const job = await renderBlogHtml(detail.slug)
-      const settled = await pollJob(job.job_id, (next) => setHtmlProgress(next.progress || `Job ${next.status}`))
-      if (settled.status === 'succeeded') {
-        const htmlPath = typeof settled.result?.html_path === 'string' ? settled.result.html_path : ''
-        if (htmlPath) setPublishHtml(htmlPath)
-        const paper = await getPaper(detail.slug)
-        setDetail(paper)
-        setStatus('博客 HTML 生成完成')
-      } else {
-        setError(settled.error ?? 'HTML 生成失败')
-      }
-    } finally {
-      setHtmlProgress(null)
-    }
-  }
-
-  function confirmAndGenerateBlogHtml() {
-    if (!detail) return
-    if (detail.meta.blog_html_path) {
-      const confirmed = window.confirm(
-        `已经生成过 HTML（${detail.meta.blog_html_path}），重新生成大约需要 2-3 分钟，确定要重新生成吗？`
-      )
-      if (!confirmed) return
-    }
-    void runAction(generateBlogHtml)
   }
 
   return (
@@ -332,38 +282,18 @@ export default function PaperDetail({ slug, onChanged }: Props) {
             <section className="side-panel">
               <h2 className="panel-title">Publish</h2>
               <button
-                className="action-button mt-3 w-full justify-center"
-                disabled={Boolean(htmlProgress)}
-                onClick={confirmAndGenerateBlogHtml}
+                className="button-primary mt-3 h-10 w-full justify-center"
+                disabled={!detail.summary.trim() || !onOpenPublish}
+                onClick={() => onOpenPublish?.(detail.slug)}
               >
-                {htmlProgress ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
-                {htmlProgress || '生成 HTML'}
+                <Send size={16} />
+                发布到公众号
               </button>
-              {detail.meta.blog_html_generated_at ? (
-                <p className="mt-1 text-xs text-body">
-                  上次生成：{new Date(detail.meta.blog_html_generated_at).toLocaleString()}
-                </p>
-              ) : null}
-              <div className="mt-3 flex gap-2">
-                <input
-                  className="field-input min-w-0 flex-1"
-                  value={publishHtml}
-                  onChange={(event) => setPublishHtml(event.target.value)}
-                />
-                <button
-                  className="icon-button"
-                  title={detail.meta.blog_html_generated_at ? 'Publish WeChat draft' : '请先生成 HTML'}
-                  disabled={!detail.meta.blog_html_generated_at || publishing}
-                  onClick={() => void runAction(publish)}
-                >
-                  {publishing ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                </button>
-              </div>
-              {publishing ? (
-                <p className="mt-1 text-xs text-body">正在发布到微信公众号草稿箱...</p>
-              ) : !detail.meta.blog_html_generated_at ? (
-                <p className="mt-1 text-xs text-muted">请先点击"生成 HTML"，再发布</p>
-              ) : null}
+              <p className="mt-2 text-xs leading-5 text-body">
+                {detail.summary.trim()
+                  ? '在发布工作台中自动生成标题、摘要、封面和排版，预览确认后写入草稿箱。'
+                  : '请先生成精读笔记。'}
+              </p>
             </section>
             <section className="side-panel">
               <h2 className="panel-title">Pattern</h2>

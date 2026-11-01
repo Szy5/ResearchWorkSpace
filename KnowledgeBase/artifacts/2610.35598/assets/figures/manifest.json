@@ -1,0 +1,169 @@
+{
+  "figures": [
+    {
+      "id": "fig-overview",
+      "label": "fig:overview",
+      "caption": "With only a KG and no question annotations, EoG lets an LLM self-evolve by proposing questions verified on the graph and then learning to solve them.",
+      "source_path": "figures/overview.pdf",
+      "asset_path": "assets/figures/overview.jpg",
+      "section_id": "sec-abstract",
+      "status": "rendered",
+      "source_sha256": "b8f02b6d6bfb59507baf2102c8e2c41f8da32075853b7a16a09ee6d493fd53d4",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-paradigm",
+      "label": "fig:paradigm",
+      "caption": "Comparison of KG reasoning paradigms. Prompt-based agents explore with a frozen LLM and RL-based agents learn from fixed QA written by humans or closed-source models, whereas EoG proposes and solves KG-verified tasks of adaptive difficulty. With Qwen-2.5-7B-Instruct, EoG outperforms all shown baselines on three Freebase benchmarks.",
+      "source_path": "figures/related_work.pdf",
+      "asset_path": "assets/figures/paradigm.jpg",
+      "section_id": "sec-abstract",
+      "status": "rendered",
+      "source_sha256": "5923e5d66fd9608ac8aca1ffb8a01243d58b8cb37af31ea9e3a0446cdbdbc7e7",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-framework",
+      "label": "fig:framework",
+      "caption": "Overview of EoG. One LLM self-plays as the Proposer and the Solver, synthesizes verifiable tasks with SVTS, and forms a boundary-aware curriculum by rewarding the Proposer for questions on the Solver's capability boundary.",
+      "source_path": "figures/main_methods.pdf",
+      "asset_path": "assets/figures/framework.jpg",
+      "section_id": "sec-methods",
+      "status": "rendered",
+      "source_sha256": "0951bd784488f903c13a3175357f53e8617f4672fa299ff13d41e6cdd0045c1f",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-role-ablation",
+      "label": "fig:role_ablation",
+      "caption": "Training dynamics of role ablations. Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.",
+      "source_path": "figures/RQ2_cwq_v2.pdf",
+      "asset_path": "assets/figures/role-ablation.jpg",
+      "section_id": "sec-experimental-setup",
+      "status": "rendered",
+      "source_sha256": "4ffc0ad9f1d55a439efd6beabb88fda3ed595d436dbba51fcdceb8b3d7e43eb5",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-role-ablation-2",
+      "label": "fig:role_ablation",
+      "caption": "Training dynamics of role ablations. Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.",
+      "source_path": "figures/RQ2_extraction_rate_v2.pdf",
+      "asset_path": "assets/figures/role-ablation-2.jpg",
+      "section_id": "sec-experimental-setup",
+      "status": "rendered",
+      "source_sha256": "508cda51eef66efd2a13282ec5c1ea3e2065e7843b696e91d4cd86525a3f11dc",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-role-ablation-3",
+      "label": "fig:role_ablation",
+      "caption": "Training dynamics of role ablations. Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.",
+      "source_path": "figures/RQ2_reward_proposer_v2.pdf",
+      "asset_path": "assets/figures/role-ablation-3.jpg",
+      "section_id": "sec-experimental-setup",
+      "status": "rendered",
+      "source_sha256": "c9c0e4fe6ff4b54085bee6128e95871e2a564d74244eb5809c0db3bf829c0d04",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-role-ablation-4",
+      "label": "fig:role_ablation",
+      "caption": "Training dynamics of role ablations. Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.",
+      "source_path": "figures/RQ2_reward_solver_v2.pdf",
+      "asset_path": "assets/figures/role-ablation-4.jpg",
+      "section_id": "sec-experimental-setup",
+      "status": "rendered",
+      "source_sha256": "b993bfd6360db385b7599a0a31d1dc322e6c7920681968f6f57af59d08bdf454",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-role-ablation-5",
+      "label": "fig:role_ablation",
+      "caption": "Training dynamics of role ablations. Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.",
+      "source_path": "figures/RQ4_unseen_schema_f1.pdf",
+      "asset_path": "assets/figures/role-ablation-5.jpg",
+      "section_id": "sec-experimental-setup",
+      "status": "rendered",
+      "source_sha256": "85f712b618ddc78608d8ba4e9e9e806ddc5562ffe240429614256cec345dab25",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-role-ablation-6",
+      "label": "fig:role_ablation",
+      "caption": "Training dynamics of role ablations. Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.",
+      "source_path": "figures/RQ1_carbench_domain_v2.pdf",
+      "asset_path": "assets/figures/role-ablation-6.jpg",
+      "section_id": "sec-experimental-setup",
+      "status": "rendered",
+      "source_sha256": "f51de8c0d96d9a4546963015cc42fb74f73d8b2ce1090b6fc1ed6b676b6e98f4",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-frontier",
+      "label": "fig:frontier",
+      "caption": "Evolution of task difficulty. Synthesis success rate of the Proposer over training steps (a) across three backbones, (b) on simple and complex topologies, and (c) per topology; complex topologies keep improving after simple ones plateau.",
+      "source_path": "figures/RQ_4_synthesis_success_v2.pdf",
+      "asset_path": "assets/figures/frontier.jpg",
+      "section_id": "sec-ablation-study-rq2",
+      "status": "rendered",
+      "source_sha256": "fd00d482292ede0adb584550bde9de54614679f7866ec6c4d71ea3235c712af2",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-frontier-2",
+      "label": "fig:frontier",
+      "caption": "Evolution of task difficulty. Synthesis success rate of the Proposer over training steps (a) across three backbones, (b) on simple and complex topologies, and (c) per topology; complex topologies keep improving after simple ones plateau.",
+      "source_path": "figures/RQ4_topology_easy_hard_v2.pdf",
+      "asset_path": "assets/figures/frontier-2.jpg",
+      "section_id": "sec-ablation-study-rq2",
+      "status": "rendered",
+      "source_sha256": "05879f3722bb324cf0da5015ea19f0ee082b3f096eff15aae5748bf2d4536ec5",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-frontier-3",
+      "label": "fig:frontier",
+      "caption": "Evolution of task difficulty. Synthesis success rate of the Proposer over training steps (a) across three backbones, (b) on simple and complex topologies, and (c) per topology; complex topologies keep improving after simple ones plateau.",
+      "source_path": "figures/RQ4_topology_success_heatmap_v2.pdf",
+      "asset_path": "assets/figures/frontier-3.jpg",
+      "section_id": "sec-ablation-study-rq2",
+      "status": "rendered",
+      "source_sha256": "5aed1c20cc021a8e71d4a28bb5738b4971eb68c67e57394bc128b059b7c93a13",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-contamination",
+      "label": "fig:contamination",
+      "caption": "Semantic contamination analysis. Max cosine similarity of synthesized questions to each test set.",
+      "source_path": "figures/A_2_similarity_cwq.pdf",
+      "asset_path": "assets/figures/contamination.jpg",
+      "section_id": "sec-experimental-details",
+      "status": "rendered",
+      "source_sha256": "64b1294af076ba7c5e3399981e2b69d3b56272ddfbc12b83639b12c0de14301f",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-contamination-2",
+      "label": "fig:contamination",
+      "caption": "Semantic contamination analysis. Max cosine similarity of synthesized questions to each test set.",
+      "source_path": "figures/A_2_similarity_grailqa.pdf",
+      "asset_path": "assets/figures/contamination-2.jpg",
+      "section_id": "sec-experimental-details",
+      "status": "rendered",
+      "source_sha256": "bfca6d4a407f836903155bcc189f2cd0f78a04293b8bf02a55cabd2952083de7",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-contamination-3",
+      "label": "fig:contamination",
+      "caption": "Semantic contamination analysis. Max cosine similarity of synthesized questions to each test set.",
+      "source_path": "figures/A_2_similarity_webqsp.pdf",
+      "asset_path": "assets/figures/contamination-3.jpg",
+      "section_id": "sec-experimental-details",
+      "status": "rendered",
+      "source_sha256": "c073271423c98f7402efdc816f39b72f82706b793d9d2c0954130e898674022f",
+      "media_type": "pdf"
+    }
+  ]
+}

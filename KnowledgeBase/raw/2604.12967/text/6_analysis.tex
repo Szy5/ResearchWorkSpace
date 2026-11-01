@@ -1,0 +1,24 @@
+\input{table/ablation}
+\input{fig/qualitative_analysis}
+
+% \vspace{-0.1in}
+\section{Analysis}
+
+% \vspace{-0.1in}
+\subsection{Ablation Study}
+% \vspace{-0.1in}
+We conduct an ablation study to evaluate the role of the proposed information bottlenecks. As shown in \Cref{tbl:ablation}, variants that expose the reconstructor to unfiltered lexical cues---either by including the final response or by using unmasked actions---perform worse than the CCS bottleneck design (Masked Actions + Observations), with average scores of 0.561 and 0.545, respectively. This suggests that both the final response and raw search queries introduce shortcut signals that weaken the intended training objective.
+Using observations alone yields an average score of 0.584, which remains below the 0.606 achieved by the CCS bottleneck design. This performance gap indicates that masked actions contribute more than simply removing lexical leakage: they preserve useful structural intent that helps the reconstructor interpret the observations within a specific investigative context. Overall, these results show that the proposed bottlenecks are effective not only because they suppress surface-level shortcuts, but also because they retain the structural signals needed for faithful reconstruction.
+
+% \vspace{-0.1in}
+\subsection{Qualitative Investigation}
+% \vspace{-0.1in}
+Qualitative analysis in \Cref{fig:qualitative_analysis} further illustrates how CCS assigns rewards based on the quality of the search trajectory. In the \emph{Information Void} case, the agent retrieves observations that are lexically related to the question (``Liu \texttt{Wenjin}'') but fail to match its key entity constraints (``composed \texttt{Wenji}''). As a result, the trajectory does not preserve the information needed to recover the original question, leading to low reconstruction fidelity and thus a low reward.
+In the \emph{Shallow Depth} case, the agent follows an incomplete search scaffold and fails to complete the full multi-hop chain required by the question. Although it identifies an intermediate entity (e.g., ``Hobart''), the trajectory does not gather the additional results needed to resolve the remaining constraints (e.g., the ``county'' in question). Consequently, the reconstructor cannot recover the full relational structure of the original question, and the trajectory receives a low reward. Together, these examples show that CCS rewards trajectories only when they preserve both the search structure and the supporting observations needed for faithful reconstruction.
+
+
+\input{fig/researchrubrics}
+\subsection{Open-ended Deep Research Task}
+Beyond traditional closed-ended question answering tasks, as reported in \Cref{sec:experiments}, we further evaluate CCS on the open-ended Deep Research setting using the ResearchRubrics benchmark \citep{researchrubrics}. This benchmark requires models to integrate multiple capabilities, including the generation of evidence-backed, long-form responses to open-ended queries, and we conduct experiments with Qwen2.5-7B-Instruct and Qwen3-4B-Instruct-2507. Response quality is assessed using the carefully designed fine-grained rubrics introduced by \citet{researchrubrics}, which measure aspects such as factual grounding and clarity, with Gemini 2.5 Pro \citep{comanici2025gemini} serving as the evaluator of model-generated outputs. Notably, ResearchRubrics covers ten diverse domains, including STEM and Historical Analysis. We report both per-domain scores and the overall average score in \Cref{fig:researchrubrics}.
+
+As shown in \Cref{fig:researchrubrics}, CCS achieves the best overall performance on both models, outperforming not only methods that do not rely on gold supervision, but also Search-R1, which is trained with gold supervision. Interestingly, Search-R1, which is optimized to generate ground-truth answers for closed-ended questions, exhibits relatively weaker performance on this open-ended task. More specifically, on Qwen2.5-7B-Instruct, CCS achieves relative improvements of 7.92\%, 14.48\%, 17.63\%, and 9.96\% over Search-O1, Search-R1, RLIF, and CJ, respectively. On Qwen3-4B-Instruct-2507, the corresponding relative improvements are 20.08\%, 19.53\%, 26.81\%, and 7.86\%.

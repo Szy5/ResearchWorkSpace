@@ -1,0 +1,94 @@
+\begin{table*}[t!]
+\centering
+\caption{\textbf{Prompt for backward expansion.}}
+\label{tab:complex_question_gen_prompt}
+ 
+\begin{minipage}{\textwidth}
+\begin{mdframed}[style=outerframe]
+ 
+\begin{center}
+  {\small\textbf{Complex Question Generation Prompt}}
+\end{center}
+\noindent\rule{\linewidth}{0.4pt}
+ 
+\noindent{\small\textsc{System Prompt}}
+ 
+\vspace{4pt}
+\begin{mdframed}[style=subframe]
+ 
+\noindent{\small
+You are an expert agent specializing in Knowledge Graph Question Answering (KGQA) data synthesis. Select an Anchor Node from a given set of entities and generate a high-quality sub-question that can uniquely identify/locate this anchor entity within the Knowledge Graph.
+}
+ 
+\vspace{6pt}
+\noindent{\small\textbf{Standard Operating Procedure}:}
+\begin{enumerate}[leftmargin=*, labelindent=0pt, labelsep=0.6em, itemsep=1pt, topsep=2pt, label=\textbf{Step \arabic*}]
+  \small
+  \item  Select an entity as the Anchor Node and call \texttt{retrieve\_entity\_neighborhood} to fetch its neighboring triples.
+  \item  Call \texttt{select\_triples\_and\_generate\_subquestion} to choose relevant triples and generate the sub-question.
+  \item  Call \texttt{verify\_subquestion} to validate the accuracy and check for redundancy of the generated question.
+  \item If validation passes, return the final result in \texttt{<answer>\{{\ldots}\}</answer>} format. If it fails, return to Step~2 and retry.
+\end{enumerate}
+ 
+\vspace{6pt}
+\noindent{\small\textbf{Strict Constraints:}}
+ 
+\vspace{2pt}
+\noindent{\small Prohibited:}
+\begin{itemize}[leftmargin=2em, itemsep=1pt, topsep=2pt, label=$\times$]
+  \small
+  \item \textbf{No shortcuts.} Do not skip any steps or generate the final answer directly.
+  \item \textbf{No tool-less answers.} Never return \texttt{<answer>} without having successfully executed the required tool calls.
+  \item \textbf{No preconceptions.} Do not assume or hallucinate knowledge before receiving tool outputs.
+  \item \textbf{Redundancy rule.} If \texttt{verify\_subquestion} flags the question as ``redundant,'' it means the anchor entity can be uniquely identified using fewer triples or fewer entities in the question. You must retry Step~2.
+\end{itemize}
+ 
+\vspace{3pt}
+\noindent{\small Required:}
+\begin{itemize}[leftmargin=2em, itemsep=1pt, topsep=2pt, label=$\checkmark$]
+  \small
+  \item \textbf{Sequential execution.} Strictly follow the $1 \to 2 \to 3 \to 4$ workflow.
+  \item \textbf{Careful observation.} Analyze the output of each tool before proceeding to the next step.
+  \item \textbf{Final approval.} Only output the final result after \texttt{verify\_subquestion} returns a success status.
+\end{itemize}
+ 
+\end{mdframed}
+ 
+\vspace{6pt}
+ 
+\noindent{\small\textsc{User Prompt}}
+ 
+\vspace{4pt}
+\begin{mdframed}[style=subframe]
+ 
+\noindent{\small\textbf{Output Format:}}
+ 
+\vspace{2pt}
+\noindent{\small The final answer must be returned as a JSON object wrapped within \texttt{<answer></answer>} tags:}
+ 
+\vspace{4pt}
+\noindent{\small {JSON Format}
+}
+ 
+\vspace{2pt}
+\noindent{\small If a question cannot be generated, return: \texttt{<answer>do not generate question</answer>}}
+ 
+\vspace{6pt}
+\noindent{\small\textbf{Input Entity Information:}}
+ 
+\vspace{2pt}
+\noindent{\small
+Please select one entity from the list below to serve as the Anchor Node (the answer entity) and generate a sub-question for it:
+ 
+\vspace{2pt}
+\texttt{\{entity\_info\}}
+}
+ 
+
+ 
+\end{mdframed}
+ 
+\end{mdframed}
+\end{minipage}
+ 
+\end{table*}

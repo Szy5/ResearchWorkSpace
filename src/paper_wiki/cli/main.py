@@ -263,9 +263,9 @@ def ingest(
         help="只生成指定语义产物，可重复传入：summary、prior_works、sci_pattern；也接受 prior-works、pattern。",
     ),
     summary_prompt: str | None = typer.Option(
-        "paper_summary_v3.py",
+        "paper_summary_v5.py",
         "--summary-prompt",
-        help="摘要 prompt 文件，默认 paper_summary.py；可传相对 prompts/ 的路径或绝对路径。",
+        help="摘要 prompt 文件，默认 paper_summary_v5.py；可传相对 prompts/ 的路径或绝对路径。",
     ),
     prior_works_prompt: str | None = typer.Option(
         "prior_work_prompt.py",
@@ -308,9 +308,9 @@ def ingest_all(
         help="只生成指定语义产物，可重复传入：summary、prior_works、sci_pattern；也接受 prior-works、pattern。",
     ),
     summary_prompt: str | None = typer.Option(
-        "paper_summary_v3.py",
+        "paper_summary_v5.py",
         "--summary-prompt",
-        help="摘要 prompt 文件，默认 paper_summary.py；可传相对 prompts/ 的路径或绝对路径。",
+        help="摘要 prompt 文件，默认 paper_summary_v5.py；可传相对 prompts/ 的路径或绝对路径。",
     ),
     prior_works_prompt: str | None = typer.Option(
         "prior_work_prompt.py",

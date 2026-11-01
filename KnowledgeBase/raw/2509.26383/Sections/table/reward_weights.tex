@@ -1,0 +1,21 @@
+\begin{table}[H]
+\centering
+\caption{Reward-component weights (\emph{$w$}) for \texttt{KG\mbox{-}R1} reward function.}
+\label{tab:kgr1_eweights}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}l l c X c@{}}
+\toprule
+\textbf{Symbol} & \textbf{Name} & \textbf{Scope} & \textbf{Role (concise)} & \textbf{Default} \\
+\midrule
+$w_{\mathrm{fmt}}$ & Format weight & Turn & Rewards valid per-turn output structure in $r_t^{\text{turn}}$ & $0.5$ \\
+$w_{\mathrm{kg}}$  & KG-query weight & Turn & Rewards schema-valid, non-empty KG retrieval in $r_t^{\text{turn}}$ & $0.5$ \\
+$w_{\mathrm{ans}}$ & Answer-format weight & Turn & Rewards correct final-answer formatting/consistency in $r_t^{\text{turn}}$ & $0.5$ \\
+$w_{\mathrm{F1}}$  & Final-answer weight & Episode & Weights $\mathrm{F1}(\hat A_q, A_q)$ in $R^{\text{global}}$ & $1.0$ \\
+$w_{\mathrm{ret}}$ & Retrieval-coverage weight & Episode & Rewards coverage signal $v_{\mathrm{ret}}\!\in\!\{0,1\}$ in $R^{\text{global}}$ & $1.0$ \\
+\bottomrule
+\end{tabularx}
+\label{tab:reward_weights}
+\vspace{2pt}
+\raggedright\footnotesize
+Notes: Only reward-component weights are shown; optimization and rollout hyperparameters are omitted.
+\end{table}

@@ -1,0 +1,10 @@
+\begin{tcolorbox}[colback=white, colframe=black, title=Server instruction template for KG-R1, boxrule=0.5pt, left=2mm, right=2mm, top=0mm, bottom=0.5mm]
+\footnotesize
+\label{tab:kg_server_instruction}
+If you encounter a KG-related error, read the error message carefully and correct your query.\\[0.75ex]
+Use exactly these query functions: \\
+-$\gettailrelations$(entity) : Returns relations where the entity is the subject/head. \\
+-$\getheadrelations$(entity) : Returns relations where the entity is the object/tail. \\
+-$\gettailentities$(entity, relation) : Returns entities connected to the given entity by the specified relation. \\
+-$\getheadentities$(entity, relation) : Returns entities from which the given entity is connected by the specified relation. \\
+\end{tcolorbox}

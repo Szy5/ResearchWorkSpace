@@ -1,0 +1,70 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2608.03292",
+  "created_at": "2026-10-24T12:46:16.371149+00:00",
+  "updated_at": "2026-10-24T12:46:16.371149+00:00",
+  "paper": {
+    "title": "DocTrace: Towards Traceable Long Document VQA via Hierarchical Evidence Graph Reasoning",
+    "authors": [
+      "Le Xiang",
+      "Zhicheng Guan",
+      "Hong Chen",
+      "Xiaocong Lin",
+      "Zhenghua Lei",
+      "Teng Hu",
+      "Bolei He",
+      "Long Zeng",
+      "Author Name",
+      "First Author Name",
+      "Second Author Name",
+      "Third Author Name"
+    ],
+    "affiliations": [
+      "Baidu Basic Model Research and Development Department, Baidu Inc.",
+      "Tsinghua Shenzhen International Graduate School, Tsinghua University"
+    ],
+    "abstract": "Long Document Visual Question Answering (LongDocVQA) requires Multimodal Large Language Models (MLLMs) to locate, integrate, and reason over heterogeneous document elements distributed across multiple pages. Existing approaches, including end-to-end MLLMs, retrieval-augmented generation (RAG) pipelines, and document agents, often lack explicit mechanisms to represent and verify how grounded evidence is progressively composed during reasoning, limiting both answer accuracy and traceability. In this paper, we cast LongDocVQA as an explicit evidence graph reasoning problem rather than implicit answer prediction. To this end, we propose DocTrace, a hierarchical framework that progressively performs evidence localization, structured document parsing, and evidence graph reasoning to enable explicit evidence provenance. To effectively learn these capabilities, we develop a two-stage training framework: joint Supervised Fine-Tuning (SFT) first initializes evidence localization and graph reasoning abilities, followed by task-specific Group Relative Policy Optimization (GRPO) with dedicated rewards to further optimize these capabilities. Extensive experiments on MMLongBench-Doc, LongDocURL, and SlideVQA demonstrate that DocTrace consistently outperforms both existing open-source baselines and proprietary MLLMs. Compared with the Qwen3-VL-8B-Instruct backbone, DocTrace achieves absolute improvements of 14.4, 11.3, and 11.7 points on the three benchmarks, respectively. Beyond competitive performance, DocTrace constructs traceable evidence graphs with explicit node-level provenance, enabling transparent and verifiable reasoning for long document understanding.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-24",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2608.03292",
+    "entry_file": "DocTrace_arXiv.tex",
+    "source_files": [
+      {
+        "path": "DocTrace_arXiv.tex",
+        "sha256": "fb1edee0f4c5bcf07f2921f169c752e5f649b262423c3b904efb4062302b530e",
+        "bytes": 79934
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 41,
+    "figures": 7,
+    "references": 34
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 28, column 1):\nunexpected Tok (line 28, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 28, column 1):\nunexpected Tok (line 28, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

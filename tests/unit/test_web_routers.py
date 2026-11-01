@@ -199,7 +199,7 @@ def test_markdown_upload_render_and_background_publish(monkeypatch, tmp_path: Pa
 
         preview = client.get(f"/api/publishing/markdown/{document['document_id']}/preview")
         assert preview.status_code == 200
-        assert "Demo" in preview.text
+        assert "Content" in preview.text
 
         submitted = client.post(
             f"/api/publishing/markdown/{document['document_id']}/publish",

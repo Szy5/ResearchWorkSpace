@@ -1,0 +1,14 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P02",
+    "P04"
+  ],
+  "secondary_pattern_names": [
+    "Cross-Domain Synthesis",
+    "Modular Pipeline Composition"
+  ],
+  "confidence": "high",
+  "reasoning": "论文针对现有多模块KG-RAG流程推理成本高且绑定特定KG schema的缺口，将任务从固定模块流水线重构为单智能体在KG环境中多轮检索-推理的端到端RL优化问题，符合P01；同时将RL与agentic KG-RAG结合，并把原多模块流程重构为单智能体+KG查询服务器，故列P02、P04为次要模式。实验在\"KGQA\"基准与\"WebQSP\"等设置上验证效率与跨KG迁移。"
+}

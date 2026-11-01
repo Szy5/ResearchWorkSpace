@@ -1,0 +1,973 @@
+% \textcolor{blue}{TODO: Discuss if we should abstract the whole pipeline into the following:
+% 1. Core algo is simply, ProposeNewProgram(), and evaluate on minibatch, then evaluate on full
+% 2. We explored 2 approaches to ProposeNewProgram(): Merge(), and ReflectiveMutate()
+% 3. We explored 2 approaches within ReflectiveMutate(), for options in SelectCandidate(): One is using ParetoBasedSelectCandidate(), and other is SelectLinearBest()}
+
+\begin{figure}[t]
+    \centering
+    % \begin{subfigure}[b]{0.65\linewidth}
+    %     \centering
+    %     \includegraphics[width=\linewidth]{manual_figures/Reflection.pdf}
+    %     \caption{Reflective Prompt Mutation: (1) Run the input minibatch through the system (with current candidate parameters) to get outputs. (2) Pass inputs, outputs, and the selected module to the feedback function to generate textual feedback. (3) Gather the module’s current prompt, inputs, outputs and feedbacks. (4) Use an LLM to reflect on the feedback and mutate the module’s prompt.}
+    % \end{subfigure}
+    % % \hfill
+    % \begin{subfigure}[b]{0.30\linewidth}
+    %     \centering
+    %     \includegraphics[width=\linewidth]{manual_figures/pareto_sampling.pdf}
+    %     \caption{Pareto-based candidate selection: Each candidate is evaluated on every instance in $D_{pareto}$, and the best performing candidate for each task is identified, filtering out candidates whose }
+    % \end{subfigure}
+    \includegraphics[width=0.94\linewidth]{manual_figures/FullGepa.pdf}
+    \hfill
+    \caption{GEPA proposes a new candidate in every iteration by improving existing candidates using one of the two strategies (Reflective Prompt Mutation (Section ~\ref{sec:reflective_prompt_mutation}) or System Aware Merge (Appendix ~\ref{sec:merge})), first evaluating them on a minibatch, and if improved, evaluating on a larger dataset. Instead of selecting the best performing candidate to mutate always, which can lead to a local-optimum, GEPA introduces Pareto-based candidate sampling (Section~\ref{sec:pareto_based_selection}), which filters and samples from the list of best candidates \textit{per} task, ensuring sufficient diversity. Overall, these design decisions allow GEPA to be highly sample-efficient while demonstrating strong generalization.}\label{fig:gepa_infographic}
+    \vspace{-4mm}
+\end{figure}
+
+\input{gepa_main_algorithm.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We introduce GEPA (Genetic-Pareto), a sample-efficient optimizer for compound AI systems motivated by three core principles: genetic prompt evolution (Section~\ref{sec:genetic_optimization_loop}), reflection using natural language feedback (Section~\ref{sec:reflective_prompt_mutation}), and Pareto-based candidate selection (Section~\ref{sec:pareto_based_selection}). Figure~\ref{fig:gepa_infographic} gives an overview of GEPA and the full GEPA algorithm is formalized in Figure~\ref{fig:gepa_pseudocode}.
+GEPA receives the following inputs: A system $\Phi$ instantiated with simple prompts to be optimized, training dataset $D_{train}$ (consisting of task instances $(x, m)$ as described in Section~\ref{par:formalizing_cais_optimization}), the standard evaluation metric $\mu$ for the task, a feedback function $\mu_f$ (introduced in Section~\ref{par:explaining_feedback_metric}) and the total rollout budget $B$. Note that GEPA evolves only the set of prompts, denoted as $\Pi_\Phi$, whereas the underlying LLM weights, denoted by $\Theta_\Phi$ remains fixed.
+
+%\subsection{Genetic Optimization Loop}\label{sec:genetic_optimization_loop}
+
+\noindent \textbf{Genetic Optimization Loop:}
+\label{sec:genetic_optimization_loop}
+Given an AI system $\Phi$, the goal is to identify parameters $\Pi_\Phi$ that maximize task performance.
+GEPA begins with a \textit{candidate pool} $\mathcal{P}$ containing only the base system, where each \textit{candidate} is a concrete instantiation of $\langle \Pi, \Theta_{frozen} \rangle_\Phi$.
+It then enters an optimization loop, repeatedly proposing new candidates until the evaluation budget is exhausted.
+Candidates are derived from existing ones via \textit{reflective mutation} or \textit{crossover}, guided by feedback from rollouts, with each inheriting learning signals from its parents and its own rollout so that GEPA accumulates knowledge along the genetic tree.
+In each iteration, GEPA (i) selects promising candidates, (ii) proposes and evaluates a variant on a minibatch of tasks, and (iii) if it outperforms its parent(s), adds it to $\mathcal{P}$ with ancestry records and evaluate on $D_{pareto}$, the validation set used for selection.
+After the budget is exhausted, GEPA returns the candidate with the best aggregate performance on $D_{pareto}$.
+
+% \subsection{Genetic Optimization Loop}\label{sec:genetic_optimization_loop}
+% Given a compound AI system $\Phi$, the goal of the optimization process is to identify a set of parameters $\langle \Pi, \Theta \rangle_\Phi$ that maximize the score over a task distribution. GEPA starts by initializing a \textit{candidate pool} $\mathcal{P}$, where a \textit{candidate} is a concrete instantiation of the learnable parameters of the compound system, $\langle \Pi, \Theta \rangle_\Phi$. Initially, the candidate pool consists only of the base system's parameters as the sole candidate. GEPA then proceeds in an optimization loop, iteratively proposing new candidates and adding them to the pool, continuing this process until the evaluation budget is exhausted.
+
+%Iteratively, GEPA proposes increasingly effective candidates by modifying existing ones through \textit{mutation} or \textit{crossover}, informed by learning signals from newly gathered rollouts and while tracking each new candidates' ancestry. This enables GEPA to accumulate lessons along the genetic tree as optimization progresses. Each new candidate inherits learning signals from its parents, as well as signals from the current rollout. 
+
+% During each iteration, GEPA identifies promising candidates from the candidate pool (candidate selection), proposes a new candidate—possibly by mutating prompts in a module based on reflective feedback or by performing crossover between two candidates---and evaluates this new variant on a minibatch of tasks. If the newly proposed candidate demonstrates improved performance relative to its parent(s) on the local minibatch, then GEPA adds the new candidate to the \textit{candidate pool} $\mathcal{P}$. This involves tracking internal data structures including tracking the ancestry of the new candidate, along with the full evaluation of the new candidate on a $D_{pareto}$, a validation set used for candidate selection.
+
+% After the budget is depleted, GEPA returns the candidate with the best aggregate performance on $D_{pareto}$.
+
+\noindent \textbf{Reflective Prompt Mutation:}
+%\subsection{Reflective Prompt Mutation}
+\label{sec:reflective_prompt_mutation}
+Natural language traces generated during the execution of a compound AI system offer rich \textit{visibility} into the behavior and responsibilities of each module, as they capture the intermediate inferences and underlying reasoning steps. When these traces are paired with the final outcome of the system (e.g., success or failure), they provide substantial \textit{diagnostic} value, allowing practitioners to trace errors or successes back to specific decisions made at the module level. LLMs can leverage these traces via \textit{reflection} to perform implicit credit assignment, attributing responsibility for the final outcome to the relevant modules. This process of \textit{reflection} can then be used to make targeted updates to individual modules, making large and effective updates to the whole system's behavior.
+
+% Given a \textit{candidate} to mutate in the current iteration of the optimization loop \added{(stochastically selected from the Pareto-frontier, see Section~\ref{sec:pareto_based_selection} below)}, GEPA executes the selected candidate on a stochastically sampled minibatch of input queries from the trainset, tracing the program’s execution (like the inputs and outputs by various language modules, as well as intermediate processing), and calls the user-defined evaluation function, which returns a numeric score and text feedback including details about the evaluation (like compiler error messages, failed rubrics, etc. GEPA selects the subset of prompts (among the N prompts that the language program contains) to update based on a policy (round-robin), and an LLM is then shown the (current prompt, language program trajectory, score, feedback) and asked to generate an updated prompt. The updated prompt, with the rest of the language program, is tested again on the minibatch, and if the score improves, then the new program is added to the candidate pool. The meta-prompt for reflective prompt updates is shown in Appendix~\ref{appendix:gepa_meta_prompt} and the full algorithm is presented in Figure~\ref{alg:desirable_short}.
+
+Given a \textit{candidate} to mutate in the current iteration of the optimization loop \added{(stochastically selected from the Pareto-frontier, see Section~\ref{sec:pareto_based_selection} below)}, GEPA executes the selected candidate on a \added{stochastically sampled} minibatch \added{of input queries from the trainset}, tracing the program’s execution. From the execution traces, GEPA extracts the module’s inputs, outputs, and reasoning, and \added{calls the \textit{feedback function} $\mu_f$, which returns a numeric score and text feedback including details about the evaluation (like compiler error messages, failed rubrics, etc.).} GEPA selects the module \added{(among the $|M|$ modules that the language program contains)} to be updated based on a policy (round-robin), and a reflection LM is then \added{shown the (current prompt, language program trajectory, score, feedback) with the task to} reflectively attribute successes or failures to prompt elements and propose revised instructions. The updated module, with the rest of the language program, is \added{evaluated again on the minibatch, and if the score improves, then the new program is added to the candidate pool}. The meta-prompt for reflective prompt updates is shown in Appendix~\ref{appendix:gepa_meta_prompt} \added{and the full algorithm is presented in Algorithm~\ref{alg:gepa_optimizer}}.
+
+
+% ,  A new candidate is formed by copying the current candidate, with the updated parameters for the target module’s prompt. The meta-prompt for reflective prompt updates is shown in Appendix~\ref{appendix:gepa_meta_prompt}.
+% Given a \textit{candidate} to mutate in the current iteration of the optimization loop, GEPA updates the system with a new set of parameters, selects a target module to improve (via round robin), and generates rollouts on a minibatch, recording outcomes. From execution traces, GEPA extracts the module’s inputs, outputs, and reasoning, then uses an LLM to reflectively attribute successes or failures to prompt elements and propose revised instructions. A new candidate is formed by copying the current candidate, with the updated parameters for the target module’s prompt. The meta-prompt for reflective prompt updates is shown in Appendix~\ref{appendix:gepa_meta_prompt}.
+% GEPA operationalizes this as follows: Given a selected \textit{candidate} to mutate in the current iteration of the optimization loop, GEPA updates the system with the \textit{candidate} parameters, selects a target module within the system to improve (via round robin to ensure all modules receive updates), and generates a few rollouts over a minibatch sampled from the training dataset, recording their outcomes (success/failure). By examining the execution traces of the system, GEPA identifies the target module's inputs, outputs, and reasoning. With this, GEPA uses an LLM to reflectively examine this information, attributing successes or failures to elements of the module’s prompt (or omission thereof), and propose new instructions for the target module. A new candidate is then proposed as a copy of the current candidate, with the target module's prompt updated to the new proposed prompt. The meta-prompt used by GEPA to perform reflective prompt update is presented in Appendix~\ref{appendix:gepa_meta_prompt}.
+
+\textbf{Evaluation traces as diagnostic signals:}\label{par:explaining_feedback_metric}  The text that LLMs produce is the \textit{execution trace} of the AI system. The text that the environment produces to compute the reward (e.g. compiler error messages before giving reward 0) is the \textit{evaluation trace}.
+Beyond reflection on execution traces, we identify a second valuable source of diagnostic information in the evaluation traces. Many evaluation metrics apply rich strategies (e.g., code evaluation may involve compilation, execution, and profiling), producing natural language traces before computing a scalar reward. We propose leveraging these \textit{evaluation traces} for reflective credit assignment and targeted prompt updates. GEPA achieves this by extending rewards $\mu$ into a \textit{feedback function} $\mu_f$ that extracts textual traces during evaluation and returns them with the final score as \lstinline{feedback_text}. When available, such feedback can even be module-specific (e.g. in multi-hop systems the evaluator may provide feedback after each hop). \added{In practice, there are domains where human-graders are able to rate the AI system’s responses, along with providing detailed feedback justifying their scalar ratings. When available}, $D_{train}$ can be augmented with such human-written explanations for each instance; during reflection, and GEPA can consume these explanations as auxiliary \lstinline{feedback_text} to guide targeted prompt updates, even when natural-language feedback from rollouts is limited or unavailable.
+% \textbf{Evaluation trace as diagnostic signal:}\label{par:explaining_feedback_metric} While the system's own execution traces already provide useful information to enable successful \textit{reflection} and prompt updates, we identify another source of highly diagnostic information: The evaluation metric $\mu$. Often, the evaluation metric $\mu$ applies rich strategies to perform evaluations to arrive at a final score. For example, code evaluation environments run a series of steps (compilation, execution, profiling, etc.) each of which produce natural language traces, before providing a scalar reward. 
+
+% We propose the use of these \textit{evaluation traces} in addition to the system's own \textit{execution traces} to perform reflective credit assignment, and targeted prompt updates. GEPA operationalizes this as a simple update to the evaluation metric $\mu$, to create a \textit{feedback function} $\mu_f$, which identifies relevant textual traces produced during the evaluation metric's execution, and returns the final score along with \lstinline{feedback_text}. Whenever available, such a feedback function can also provide module-level feedback (for example, in multi-hop systems, the evaluator can provide feedback after each hop of the system).
+
+% \begin{figure*}[!htp]
+% \centering
+% \includegraphics[width=\linewidth]{figures/manual_dots/iterative_refinement_visualization.pdf}
+% % \caption{GEPA's reflective prompt mutation adds task-specific nuances to the prompts gathering lessons as optimization proceeds, which enable better performance. This figure visualizes the optimization trajectory taken by GEPA to improve a prompt for the PUPA task. The figure is an annotated subtree from Figure~\ref{fig:full_gepa_iterative_refinement_tree} to demonstrate the iterative improvements in the prompts achieved by GEPA. The path from the base prompts (candidate 0) to the best performing prompts (candidate 11) is highlighted using red arrows, and the key changes as the prompt evolves are annotated alongside the nodes. The full length instructions at these iterations are presented in Appendix~\ref{sec:iterative_vis}. Every prompt refinement in this trajectory adds task-specific nuances to improving the performance.}\label{fig:gepa_iterative_improvement_vis}
+% \caption{GEPA’s reflective prompt mutation systematically incorporates task-specific nuances, leading to substantial improvements in performance. This figure visualizes the optimization trajectory taken by GEPA, presenting an annotated subtree from Figure~\ref{fig:full_gepa_iterative_refinement_tree} (for the privacy-preserving delegation task PUPA) to demonstrate the iterative enhancements made to the prompts. The progression from the base prompt (candidate 0) to the best performing prompt (candidate 11) is highlighted with red arrows, and key prompt changes at each step are annotated beside the corresponding nodes. Full-length instructions for these iterations are provided in Appendix~\ref{sec:iterative_vis}. Each prompt refinement in this trajectory adds targeted nuances informed by ongoing optimization, illustrating how GEPA’s process accumulates lessons to continually boost task performance.}\label{fig:gepa_iterative_improvement_vis}
+% \end{figure*}
+
+\begin{figure*}[htp]
+\centering
+\includegraphics[width=\linewidth]{figures/manual_dots/iterative_refinement_visualization.pdf}
+% \caption{GEPA's reflective prompt mutation adds task-specific nuances to the prompts gathering lessons as optimization proceeds, which enable better performance. This figure visualizes the optimization trajectory taken by GEPA to improve a prompt for the PUPA task. The figure is an annotated subtree from Figure~\ref{fig:full_gepa_iterative_refinement_tree} to demonstrate the iterative improvements in the prompts achieved by GEPA. The path from the base prompts (candidate 0) to the best performing prompts (candidate 11) is highlighted using red arrows, and the key changes as the prompt evolves are annotated alongside the nodes. The full length instructions at these iterations are presented in Appendix~\ref{sec:iterative_vis}. Every prompt refinement in this trajectory adds task-specific nuances to improving the performance.}\label{fig:gepa_iterative_improvement_vis}
+\caption{GEPA’s reflective prompt mutation systematically incorporates task-specific nuances, leading to substantial improvements in performance. This figure visualizes the optimization trajectory taken by GEPA, presenting an annotated subtree from Figure~\ref{fig:full_gepa_iterative_refinement_tree} (for the privacy-preserving delegation task PUPA) to demonstrate the iterative enhancements made to the prompts. The progression from the base prompt (candidate 0) to the best performing prompt (candidate 11) is highlighted with red arrows, and key prompt changes at each step are annotated beside the corresponding nodes. Full-length instructions for these iterations are provided in Appendix~\ref{sec:iterative_vis}. Each prompt refinement in this trajectory adds targeted nuances informed by ongoing optimization, illustrating how GEPA’s process accumulates lessons to continually boost task performance.}\label{fig:gepa_iterative_improvement_vis}
+\end{figure*}
+
+\subsection{Pareto-based candidate selection}\label{sec:pareto_based_selection}
+GEPA is a highly modular algorithm that supports various strategies for candidate selection, with the choice of strategy governing the exploration–exploitation tradeoff. A naive approach is to always select the best-performing candidate, but this often traps the optimizer in a local optimum: once a dominant strategy is found, it becomes difficult to surpass, and the optimizer exhausts its budget without learning new, potentially better strategies.
+Figure~\ref{fig:example_of_bestcandidate_selection_tree} illustrates this behavior: after finding one new strategy (the first child node), the search repeatedly attempts to refine it, fails to improve, and ultimately depletes the budget.
+
+% GEPA is a highly modular algorithm capable of supporting various strategies for selecting candidates in each iteration of optimization. Crucially, the choice of candidate selection strategy determines the exploration-exploitation tradeoff adopted by the optimizer. A naive strategy is to always select the best-performing candidate in the pool. However, this can cause the optimizer to get stuck in a local optimum within the prompt space: once a dominant strategy is found, it becomes difficult to surpass, and the optimizer exhausts its budget without learning new, potentially better strategies. An example search tree generated with this strategy is demonstrated in Figure~\ref{fig:example_of_bestcandidate_selection_tree}. Specifically, note how the search process found one new strategy (the first child node), and then kept trying to improve it, failing to do so across many iterations, finally exhausting all the rollouts budget.
+
+To address this, GEPA employs a Pareto-based ``illumination" strategy~\citep{map_elites}, shown in Algorithm~\ref{alg:pareto_selection}. For each training instance, GEPA records the highest score across all candidates, forming a Pareto frontier. Candidates that achieve the best score on at least one task are retained, while strictly dominated ones are pruned.
+%(e.g., if Candidate 2 ties the best on Task 1 but Candidate 3 matches it on Task 1 and surpasses it on Task 2, Candidate 2 is pruned). 
+From this pruned set, GEPA stochastically samples a candidate, weighting probabilities by how many tasks each candidate leads. This strategy helps GEPA escape local optima without inflating the search, efficiently balancing exploration and exploitation by focusing resources on candidates that embody ``winning'' strategies within the optimization budget.
+
+
+% To address this, GEPA employs a Pareto-based ``illumination" strategy~\citep{map_elites}, as shown in Algorithm~\ref{alg:pareto_selection}. Specifically, GEPA identifies the highest score achieved for each individual training instance across all candidates in the pool, creating a ``Pareto frontier'' of scores achieved by the optimization process so far. GEPA then compiles a list of candidates that achieve the best score on at least one training task. This filters the pool down to candidates that incorporate “winning” strategies, preserving every valuable insight discovered in any reflective mutation. Next, GEPA prunes candidates that are strictly dominated: for instance, if Candidate 2 has the best score on Task 1 only, but Candidate 3 achieves that same best score on Task 1 and the best on Task 2, Candidate 2 is removed. Finally, GEPA stochastically samples a candidate from this pruned list, assigning higher selection probability to candidates that achieved the best score across more training instances.
+
+% In practice, this strategy helps GEPA escape local optima without expanding the search excessively. By focusing resources on promising candidates that have already demonstrated impactful, ``winning'' strategies, GEPA efficiently balances exploration and exploitation, allowing for continual improvement within the optimization budget.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% This process of reflection enables the system to target and refine individual components more effectively, facilitating significant and coherent improvements to overall system performance.
+% The natural language traces of a compound AI system's execution provide high \textit{visibility} into the behaviour and responsibility of every module in the system---capturing intermediate inferences made by each module along with their reasoning. When paired with the outcome (success/failure) of the rollout, this information provides high \textit{diagnostic} value. LLMs, through \textit{reflection}, can perform implicit credit assignment about the final outcome to each module. This \textit{reflection} can then be used to make targeted updates to individual modules, making large and effective updates to the whole system's behavior.
+%%%%%%%%%%%%%%%%%%%%%
+% Given a compound AI system $\Phi$, the goal of the optimization process is to identify an optimal set of parameters $\langle \Pi, \Theta \rangle_\Phi$ that maximize the score over a task distribution.
+% GEPA starts by initializing a \textit{candidate pool} $\mathcal{P}$ (a \textit{candidate} is a concrete instantiation of learnable parameters of the compound system, $\langle \Pi, \Theta \rangle_\Phi$) initially consisting of the base system's parameters as the only \textit{candidate}. Then, GEPA proceeds in an optimization loop, proposing a new \textit{candidate} in every iteration, and adding it to the candidate pool, until the budget is exhausted.
+
+% the IFBench~\citep{ifbench_bench} evaluation metric procedurally matches the output against a set of rubrics, finally collapsing the truth values into a single score. 
+
+% Another useful initialization of the feedback function is to provide visibility into the underlying data behind aggregate metrics---for example, PUPA~\citep{papillon_bench} uses a metric that aggregates over the quality score and PII leakage score. The feedback function can be used to surface the breakdown of such aggregates to the optimization process, which can be leveraged by LLM's to perform precise attribution (``The quality score is high, but PII leakage score is very low, I should focus on reducing PII leakage...'')
+
+% GEPA's goal is to propose increasingly better \textit{candidates} as optimization progresses. GEPA achieves this by proposing new \textit{candidates} by modifying an existing \textit{candidate} or set of \textit{candidates} (through \textit{mutation} or \textit{crossover}), in light of learning signals from new rollouts, while tracking each new candidates' ancestry. This way, GEPA enables learning acorss rollouts, accumulating ``lessons'' in the genetic tree, as the optimization progresses.
+
+% At each step, GEPA identifies promising candidates from the candidate pool (candidate selection), proposes a new candidate system based on the selected candidates (for example, by mutating one of the system modules' prompt based on reflective feedback or by crossover across 2 candidates) and evaluates the new variant on a minibatch of tasks. If the local performance improves relative to its predecessors, the candidate is then fully evaluated on a held-out set and added to the candidate pool. After the rollout budget is depleted, GEPA returns the candidate with the best aggregate performance on macro evaluations.
+%%%%%%%%%%%%%%%%%%%%%%%
+
+% GEPA achieves this by proposing new instantiations of the learnable parameters $\langle \Pi, \Theta \rangle_\Phi$ iteratively till the rollout budget is exhausted.
+% GEPA achieves this by proposing new instantiations of the learnable parameters $\langle \Pi, \Theta \rangle_\Phi$ iteratively till the rollout budget is exhausted.
+
+% GEPA generalizes by learning across rollouts, GEPA optimizes compound systems iteratively, accumulating ``lessons'' as the optimization progresses.
+% Throughout the iterative optimization, GEPA maintains a list of candidate systems (concrete instantiations of the set of learnable parameters of the compound system, $\langle \Pi, \Theta \rangle_\Phi$)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{The GEPA Optimizer}
+% We introduce \textbf{GEPA} (\textbf{Ge}netic-\textbf{Pa}Reto), a sample-efficient optimizer for compound AI systems $\Phi$ motivated by three core principles: (1) (re)flection using natural language feedback, (2) (ge)netic-style prompt evolution, and (3) (Pa)reto-based candidate selection. The full GEPA algorithm is formalized in Figure~\ref{fig:gepa_pseudocode}.
+
+% \subsection{Optimization Loop}
+% Given the goal of optimizing over rollouts on $(x, m) \sim \mathcal{T}$ with restricted budget $B$, GEPA iteratively improves the system parameters $\langle \Pi, \Theta \rangle_\Phi$ by generalizing across observed rollouts. At each iteration, GEPA maintains a pool $\mathcal{P}$ of candidate systems, each a particular configuration of $\langle \Pi, \Theta \rangle_\Phi$. On each step: GEPA (\emph{i}) selects a promising candidate system $\Phi_k \in \mathcal{P}$ by Pareto-based candidate selection (Algorithm~\ref{alg:pareto_selection}), (\emph{ii}) proposes a new system $\Phi'$ by mutating the prompt $\pi_j$ of a selected module $M_j$ in $\Phi_k$ based on reflective feedback, and (\emph{iii}) evaluates $\Phi'$ on a minibatch $\mathcal{M}$ of $b$ tasks using the feedback metric $\mu_f$. If the minibatch performance $\sigma'$ exceeds the pre-mutation score $\sigma$, the new candidate $\Phi'$ is fully evaluated on the held-out set $\mathcal{D}_\text{pareto}$ and added to the pool. This loop repeats until the allotted rollout budget $B$ is exhausted, after which GEPA outputs the candidate $\Phi^*$ with highest average macro evaluation on $\mathcal{D}_\text{pareto}$.
+
+% \subsection{Reflective Prompt Mutation}
+% Within each compound system $\Phi = (M, C, \mathcal{X}, \mathcal{Y})$, the execution traces from running $\Phi$ on $x$—including each module's $M_j$ reasoning and outputs—provide high \emph{visibility} into the behavior and responsibility of every module. When combined with rollout outcomes (success/failure as judged by $\mu$), these traces have strong \emph{diagnostic} value, enabling reflection on ``what went well, what didn't, what should be changed,'' and supporting module-level credit assignment for updates to $\langle \Pi, \Theta \rangle_\Phi$.
+
+% Operationally, GEPA achieves this as follows: once a candidate $\Phi_k$ is chosen for evolution, it selects a module $M_j$ (e.g., in round robin) and rolls out $\Phi_k$ on a minibatch $\mathcal{M}$. For each $(x, m) \in \mathcal{M}$, it collects execution traces for $M_j$ as well as the overall output and evaluation via $\mu_f$. Using these, GEPA uses an LLM to reflectively analyze the traces and outcome, attributing successes or failures to specific characteristics of $\pi_j$, and then proposes a refined prompt $\pi_j'$. The new system $\Phi'$ is identical to $\Phi_k$ except with $M_j$'s prompt updated to $\pi_j'$. The meta-prompt for reflective prompt update is detailed in Appendix~\ref{appendix:gepa_meta_prompt}.
+
+% \textbf{Evaluation trace as diagnostic signal:} Beyond standard execution traces, the evaluation metric $\mu$ often employs complex evaluation procedures (e.g., rubric scoring, multi-step code execution) and outputs not only a final scalar $\mu(y,m)$ but also rich natural language traces produced during its computation. We extend this by defining a \emph{feedback metric} $\mu_f$, which for each rollout returns both the numeric score and an auxiliary \texttt{feedback\_text} string summarizing the evaluation trace. Where possible, $\mu_f$ can also provide module-level feedback in multi-hop or modular systems—enabling even more targeted prompt updates informed by both execution and evaluation traces.
+
+% \subsection{Pareto-based Candidate Selection}
+% GEPA's optimizer supports various candidate selection strategies at each optimization step, explicitly controlling the exploration-exploitation tradeoff. While a naive approach would deterministically select the current best-performing candidate in $\mathcal{P}$, this is susceptible to local optima in prompt space—once a strong but suboptimal strategy is discovered, improvement may stagnate as the budget is spent locally.
+
+% To mitigate this, GEPA uses a Pareto-based ``illumination'' strategy (Algorithm~\ref{alg:pareto_selection}): for each data instance $(x_i, m_i)$, it records the highest score $s^*[i] = \max_k S_{\mathcal{P}[k]}[i]$ obtained across all candidates, identifying a ``Pareto front'' of per-instance best scores. Candidates that achieve the best score on at least one instance are retained; any strictly dominated candidates (whose winning scores are a subset of another candidate's) are removed. Finally, GEPA samples a candidate from this pruned set, giving preference to those responsible for more Pareto-optimal scores, i.e., proportional to $f[\Phi_k]$ (number of wins).
+
+% In practice, this approach enables GEPA to efficiently escape local optima without excessive branching. By preferentially allocating rollouts to systems that have demonstrated valuable strategies on at least one instance, GEPA balances exploitation (refining strong strategies) and exploration (diversifying across multiple system variants), extracting maximal learning signal per rollout under budget $B$.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}[t]{0.47\textwidth}
+%     \vspace{0pt}
+%     \begin{algorithm}[H]
+%     \caption{GEPA Main Meta-loop (Genetic-Evolution)}
+%     \label{alg:gepa_main_loop}
+%     \begin{algorithmic}[1]
+%     \Require State: programs $\mathcal{P}$, scores $S$, parents $\mathcal{A}$, datasets, metrics, budget $B$
+%     \State \textbf{Initialize} $\mathcal{P}, S, \mathcal{A}$ % possibly other state vars
+%     \While{budget $B$ not exhausted}
+%         \State $(\Phi_{\text{new}}, \text{parents}) \gets$ \textsc{AttemptNewProgramCreate}(State)
+%         \If{$\Phi_{\text{new}}$ is not None}
+%             \State \textsc{MacroEval}$(\Phi_{\text{new}}, \text{parents},$ State$)$
+%         \EndIf
+%     \EndWhile
+%     \State \Return candidate in $\mathcal{P}$ with best macro-eval score
+%     \end{algorithmic}
+%     \end{algorithm}
+%     \vspace{6pt} % Small gap to next algorithm
+%     % -----
+%     \begin{algorithm}[H]
+%     \caption{AttemptNewProgramCreate (Reflection)}
+%     \label{alg:gepa_reflection}
+%     \begin{algorithmic}[1]
+%     \Function{AttemptNewProgramCreate}{State}
+%         \State $k \gets$ \textsc{SelectCandidate}$(\mathcal{P}, S)$
+%         \State $j \gets$ \textsc{SelectModule}$(\mathcal{P}[k])$
+%         \State $\mathcal{M} \gets$ minibatch from $\mathcal{D}_{\text{feedback}}$
+%         \State Gather feedback/traces for $\mathcal{P}[k][j]$ on $\mathcal{M}$ using $\mu_f$
+%         \State $\pi_j' \gets$ \textsc{UpdatePrompt}$(\pi_j,$ feedbacks, traces$[j])$
+%         \State $\Phi_{\text{new}} \gets$ copy of $\mathcal{P}[k]$ with module $j$ updated by $\pi_j'$
+%         \State $\sigma, \sigma' \gets$ avg score on $\mathcal{M}$ (before, after)
+%         \If{$\sigma'$ improved}
+%             \State \Return $(\Phi_{\text{new}}, [k])$
+%         \Else
+%             \State \Return (None, [])
+%         \EndIf
+%     \EndFunction
+%     \end{algorithmic}
+%     \end{algorithm}
+%     \vspace{0pt}
+% \end{minipage}%
+% \hfill
+% \begin{minipage}[t]{0.51\textwidth}
+%     \vspace{0pt}
+%     \begin{algorithm}[H]
+%     \caption{SelectCandidate (Pareto-based Selection)}
+%     \label{alg:pareto_selection}
+%     \begin{algorithmic}[1]
+%     \Function{SelectCandidate}{$\mathcal{P}, S$}
+%         \For{each $i$}
+%             \State $s^*[i] \gets \max_k S_{\mathcal{P}[k]}[i]$
+%             \State $\mathcal{P}^*[i] \gets \{\mathcal{P}[k] : S_{\mathcal{P}[k]}[i] = s^*[i]\}$
+%         \EndFor
+%         \State $\mathcal{C} \gets$ unique candidates in $\bigcup_i \mathcal{P}^*[i]$
+%         \State $D \gets \emptyset$
+%         \While{there exists $\Phi \in \mathcal{C} \setminus D$ dominated by another in $\mathcal{C} \setminus D$}
+%             \State $D \gets D \cup \{ \Phi \}$
+%         \EndWhile
+%         \State Remove $D$ from each $\mathcal{P}^*[i]$ to get $\hat{\mathcal{P}}^*[i]$
+%         \State $f[\Phi] =$ number of $i$ with $\Phi \in \hat{\mathcal{P}}^*[i]$
+%         \State Sample $\Phi_k$ from $\hat{\mathcal{C}}$ with probability $\propto f[\Phi_k]$
+%         \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+%     \EndFunction
+%     \end{algorithmic}
+%     \end{algorithm}
+%     \vspace{6pt}
+%     \textbf{MacroEval:} \textit{Given $\Phi_{\text{new}}$ and parents: Evaluate $\Phi_{\text{new}}$ on $\mathcal{D}_{\text{pareto}}$, add to population $\mathcal{P}$, track scores and parent pointers.}
+% \end{minipage}
+% \vspace{-5pt}
+% \caption{(\textbf{Left, top}) GEPA main optimization loop.
+% (\textbf{Left, bottom}) Reflection step logic, which proposes new candidates.
+% (\textbf{Right}) Pareto-based candidate selection subroutine. \textit{See text for details.}}
+% \label{fig:modular_gepa_algorithms}
+% \end{figure}
+
+% GEPA is a highly modular algorithm, and can admit several strategies to select candidates for the next iteration of optimization. Crucially, the next candidate selection strategy tunes the exploration-exploitation tradeoff of the optimizer. One such strategy is to always select the best performing candidate in the pool. However, this often leads to a local-optima in prompt space, where the optimizer discovers a dominant strategy, which is harder to outperform on aggregate, and therefore the optimizer never incorporates any new ``lessons'' exhausting the budget. An example of this is provided in the ablations section~\ref{sec:gepa_ablations}.
+
+% Instead, GEPA uses a Pareto-based ``illumination'' strategy, highlighted in algorithm~\ref{alg:pareto_selection}. Specifically, GEPA identifies the best achieved score on every training data instance across all candidates in the candidate pool, and then builds a list of candidates that achieve the best score on at least one training task instance. This helps to filter the candidates to those containing ``winning'' strategies, representing all valuable insights discovered in any reflective mutation. Next, GEPA prunes out all candidates that are strictly dominated by other candidates (for example, if candidate 2 achieves the best score on task 1 only, but candidate 3 achieves the same best score on task 1 as well as the best score on task 2, then candidate 2 is pruned out). Finally, GEPA stochastically samples a candidate from this pruned out pool, with the probability of a candidate being selected based on the number of train instances it achieved the best score on.
+
+% This strategy allows GEPA to avoid local minima, while not being too broad in its search, and focussing the budget on trying to improve promising candidates, that have already accumulated impactful ``winning'' strategies.
+
+% With this insight, we propose that reinforcement learning environments should return a text-feedback, in addition to the scalar reward. In practice, designing $\mu_f$ is as simple as having the evaluator or grader verbalize its scoring rubric and annotate what criteria were met or missed. For instance, in a retrieval-augmented QA system, $\mu_f$ can identify the missing retrievals at each stage of the system, and in multi-label tasks, it can identify which labels were correct or incorrect. Overall, natural language feedback offers a rich, high-bandwidth learning signal, making it much easier and more sample-efficient to improve system prompts compared to relying on reward scores alone. Finally, many environments collapse multiple, independent metrics into a single scalar reward through aggregation. For example, PUPA's metric utilizes 2 LLM-as-a-judge calls, first to identify the PII information leakage, and second to evaluate the quality, which are then aggregated to produce the final reward. Simply providing the breakdown of such aggregate rewards can itself provide very high diagnostic signal, guiding the \textit{reflection} focus towards optimizing such multi-objective metrics with the right strategies.
+
+% \textbf{Reflection:} The natural language traces obtained from the execution of a compound AI system can provide high \textit{visibility} into the system's behavior: every intermediate output and decisions that led to the final output with their verbalized reasoning (Chain of Thought). This allows making targetted improvements at each module's level, in light of the final outcome of a rollout. To leverage this, GEPA proceeds in iterations, making targetted improvements to one module of the system at a time. GEPA traces the execution of the full compound AI system over a rollout, identifying the inputs and outputs by the target module, and combines this with the final outcome of the rollout, making an LLM call to \textit{reflect} on the inputs and outputs of the module in light of the global outcome, attribute the success/failure to parts of the module's current instruction (or identify what is missing), and update the prompt for this target module, to create a new candidate. The full prompt used for GEPA's \textit{reflective prompt update} is presented in appendifx~\ref{appendix:gepa_meta_prompt}.
+
+% \textbf{Reflective Prompt Mutation:} Given a candidate system to mutate, GEPA first selects any one module to focus improvements on in this iteration
+% The execution of compound AI systems produces rich natural language traces, exposing intermediate decisions and reasoning (e.g., Chain-of-Thought) at each module. These traces offer fine-grained visibility into system behavior and enable targeted module-level improvements. GEPA leverages these traces by iteratively selecting a specific module, analyzing its inputs, outputs, and local reasoning within the context of the rollout's global outcome, and then using an LLM to reflect on this context. The LLM identifies shortfalls or strengths in the module's current prompt in light of the observed outcome, and proposes improvements. The updated prompt defines a new candidate system variant. The full prompt for GEPA's reflective module update is provided in Appendix~\ref{appendix:gepa_meta_prompt}.
+
+
+% \begin{minipage}[t]{0.45\textwidth}
+%     \begin{algorithm}[H]
+%     \caption{Pareto-based candidate selection}
+%     \label{alg:select_candidate}
+%     \begin{algorithmic}[1]
+%     \Function{SelectCandidate}{$\mathcal{P}, S$}
+%         \State $\mathcal{C} \gets$ unique candidates in $\bigcup_i \mathcal{P}^{*}[i]$
+%         \State $D \gets \emptyset$
+%         \While{there exists $\Phi \in \mathcal{C} \setminus D$ dominated by another in $\mathcal{C} \setminus D$}
+%             \State $D \gets D \cup \{\Phi\}$
+%         \EndWhile
+%         \State Remove $D$ from each $\mathcal{P}^{*}[i]$ to get $\hat{\mathcal{P}}^{*}[i]$
+%         \State Let $f[\Phi]=$ number of $i$ for which $\Phi \in \hat{\mathcal{P}}^{*}[i]$
+%         \State Sample $\Phi_k$ from $\hat{\mathcal{C}}$ with probability $\propto f[\Phi_k]$
+%         \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+%     \EndFunction
+%     \end{algorithmic}
+%     \end{algorithm}
+% \end{minipage}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}[t]{0.54\textwidth}
+%     \begin{algorithm}[H]
+%     \caption{GEPA: Reflective Evolutionary Prompt Optimizer}
+%     \label{alg:gepa_optimizer}
+%     \begin{algorithmic}[1]
+%     \Require System $\Phi$, dataset $\mathcal{D}_{\text{train}}$, eval metric $\mu$, feedback metric $\mu_f$, budget $B$, minibatch size $b$
+%     \State Split $\mathcal{D}_{\text{train}}$ into $\mathcal{D}_{\text{feedback}}$, $\mathcal{D}_{\text{pareto}}$
+%     \State Initialize candidates $\mathcal{P} \gets [\Phi]$, parents $\mathcal{A} \gets [\text{None}]$
+%     \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%         \State $S_{\Phi}[i] \gets s^*[i] \gets \mu(\Phi(x_i), m_i)$, \ $\mathcal{P}^*[i] \gets \{\Phi\}$
+%     \EndFor
+%     \While{budget $B$ not exhausted}
+%         \State $k \gets$ \textsc{SelectCandidate}($\mathcal{P}, \mathcal{P}^*, S$)
+%         \State $j \gets$ \textsc{SelectModule}($\Phi_k$)
+%         \State $\mathcal{M} \gets$ minibatch of size $b$ from $\mathcal{D}_{\text{feedback}}$
+%         \State Gather feedbacks, scores, traces for $\Phi_k$ on $\mathcal{M}$ using $\mu_f$
+%         \State $\pi_j' \gets$ \textsc{UpdatePrompt}($\pi_j$, feedbacks, traces)
+%         \State $\Phi' \gets$ Copy of $\Phi_k$ w/ module $j$ updated by $\pi_j'$
+%         \State $\sigma$, $\sigma'$ $\gets$ avg score on $\mathcal{M}$ (before, after)
+%         \If{$\sigma'$ improved}
+%             \State Add $\Phi'$ to $\mathcal{P}$; Add $k$ to $\mathcal{A}$
+%             \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%                 \State $S_{\Phi'}[i] \gets \mu(\Phi'(x_i), m_i)$
+%                 \If{$S_{\Phi'}[i] > s^*[i]$}
+%                     \State $s^*[i] \gets S_{\Phi'}[i]$, $\mathcal{P}^*[i] \gets \{\Phi'\}$
+%                 \ElsIf{$S_{\Phi'}[i] = s^*[i]$}
+%                     \State $\mathcal{P}^*[i] \gets \mathcal{P}^*[i] \cup \{\Phi'\}$
+%                 \EndIf
+%             \EndFor
+%         \EndIf
+%     \EndWhile
+%     \State \Return $\Phi^*$ maximizing average score on $\mathcal{D}_{\text{pareto}}$
+%     \end{algorithmic}
+%     \end{algorithm}
+% \end{minipage}%
+% \hfill
+% \begin{minipage}[t]{0.45\textwidth}
+%     \begin{algorithm}[H]
+%     \caption{Pareto-based candidate selection}
+%     \label{alg:select_candidate}
+%     \begin{algorithmic}[1]
+%     \Function{SelectCandidate}{$\mathcal{P}, \mathcal{P}^*, S$}
+%         \State $\mathcal{C} \gets$ unique candidates in $\bigcup_i \mathcal{P}^{*}[i]$
+%         \State $D \gets \emptyset$
+%         \While{there exists $\Phi \in \mathcal{C} \setminus D$ dominated by another in $\mathcal{C} \setminus D$}
+%             \State $D \gets D \cup \{\Phi\}$
+%         \EndWhile
+%         \State Remove $D$ from each $\mathcal{P}^{*}[i]$ to get $\hat{\mathcal{P}}^{*}[i]$
+%         \State Let $f[\Phi]=$ number of $i$ for which $\Phi \in \hat{\mathcal{P}}^{*}[i]$
+%         \State Sample $\Phi_k$ from $\hat{\mathcal{C}}$ with probability $\propto f[\Phi_k]$
+%         \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+%     \EndFunction
+%     \end{algorithmic}
+%     \end{algorithm}
+% \end{minipage}
+% \caption{(\textbf{Left}) GEPA's core algorithm for reflective prompt evolution. GEPA works iteratively, in each iteration, selecting one of the current candidates to evolve (line 7), executing the identified candidate on a minibatch of rollouts, while utilizing a special \textit{feedback metric} $\mu_f$ to gather module specific feedback when available (lines 9-10), using an LLM to reflectively update the prompt (line 11), and evaluating whether the system instantiated with the new prompt improved the performance on the minibatch (line 14). If improved, GEPA then proceeds to evaluate the new system candidate on the full $D_{pareto}$ set, adding it to the list of candidates tracked and marking the new system's parent.
+% (\textbf{Right}) SelectCandidate: sample a non-dominated candidate according to instance frequency.}
+% \label{fig:sidebyside-algs}
+% \end{figure}
+
+% Talk about (Re)flection, (Ge)netic, (Pa)reto. Keep this section brief.
+% \begin{algorithm}[t]
+% \caption{\textbf{Sample-Efficient Compound System Optimization}}
+% \label{alg:gepa_optimizer}
+% \begin{algorithmic}[1]
+% \Require System $\Phi$, dataset $\mathcal{D}_{\text{train}}$, eval metric $\mu$, feedback metric $\mu_f$, budget $B$, minibatch size $b$
+% \vspace{0.5em}
+% \State // \textbf{Initialization}
+% \State Split $\mathcal{D}_{\text{train}}$ into feedback set $\mathcal{D}_{\text{feedback}}$, Pareto set $\mathcal{D}_{\text{pareto}}$
+% \State Initialize candidate list $\mathcal{P} \gets [\Phi]$; parent list $\mathcal{A} \gets [\text{None}]$
+% \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%     \State $S_{\Phi}[i] \gets s^*[i] \gets \mu(\Phi(x_i), m_i)$
+%     \State $\mathcal{P}^*[i] \gets \{\Phi\}$
+% \EndFor
+% \vspace{0.25em}
+% \State // \textbf{Optimization Loop}
+% \While{budget $B$ not exhausted}
+%     \State $k \gets$ \textsc{SelectCandidate}($\mathcal{P}, \mathcal{P}^*, S$)
+%     \State $j \gets$ \textsc{SelectModule}($\Phi_k$)
+%     \State $\mathcal{M} \gets$ minibatch of size $b$ from $\mathcal{D}_{\text{feedback}}$
+%     \State Gather feedbacks, scores, traces for $\Phi_k$ on $\mathcal{M}$ using $\mu_f$
+%     \State $\pi_j' \gets$ \textsc{UpdatePrompt}($\pi_j$, feedbacks, traces)
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ with module $j$ updated by $\pi_j'$
+%     \State $\sigma$, $\sigma'$ $\gets$ avg score on $\mathcal{M}$ (before, after)
+%     \If{$\sigma'$ improved}
+%         \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%             \State $S_{\Phi'}[i] \gets \mu(\Phi'(x_i), m_i)$
+%             \If{$S_{\Phi'}[i] > s^*[i]$}
+%                 \State $s^*[i] \gets S_{\Phi'}[i]$, $\mathcal{P}^*[i] \gets \{\Phi'\}$
+%             \ElsIf{$S_{\Phi'}[i] = s^*[i]$}
+%                 \State $\mathcal{P}^*[i] \gets \mathcal{P}^*[i] \cup \{\Phi'\}$
+%             \EndIf
+%         \EndFor
+%         \State Add $\Phi'$ to $\mathcal{P}$; add $k$ to $\mathcal{A}$
+%     \EndIf
+% \EndWhile
+% \vspace{0.25em}
+% \State \Return $\Phi^*$ maximizing average score on $\mathcal{D}_{\text{pareto}}$
+% \end{algorithmic}
+% \vspace{-0.3em}
+% \caption*{\textit{At each iteration, propose a prompt/module edit, evaluate locally, and only admit it if performance improves. Track per-instance Pareto fronts and return the candidate with best average score.}}
+% \end{algorithm}
+
+% \vspace{1.5em}
+
+% \begin{algorithm}[t]
+% \caption{SelectCandidate: Sample a Non-Dominated Candidate Proportional to Frequency}
+% \label{alg:select_candidate}
+% \begin{algorithmic}[1]
+% \Function{SelectCandidate}{$\mathcal{P}, \mathcal{P}^*, S$}
+%     \State $\mathcal{C} \gets$ all unique candidates in $\bigcup_i \mathcal{P}^{*}[i]$
+%     \State $D \gets \emptyset$
+%     \While{there exists $\Phi \in \mathcal{C} \setminus D$ dominated by another in $\mathcal{C} \setminus D$}
+%         \State $D \gets D \cup \{\Phi\}$
+%     \EndWhile
+%     \State Remove $D$ from each $\mathcal{P}^{*}[i]$ to get $\hat{\mathcal{P}}^{*}[i]$
+%     \State Let $f[\Phi]=$ number of $i$ for which $\Phi \in \hat{\mathcal{P}}^{*}[i]$
+%     \State Sample $\Phi_k$ from $\hat{\mathcal{C}}$ with probability $\propto f[\Phi_k]$
+%     \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+% \EndFunction
+% \end{algorithmic}
+% \end{algorithm}
+
+% In your document, where you want the algorithms:
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} System $\Phi$, dataset $\mathcal{D}_{\text{train}}$, eval metric $\mu$, feedback metric $\mu_f$, budget $B$, minibatch size $b$
+% \vspace{0.5em}
+% \State // \textbf{Initialization}
+% \State \textsc{SplitDataset}($\mathcal{D}_{\text{train}}$) $\to$ feedback set $\mathcal{D}_{\text{feedback}}$, pareto set $\mathcal{D}_{\text{pareto}}$
+% \State Initialize optimization candidates list $\mathcal{P} \gets [\Phi]$, parents list $\mathcal{A} \gets [\text{None}]$
+% \State // $S_{\Phi''}[i]$ is the score of some candidate $\Phi''$ on $\mathcal{D}_{\text{pareto}}[i]$
+% \State // $\mathcal{P}^*[i]$: set of candidates achieving best score on $\mathcal{D}_{\text{pareto}}[i]$
+% \State // $s^*[i]$: best score so far on $\mathcal{D}_{\text{pareto}}[i]$
+% \For{each $(x_i,m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%     \State $S_{\Phi}[i] \gets s^*[i] \gets \mu(\Phi(x_i), m_i)$
+%     \State $\mathcal{P}^*[i] \gets \{\Phi\}$
+% \EndFor
+
+% \vspace{0.25em}
+% \State // \textbf{Optimization Loop}
+% \While{budget $B$ not exhausted}
+%     \State $k \gets$ \textsc{SelectCandidate}($\mathcal{P}, \mathcal{P}^*, S$)
+%     \State $j \gets$ \textsc{SelectModule}($\Phi_k$)
+%     \State $\mathcal{M} \gets$ sample minibatch of size $b$ from $\mathcal{D}_{\text{feedback}}$
+    
+%     \State Gather feedbacks, scores and traces from $\Phi_k$ on $\mathcal{M}$ using $\mu_f$
+%     \State $\pi_j' \gets$ \textsc{UpdatePrompt}($\pi_j$, feedbacks, traces)
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ having module $j$ updated with new prompt $\pi_j'$
+    
+%     \State $\sigma$, $\sigma'$ $\gets$ avg score on $\mathcal{M}$ before and after edit
+    
+%     \If{$\sigma'$ improved}
+%         \State // Evaluate $\Phi'$ on $\mathcal{D}_{\text{pareto}}$:
+%         \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%             \State $S_{\Phi'}[i] \gets \mu(\Phi'(x_i), m_i)$
+%             \If{$S_{\Phi'}[i] > s^*[i]$}
+%                 \State $s^*[i] \gets S_{\Phi'}[i]$, $\mathcal{P}^*[i] \gets \{\Phi'\}$
+%             \ElsIf{$S_{\Phi'}[i] = s^*[i]$}
+%                 \State $\mathcal{P}^*[i] \gets \mathcal{P}^*[i] \cup \{\Phi'\}$
+%             \EndIf
+%         \EndFor
+%         \State Add $\Phi'$ to candidate set $\mathcal{P}$, Add $k$ to $\mathcal{A}$
+%     \EndIf
+% \EndWhile
+% \vspace{0.25em}
+% \State \Return $\Phi^*$ maximizing average score on $\mathcal{D}_{\text{pareto}}$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{\textbf{Sample-Efficient Compound System Optimization.} 
+% At each iteration, propose a prompt/module edit, evaluate locally, and only admit it if performance improves. Track per-instance Pareto fronts and return the candidate with best average held-out score.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \begin{algorithm}
+% \caption{SelectCandidate: Sample a Non-Dominated Candidate Proportional to Frequency}
+% \begin{algorithmic}[1]
+% \Function{SelectCandidate}{$\mathcal{P}, \mathcal{P}^*, S$}
+%     \State $\mathcal{C} \gets$ all unique candidates in $\bigcup_i \mathcal{P}^{*}[i]$
+%     \State $D \gets \emptyset$
+%     \State // A candidate $\Phi$ is dominated if some $\Psi$ is no worse than $\Phi$ on all fronts and better on at least one.
+%     \While{there exists $\Phi \in \mathcal{C} \setminus D$ dominated by another in $\mathcal{C} \setminus D$}
+%         \State $D \gets D \cup \{\Phi\}$
+%     \EndWhile
+
+%     \State Remove all $D$ from each $\mathcal{P}^{*}[i]$ to get $\hat{\mathcal{P}}^{*}[i]$
+
+%     \State Let $f[\Phi] =$ number of $i$ for which $\Phi \in \hat{\mathcal{P}}^{*}[i]$
+%     \State Sample $\Phi_k$ from $\hat{\mathcal{C}}$ with probability proportional to $f[\Phi_k]$
+%     \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+% \EndFunction
+% \end{algorithmic}
+% \end{algorithm}
+
+% \begin{algorithmic}[1]
+% \Function{SelectCandidate}{$\mathcal{P}, \mathcal{P}^*, S$}
+%     \State // Step 1: Remove dominated candidates
+%     \State Initialize dominated set $D \gets \emptyset$
+%     \State Let $\text{scores}[\Phi] \gets$ mean score of $\Phi$ from $S_\Phi$
+%     \State $\mathcal{C} \gets$ all unique candidates in $\,\bigcup_i \mathcal{P}^*[i]$
+%     \Repeat
+%         \State found $\gets$ \textbf{False}
+%         \For{each $\Phi \in \mathcal{C} \setminus D$ (ascending by $\text{scores}[\Phi]$)}
+%             \If{$\Phi$ is dominated by some $\Psi \in \mathcal{C} \setminus (D \cup \{\Phi\})$ with respect to all fronts}
+%                 \State $D \gets D \cup \{\Phi\}$, found $\gets$ \textbf{True}
+%                 \State \textbf{break}
+%             \EndIf
+%         \EndFor
+%     \Until{found = \textbf{False}}
+%     \State $\hat{\mathcal{P}}^{*}[i] \gets \mathcal{P}^{*}[i] \setminus D$ for all $i$
+    
+%     \State // Step 2: Frequency counting
+%     \For{each $i$}
+%         \For{each $\Phi_j \in \hat{\mathcal{P}}^{*}[i]$}
+%             \State $f[\Phi_j] \gets f[\Phi_j] + 1$
+%         \EndFor
+%     \EndFor
+
+%     \State // Step 3: Sample candidate $\Phi_k$ proportional to $f[\cdot]$
+%     \State Sample $\Phi_k \sim f$
+%     \State \Return index $k$ of $\Phi_k$ in $\mathcal{P}$
+% \EndFunction
+% \end{algorithmic}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} System $\Phi$, dataset $\mathcal{D}_{\text{train}}$, eval metric $\mu$, feedback metric $\mu_f$, budget $B$, minibatch size $b$
+% \vspace{0.5em}
+% \State \textsc{SplitDataset}($\mathcal{D}_{\text{train}}$) $\to$ feedback set $\mathcal{D}_{\text{feedback}}$, pareto set $\mathcal{D}_{\text{pareto}}$
+
+% \State Initialize optimiztion candidate set $\mathcal{P} \gets [\Phi]$, parents $\mathcal{A} \gets [None]$
+
+% \vspace{0.25em}
+% \State // Initialize Pareto Front ($s^*$), and candidates achieving 
+% \For{each $(x_i,m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%     \State $S_{\Phi}[i] \gets s^*[i] \gets \mu(\Phi(x_i), m_i)$
+%     \State $\mathcal{P}^*[i] \gets \{\Phi\}$
+% \EndFor
+
+% \vspace{0.25em}
+% \While{budget $B$ not exhausted}
+%     \State $k \gets$ \textsc{SelectCandidate}($\mathcal{P}, \mathcal{P}^*, S$)
+%     \State $j \gets$ \textsc{SelectModule}($\Phi_k$)
+%     \State $\mathcal{M} \gets$ sample minibatch of size $b$ from $\mathcal{D}_{\text{feedback}}$
+    
+%     \State Gather feedbacks, scores and traces from $\Phi_k$ on $\mathcal{M}$ using $\mu_f$
+%     \State $\pi_j' \gets$ \textsc{UpdatePrompt}($\pi_j$, feedbacks, traces)
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ having module $j$ updated with new prompt $\pi_j'$
+    
+%     \State $\sigma$, $\sigma'$ $\gets$ avg score on $\mathcal{M}$ before and after edit
+    
+%     \If{$\sigma'$ improved}
+%         \State // Evaluate $\Phi'$ on $\mathcal{D}_{\text{pareto}}$:
+%         \For{each $(x_i, m_i)$ in $\mathcal{D}_{\text{pareto}}$}
+%             \State $S_{\Phi'}[i] \gets \mu(\Phi'(x_i), m_i)$
+%             \If{$S_{\Phi'}[i] > s^*[i]$}
+%                 \State $s^*[i] \gets S_{\Phi'}[i]$, $\mathcal{P}^* \gets \{\Phi'\}$
+%             \ElsIf{$S_{\Phi'}[i] = s^*[i]$}
+%                 \State $\mathcal{P}^*[i] \gets \mathcal{P}^*[i] \cup \{\Phi'\}$
+%             \EndIf
+%         \EndFor
+%         \State Add $\Phi'$ to candidate set $\mathcal{P}$, Add k to $\mathcal{A}$
+%     \EndIf
+% \EndWhile
+% \vspace{0.25em}
+% \State \Return $\Phi^*$ maximizing average score on $\mathcal{D}_{\text{pareto}}$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{\textbf{Sample-Efficient Compound System Optimization.} 
+% At each iteration, propose a prompt/module edit, evaluate locally, and only admit it if performance improves. Track per-instance Pareto fronts and return the candidate with best average held-out score.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \begin{algorithm}[h]
+% \caption{Remove Strictly Dominated Programs}
+% \label{alg:pareto-remove-detailed}
+% \begin{algorithmic}[1]
+% \Function{PrunePareto}{$\mathcal{P}, S$}
+%     \Repeat
+%         \State $changed \gets$ \textbf{False}
+%         \State $\mathcal{C} \gets \bigcup_{x} \mathcal{P}[x]$
+%         \For{each $Q \in \mathcal{C}$}
+%             \If{exists $P$ such that $S_P[x]\ge S_Q[x]~\forall x$, and $S_P[x'] > S_Q[x']$ for some $x'$}
+%                 \For{all $x$} \State remove $Q$ from $\mathcal{P}[x]$ \EndFor
+%                 \State $changed \gets$ \textbf{True}
+%             \EndIf
+%         \EndFor
+%     \Until{not $changed$}
+%     \State \Return{$\mathcal{P}$}
+% \EndFunction
+% \end{algorithmic}
+% \end{algorithm}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} Compound system $\Phi$, dataset $\mathcal{D}_{\text{train}} = \{(x, m)\}$, evaluation metric $\mu$, feedback metric $\mu_f$, rollout budget $B$, minibatch size $b$
+% \State \textbf{Split} $\mathcal{D}_{\text{train}}$ into training set $\mathcal{D}_{\text{feedback}}$ and pareto evaluation set $\mathcal{D}_{\text{pareto}}$
+% \State Initialize candidate set $\mathcal{P} \gets \{\Phi\}$, scores $S \gets \{s_0\}$, parents $\mathcal{A} \gets \{\epsilon\}$
+% \State Initialize Pareto Front:
+% \For{$i=1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%     \State $s^*_i \gets \mu(\Phi(x_i, m_i))$; \Comment $s^*_i$: best score on $(x_i, m_i) \in \mathcal{D}_\text{pareto}$
+%     \State $\mathcal{P}_i^* \gets \{\Phi\}$; \Comment $\mathcal{P}_i^*$: systems attaining $s^*_i$ for instance $i$
+% \EndFor
+% \While{budget $B$ not exhausted}
+%     \State Select $\Phi_k$ from $\mathcal{P}$ for edit (\emph{e.g.}, $\arg\max S$ or sampling)
+%     \State Select module $j$ in $\Phi_k$ via round-robin
+%     \State Sample minibatch $\mathcal{M} \subset \mathcal{D}_\text{feedback}$, $|\mathcal{M}|=b$
+%     \State For minibatch $\mathcal{M}$, collect: predictions $y$, feedbacks $f$, scores $s$, and traces $(X_j, Y_j)$ via $\Phi_k$ and $\mu_f$
+%     \State Aggregate feedback $\mathcal{F} \gets \{f\}$, $\sigma \gets \operatorname{mean}(s)$
+%     \State $\pi_j' \gets \text{UpdatePrompt}(\pi_j, \{(X_j, Y_j)\}, \mathcal{F})$
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ with $\pi_j \gets \pi_j'$
+%     \State $\sigma' \gets$ minibatch mean $\mu_f(\Phi'(x), m).\text{score}$ over $\mathcal{M}$
+%     \If{$\sigma' \leq \sigma$} \Comment New candidate did not improve on the minibatch.
+%         \State \textbf{continue} \Comment Discard and retry in next iteration.
+%     \EndIf
+%     \For{$i = 1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%         \State $s' \gets \mu(\Phi'(x_i), m_i)$
+%         \If{$s' > s^*_i$}
+%             \State $s^*_i \gets s'$ \Comment The new candidate improved on the pareto-front
+%             \State $\mathcal{P}_i^* \gets \{ \Phi' \}$
+%         \ElsIf{$s' = s^*_i$}
+%             \State $\mathcal{P}_i^* \gets \mathcal{P}_i^* \cup \{\Phi'\}$ \Comment The new candidate got as good score is the current best
+%         \EndIf
+%     \EndFor
+%     \State Add $\Phi'$ to $\mathcal{P}$, $S$, $\mathcal{A}$ (record parent $k$)
+% \EndWhile
+% \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \mathbb{E}_{(x,m) \sim \mathcal{D}_\text{pareto}} [\mu(\Phi'(x), m)]$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{
+% \textbf{Sample-Efficient Compound AI System Optimization.}
+% Let $\mathcal{D}_\text{pareto} = \{(x_i, m_i)\}$.
+% We maintain (a) a vector of per-instance best scores, $(s^*_1, \ldots, s^*_N)$ with $s^*_i = \max_\Phi \mu(\Phi(x_i), m_i)$, and (b) a vector of sets $\mathcal{P}_i^*$ storing all candidates achieving $s^*_i$.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} Compound system $\Phi$, dataset $\mathcal{D}_{\text{train}} = \{(x, m)\}$, evaluation metric $\mu$, feedback metric $\mu_f$, rollout budget $B$, minibatch size $b$
+% \State \textbf{Split} $\mathcal{D}_{\text{train}}$ into training set $\mathcal{D}_{\text{feedback}}$ and pareto evaluation set $\mathcal{D}_{\text{pareto}}$
+% \State Initialize candidate set $\mathcal{P} \gets \{\Phi\}$, scores $S \gets \{s_0\}$, parents $\mathcal{A} \gets \{\eps\}$
+% \State Initialize Pareto Front:
+% \For{$i=1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%     \State $s^*_i \gets \mu(\Phi(x_i, m_i))$; \Comment $s^*_i$ is the best achieved score on $(x_i, m_i) \in \mathcal{D}_\text{pareto}$
+%     \State $\mathcal{P}_i^* \gets \{\Phi\}$; \Comment $\mathcal{P}_i^*$ is the set of candidate systems $\Phi$ attaining $s^*_i$ for instance $i$
+% \EndFor
+% \While{budget $B$ not exhausted}
+%     \State Select $\Phi_k$ from $\mathcal{P}$ for edit (\emph{e.g.}, $\arg\max S$ or sampling)
+%     \State Select module $j$ in $\Phi_k$ via round-robin
+%     \State Sample minibatch $\mathcal{M} \subset \mathcal{D}_\text{feedback}$, $|\mathcal{M}|=b$
+%     \For{$(x, m) \in \mathcal{M}$}
+%         \State $y \gets \Phi_k(x; \langle \Pi, \Theta \rangle_{\Phi_k})$
+%         \State $f \gets \mu_f(y, m).\text{feedback}$
+%         \State $s \gets \mu_f(y, m).\text{score}$
+%         \State Extract $(X_j, Y_j) \gets y.\texttt{trace}[j]$
+%     \EndFor
+%     \State Aggregate feedback $\mathcal{F} \gets \{f\}$, $\sigma \gets \frac{1}{b} \sum s$
+%     \State $\pi_j' \gets \text{UpdatePrompt}(\pi_j, \{(X_j, Y_j)\}, \mathcal{F})$
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ with $\pi_j \gets \pi_j'$
+%     \State $\sigma' \gets$ minibatch mean $\mu_f(\Phi'(x), m).\text{score}$ over $\mathcal{M}$
+%     \If{$\sigma' \leq \sigma$}
+%         \State \textbf{continue}
+%     \EndIf
+%     \For{$i = 1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%         \State $s' \gets \mu(\Phi'(x_i), m_i)$
+%         \If{$s' > s^*_i$}
+%             \State $s^*_i \gets s'$
+%             \State $\mathcal{P}_i^* \gets \{ \Phi' \}$
+%         \ElsIf{$s' = s^*_i$}
+%             \State $\mathcal{P}_i^* \gets \mathcal{P}_i^* \cup \{\Phi'\}$
+%         \EndIf
+%     \EndFor
+%     \State Add $\Phi'$ to $\mathcal{P}$, $S$, $\mathcal{A}$ (record parent $k$)
+% \EndWhile
+% \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \mathbb{E}_{(x,m) \sim \mathcal{D}_\text{pareto}} [\mu(\Phi'(x), m)]$
+% % \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \frac{1}{|\mathcal{D}_\text{pareto}|} \sum_{(x_i,m_i) \in \mathcal{D}_\text{pareto}} \mu(\Phi'(x_i), m_i)$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{
+% \textbf{Sample-Efficient Compound AI System Optimization.}
+% Let $\mathcal{D}_\text{pareto} = \{(x_i, m_i)\}$.
+% We maintain (a) a vector of per-instance best scores, $(s^*_1, \ldots, s^*_N)$ with $s^*_i = \max_\Phi \mu(\Phi(x_i), m_i)$, and (b) a vector of sets $\mathcal{P}_i^*$ storing all candidates achieving $s^*_i$.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} Compound system $\Phi$, dataset $\mathcal{D}_{\text{train}} = \{(x, m)\}$, evaluation metric $\mu$, feedback metric $\mu_f$, rollout budget $B$, minibatch size $b$
+% \State \textbf{Split} $\mathcal{D}_{\text{train}}$ into training set $\mathcal{D}_{\text{feedback}}$ and Pareto evaluation set $\mathcal{D}_{\text{pareto}}$
+% \State Initialize candidate set $\mathcal{P} \gets \{\Phi\}$, scores $S \gets \{s_0\}$, parents $\mathcal{A} \gets \{\eps\}$
+% \State Initialize Pareto Front:
+% \For{$i=1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%     \State $s^*_i \gets \mu(\Phi(x_i, m_i))$; \Comment $s^*_i$ is the best achieved score on $(x_i, m_i) \in \mathcal{D}_\text{pareto}$
+%     \State $\mathcal{P}_i^* \gets \{\Phi\}$; \Comment $\mathcal{P}_i^*$ is the set of candidate systems $\Phi$ attaining $s^*_i$ for instance $i$
+% \EndFor
+% \While{budget $B$ not exhausted}
+%     \State Select $\Phi_k$ from $\mathcal{P}$ for edit (\emph{e.g.}, $\arg\max S$ or sampling)
+%     \State Select module $j$ in $\Phi_k$
+%     \State Sample minibatch $\mathcal{M} \subset \mathcal{D}_\text{feedback}$, $|\mathcal{M}|=b$
+%     \For{$(x, m) \in \mathcal{M}$}
+%         \State $y \gets \Phi_k(x; \langle \Pi, \Theta \rangle_{\Phi_k})$
+%         \State $f \gets \mu_f(y, m).\text{feedback}$
+%         \State $s \gets \mu_f(y, m).\text{score}$
+%         \State Extract $(X_j, Y_j) \gets y.\texttt{trace}[j]$
+%     \EndFor
+%     \State Aggregate feedback $\mathcal{F} \gets \{f\}$, $\sigma \gets \frac{1}{b} \sum s$
+%     \State $\pi_j' \gets \text{UpdatePrompt}(\pi_j, \{(X_j, Y_j)\}, \mathcal{F})$
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ with $\pi_j \gets \pi_j'$
+%     \State $\sigma' \gets$ minibatch mean $\mu_f(\Phi'(x), m).\text{score}$ over $\mathcal{M}$
+%     \If{$\sigma' \leq \sigma$}
+%         \State \textbf{continue}
+%     \EndIf
+%     \For{$i = 1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%         \State $s' \gets \mu(\Phi'(x_i), m_i)$
+%         \State \texttt{ParetoUpdateInstance}($i$, $\Phi'$, $s'$, $\{ s^*_i \}$, $\{ \mathcal{P}_i^* \}$)
+%     \EndFor
+%     \State Add $\Phi'$ to $\mathcal{P}$, $S$, $\mathcal{A}$ (record parent $k$)
+% \EndWhile
+% \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \mathbb{E}_{(x,m) \sim \mathcal{D}_\text{pareto}} [\mu(\Phi'(x), m)]$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{
+% \textbf{Sample-Efficient Compound AI System Optimization.}
+% Let $\mathcal{D}_\text{pareto} = \{(x_i, m_i)\}$.
+% We maintain (a) a vector of per-instance best scores, $(s^*_1, \ldots, s^*_N)$ with $s^*_i = \max_\Phi \mu(\Phi(x_i), m_i)$, and (b) a vector of sets $\mathcal{P}_i^*$ storing all candidates achieving $s^*_i$.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \begin{algorithm}[h]
+% \caption{\texttt{ParetoUpdateInstance}($i$, $\Phi'$, $s'$, $\{ s^*_i \}$, $\{\mathcal{P}_i^*\}$)}
+% \begin{algorithmic}[1]
+% \If{$s' > s^*_i$}
+%     \State $s^*_i \gets s'$
+%     \State $\mathcal{P}_i^* \gets \{ \Phi' \}$
+% \ElsIf{$s' = s^*_i$}
+%     \State $\mathcal{P}_i^* \gets \mathcal{P}_i^* \cup \{\Phi'\}$
+% \EndIf
+% \end{algorithmic}
+% \end{algorithm}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} Compound system $\Phi$, training set $\mathcal{D}_{\text{train}} = \{(x, m)\}$, Pareto evaluation set $\mathcal{D}_\text{pareto} = \{(x_i, m_i)\}$, evaluation metric $\mu$, feedback metric $\mu_f$, rollout budget $B$, minibatch size $b$
+% \State Initialize candidate set $\mathcal{P} \gets \{\Phi\}$, scores $S \gets \{s_0\}$, parents $\mathcal{A} \gets \{\varnothing\}$
+% \State \textbf{Initialize Pareto Front:}
+% \For{$i=1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%     \State $s^*_i \gets \mu(\Phi(x_i;m_i))$
+%     \State $\mathcal{P}_i^* \gets \{\Phi\}$
+% \EndFor
+% \While{budget $B$ not exhausted}
+%     \State Select $\Phi_k$ from $\mathcal{P}$ for edit (\emph{e.g.}, $\arg\max S$ or sampling)
+%     \State Select module $j$ in $\Phi_k$
+%     \State Sample minibatch $\mathcal{M} \subset \mathcal{D}_\text{train}$, $|\mathcal{M}|=b$
+%     \For{$(x, m) \in \mathcal{M}$}
+%         \State $y \gets \Phi_k(x; \langle \Pi, \Theta \rangle_{\Phi_k})$
+%         \State $f \gets \mu_f(y, m).\text{feedback}$
+%         \State $s \gets \mu_f(y, m).\text{score}$
+%         \State Extract $(X_j, Y_j) \gets y.\texttt{trace}[j]$
+%     \EndFor
+%     \State Aggregate feedback $\mathcal{F} \gets \{f\}$, $\sigma \gets \frac{1}{b} \sum s$
+%     \State $\pi_j' \gets \text{UpdatePrompt}(\pi_j, \{(X_j, Y_j)\}, \mathcal{F})$
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ with $\pi_j \gets \pi_j'$
+%     \State $\sigma' \gets$ minibatch mean $\mu_f(\Phi'(x), m).\text{score}$ over $\mathcal{M}$
+%     \If{$\sigma' \leq \sigma$}
+%         \State \textbf{continue}
+%     \EndIf
+%     \For{$i = 1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%         \State $s' \gets \mu(\Phi'(x_i), m_i)$
+%         \State \texttt{ParetoUpdateInstance}($i$, $\Phi'$, $s'$, $\{ s^*_i \}$, $\{ \mathcal{P}_i^* \}$)
+%     \EndFor
+%     \State Add $\Phi'$ to $\mathcal{P}$, $S$, $\mathcal{A}$ (record parent $k$)
+% \EndWhile
+% \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \mathbb{E}_{(x,m) \sim \mathcal{D}_\text{train}} [\mu(\Phi'(x), m)]$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{
+% \textbf{Sample-Efficient Compound AI System Optimization.}
+% Let $\mathcal{D}_\text{pareto} = \{(x_i, m_i)\}$.
+% We maintain (a) a vector of per-instance best scores, $(s^*_1, \ldots, s^*_N)$ with $s^*_i = \max_\Phi \mu(\Phi(x_i), m_i)$, and (b) a vector of sets $\mathcal{P}_i^*$ storing all candidates achieving $s^*_i$.}
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \vspace{5mm}
+
+% \noindent
+% \textbf{Notation:}
+% \begin{itemize}
+%     \item $s^*_i$ is the best achieved score on $(x_i, m_i) \in \mathcal{D}_\text{pareto}$
+%     \item $\mathcal{P}_i^*$ is the set of candidate systems $\Phi$ attaining $s^*_i$ for instance $i$
+% \end{itemize}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} Compound system $\Phi$, training set $\mathcal{D}_{\text{train}} = \{(x, m)\}$, Pareto evaluation set $\mathcal{D}_\text{pareto} = \{(x_i, m_i)\}$, evaluation metric $\mu$, feedback metric $\mu_f$, rollout budget $B$, minibatch size $b$
+% \State Initialize candidate set $\mathcal{P} \gets \{\Phi\}$, scores $S \gets \{s_0\}$, parents $\mathcal{A} \gets \{\varnothing\}$
+% \State \textbf{Initialize Pareto Front:}
+% \For{$i=1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%     \State $s_0[i] \gets \mu(\Phi(x_i;m_i))$
+%     \State $\texttt{pareto\_front}[i] \gets s_0[i]$
+%     \State $\texttt{pareto\_pool}[i] \gets \{\Phi\}$
+% \EndFor
+% \While{budget $B$ not exhausted}
+%     \State Select $\Phi_k$ from $\mathcal{P}$ for edit (\emph{e.g.}, $\arg\max S$ or sampling)
+%     \State Select module $j$ in $\Phi_k$
+%     \State Sample minibatch $\mathcal{M} \subset \mathcal{D}_\text{train}$, $|\mathcal{M}|=b$
+%     \For{$(x, m) \in \mathcal{M}$}
+%         \State $y \gets \Phi_k(x; \langle \Pi, \Theta \rangle_{\Phi_k})$
+%         \State $f \gets \mu_f(y, m).\text{feedback}$
+%         \State $s \gets \mu_f(y, m).\text{score}$
+%         \State Extract $(X_j, Y_j) \gets y.\texttt{trace}[j]$
+%     \EndFor
+%     \State Aggregate feedback $\mathcal{F} \gets \{f\}$, $\sigma \gets \frac{1}{b} \sum s$
+%     \State $\pi_j' \gets \text{UpdatePrompt}(\pi_j, \{(X_j, Y_j)\}, \mathcal{F})$
+%     \State $\Phi' \gets$ Copy of $\Phi_k$ with $\pi_j \gets \pi_j'$
+%     \State $\sigma' \gets$ minibatch mean $\mu_f(\Phi'(x), m).\text{score}$ over $\mathcal{M}$
+%     \If{$\sigma' \leq \sigma$}
+%         \State \textbf{continue}
+%     \EndIf
+%     \For{$i = 1$ \textbf{ to } $|\mathcal{D}_\text{pareto}|$}
+%         \State $s'[i] \gets \mu(\Phi'(x_i), m_i)$
+%         \State \texttt{ParetoUpdateInstance}($i$, $\Phi'$, $s'[i]$, $\texttt{pareto\_front}$, $\texttt{pareto\_pool}$)
+%     \EndFor
+%     \State Add $\Phi'$ to $\mathcal{P}$, $S$, $\mathcal{A}$ (record parent $k$)
+% \EndWhile
+% \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \mathbb{E}_{(x,m) \sim \mathcal{D}_\text{train}} [\mu(\Phi'(x), m)]$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{
+% \textbf{Sample-Efficient Compound AI System Optimization.}
+% With a Pareto set $\mathcal{D}_\text{pareto}$, we maintain (a) a vector $\texttt{pareto\_front}$ recording the best achieved score per instance, and (b) a vector $\texttt{pareto\_pool}$ storing sets of all candidate programs that achieve the current best score for each instance. If a candidate matches the best, it is added. If it exceeds the best, it replaces the set. Optimization proceeds via local module prompt edits.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \vspace{5mm}
+
+% \textbf{Helper function:}
+% \begin{algorithm}[h]
+% \caption{\texttt{ParetoUpdateInstance}($i$, $\Phi'$, $s'$, $\texttt{pareto\_front}$, $\texttt{pareto\_pool}$)}
+% \begin{algorithmic}[1]
+% \If{$s' > \texttt{pareto\_front}[i]$}
+%     \State $\texttt{pareto\_front}[i] \gets s'$
+%     \State $\texttt{pareto\_pool}[i] \gets \{ \Phi' \}$
+% \ElsIf{$s' = \texttt{pareto\_front}[i]$}
+%     \State $\texttt{pareto\_pool}[i] \gets \texttt{pareto\_pool}[i] \cup \{\Phi'\}$
+% \EndIf
+% \end{algorithmic}
+% \end{algorithm}
+
+% \begin{figure}[t]
+% \centering
+% \begin{minipage}{0.97\linewidth}
+% \begin{algorithmic}[1]
+% \State \textbf{Input:} Compound AI system $\Phi$, training set $\mathcal{D}_{\text{train}} = \{(x, m)\}$, evaluation metric $\mu$, feedback metric $\mu_f$, rollout budget $B$, minibatch size $b$
+% \State Initialize candidate set $\mathcal{P} \gets \{\Phi\}$, scores $S \gets \{s_0\}$, parents $\mathcal{A} \gets \{\varnothing\}$
+% \State Initialize Pareto pool $\mathcal{U} \gets \{\Phi\}$
+% \For{$i=1$ \textbf{ to } $|\mathcal{U}|$}
+%     \State $s_0[i] \gets \mu(\Phi(x;m))$ for $(x,m) \in \mathcal{U}$
+% \EndFor
+% \While{budget $B$ not exhausted}
+%     \State Select $\Phi_k \in \mathcal{U}$ via search/selection (\emph{e.g.}, $\arg\max S$ or sampling)
+%     \State Select module $j \in [|M|]$ in $\Phi_k$
+%     \State Sample minibatch $\mathcal{M} \subset \mathcal{D}_\text{train}$, $|\mathcal{M}|=b$
+%     \For{$(x, m) \in \mathcal{M}$}
+%         \State $y \gets \Phi_k(x; \langle \Pi, \Theta \rangle_{\Phi_k})$
+%         \State $f \gets \mu_f(y, m).{\text{feedback}}$
+%         \State $s \gets \mu_f(y, m).\text{score}$
+%         \State Extract $(X_j, Y_j) \gets y.\texttt{trace}[j]$
+%     \EndFor
+%     \State Aggregate feedback $\mathcal{F} \gets$ $\{f\}$, scores $\sigma \gets \frac{1}{b} \sum s$
+%     \State $\pi_j' \gets \text{UpdatePrompt}(\pi_j, \{(X_j, Y_j)\}, \mathcal{F})$
+%     \State Form $\Phi' \gets$ Copy of $\Phi_k$ with $\pi_j \gets \pi_j'$
+%     \State Evaluate $\sigma' \gets$ minibatch mean $\mu_f(\Phi'(x), m)$.score over $\mathcal{M}$
+%     \If{$\sigma' \leq \sigma$}
+%         \State\textbf{continue}
+%     \EndIf
+%     \State Evaluate $\vec{s}'[i] = \mu(\Phi'(x_i), m_i)$ for $(x_i, m_i) \in \mathcal{U}$
+%     \State Add $\Phi'$ to $\mathcal{P}$, $S$, $\mathcal{A}$ (record parent $k$)
+%     \State Update pareto front $\mathcal{U} \gets \text{ParetoUpdate}(\mathcal{U} \cup \{\Phi'\}, S \cup \{\vec{s}'\})$
+% \EndWhile
+% \State \Return $\Phi^* \gets \arg\max_{\Phi' \in \mathcal{P}} \mathbb{E}_{(x,m) \sim \mathcal{D}_\text{train}} [\mu(\Phi'(x), m)]$
+% \end{algorithmic}
+% \end{minipage}
+% \caption{
+% \textbf{Sample-Efficient Compound AI System Optimization.} 
+% Given system $\Phi$, dataset $\mathcal{D}_\text{train}$, and feedback metric $\mu_f$, we iteratively generate and evaluate new candidates by locally editing module prompts in minibatches. We select and promote candidates on a Pareto front, maximizing $\mathbb{E}_{(x, m)}[\mu(\Phi(x), m)]$ with at most $B$ system rollouts.
+% }
+% \label{fig:gepa_optimizer}
+% \end{figure}
+
+% \begin{algorithm}[h]
+% \caption{GEPA}
+% \begin{algorithmic}[1]
+% \Require Initial program $P_0$, train set $\mathcal{D}_\mathrm{train}$, val set $\mathcal{D}_\mathrm{val}$, metric $\mathcal{M}$, feedback $\mathcal{F}$
+% \Ensure Pareto-optimal DSPy program
+
+% \State Evaluate $P_0$ on $\mathcal{D}_\mathrm{val}$
+% \State Initialize Pareto fronts: $\mathcal{P}[x] \gets \{P_0\}$, scores $S_{P_0}[x]$ for all $x \in \mathcal{D}_\mathrm{val}$
+% \For{$i = 1$ to $N$}
+%     \State $\mathcal{C} \gets \bigcup_{x} \mathcal{P}[x]$
+%     \State $w_P \gets$ count($x$ s.t. $P \in \mathcal{P}[x]$), $\forall P \in \mathcal{C}$
+%     \State Sample $P_\text{curr}$ from $\mathcal{C}$ with weight $w_P$; pick module $M$ in $P_\text{curr}$ via round-robin
+%     \State Sample minibatch $\mathcal{B} \subset \mathcal{D}_\mathrm{train}$, $|\mathcal{B}| \sim 3$
+%     \For{each $x \in \mathcal{B}$}
+%         \State $y \leftarrow P_\text{curr}(x)$; $s \leftarrow \mathcal{M}(x, y)$; $f \leftarrow \mathcal{F}[M](x, y)$
+%     \EndFor
+%     \State $I' \leftarrow$ propose new instruction for $M$ (using LM, $f$)
+%     \State $P_\text{new} \leftarrow$ $P_\text{curr}$ with $M$ replaced by $I'$
+%     \State Evaluate $P_\text{new}$ on $\mathcal{B}$
+%     \If{score of $P_\text{new}$ improved on $\mathcal{B}$}
+%         \State Evaluate $P_\text{new}$ on all $\mathcal{D}_\mathrm{train}$ and $\mathcal{D}_\mathrm{val}$
+%         \State $\mathcal{P} \gets \textsc{UpdatePareto}(\mathcal{P}, P_\text{new}, S_{P_\text{new}})$
+%         \State $\mathcal{P} \gets \textsc{PrunePareto}(\mathcal{P}, S)$
+%     \EndIf
+% \EndFor
+% \State \Return{ $P^* \in \mathcal{C}$ with maximal aggregate score on $\mathcal{D}_\mathrm{train} \cup \mathcal{D}_\mathrm{val}$ }
+% \end{algorithmic}
+% \end{algorithm}
+
+% \begin{algorithm}[h]
+% \caption{Update Pareto Front Per Instance}
+% \label{alg:pareto-update-detailed}
+% \begin{algorithmic}[1]
+% \Function{UpdatePareto}{$\mathcal{P}, P, S_P$}
+%     \For{each $x \in \mathcal{D}_\mathrm{train}$}
+%         \State $s^* \gets \max\limits_{Q \in \mathcal{P}[x]} S_Q[x]$
+%         \If{$S_P[x] > s^*$}
+%             \State $\mathcal{P}[x] \gets \{P\}$
+%         \ElsIf{$S_P[x] = s^*$}
+%             \State $\mathcal{P}[x] \gets \mathcal{P}[x] \cup \{P\}$
+%         \EndIf
+%     \EndFor
+%     \State \Return{$\mathcal{P}$}
+% \EndFunction
+% \end{algorithmic}
+% \end{algorithm}
+
+% What is GEPA:
+% 1. Reflection: Use text feedback, that consists of text processed by compound AI system anyways, just not shown to LLMs typically.
+% 2. Genetic/Evolutionary: Mutation uses very small (3) number of rollouts, to make large update at once. "It is possible to use even very few data and rollout samples, to reflectively update the prompt making a large and successful change to the model, as compared to weight updates, which requires much more data".
+% 3. Use an "illumination algorithm" (inspired from MAP-Elites) to efficiently search the space. Specifically, GEPA uses an indirect encoding (the set of problems on which a specific prompt set is the best performing). The search space is defined as follows: Let P be the space of all problems of the type we wish to solve. Let V be the validation set provided to us, then V provides a discretization of the problem space P. We use V as our search space. 
+% 4. 
+
+
+% We present GEPA, a sample-efficient optimizer for compound AI systems. 
+
+
+
+% In this section, we detail \textbf{GEPA} (\textbf{Ge}netic \textbf{Pa}reto Prompt Optimization), our proposed method for optimizing compound AI systems. We begin by motivating our approach through several key observations about prompt-based learning. We then present the GEPA optimization algorithm in depth, highlight its integration of textual feedback via evolutionary mechanisms.
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Motivation and Design Insights}\label{sec:motivation}
+
+% \paragraph{Leveraging Rich, Underutilized Textual Feedback}
+% In practical deployments, the reward signals that guide optimization often originate from complex subsystems (e.g., compilers, toolchains, task-specific evaluators) that emit verbose, structured textual feedback—such as error traces, logs, or warnings—alongside scalar performance metrics. Even aside from this, there may be domain-specific knowledge corpora available, that otherwise do not get used by the program. Current optimizers cannot leverage such textual signals and focus exclusively on numeric rewards. Yet, such feedback provides actionable information about \emph{why} outputs failed or succeeded, offering fine-grained, interpretable guidance that can dramatically accelerate learning. Often reward metrics are aggregates of independent components, and the decomposition of the final reward into its subcomponents could itself be valuable. Textual reflection and feedback helps GEPA to make large, targeted behavioral changes to system modules using very few observations, facilitating efficient exploration.
+
+% \paragraph{Multi-objective optimization for diverse and data-efficient discovery}
+% Targeting global / aggregate metric during optimization can blunt the signal that can be used to improve performance on individual data points, discouraging the discovery of prompts that deviate significantly from the initial seed, yet include specific knowledge/rules/facts required to solve specific test cases. 
+% Instead, a multi-objective optimization metric, that tracks performance improvements on individual train instances encourages the emergence of diverse and specialized prompts (for individual train instances), enabling search over a large space, accelerating search through diversity, and thereby providing sample efficiency. Once such strategies have been identified, they can be integrated with other strategies to create strong generalizers.
+
+% \paragraph{Genetic Prompt Derivation}
+% A Compound AI System often consists of multiple modules, each having a different subtask, specified by different prompts that need to be jointly optimized towards the overall task. Some prior optimizers, that leverage bayesian search to identify combinations of prompts among modules, and between prompts and few shot demonstrations that work well together, need to create several prompt proposals and few-shot demonstrations upfront. However, often for complex task domains, good problem solving strategies, or heuristics are too far removed from the one that the seed prompt can elicit, and discovering them requires identifying some intermediate strategies first. This insight can be leveraged by treating each the prompt of each module in the system as a gene, and iteratively perturbing any one gene based on feedback starting from the seed prompt, to eventually a prompt that is able to elicit the right problem solving strategy.
+
+% \paragraph{Evolutionary Pressure}
+% While multi-objective optimization encourages diverse exploration, efficient progress toward strong overall performance is driven by prioritizing the most promising candidates. In each iteration, prompts are stochastically selected for reproduction, with the probability of selection proportional to the number of objectives (in the multi-objective pareto front) on which a prompt is the top performer. At the same time, only those candidates that achieve best-so-far performance on at least one data point are retained, filtering out redundant or underperforming solutions. This approach applies evolutionary pressure that centers the search on prompts with broad and meaningful impact, thereby maximizing sample efficiency and improving aggregate results.
+
+% \paragraph{Summary of GEPA’s Design}
+% GEPA combines three key components to optimize compound AI systems with high sample efficiency: (1) leveraging rich textual feedback from system outputs for more targeted prompt improvements, (2) applying multi-objective Pareto optimization to discover diverse and specialized prompts for individual data points, and (3) using evolutionary strategies to iteratively mutate and select the best-performing prompt candidates. This design enables rapid adaptation and strong performance—especially in data- and rollout-constrained settings.
+
+% \subsection{GEPA: The Evolutionary Optimization Algorithm}
+
+% Write about MAP-Elites:
+% \paragraph{Comparison to MAP-Elites.}
+% The GEPA algorithm bears significant resemblance to MAP-Elites, a quality-diversity evolutionary algorithm, in its use of an explicit archive (or elite set) and its emphasis on diversity among high-performing solutions. In MAP-Elites, the search space is partitioned into discrete ``cells'' defined by user-specified feature descriptors, with each cell retaining the best solution found according to a scalar objective. Similarly, GEPA maintains a collection of ``cells,'' but each cell corresponds to a specific training instance, and the archive for each cell consists of the set of Pareto-optimal programs---those that perform best for that instance. Both algorithms generate new candidates by mutating high-performing solutions (elites), though GEPA leverages targeted feedback mechanisms and language models for more informed mutations, rather than random variation. A key difference is that, whereas MAP-Elites prioritizes diversity across feature dimensions, GEPA's notion of diversity is per-instance optimality---programs are rewarded for covering distinct subsets of the data. Furthermore, GEPA maintains Pareto fronts per instance and prunes programs that are strictly dominated across all instances, while MAP-Elites typically maintains only the top solution per cell. Thus, GEPA can be viewed as an instance-based, Pareto-optimal counterpart to feature-based evolutionary illumination, retaining the core spirit of archive-based evolutionary search but adapting its granularity and objective to the program synthesis domain.
+
+% % \subsection{GEPA: Evolutionary Optimization Algorithm}
+% % \label{sec:gepa-description}
+
+% We formulate prompt discovery for compound AI systems as a multi-objective evolutionary search, introducing \textbf{GEPA (Generalized Evolutionary Program Algorithm)}, which jointly optimizes module prompts using both quantitative and textual signals.
+
+% \paragraph{Pareto-Front Prompt Pool.}
+% GEPA maintains a \textit{genetic pool} of candidate programs (sets of prompts), collectively forming a Pareto frontier with respect to multiple objectives; typically, these are per-instance model accuracies, error minimization, or other task-specific criteria. Unlike single-objective optimizers, GEPA explicitly tracks not only aggregate performance, but also the contributions of each candidate to specific objectives across the training dataset. This ensures the prompt pool contains both robust generalists and valuable specialists.
+
+% \paragraph{Evolutionary Variation and Feedback-Guided Editing.}
+% Optimization proceeds in cycles. In each, one from the Pareto pool is stochastically selected---favoring those appearing on the Pareto front for at least one instance (i.e., \emph{best-in-class} for some objective dimension), and selecting them with a probability proportional to the frequency of their appearance on the pareto front. Rather than relying on uninformed/random mutations, GEPA leverages module-level textual feedback---such as error traces, logs, or failure messages---observed during previous executions. These textual signals, optionally augmented by retrieval-augmented generation (RAG) over domain knowledge corpus, guide the generation of targeted prompt variants. For example, if a recurrent compiler error or misunderstanding is detected, the system can synthesize new candidate prompts specifically to address these failure modes, facilitating large and directed behavioral improvements.
+
+% \paragraph{Prompt Evaluation and Pareto Updating.}
+% Each new descendant program is evaluated both on the aggregate metric and across all objectives (e.g., per-instance results on $\mathcal{D}_\mathrm{train}$ and $\mathcal{D}_\mathrm{val}$). If the candidate outperforms the existing Pareto pool on any objective---that is, it achieves a new best on any data point---the corresponding Pareto front(s) are updated to include it, with ties handled inclusively. The process repeats until a computational budget or time limit is met, or until no further improvements are observed (Pareto front saturation).
+
+% \paragraph{Evolutionary Pressure and Selection.}
+% A fundamental innovation in GEPA is the continual application of evolutionary pressure: only prompts that are non-dominated (i.e., Pareto leaders for at least one instance) are retained in the population. Selection probabilities are proportional to each candidate's impact (the number of objectives on which it is a current best performer), thereby focusing exploration on widely effective solutions. Strictly dominated programs are pruned, ensuring focus and sample-efficiency.
+
+% \paragraph{Algorithmic Summary.}
+% In summary, GEPA evolves a diverse population of programs by iteratively selecting and perturbing Pareto-optimal candidates using feedback-driven edits. Each mutation is informed by structured textual feedback from the system and is evaluated for localized (per-instance) and global (aggregate) improvement. The evolutionary loop---consisting of selection, feedback-guided mutation, evaluation, Pareto update, and pruning---continues until stopping criteria are met, culminating in the selection of the candidate with highest aggregate validation performance from the non-dominated pool.
+
+% This results in a sample-efficient, feedback-responsive approach capable of rapidly surfacing both strong generalist and specialist strategies for compound AI systems.

@@ -1,0 +1,148 @@
+\documentclass{article}
+\PassOptionsToPackage{numbers}{natbib}
+
+
+\usepackage[preprint]{main}
+
+
+
+
+\usepackage[utf8]{inputenc} %
+\usepackage[T1]{fontenc}    %
+\usepackage{hyperref}       %
+\usepackage{url}            %
+\usepackage{booktabs}       %
+\usepackage{amsfonts}       %
+\usepackage{nicefrac}       %
+\usepackage{microtype}      %
+\usepackage{xcolor}         %
+
+\input{math_commands.tex}
+\input{_tcolorbox_style}
+\input{_colortable_style}
+\input{_maths}
+\input{_misc}
+\usepackage{tabularx} %
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{wrapfig}
+\usepackage{relsize}
+\usepackage[utf8]{inputenc} 
+\usepackage{subcaption}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{booktabs}     %
+\usepackage{multirow}     %
+\usepackage{multicol}     %
+\usepackage{array}        %
+\usepackage{float}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{adjustbox}    %
+\usepackage{graphicx}     %
+
+\usepackage{threeparttable} %
+
+\usepackage[bottom]{footmisc}
+\usepackage{cleveref}
+\AddToHook{cmd/appendix/before}{\crefalias{section}{appendix}}
+
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\newcommand{\gettailrelations}{\ensuremath{\mathtt{get\_tail\_relations}}}
+\newcommand{\getheadrelations}{\ensuremath{\mathtt{get\_head\_relations}}}
+\newcommand{\gettailentities}{\ensuremath{\mathtt{get\_tail\_entities}}}
+\newcommand{\getheadentities}{\ensuremath{\mathtt{get\_head\_entities}}}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\lt}{\textless}
+\newcommand{\gt}{\textgreater}
+
+\newcommand{\ActSet}{\ensuremath{\mathcal{U}_{\text{ret}}}}
+
+
+
+
+\newcommand{\answer}{\operatorname{Answer}}
+
+\newenvironment{blueblock}{\color{blue}}{\color{black}}
+
+\usepackage{xcolor,pifont}
+\newcommand{\dataset}[1]{\texttt{#1}}
+\newcommand{\colorann}[3]{\textcolor{#1}{${}^{#2}[$#3$]$}}
+\newcommand{\junhong}[1]{\colorann{green}{Junhong}{#1}}
+\newcommand{\zhu}[1]{\colorann{blue}{Yada}{#1}}
+\newcommand{\jy}[1]{\colorann{red}{JY}{#1}}
+\newcommand{\sw}[1]{\colorann{purple}{SW}{#1}}
+\newcommand{\julian}[1]{\colorann{magenta}{Julian}{#1}}
+
+\newcommand{\framework}{\textsc{KG-R1}}
+
+\title{Efficient and Transferable Agentic Knowledge Graph RAG via Reinforcement Learning}
+
+
+
+\author{
+    Junhong Lin$^{1}$\thanks{Equal contribution.}
+    \quad
+    Shicheng Liu$^{1*}$
+    \quad
+    Jinyeop Song$^{1}$
+    \quad
+    Song Wang$^{2}$
+    \\
+    \textbf{ Julian Shun$^{1}$}
+    \quad
+    \textbf{Yada Zhu$^{3}$}
+    \\[0.35em]
+    $^{1}$MIT CSAIL \quad
+    $^{2}$University of Virginia \quad
+    $^{3}$IBM Research
+    \\[0.25em]
+    \texttt{\small \{junhong,liushch, yeopjin, jshun\}@mit.edu \quad sw3wv@virginia.edu}\\
+    \texttt{\small yzhu@us.ibm.com}
+}
+
+
+\begin{document}
+
+
+\maketitle
+
+
+\begin{abstract}
+Knowledge-graph retrieval-augmented generation (KG-RAG) couples large language models (LLMs) with structured, verifiable knowledge graphs (KGs) to reduce hallucination and provide reasoning traces. However, current KG-RAG systems often rely on fixed pipelines of multiple LLM modules (e.g., planning, reasoning, and responding), which inflate inference costs and tie performance to specific graph schemas. To address this, we introduce \framework{}, an agentic framework that optimizes KG-RAG through reinforcement learning (RL). Unlike modular workflows, \framework{} uses a single agent that interacts with KGs as its environment, learning to retrieve information at each step and incorporating it into its reasoning and generation in a unified process. Across Knowledge-Graph Question Answering (KGQA) benchmarks, \framework{} demonstrates both \emph{efficiency} and \emph{transferability}---using Qwen 2.5-3B, \framework{} improves answer accuracy with fewer generation tokens than prior multi-module workflow methods that use much larger foundation or fine-tuned models. Furthermore, \framework{} exhibits strong \emph{plug-and-play} capability: after training, maintaining accuracy on unseen KGs without retraining. These properties make \framework{} a promising KG-RAG framework for real-world deployment. Our code is publicly available at \href{https://github.com/junhongmit/KG-R1}{\faGithub~\texttt{github.com/junhongmit/KG-R1/}}.
+\end{abstract}
+
+
+
+\input{Sections/1_introduction}
+\input{Sections/2_related_works}
+\input{Sections/4_methods}
+\input{Sections/5_experiment}
+\input{Sections/6_conclusion}
+
+
+
+\newpage
+\bibliography{reference, reference_JL}
+\bibliographystyle{ieeetr}
+
+\newpage
+\appendix
+\input{Sections/appendix}
+
+
+\newpage
+\input{checklist.tex}
+
+
+\end{document}

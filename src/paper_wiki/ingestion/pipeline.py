@@ -60,7 +60,7 @@ class IngestPipeline:
         self.summary_generator = SummaryGenerator(
             self.llm,
             self.settings.resolved_prompts_dir(),
-            max_context_chars=self.settings.max_parse_chars,
+            max_context_chars=self.settings.summary_max_context_chars,
         )
         self.prior_works_generator = PriorWorksGenerator(
             self.llm,

@@ -72,10 +72,28 @@ class Settings(BaseSettings):
         default=30.0,
         validation_alias=AliasChoices("WECHAT_REQUEST_TIMEOUT_SECONDS"),
     )
+    wechat_headline_prompt_path: str = Field(
+        default="wechat_headline_v1.py",
+        validation_alias=AliasChoices("WECHAT_HEADLINE_PROMPT_PATH"),
+    )
+    wechat_article_prompt_path: str = Field(
+        default="wechat_article_v1.py",
+        validation_alias=AliasChoices("WECHAT_ARTICLE_PROMPT_PATH"),
+    )
+    wechat_article_target_chars: int = Field(
+        default=3000,
+        validation_alias=AliasChoices("WECHAT_ARTICLE_TARGET_CHARS"),
+    )
+    wechat_proxy: str | None = Field(default=None, validation_alias=AliasChoices("WECHAT_PROXY"))
     cursor_headless_binary: str = Field(default="agent", validation_alias=AliasChoices("CURSOR_HEADLESS_BINARY"))
     cursor_headless_timeout_seconds: float = Field(
         default=300.0,
         validation_alias=AliasChoices("CURSOR_HEADLESS_TIMEOUT_SECONDS"),
+    )
+    cursor_api_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CURSOR_API_KEY"),
+        description="Cursor headless (-p) API key; browser `agent login` is not enough for print mode.",
     )
     cursor_render_theme: str = Field(default="摸鱼绿", validation_alias=AliasChoices("CURSOR_RENDER_THEME"))
     cursor_render_prompt_path: str = Field(
@@ -103,8 +121,23 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("RECOMMEND_EMBEDDING_MODEL"),
     )
     max_llm_retries: int = 3
-    request_timeout_seconds: float = 120.0
+    request_timeout_seconds: float = Field(
+        default=300.0,
+        validation_alias=AliasChoices("REQUEST_TIMEOUT_SECONDS"),
+        description="LLM HTTP read/write timeout in seconds (long summary/prior-works calls).",
+    )
+    llm_connect_timeout_seconds: float = Field(
+        default=15.0,
+        validation_alias=AliasChoices("LLM_CONNECT_TIMEOUT_SECONDS"),
+        description="LLM HTTP connect timeout; fail fast when the API host is unreachable without proxy.",
+    )
+    llm_http_proxy: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("LLM_HTTP_PROXY"),
+        description="Optional proxy only for LLM calls. If unset, httpx trusts HTTP(S)_PROXY from the process env.",
+    )
     max_parse_chars: int = 32000
+    summary_max_context_chars: int = Field(default=60000, validation_alias=AliasChoices("SUMMARY_MAX_CONTEXT_CHARS"))
 
     def resolved_knowledge_base_dir(self) -> Path:
         """返回知识库根目录；默认 `KnowledgeBase/`，集中存放 raw / artifacts / graph。"""

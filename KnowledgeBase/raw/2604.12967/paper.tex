@@ -1,0 +1,98 @@
+\documentclass[]{fairmeta}
+% Option "twocolumn" available, but please prioritize single-column
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Added
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{todonotes}
+\usepackage{multirow}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{dsfont}
+\usepackage{amssymb}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{lipsum}
+\usepackage{longtable} % if table is very long
+\usepackage{adjustbox}
+\usepackage{makecell}
+\usepackage{rotating}
+\usepackage{url}
+\usepackage{threeparttable}
+\usepackage{tabularx}
+\usepackage{subcaption}
+\newtcblisting{promptbox}[1][]{
+    breakable,
+    enhanced,
+    coltitle=white,
+    listing only,
+    boxed title style={sharp corners, frame hidden},
+    fonttitle=\ttfamily\centering\bfseries,
+    title={#1},
+    listing options={
+        language={},
+        basicstyle=\small\ttfamily,
+        breaklines=true,
+        breakautoindent=false,
+        breakindent=0pt,
+        columns=fullflexible,
+        showstringspaces=false,
+    },
+    boxsep=2pt,
+    top=2pt,
+    bottom=2pt,
+}
+%%%%%%%%%%%%%%%%%%%%%%%
+
+% \title{Cycle-Consistent Search: Gold-Free Reinforcement Learning for Search Agents}
+\title{Cycle-Consistent Search: Question Reconstructability as a Proxy Reward for Search Agent Training}
+
+\author[1,2,*]{Sohyun An}
+\author[1]{Shuibenyang Yuan}
+\author[1]{Hayeon Lee}
+\author[2,\dagger]{Cho-Jui Hsieh}
+\author[1,\dagger]{Alexander Min}
+
+\affiliation[1]{Meta Superintelligence Labs}
+\affiliation[2]{UCLA}
+
+\contribution[*]{Work done at Meta}
+\contribution[\dagger]{Joint last author}
+
+\input{text/0_abstract}
+
+\date{\today}
+\correspondence{Sohyun An at \email{sohyun0423@cs.ucla.edu}}
+
+% You can add additional metadata fields as follows 
+% \metadata[Code]{\url{https://github.com/facebookresearch/repo}}
+% \metadata[Blogpost]{\url{https://ai.meta.com/blog/?page=1}}
+
+\begin{document}
+
+\maketitle
+
+\input{text/1_introduction}
+\input{text/2_related_work}
+\input{text/4_method_v2}
+\input{text/5_experiments}
+\input{text/6_analysis}
+\input{text/7_conclusion}
+
+% \clearpage
+% \newpage
+\bibliographystyle{assets/plainnat}
+\bibliography{paper}
+
+\clearpage
+\newpage
+\beginappendix
+
+% \section{First appendix}
+\input{text/appendix}
+
+\end{document}

@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{llc}
+\toprule
+\textbf{Reward term} & \textbf{Coefficient} & \textbf{Value} \\
+\midrule
+Answer F1 ($R_{\text{out}}$)          & $\lambda_{\text{f1}}$   & 0.7 \\
+Answer retrieval ($R_{\text{out}}$)   & $\lambda_{\text{ret}}$  & 0.3 \\
+Step validity ($R_{\text{step}}$)     & $\lambda_{\text{step}}$ & 0.5 \\
+Evidence coverage ($R_{\text{ecpr}}$) & $\lambda_{\text{ecpr}}$ & 1.0 \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Coefficients of the composite reward.} Each coefficient weights one term of the reward in Section~\ref{sec:training}.}
+\label{tab:reward_weights}
+\end{table}

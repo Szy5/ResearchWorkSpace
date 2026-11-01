@@ -1,0 +1,81 @@
+{
+  "figures": [
+    {
+      "id": "fig-teaser",
+      "label": "fig:teaser",
+      "caption": "Comparison of experience reuse (retrieving past cases) and harness skill evolution (compiling experiences into reusable guidance).",
+      "source_path": "figures/teaser.pdf",
+      "asset_path": "assets/figures/teaser.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "dbba1534c2b74f5ac49aad8870ae6f85fa7fb65c712b32125e5ead25233ac7c8",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-setting",
+      "label": "fig:setting",
+      "caption": "Illustration of the problem setting. (a) Prior methods collect executions and mine reusable patterns offline. (b) In practical online streams, agents encounter tasks sequentially, yielding rich but one-shot execution experiences. (c) compiles these online experiences into evolving skill harnesses for future reuse.",
+      "source_path": "figures/setting.pdf",
+      "asset_path": "assets/figures/setting.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "ea1d1b664c776cf155a20c253c1c2843d1a2d2f325267c79008de254a902ec10",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-main",
+      "label": "fig:main",
+      "caption": "Overview of . The solver uses the current harness to solve a task batch or stream. Each execution produces a context, including input, action trajectory, outcome, and feedback. Execution reflection converts these contexts into candidate memories. The evolver compares the candidate memories with the current harness and updates the harness with cross-task patterns and task-type procedures for later batches.",
+      "source_path": "figures/main.pdf",
+      "asset_path": "assets/figures/main.jpg",
+      "section_id": "sec-related-work",
+      "status": "rendered",
+      "source_sha256": "acd33e22e02ca2021fb7865728ff1131b839c5b8eb6c8a60506a6e9a190948eb",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-skill-taxonomy",
+      "label": "fig:skill-taxonomy",
+      "caption": "Distribution of evolved skill patterns across benchmarks. The learned skills exhibit benchmark-specific characteristics, ranging from workflow and tool-use procedures to verification, domain reasoning, and output-constraint handling.",
+      "source_path": "figures/skill_taxonomy_general.png",
+      "asset_path": "assets/figures/skill-taxonomy.png",
+      "section_id": "sec-setup",
+      "status": "copied",
+      "source_sha256": "5c103dd5c9d1275e6c0e7564d82cd70e8b99af1768d8fd0212c36e5fc976201f",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-swe-evolution-setting",
+      "label": "fig:swe-evolution-setting",
+      "caption": "SWE-bench Lite success rates under different evolution settings. No-Evolve uses no harness updates; Train-Split Transfer evaluates skills evolved by Claude Sonnet on the training split; and Online-Updated updates skills during the task stream.",
+      "source_path": "figures/swe_cross_skill_transfer.png",
+      "asset_path": "assets/figures/swe-evolution-setting.png",
+      "section_id": "sec-harness-content-and-components-rq2",
+      "status": "copied",
+      "source_sha256": "bba17ca7ea1998b14d6cbba3190ed2f480fe8011084c2924d471db35a21510b9",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-swe-curator-opus",
+      "label": "fig:swe-curator-opus",
+      "caption": "Opus 4.7 Solver",
+      "source_path": "figures/swe_curator_solver_opus.png",
+      "asset_path": "assets/figures/swe-curator-opus.png",
+      "section_id": "sec-feedback-grounding-rq4",
+      "status": "copied",
+      "source_sha256": "17b4c71deb949c106cd95ca9aa6f6fec85a324c020e953a0d78659a9e9e408cc",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-swe-curator-opus-2",
+      "label": "fig:swe-curator-opus",
+      "caption": "Opus 4.7 Solver",
+      "source_path": "figures/swe_curator_solver_sonnet.png",
+      "asset_path": "assets/figures/swe-curator-opus-2.png",
+      "section_id": "sec-feedback-grounding-rq4",
+      "status": "copied",
+      "source_sha256": "500bdaf5b7d3a3b491f4c71cf9245d7e2134d74ea4a7c0a81519c40a2dcd515b",
+      "media_type": "png"
+    }
+  ]
+}

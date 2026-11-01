@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\small
+
+\resizebox{\columnwidth}{!}{         
+\begin{tabular}{lc}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Actor learning rate           & $1\times10^{-6}$ \\
+KL loss coefficient           & 0.03 ($k_3$ type) \\
+GRPO rollout $N$              & 4 \\
+Max interaction turns per question & 10 \\
+Train batch size              & 32 \\
+PPO mini-batch size           & 16 \\
+Max prompt length             & 4,096 \\
+Max response length per step  & 8,192 \\
+Max observation length        & 1,024 \\
+Rollout temperature           & 0.7 \\
+Total training steps          & 450 \\
+Hardware                      & 4$\times$ NVIDIA A100 (40\,GB) \\
+\bottomrule
+\end{tabular}}
+\caption{\textbf{Hyperparameters of reinforcement learning.}}
+\label{tab:rl_hyperparams}
+\end{table}

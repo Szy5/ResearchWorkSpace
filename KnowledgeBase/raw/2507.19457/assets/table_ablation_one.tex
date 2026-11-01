@@ -1,0 +1,53 @@
+\begin{table*}[htp]
+\centering
+% \caption{Comparing candidate selection strategies across different tasks with Qwen3 8B. At each step, \lstinline{SelectBestCandidate} \added{(used by TextGrad)} evolves the candidate prompt only from the top-scoring candidate, \added{while BeamSearch selects uniformly from top-N candidates}, which are more prone to getting stuck in a local optimum. \added{In comparison, GEPA's Pareto-based candidate selection strategy leads to +12.44\% improvement over baseline, significantly outperforming the +6.04\% and +5.11\% improvements of other candidate selection strategies, while keeping the evolution harness fixed.}}
+\caption{Comparing candidate selection strategies across different tasks with Qwen3 8B \added{while keeping the evolution harness fixed}. 
+At each step, \lstinline{SelectBestCandidate} \added{(used by TextGrad~\cite{textgrad})} evolves only from the top-scoring candidate. \lstinline{BeamSearch} maintains a pool of the top-N candidates (used by APO~\cite{pryzant_apo}), but is still prone to local optima. In comparison, GEPA's Pareto-based selection yields a +12.44\% improvement, significantly outperforming the +6.05\% and +5.11\% gains of greedy and beam-search strategies respectively.}
+\label{tab:ablation_1}
+\resizebox{0.8\textwidth}{!}{
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Qwen3 8B} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{Qwen3-8B}} \\
+\midrule
+% Baseline         & 42.33 & 36.90 & 35.33 & 80.82 & 48.85 & --- \\
+% MIPROv2          & 55.33 & 36.22 & 47.33 & 81.55 & 55.11 & +6.26 \\
+% GRPO             & 43.33 & 35.88 & 38.67 & 86.66 & 51.14 & +2.29 \\
+Baseline & 42.33 & 36.90 & 35.33 & 80.82 & 48.84 & --- \\
+SelectBestCandidate      & 58.33 & 30.44 & 45.33 & 85.45 & 54.89 & +6.05 \\
+\added{BeamSearch}               & \added{57.33} & \added{36.39} & \added{41.00} & \added{81.08} & \added{53.95} & \added{+5.11} \\
+% GEPAWMergeWLinear& 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +10.59 \\
+GEPA             & \textbf{62.33} & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \textbf{61.28} & \textbf{+12.44} \\
+% GEPA+Merge       & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 57.62 & +8.78 \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% \midrule
+% Baseline         & 38.00 & 47.79 & 46.33 & 78.57 & 52.67 & --- \\
+% MIPROv2          & 58.00 & 49.15 & 48.33 & 83.37 & 59.71 & +7.04 \\
+% % GEPAWLinear      & 66.00 & 49.49 & 51.00 & 94.03 & 65.13 & +12.46 \\
+% % GEPAWMergeWLinear& 64.00 & 49.15 & 52.67 & 93.34 & 64.79 & +12.12 \\
+% GEPA             & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 66.97 & +14.29 \\
+% GEPA+Merge       & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{68.69} & +\textbf{16.02} \\
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+\begin{figure}[!htp]
+    \centering
+    \begin{subfigure}[b]{0.42\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/dag_dots/Papillon_PAPILLON_gpt-41-mini_GEPAWLinear.pdf}
+        \caption{SelectBestCandidate Strategy}\label{fig:example_of_bestcandidate_selection_tree}
+    \end{subfigure}
+    % \hfill
+    \begin{subfigure}[b]{0.42\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/dag_dots/Papillon_PAPILLON_gpt-41-mini_GEPA.pdf}
+        \caption{Pareto-based candidate sampling.}
+    \end{subfigure}
+    \hfill
+    \caption{Comparing the impact of different candidate selection strategies. (Left) As can be seen, selecting the best-performing candidate in every iteration led to a local-optima after one iteration, leading to suboptimal search performance. (Right) On the other hand, using pareto-based candidate selection strategy, GEPA was able to generate a balanced search tree, finding a better performing program within the same budget.}\label{fig:compare_linear_vs_pareto}
+    % \vspace{-5mm}
+\end{figure}

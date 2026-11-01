@@ -1,0 +1,121 @@
+\documentclass[sigconf, nonacm]{acmart}
+
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{mdframed}
+\usepackage{multirow}
+\usepackage{needspace}
+\usepackage{placeins}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{fontawesome5}
+\definecolor{linkblue}{RGB}{0,0,238}
+\newcommand{\paperlink}[3]{\href{#3}{#1\,\textcolor{linkblue}{#2}}}
+\newcommand{\modelurl}{https://huggingface.co/Bobzong/EoG}
+\newcommand{\hficon}{\raisebox{-0.15em}{\includegraphics[height=1.0em]{figures/hf_logo.png}}}
+
+\providecommand{\llbracket}{[\![}
+\providecommand{\rrbracket}{]\!]}
+\providecommand{\varnothing}{\emptyset}
+\definecolor{lightblue}{RGB}{225,240,255}
+\definecolor{promptbg}{RGB}{242,244,249}
+\definecolor{agentbg}{RGB}{229,245,236}
+\definecolor{retrbg}{RGB}{253,236,220}
+\definecolor{rlbg}{RGB}{240,231,252}
+\definecolor{ablrole}{RGB}{250,234,240}
+\definecolor{ablquery}{RGB}{252,246,220}
+\definecolor{ablreward}{RGB}{253,242,230}
+\definecolor{dswebqsp}{RGB}{250,234,240}
+\definecolor{dscwq}{RGB}{252,246,220}
+\definecolor{dsgrail}{RGB}{232,245,232}
+\newcommand{\swatch}[2]{{\setlength{\fboxsep}{1pt}\colorbox{#1}{#2}}}
+\definecolor{icwebqsp}{RGB}{196,72,112}
+\definecolor{iccwq}{RGB}{196,136,0}
+\definecolor{icgrail}{RGB}{52,138,72}
+\definecolor{icgtsqa}{RGB}{88,92,190}
+\newcommand{\dsicon}[2]{{\setlength{\fboxsep}{0.9pt}\colorbox{#1}{\textcolor{white}{\sffamily\bfseries\tiny #2}}}}
+\newcommand{\icW}{\dsicon{icwebqsp}{W}}
+\newcommand{\icC}{\dsicon{iccwq}{C}}
+\newcommand{\icG}{\dsicon{icgrail}{G}}
+\newcommand{\icT}{\dsicon{icgtsqa}{T}}
+\newcommand{\best}[1]{\textbf{#1}}
+\newcommand{\daulg}[1]{\textbf{#1}}
+\mdfdefinestyle{subframe}{%
+  backgroundcolor=gray!6,
+  linecolor=gray!45,
+  linewidth=0.5pt,
+  roundcorner=2pt,
+  innerleftmargin=6pt,
+  innerrightmargin=6pt,
+  innertopmargin=5pt,
+  innerbottommargin=5pt
+}
+\AtBeginDocument{%
+  \providecommand\BibTeX{{%
+    Bib\TeX}}}
+
+\setcopyright{none}
+\settopmatter{printacmref=false}
+
+\begin{document}
+
+\title{Evolve on Graph: Self-Evolving Knowledge Graph Reasoning without Question Annotations}
+\author{Zongyuan Sun\texorpdfstring{$^{1,*}$}{}, Shuai Zhao\texorpdfstring{$^{1,\dagger}$}{}, Ke Shu\texorpdfstring{$^{2,*}$}{}, Ziyue Zhu\texorpdfstring{$^{1}$}{}, Shangyang Wu\texorpdfstring{$^{1}$}{}, Yuanlin Lin\texorpdfstring{$^{1}$}{}, Tao Wang\texorpdfstring{$^{1}$}{}, Shiyue Li\texorpdfstring{$^{1}$}{}, Yingjun Du\texorpdfstring{$^{3}$}{}, Anh Tuan Luu\texorpdfstring{$^{4}$}{}, Haoran Luo\texorpdfstring{$^{4,\dagger}$}{}}
+\affiliation{%
+  \institution{$^{1}$Beijing University of Posts and Telecommunications, Beijing, China\quad $^{2}$University of Helsinki, Helsinki, Finland}
+  \institution{$^{3}$University of Amsterdam, Amsterdam, Netherlands\quad $^{4}$Nanyang Technological University, Singapore}
+  \institution{$^{*}$Equal contribution.\quad $^{\dagger}$Corresponding authors.}
+  \institution{\vspace{3pt}\normalsize\paperlink{\faHome}{Homepage}{https://szy5.github.io/EoG/}\qquad\paperlink{\faGithub}{GitHub}{https://github.com/Szy5/EoG}\qquad\paperlink{\hficon}{Model}{\modelurl}}
+  \country{}
+}
+
+\renewcommand{\shortauthors}{Sun et al.}
+
+\begin{abstract}
+\input{sections/0_abstract}
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10002951.10003317.10003347.10003348</concept_id>
+  <concept_desc>Information systems~Question answering</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010147.10010178.10010187.10010188</concept_id>
+  <concept_desc>Computing methodologies~Semantic networks</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10010147.10010257.10010258.10010261</concept_id>
+  <concept_desc>Computing methodologies~Reinforcement learning</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Information systems~Question answering}
+\ccsdesc[500]{Computing methodologies~Semantic networks}
+
+\keywords{Knowledge Graph, Large Language Models, Agentic Reasoning, Self-Play, Graph Reasoning}
+
+\maketitle
+
+\input{sections/1_introduction}
+\input{sections/4_related_work}
+\input{sections/2_methods}
+\input{sections/3_experiments}
+\input{sections/5_conclusion}
+\clearpage
+\input{sections/reference}
+
+\FloatBarrier
+\clearpage
+\appendix
+\input{sections/appendix}
+\end{document}
+\endinput

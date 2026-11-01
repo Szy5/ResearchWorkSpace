@@ -1,0 +1,105 @@
+\documentclass[11pt]{article}
+
+\usepackage[final]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{nicefrac}
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{multirow}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{pifont}
+\useunder{\uline}{\ul}{}
+\usepackage{bbm}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{balance}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{colortbl}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\newcommand{\bing}[1]{{\color{olive}\bf [Bing: #1]}}
+\newcommand{\rubin}[1]{{\color{blue}\bf [Rubin: #1]}}
+\newcommand\yc[1]{\textcolor{orange}{[YC: #1]}}
+\newcommand\hq[1]{\textcolor{orange}{[Hanqing: #1]}}
+\newcommand\tingwei[1]{\textcolor{teal}{[TW: #1]}}
+\newcommand\xy[1]{\textcolor{red}{[xy: #1]}}
+\newcommand\tx[1]{\textcolor{olive}{[TX: #1]}}
+\newcommand\xl[1]{\textcolor{teal}{[xl: #1]}}
+
+
+\input{sections_new/hd}
+
+\title{\algname{}: Context-to-Harness Skill Compilation \\for Self-Evolving Agents}
+
+\author{
+\textbf{Tianxin Wei\textsuperscript{1}},
+\textbf{Zhan Shi\textsuperscript{2}},
+\textbf{Minhua Lin\textsuperscript{3}},
+\textbf{Bing He\textsuperscript{2}},
+\textbf{Zewen Liu\textsuperscript{4}},
+\textbf{Yisi Sang\textsuperscript{2}},
+\\
+\textbf{Yuanchen Bei\textsuperscript{1}},
+\textbf{Xuying Ning\textsuperscript{1}},
+\textbf{Jiaru Zou\textsuperscript{1}},
+\textbf{Ting-Wei Li\textsuperscript{1}},
+\textbf{Xiao Lin\textsuperscript{1}},
+\textbf{Yanjun Zhao\textsuperscript{1}},
+\\
+\textbf{Chi Wang\textsuperscript{5}},
+\textbf{Benoit Dumoulin\textsuperscript{2}},
+\textbf{Dakuo Wang\textsuperscript{6}},
+\textbf{Jingrui He\textsuperscript{1}},
+\textbf{Hanqing Lu\textsuperscript{2}}
+\\[2mm]
+\textsuperscript{1}University of Illinois Urbana-Champaign
+\quad
+\textsuperscript{2}Amazon
+\quad
+\textsuperscript{3}The Pennsylvania State University
+\\
+\textsuperscript{4}Emory University
+\quad
+\textsuperscript{5}AG2 AI
+\quad
+\textsuperscript{6}Northeastern University
+}
+
+\begin{document}
+\maketitle
+
+\input{sections_new/0-abs}
+\input{sections_new/1-intro}
+\input{sections_new/2-related}
+\input{sections_new/3-method}
+\input{sections_new/4-exp}
+\input{sections_new/5-con}
+
+\bibliography{main}
+\clearpage
+\newpage
+\appendix
+\input{sections_new/app}
+
+\end{document}

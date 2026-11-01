@@ -1,0 +1,10 @@
+\section*{Limitations}
+
+\paragraph{KG completeness and freshness.}
+FoG uses Wikidata triples as verifiable references for evidence-covered supervision, but real-world knowledge graphs may be incomplete, outdated, or noisy. When the required evidence is absent or incorrect in the graph, the agent may still fail despite following the intended evidence path. A natural extension is to equip the agent with a mechanism for detecting insufficient on-graph evidence and invoking external retrieval when needed.
+
+\paragraph{Dependence on teacher models.}
+Like other KG agents distilled from teacher trajectories~\citep{KnowCoder-A1,SoG-R1}, FoG currently relies on an external teacher LLM (Kimi-K2) for question synthesis and trajectory distillation. Although symbolic checks filter invalid questions and evidence paths, the synthesis process still depends on the generation quality of external teachers. One promising direction is to replace teacher-driven synthesis with self-play, where agents generate, explore, and verify candidate questions through graph execution and symbolic filtering.
+
+\paragraph{Long-horizon graph interaction.}
+FoG caps graph interactions at 10 turns, which is sufficient for the 1--4-hop questions studied in our benchmarks. More open-ended KG reasoning may require longer evidence chains and broader graph exploration. Extending FoG to such settings requires balancing search depth against error accumulation, noisy observations, and sparser rewards.

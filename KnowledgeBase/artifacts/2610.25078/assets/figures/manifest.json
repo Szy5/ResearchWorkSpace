@@ -1,0 +1,81 @@
+{
+  "figures": [
+    {
+      "id": "fig-coevox-teaser",
+      "label": "fig:coevox-teaser",
+      "caption": "Brain--body alignment in model--harness co-evolution. Left: Historical harnesses and checkpoints are recombined and adapted to resolve interface mismatch. Right: Step accuracy versus Turn-level Interface Mismatch Rate (TIMR; sec:coevolution) for ten evolved versions per method, from a three-round run evaluated on the Who\\&When test benchmark.",
+      "source_path": "assets/coevox-teaser.pdf",
+      "asset_path": "assets/figures/coevox-teaser.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "c1adbf74727eae9decfaad448d0fb43e78a818e19247f44055a44fee53eb3418",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-coevox-framework",
+      "label": "fig:coevox-framework",
+      "caption": "",
+      "source_path": "assets/coevox-framework.pdf",
+      "asset_path": "assets/figures/coevox-framework.jpg",
+      "section_id": "sec-method",
+      "status": "rendered",
+      "source_sha256": "bed180e95c149d266bf48c153315120520a462f360480f1657811a3c4a5e846f",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-whowhen-harness-evolution",
+      "label": "fig:whowhen-harness-evolution",
+      "caption": "Co-evolution on Who\\&When Algo. Dashed/solid curves show AA/SA, and marker labels give TIMR (\\%). Panels show harnesses at rounds 6--8. The left panel compares full with Harness-only, Model-only, and Latest-only evolution across ten rounds. The right panels connect selected rounds to actor-summary recovery, budget-aware evidence coverage, and evidence rechecking, including reuse of round-4 model weights. Full improves accuracy while keeping TIMR at or below 0.22\\%, illustrating the complementary roles of joint adaptation and historical inheritance.",
+      "source_path": "assets/whowhen-evolution-sketch.pdf",
+      "asset_path": "assets/figures/whowhen-harness-evolution.jpg",
+      "section_id": "sec-main-results",
+      "status": "rendered",
+      "source_sha256": "3f6f8e8970e124ede40bacca0bc3972127b9425e3a532fc30de4a92e27207af3",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-rbac-harness-evolution",
+      "label": "fig:rbac-harness-evolution",
+      "caption": "Harness evolution on role-aware text-to-SQL. Safe-EX and violation rate over ten rounds, with designs from rounds 3, 4, and 9. Blue circles and purple squares track Safe-EX and violation rate on the left and right axes, respectively. Dashed connectors link the selected rounds to evidence-backed refusal, authorization of all SQL references, and verification with bounded repair. Across the run, Safe-EX rises from 77.09\\% to 80.85\\%, while violation rate falls from 2.00\\% to 1.57\\%, a 21.5\\% relative reduction.",
+      "source_path": "assets/rbac-sqlfix-evolution-sketch.pdf",
+      "asset_path": "assets/figures/rbac-harness-evolution.jpg",
+      "section_id": "sec-main-results",
+      "status": "rendered",
+      "source_sha256": "80f6fda4acf91f45715b0ae43974d380afbf7083a006da249f179b0368ee76ce",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-candidate-sensitivity",
+      "label": "fig:candidate_sensitivity",
+      "caption": "",
+      "source_path": "assets/candidate_sensitivity_final_test.pdf",
+      "asset_path": "assets/figures/candidate-sensitivity.jpg",
+      "section_id": "sec-framework-analysis",
+      "status": "rendered",
+      "source_sha256": "23a84dd418c73c7b2c866b69e2855be8ce8afcfcac5860b221ad835516b34b30",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-pareto-cost",
+      "label": "fig:pareto-cost",
+      "caption": "Inference cost--accuracy trade-offs. uses OpenRouter's Qwen3.5-9B pricing. The left and right panels report Who accuracy on Who\\&When Hand and Safe-EX on RBAC Spider against the cost of a full evaluation pass, using a logarithmic cost axis. Dashed staircases and shaded regions summarize the baseline Pareto frontiers, while stars mark the co-evolved 9B agent.",
+      "source_path": "assets/pareto-cost-coevox.pdf",
+      "asset_path": "assets/figures/pareto-cost.jpg",
+      "section_id": "sec-framework-analysis",
+      "status": "rendered",
+      "source_sha256": "50053a1f47b4e6547000ce29f70b64af311ba8da3087b218830120ff420d5ba7",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-lineage-heatmap",
+      "label": "fig:lineage-heatmap",
+      "caption": "Interface compatibility on RBAC. Normalized TIMR ( ) across harness--checkpoint pairs; only the lower triangle is available during evolution. Rows index evolved harnesses and columns index model checkpoints, with TIMR globally min--max scaled to [0,1] across the complete matrix for comparison. Stars identify selected pairs and aliased checkpoints, and the side and bottom links record derivation, reuse, and historical design references. Low-TIMR off-diagonal pairings and checkpoint reuse show that interface compatibility depends on the particular harness--model pair, motivating inheritance beyond the latest generation.",
+      "source_path": "assets/lineage-heatmap-coevox.pdf",
+      "asset_path": "assets/figures/lineage-heatmap.jpg",
+      "section_id": "sec-framework-analysis",
+      "status": "rendered",
+      "source_sha256": "d848f3d197fa5c38621af4850b5fe58d0cd2690de37f84ded2e7fb8d2bfc9161",
+      "media_type": "pdf"
+    }
+  ]
+}

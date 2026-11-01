@@ -1,10 +1,10 @@
 {
   "schema_version": "paper-wiki-assets-v1",
   "slug": "2607.22529",
-  "created_at": "2026-07-29T04:45:36.540890+00:00",
-  "updated_at": "2026-08-06T04:36:23.294389+00:00",
+  "created_at": "2026-10-31T07:27:21.435728+00:00",
+  "updated_at": "2026-10-31T07:27:21.435728+00:00",
   "paper": {
-    "title": "Skill Self-Play: Pushing the Frontier of LLM Capability with Co-Evolving Skills",
+    "title": "Skill Self-Play: Proactive Curricula for Self-Evolving Agents",
     "authors": [
       "Siyuan Huang",
       "Pengyu Cheng",
@@ -20,21 +20,29 @@
       "Xiaoxi Jiang",
       "Guanjun Jiang"
     ],
+    "affiliations": [
+      "Qwen Large Model Application Team, Alibaba",
+      "The Chinese University of Hong Kong",
+      "Renmin University of China",
+      "Sun Yat-sen University",
+      "Peking University",
+      "University of Zurich"
+    ],
     "abstract": "LLM training is shifting from manual design and annotation to interaction-driven self-evolution. However, existing self-evolutionary methods face a fundamental dilemma between task diversity and verification reliability: environment-bound methods obtain precise feedback but confine learning to narrow domains, while open-ended self-generation broadens the task space but lacks reliable verification, allowing misleading rewards to pollute the training loop. We identify agent skills as a powerful middle ground to reconcile this tension: each skill ensures deep, verifiable execution in a specific scenario, while dynamic routing across skills maintains open-ended task variety. Leveraging this insight, we introduce Skill Self-Play (Skill-SP), a co-evolutionary framework comprising a proposer, a solver, and a dynamic skill controller. Orchestrated via a reinforcement learning loop, these components co-evolve in a continuous self-play loop: the proposer generates challenging tasks conditioned on dynamically sampled skills; the solver explores candidate solutions to push its capability boundaries; and the skill controller collects execution feedback to update and expand the skill library. This interactive co-evolution effectively bridges the gap between structured verification and open-ended exploration. Empirical evaluations on tool-use and reasoning benchmarks demonstrate that Skill-SP, serving as a robust evolution engine, consistently pushes the performance ceiling of competent backbones while catalyzing striking turnarounds for initially misaligned models. Our code is available at https://github.com/Qwen-Applications/skill-self-play.",
-    "year": 2027,
+    "year": null,
     "venue": "",
-    "arxiv_id": "2607.22529",
+    "arxiv_id": "",
     "tags": [],
     "contribution_type": null,
-    "reviewed": true,
-    "meta_reviewed": true,
-    "prior_works_reviewed": true,
-    "added_date": "2026-07-29",
-    "blog_html_path": "summary_排版_摸鱼绿(moyu-green).html",
-    "blog_html_generated_at": "2026-07-29T04:59:09.106474+00:00"
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-31",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
   },
   "source": {
-    "raw_dir": "raw/2607.22529",
+    "raw_dir": "KnowledgeBase/raw/2607.22529",
     "entry_file": "main.tex",
     "source_files": [
       {

@@ -1,0 +1,90 @@
+\begin{table*}[t!]
+\centering
+\caption{\textbf{Prompt for seed question generation.}}
+\label{tab: seedquestion}
+ 
+\begin{minipage}{\textwidth}
+\begin{mdframed}[style=outerframe]
+\begin{center}
+  {\small\textbf{Seed Question Generation Prompt}}
+\end{center}
+\noindent\rule{\linewidth}{0.4pt}
+
+\noindent{\small\textbf{\textsc{System Prompt}}}
+
+\vspace{4pt}
+\begin{mdframed}[style=subframe]
+
+\noindent{\small
+You are a question synthesis expert. You are deeply familiar with the structure of the Wikidata knowledge graph and specialize in constructing questions based on given triple information.
+}
+
+\vspace{4pt}
+\noindent{\small\textbf{Core Concept Definitions}}
+
+\vspace{2pt}
+\noindent{\small\textit{Three Entity Roles in this task:}}
+\begin{itemize}[leftmargin=*, labelindent=0pt, labelsep=0.6em, itemsep=1pt, topsep=2pt]
+  \small
+  \item \textbf{Constraint Entity (Con@).} The starting point of the question; an entity the user already knows that must be explicitly mentioned. It anchors the context of the question.
+  \item \textbf{Intermediate Entity (Mid@).} The intermediate node in the reasoning chain, obtained through the first reasoning step from the constraint entity. It connects two reasoning steps and must be inferred by the user, never stated explicitly.
+  \item \textbf{Answer Entity (Ans@).} The endpoint of the reasoning chain and the final answer requested by the user.
+\end{itemize}
+
+\vspace{4pt}
+\noindent{\small\textbf{Triple Selection Principles}}
+\begin{itemize}[leftmargin=*, labelindent=0pt, labelsep=0.6em, itemsep=1pt, topsep=2pt]
+  \small
+  \item \textbf{Subset selection.} Select a subset of triples from the given set as the evidence basis. Prefer strong constraints that lead to clear, unambiguous answers.
+  \item \textbf{Avoid redundancy.} If a triple already infers B from A, do not select another path that also infers B (no shortcuts allowed).
+  \item \textbf{Necessity.} Every selected triple must contribute to the reasoning chain; no irrelevant triples are permitted.
+\end{itemize}
+
+\vspace{4pt}
+\noindent{\small\textbf{Question Design Principles}}
+\begin{itemize}[leftmargin=*, labelindent=0pt, labelsep=0.6em, itemsep=1pt, topsep=2pt]
+  \small
+  \item \textbf{Information sources.} All information must come exclusively from the selected triples. No external knowledge may be used; the question must be verifiable via a SPARQL query on Wikidata.
+  \item \textbf{Reasoning forms.} The question may adopt single-hop reasoning, multi-hop reasoning, intersection queries, union queries, counting, or reverse reasoning.
+  \item \textbf{Answer requirements.} The answer must be derived entirely from selected triples and directly verifiable via a SPARQL query.
+  \item \textbf{Path guidelines.} A Path is an explanation of the reasoning process, expressed as a reasoning chain describing how the answer is derived.
+\end{itemize}
+
+\vspace{4pt}
+\noindent{\small\textbf{SPARQL Query Requirements}}
+\begin{itemize}[leftmargin=*, labelindent=0pt, labelsep=0.6em, itemsep=1pt, topsep=2pt]
+  \small
+  \item The generated SPARQL must be syntactically correct and executable on the Wikidata Query Service (WDQS).
+  \item Query results must accurately correspond to the answer of the question.
+  \item For multi-hop questions, the SPARQL must clearly reflect intermediate variables in the reasoning process.
+\end{itemize}
+
+\vspace{4pt}
+\noindent{\small\textbf{Entity Usage Rules in Questions}}
+\begin{itemize}[leftmargin=*, labelindent=0pt, labelsep=0.6em, itemsep=1pt, topsep=2pt]
+  \small
+  \item[$\checkmark$] Only constraint entities (question premises) may be explicitly mentioned.
+  \item[$\checkmark$] The question must ask for the answer entity (final target).
+  \item[$\times$] The specific name of any intermediate entity must \textit{never} appear explicitly in the question.
+  \item[$\times$] Intermediate entities must only be implicitly implied through relational wording.
+  \item[$\times$] Avoid redundancy: if the answer can be uniquely determined with fewer triples or entities, the question is redundant and must be revised.
+\end{itemize}
+
+\end{mdframed}
+
+\vspace{6pt}
+
+\noindent{\small\textbf{\textsc{User Prompt}}}
+
+\vspace{4pt}
+\begin{mdframed}[style=subframe]
+
+\noindent{\small\textbf{Relevant Triple Information:}}
+
+\vspace{2pt}
+\noindent{\small\texttt{\#\{Relevant triple information\}}}
+
+\end{mdframed}
+\end{mdframed}
+\end{minipage}
+\end{table*}

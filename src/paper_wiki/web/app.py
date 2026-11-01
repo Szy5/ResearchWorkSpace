@@ -11,7 +11,7 @@ from paper_wiki.core.config import Settings, get_settings
 from paper_wiki.ingestion.pipeline import IngestPipeline
 from paper_wiki.web.error_handlers import register_error_handlers
 from paper_wiki.web.middleware import RequestIDMiddleware
-from paper_wiki.web.routers import jobs, markdown_publishing, papers, publish, recommendations, search
+from paper_wiki.web.routers import jobs, markdown_publishing, papers, publish, recommendations, search, wechat
 from paper_wiki.web.services.job_manager import JobManager
 from paper_wiki.web.services.paper_repository import PaperRepository
 
@@ -53,6 +53,7 @@ def create_app(
     app.include_router(recommendations.router)
     app.include_router(search.router)
     app.include_router(markdown_publishing.router)
+    app.include_router(wechat.router)
 
     @app.get("/api/health")
     def health() -> dict[str, str]:

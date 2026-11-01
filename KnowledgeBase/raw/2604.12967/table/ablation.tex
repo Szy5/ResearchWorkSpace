@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\caption{\textbf{Ablation studies on the components of CCS.} The best and second-best performances are shown in bold and underline, respectively.}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{\textbf{Methods}} & \multicolumn{3}{c}{\textbf{General QA}} & \multicolumn{4}{c}{\textbf{Multi-Hop QA}} & \multirow{2}{*}{\textbf{Avg.}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-8}
+ & \textbf{NQ}$^\dagger$ & \textbf{TriviaQA}$^*$ & \textbf{PopQA}$^*$ & \textbf{HotpotQA}$^\dagger$ & \textbf{2wiki}$^*$ & \textbf{Musique}$^*$ & \textbf{Bamboogle}$^*$ & \\
+\midrule
+Actions + Observations + Final Response & \underline{0.700} & 0.852 & \underline{0.618} & 0.543 & 0.476 & 0.202 & \underline{0.536} & 0.561 \\
+Actions + Observations  & 0.679 & 0.852 & 0.598 & 0.526 & 0.474 & 0.201 & 0.488 & 0.545 \\
+Observations & 0.691 & \underline{0.866} & 0.610 & \underline{0.589} & \textbf{0.588} & \underline{0.225} & 0.520 & \underline{0.584} \\
+Masked Actions + Observations  & \textbf{0.712} & \textbf{0.880} & \textbf{0.639} & \textbf{0.598} & \underline{0.567} & \textbf{0.239} & \textbf{0.608} & \textbf{0.606} \\
+\bottomrule
+\end{tabular}
+}
+\label{tbl:ablation}
+\end{table*}

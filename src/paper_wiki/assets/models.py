@@ -35,6 +35,7 @@ class PaperAssetMeta(BaseModel):
 
     title: str = ""
     authors: list[str] = Field(default_factory=list)
+    affiliations: list[str] = Field(default_factory=list)
     abstract: str = ""
     year: int | None = None
     venue: str = ""

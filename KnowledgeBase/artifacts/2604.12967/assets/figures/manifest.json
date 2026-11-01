@@ -1,0 +1,224 @@
+{
+  "figures": [
+    {
+      "id": "fig-ccs-ex",
+      "label": "fig:ccs_ex",
+      "caption": "Examples of search trajectories. A high-quality trajectory (left) constitutes a lossless encoding of the question's intent, preserving all necessary information required to reconstruct the original question. In contrast, trajectories that involve insufficient (middle) or irrelevant (right) search steps fail to preserve this information, resulting in incomplete or distorted representations of the question.",
+      "source_path": "img/ccs_ex.pdf",
+      "asset_path": "assets/figures/ccs-ex.jpg",
+      "section_id": "sec-introduction",
+      "status": "rendered",
+      "source_sha256": "b3938582f00fa0bdf2a82b0e3d4756a8ac8a217ad2399a4eb9a12c26d711613b",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-ccs-main",
+      "label": "fig:ccs_main",
+      "caption": "Overview of the Cycle-Consistent Search (CCS) framework. The agent generates search trajectories to address a question q . To ensure the search process is driven by information gain rather than lexical copying, is passed through a strategic information bottleneck ( ) that removes the a T and masks entities within actions (highlighted in grey). A frozen reconstructor P then attempts to recover the original question from . The agent is optimized using GRPO based on the semantic similarity between q and q , encouraging trajectories that capture sufficient evidence.",
+      "source_path": "img/ccs_main.pdf",
+      "asset_path": "assets/figures/ccs-main.jpg",
+      "section_id": "sec-related-works",
+      "status": "rendered",
+      "source_sha256": "0faff3204996cea1abf17049e2c4fc6c298886bf50eea137e4d8efc35f75161c",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-qualitative-analysis",
+      "label": "fig:qualitative_analysis",
+      "caption": "Qualitative analysis of search trajectories. CCS assigns low rewards to trajectories exhibiting (a) Information Void, where the retrieved observations fail to satisfy key entity constraints, and (b) Shallow Depth, where the agent fails to complete the full multi-hop search scaffold. By contrast, high rewards are assigned only to trajectories that preserve both the search structure and the supporting observations needed to faithfully reconstruct the original question. Masked spans are highlighted in gray.",
+      "source_path": "img/ccs_qualitative_analysis.pdf",
+      "asset_path": "assets/figures/qualitative-analysis.jpg",
+      "section_id": "sec-results",
+      "status": "rendered",
+      "source_sha256": "cffdf0858b6917606b0d264a53d03e985db2728cb56ac44e200daa552f33c8a2",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-researchrubrics",
+      "label": "fig:researchrubrics",
+      "caption": "",
+      "source_path": "img/researchrubrics_results.pdf",
+      "asset_path": "assets/figures/researchrubrics.jpg",
+      "section_id": "sec-qualitative-investigation",
+      "status": "rendered",
+      "source_sha256": "914c33d9ea8af86da56fceedb718046e43356acba9cb83f7842cb41d8ac9c38c",
+      "media_type": "pdf"
+    },
+    {
+      "id": "fig-rl-train-reward",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_EM_qwen2.5-7b-instruct.png",
+      "asset_path": "assets/figures/rl-train-reward.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "96a76e4eea685ca8169dcce6fd513a1d7d77de12b3b4b1ac068b80370afae81e",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-2",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_EM_qwen3-4b-instruct-2507.png",
+      "asset_path": "assets/figures/rl-train-reward-2.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "c868b54b1012ea363992929375901c3923b87c1ee1d0adafc080e34da122d34b",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-3",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_EM_qwen3-32b.png",
+      "asset_path": "assets/figures/rl-train-reward-3.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "1af8ce58933ff65c507ec8f299b649dae488cb3245a1a8600c7116f3e64a10c9",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-4",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_CJ_qwen2.5-7b-instruct.png",
+      "asset_path": "assets/figures/rl-train-reward-4.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "6dc3230e001ff985979bb1dd2615e1fbc0fa2ebbd9f004317b6a06ebbd18a0f3",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-5",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_CJ_qwen3-4b-instruct-2507.png",
+      "asset_path": "assets/figures/rl-train-reward-5.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "3ce484743a37d5bdf1c4c58e9998cb3128502c24fff46f244da81b6d66105983",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-6",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_CJ_qwen3-32b.png",
+      "asset_path": "assets/figures/rl-train-reward-6.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "d1b5f343fc8acbe83010c2d7ce730a61810e308132fbbf5ad0ee428deaea85ed",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-7",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_RLIF_qwen2.5-7b-instruct.png",
+      "asset_path": "assets/figures/rl-train-reward-7.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "c4b344b4992e766e832110ebb7206ca74b8ce0addc5c52878cb508a687470699",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-8",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_RLIF_qwen3-4b-instruct-2507.png",
+      "asset_path": "assets/figures/rl-train-reward-8.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "85c19281ce4010539ec8c3615fd34894301cac0318c8763866218bf28f3c5a33",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-9",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_RLIF_qwen3-32b.png",
+      "asset_path": "assets/figures/rl-train-reward-9.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "b7c2bd487e1b6a17df1ebd5fc4c669f4e927d762e96b2cb4a68a72ba00f92a0d",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-10",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_CCS_qwen2.5-7b-instruct.png",
+      "asset_path": "assets/figures/rl-train-reward-10.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "957a26acc59a740ee9eabb1f35f4f8d413887cade9b5f6b3e96c643aab827dfa",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-11",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_CCS_qwen3-4b-instruct-2507.png",
+      "asset_path": "assets/figures/rl-train-reward-11.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "22c68a851be6fe4adbf3dbf6e7d23ba605c442492ccfa6d85046635c6c98a47a",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-train-reward-12",
+      "label": "fig:rl_train_reward",
+      "caption": "Search-R1",
+      "source_path": "img/rl_training_reward_CCS_qwen3-32b.png",
+      "asset_path": "assets/figures/rl-train-reward-12.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "bf0a73975035638fc4732b8c430f2523c515d5148cfd5b2671d69983223b9d08",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-avg-num-search",
+      "label": "fig:rl_avg_num_search",
+      "caption": "Average number of search during RL.",
+      "source_path": "img/rl_avg_num_search_qwen2.5-7b-instruct.png",
+      "asset_path": "assets/figures/rl-avg-num-search.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "925c7696e6ddda6d2bc7f661cd7330e3e046834a22b2148f76162dc83c386eb7",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-avg-num-search-2",
+      "label": "fig:rl_avg_num_search",
+      "caption": "Average number of search during RL.",
+      "source_path": "img/rl_avg_num_search_qwen3-4b-instruct-2507.png",
+      "asset_path": "assets/figures/rl-avg-num-search-2.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "6d7b4929754bccc589c026ac4bdb66e8d832b1989e6258a48d27bf0d93c239af",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-rl-avg-num-search-3",
+      "label": "fig:rl_avg_num_search",
+      "caption": "Average number of search during RL.",
+      "source_path": "img/rl_avg_num_search_qwen3-32b.png",
+      "asset_path": "assets/figures/rl-avg-num-search-3.png",
+      "section_id": "sec-training-dynamics",
+      "status": "copied",
+      "source_sha256": "c35906049144bf7dcd368c8a08ca2141bb24006766953ad60c9a32f6e7d62a9e",
+      "media_type": "png"
+    },
+    {
+      "id": "fig-ttrl-train-reward",
+      "label": "fig:ttrl_train_reward",
+      "caption": "Training reward for TTRL.",
+      "source_path": "img/ttrl_training_reward.png",
+      "asset_path": "assets/figures/ttrl-train-reward.png",
+      "section_id": "sec-baselines-2",
+      "status": "copied",
+      "source_sha256": "bb0a67901b35b80c5fd300bb302a9ea46e9d9847fcdc2b648c5d66ef9a5bf6c0",
+      "media_type": "png"
+    }
+  ]
+}

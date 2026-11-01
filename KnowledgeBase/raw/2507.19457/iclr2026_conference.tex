@@ -1,0 +1,1598 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{iclr2026_conference,times}
+
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{inconsolata}
+% \usepackage[margin=1in]{geometry} % Optional, for nice margins
+\usepackage{geometry}
+\usepackage[final]{changes}
+
+%%%%%%%%%%%%%%
+% For annotated prompt box
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\definecolor{promptbg}{RGB}{233,240,255}
+\definecolor{annotbg}{RGB}{255,250,200}
+\definecolor{highlight}{RGB}{252,213,122}
+
+%%%%%%%%%%%%%%
+
+% For text box
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{listingsutf8}
+\newtcolorbox{instructbox}[1][]{
+  breakable,
+  enhanced,
+  colback=gray!4,
+  colframe=black!50,
+  sharp corners,
+  fontupper=\small\ttfamily,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt,
+  boxrule=0.6pt,
+  listing only,
+  listing options={
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{gray}{$\hookrightarrow$}\space},
+    showstringspaces=false,
+    tabsize=2,
+    numbers=none,
+    stepnumber=1,
+    xleftmargin=0pt,
+    xrightmargin=0pt,
+    frame=none,
+    keywordstyle=\color{blue}\bfseries,
+    emph={curr_instructions,inputs_outputs_feedback},
+    emphstyle=\color{teal}
+  },
+  title=#1
+}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\lstset{
+  basicstyle=\ttfamily, % Monospace, smaller
+  breaklines=true,                   % Wrap long lines
+  showstringspaces=false,            % Hide special spaces
+  columns=fullflexible,              % Proper spacing
+  % No language specified—NO highlighting!
+}
+\newcommand{\incode}[1]{\texttt{\detokenize{#1}}}
+%%%%%%%%%%%
+
+%%%%%%%%%%
+% For dot2tex
+% \usepackage{dot2texi}
+% \usepackage{tikz}
+%%%%%%%%%%
+
+% \usepackage[settings]{markdown}
+\usepackage{arydshln}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Optional math commands from https://github.com/goodfeli/dlbook_notation.
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+\usepackage{cleveref}
+
+
+% \defcitealias{mmgrpo_future_ref}{Ziems, Soylu, and Agrawal et~al.\ (2025)}
+
+
+\title{GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning}
+
+% Authors must not appear in the submitted version. They should be hidden
+% as long as the \iclrfinalcopy macro remains commented out below.
+% Non-anonymous submissions will be rejected without review.
+\iclrfinalcopy
+
+\author{
+Lakshya A Agrawal\textsuperscript{1},
+Shangyin Tan\textsuperscript{1},
+Dilara Soylu\textsuperscript{2},
+Noah Ziems\textsuperscript{4},\\
+\textbf{Rishi Khare}\textsuperscript{1},
+\textbf{Krista Opsahl-Ong}\textsuperscript{5},
+\textbf{Arnav Singhvi}\textsuperscript{2,5},
+\textbf{Herumb Shandilya}\textsuperscript{2},\\
+\textbf{Michael J Ryan}\textsuperscript{2},
+\textbf{Meng Jiang}\textsuperscript{4},
+\textbf{Christopher Potts}\textsuperscript{2},
+\textbf{Koushik Sen}\textsuperscript{1},\\
+\textbf{Alexandros G. Dimakis}\textsuperscript{1,3},
+\textbf{Ion Stoica}\textsuperscript{1},
+\textbf{Dan Klein}\textsuperscript{1},
+\textbf{Matei Zaharia}\textsuperscript{1,5},
+\textbf{Omar Khattab}\textsuperscript{6} \\
+\\
+\textsuperscript{1}UC Berkeley \quad 
+\textsuperscript{2}Stanford \quad 
+% \textsuperscript{3}Anyscale \quad 
+\textsuperscript{3}BespokeLabs.ai \quad
+\textsuperscript{4}Notre Dame \quad
+\textsuperscript{5}Databricks \quad 
+\textsuperscript{6}MIT
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+%\iclrfinalcopy % Uncomment for camera-ready version, but NOT for submission.
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+    % Compound AI systems—comprised of interconnected modules such as retrieval, tool invocation, and large language models (LLMs)—have emerged as an effective paradigm to address complex, multi-stage reasoning tasks. However, optimizing these systems in low-data or costly rollout settings remains a major challenge, as existing approaches often require extensive data or prohibitively many evaluation cycles. We introduce GEPA, a sample-efficient optimizer for compound AI systems that synergistically combines textual feedback with multi-objective Pareto-based evolutionary optimization. GEPA enables efficient exploration of problem-solving strategies and heuristics, substantially reducing the number of rollouts required for effective adaptation to new task domains. We evaluate GEPA across five challenging benchmarks—HotpotQA, IFBench, PUPA, HoVer, and FSABench—spanning multi-hop reasoning, instruction following, privacy-conscious delegation, document retrieval for fact verification, and structured information extraction. Empirically, on models such as Qwen3 8B and GPT 4.1 mini, GEPA consistently outperforms established optimizers— for Qwen, improving the program under optimization by aggregate +12.1\%in <15\% rollouts, compared to GRPO(500 steps, 24000 rollouts) which achieves +5.7\% aggregate improvement. For GPT-4.1 mini, GEPA achieves upto +14.2\% improvement, compared to MIPROv2, which achieves +7.01\% on equivalent rollout budget. These results demonstrate GEPA’s ability to deliver superior generalization and efficiency in optimizing compound AI workflows for diverse, data-constrained tasks.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % D1 Before Matei's feedback on July 13:
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Developers and researchers are increasingly writing compound AI systems that connect several language model calls with other modules like retrieval and tool invocations for downstream problems. Optimizing these systems efficiently remains a major challenge, as leading approaches typically require extensive data or prohibitively many evaluation cycles.
+    
+    % We propose GEPA, a sample-efficient prompt optimizer for compound AI systems. GEPA introduces Pareto-based multi-objective optimization via a genetic algorithm. Unlike previous optimizers that rely solely on numeric reward signals, GEPA incorporates both scalar performance metrics and domain-specific textual feedback for reflective prompt evolution. This enables the generation and selection of candidate prompts that explicitly reflect learned strategies and heuristics, facilitating faster and more effective adaptation to new tasks with limited evaluation rollouts. Across five challenging benchmarks—including multi-hop reasoning (HotpotQA), instruction following (IFBench), privacy-aware delegation (PUPA), fact verification (HoVer), and structured information extraction (FSABench)—GEPA consistently outperforms established optimizers. On Qwen3 8B, GEPA boosts performance by +12.1\%—using under 15\% of the rollouts needed by GRPO (which achieves only +5.7\% after 500 training steps with 24,000 rollouts). With GPT-4.1 mini, GEPA delivers up to +14.2\% gain, doubling the +7.01\% achieved by MIPRO under comparable rollout budgets. Notably, GEPA improves GPT-4.1 mini's performance on the recently released IFBench consisting of OOD task constraints by +8.2\%. These results highlight GEPA’s superior sample efficiency and robust generalization.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % However, current approaches like GRPO require prohibitively many environment rollouts, making them impractical when rollouts are expensive.
+    % This is because current RL algorithms like GRPO only learn from a scalar reward at the end of an expensive rollout. % Instead, humans learn via reflection.
+
+    % However, GRPO and similar RL approaches require a prohibitive number of environment rollouts, limiting their practicality in settings with expensive rollouts involving retrieval or tool calls.
+    % involve expensive operations like retrieval or external tool invocation.
+    % Across five challenging benchmarks—including multi-hop reasoning (HotpotQA), instruction following (IFBench), privacy-aware delegation (PUPA), fact verification (HoVer), and structured information extraction (FSABench)—GEPA consistently outperforms established optimizers. On Qwen3 8B, GEPA boosts performance by +12.1\%—using under 15\% of the rollouts needed by GRPO (which achieves only +5.7\% after 500 training steps with 24,000 rollouts). With GPT-4.1 mini, GEPA delivers up to +14.2\% gain, doubling the +7.01\% achieved by MIPRO under comparable rollout budgets. Notably, GEPA improves GPT-4.1 mini's performance on the recently released IFBench consisting of OOD task constraints by +8.2\% without any weight updates. These results highlight GEPA’s superior sample efficiency and robust generalization.
+    % To address this problem, we propose GEPA (Genetic-Pareto), a sample-efficient prompt optimizer for compound AI systems. GEPA introduces Pareto-based multi-objective optimization via a genetic algorithm. Unlike previous optimizers that rely solely on numeric rewards, GEPA incorporates both scalar performance metrics and domain-specific text feedback for reflective prompt evolution. This enables the generation and selection of candidate prompts that explicitly reflect learned strategies and heuristics, facilitating faster and more effective adaptation to new tasks with limited evaluation rollouts.
+    % To address this challenge, we introduce GEPA (Genetic-Pareto), a prompt optimizer designed for compound AI systems. We find that mutating prompts reflectively based on text feedback from as few as one rollout at a time is sufficient to make large and successful updates to the behavior of the compound AI system. However, updating prompts for each data instance independently can yield a diverse but overly specialized set of candidates. To address this, GEPA integrates Pareto-based illumination---a search strategy that maintains and tracks the highest-performing prompt candidates for each training example. This allows GEPA to explore the prompt-search space consisting of various heuristics and strategies very efficiently, achieving high sample efficiency.
+    % We evaluate GEPA on five challenging tasks---including multi-hop reasoning (HotpotQA), instruction following (IFBench), privacy-aware delegation (PUPA), fact verification (HoVer), and structured information extraction (FSABench). For Qwen3 8B, GEPA matches GRPO's best aggregate performance using only 1.8\% of GRPO's budget (500 train steps totalling 24000 rollouts), while achieving a +7.8\% higher aggregate score at just 12.4\% of GRPO's rollouts. GEPA improves GPT-4.1 mini's aggregate performance by +14.37\%, more than doubling the +7.01\% gains achieved by MIPROv2 under comparable rollout budgets. Notably, GEPA improves GPT-4.1 mini's performance on the challenging IFBench consisting of OOD task constraints by +8.2\% without any weight updates. These results highlight GEPA’s superior sample efficiency and robust generalization.
+    % Why does natural language reflection lead to faster updates than weight? Using natural language feedback is very interpretable, allowing GEPA to potentially learn a lot from each example.
+    % To combine learnings across many examples, GEPA uses a genetic algorithm.
+    % To ensure that the system overall covers the full problem space, we use pareto illumination.
+    % 1) (Re)flection: GEPA works by mutating prompts through reflection on text feedback for as few as one training example at a time. The high interpretability of natural language traces combined with diagnostic information in text feedback enables GEPA to make large and effective updates to the system’s behavior by incorporating "lessons" in the system prompt.
+    % (1) (Re)flection: The high interpretability of natural language traces combined with diagnostic information from domain-specific text feedback provides a high learning signal (as opposed to scalar rewards). GEPA works by reflectively mutating prompts, to incorporate such high signal "lessons" into the system prompt, making large and effective updates to the system's behaviour by reflecting on as few as one training example.
+    % The interpretability of natural language and diagnostic information in text feedback provides high learning signal (as opposed to scalar rewards alone). GEPA works by reflectively identifying such high signal "lessons", mutating prompts, to incorporate such high signal "lessons" into the system prompt, making large updates to the system's behaviour using as few as one training example.
+    % Natural language feedback is highly interpretable and provides diagnostic details, offering a much richer learning signal than scalar rewards alone. GEPA leverages this by reflecting on system traces and feedback, identifying high signal "lessons" and then mutating the system prompt to incorporate these, allowing the system to make significant behavioral updates using as little as one rollout.
+    % To prevent these updates from becoming overly specialized, GEPA combines two strategies: (2) (Ge)netic:  and (3) (Pa)reto-based illumination, which maintains the best-performing candidate for each training instance, ensuring a diverse set of effective heuristics and strategies is preserved and recombined. 
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), a system prompt learning algorithm for compound AI systems.
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), a prompt optimizer for compound AI systems.
+    % GEPA builds on the following insights: (1) (Re)flection: Natural language feedback is highly interpretable and diagnostic, providing a far richer learning signal than scalar rewards. GEPA leverages this by reflecting on system traces and feedback, identifying high-signal "lessons", and mutating the system prompt to incorporate them. This enables large behavioral updates to the system from as little as one rollout. (2) (Pa)reto-based illumination, which maintains the best-performing candidate for each training instance, ensuring full coverage of the problem space by solution strategies represented in the prompts, and (3) (Ge)netic: To ensure that the learned prompts generalize, GEPA adopts a genetic approach that constructs an evolutionary tree of candidates, where each prompt is adapted through mutations for new data instances—enabling descendant prompts to generalize across multiple examples. Together, these mechanisms allow GEPA to efficiently search the prompt space for robust generalization with high sample efficiency.
+    % However, GRPO and similar RL approaches require a large number of environment rollouts, making them impractical when rollouts are expensive---for example, complex retrieval strategies.
+    % Reinforcement Learning (RL) techniques like Group Relative Policy Optimization (GRPO) have emerged as popular methods to optimize performance of complex AI systems, where developers increasingly compose multiple language model calls with intermediate retrieval and tool-use. However, GRPO and similar RL approaches require tens or even hundreds of thousands of environment rollouts, making them impractical when rollouts are expensive, involving for example, complex tool-use cases.
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), an iterative prompt optimizer for compound AI systems. We find that mutating prompts (Re)flectively based on text feedback from as few as one rollout at a time is sufficient to make large, successful updates to the behavior of the AI system. This is because natural language feedback is highly interpretable and diagnostic, providing a far richer learning signal than scalar rewards alone. To ensure that the learned prompts generalize, GEPA constructs an evolutionary tree of candidate prompts, where each descendant is created by reflectively mutating its parent prompt in light of new rollouts. This way, each descendant inherits the learning signals accumulated by its parent, and incorporates insights from the most recent rollouts, allowing generalization across multiple examples. Finally, to avoid local minima and ensuring exploration of a large search space of solution strategies, GEPA introduces Pareto-based ``illumination"---maintaining the best-performing candidate for each training instance, ensuring coverage of the full problem space represented by the training dataset, in the solution strategies represented by the prompt candidates. Together, these mechanisms allow GEPA to efficiently explore the prompt space for robust generalization with high sample efficiency.
+    % Why does natural language reflection lead to faster updates than weight? Using natural language feedback is very interpretable, allowing GEPA to potentially learn a lot from each example.
+    % To combine learnings across many examples, GEPA uses a genetic algorithm.
+    % To ensure that the system overall covers the full problem space, we use pareto illumination.
+    
+    % To address this challenge, we introduce GEPA (Genetic-Pareto), a prompt optimizer designed for compound AI systems. We find that mutating prompts reflectively based on text feedback from as few as one rollout at a time is sufficient to make large and successful updates to the behavior of the compound AI system. However, updating prompts for each data instance independently can yield a diverse but overly specialized set of candidates. To address this, GEPA integrates Pareto-based illumination---a search strategy that maintains and tracks the highest-performing prompt candidates for each training example. This allows GEPA to explore the prompt-search space consisting of various heuristics and strategies very efficiently, achieving high sample efficiency.
+    % Unlike previous optimizers that rely solely on numeric reward signals, GEPA incorporates both scalar performance metrics and domain-specific textual feedback for reflective prompt evolution.
+    
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), a prompt optimizer for compound AI systems. GEPA is an iterative method that refines prompts using natural language feedback from as little as a single rollout. Instead of relying on scalar rewards alone, GEPA leverages the interpretive, diagnostic value of textual feedback to make large, successful updates to the behavior of the AI system. To ensure that the learned prompts generalize, prompts evolve through a tree structure, with each generation reflectively mutating its parent based on new rollouts, accumulating learning signals across generations. GEPA navigates the exploration-exploitation tradeoff efficiently by using Pareto-based ``illumination"---instead of evolving only the best performing prompts, GEPA stochastically evolves the top-performing prompt for \textit{each} problem instance in the training data. This encourages the retention of diverse, high-quality strategies tailored to different problems, while still focusing evolution budget to promising candidates. Together, these mechanisms allow GEPA to efficiently explore the prompt space for robust generalization with high sample efficiency.
+    % To ensure coverage of the problem space and prevent local minima, GEPA employs Pareto-based illumination---maintaining the top-performing candidate for each training instance. This approach yields robust, sample-efficient prompt optimization that generalizes across diverse tasks.
+    
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), an iterative prompt optimizer for compound AI systems. We find that mutating prompts (Re)flectively based on text feedback from as few as one rollout at a time is sufficient to make large, successful updates to the behavior of the AI system. This is because natural language feedback is highly interpretable and diagnostic, providing a far richer learning signal than scalar rewards alone. To ensure that the learned prompts generalize, GEPA constructs an evolutionary tree of candidate prompts, where each descendant is created by reflectively mutating its parent prompt in light of new rollouts. This way, each descendant inherits the learning signals accumulated by its parent, and incorporates insights from the most recent rollouts, allowing generalization across multiple examples. Finally, to avoid local minima and ensuring exploration of a large search space of solution strategies, GEPA introduces Pareto-based ``illumination"---maintaining the best-performing candidate for each training instance, ensuring coverage of the full problem space represented by the training dataset, in the solution strategies represented by the prompt candidates. Together, these mechanisms allow GEPA to efficiently explore the prompt space for robust generalization with high sample efficiency.
+
+    % achieving upto 21\% higher performance in just 6700 rollouts compared to what GRPO achieves with 24,000 rollouts (500 training steps with Qwen3 8B). In three out of five tasks, GEPA achieves the same scores as GRPO with 24,0000 rollouts in less than 400 rollouts, 
+    % % Across most tasks, GEPA achieves in just 400 rollouts, the performance that GRPO achieves after 24,000 rollouts (500 training steps),
+    % % it rapidly matches the performance of GRPO—which requires 24,000 rollouts—using just 400 rollouts, often after only a single prompt mutation.
+    % On five diverse and challenging tasks, GEPA matches GRPO’s best aggregate performance using only 1.8\% of GRPO’s rollout budget (500 train steps totaling 24,000 rollouts), and even surpasses GRPO by +7.8\% in aggregate score when given just 12.4\% of GRPO’s rollouts. On GPT-4.1 mini, GEPA achieves a +14.4\% improvement in aggregate performance, more than doubling the +7.0\% gain of MIPROv2 under comparable rollout budgets.
+    % % These results are demonstrated across five tasks: multi-hop reasoning (HotpotQA), instruction following (IFBench), privacy-aware delegation (PUPA), fact verification (HoVer), and structured information extraction (FSABench).
+    % Overall, GEPA demonstrates superior sample efficiency and robust generalization compared to leading compound AI optimization methods.
+
+    % while maintaining an aggregate 7.8\% higher performance across all five tasks. Compared to leading prompt optimizer MIPROv2, GEPA achieves +14.4\% improvement in aggregate performance, more than doubling the +7.0\% gain of MIPROv2 under comparable rollout budgets.
+
+
+    % GEPA builds on the following insights: (1) (Re)flection: Natural language feedback is highly interpretable and diagnostic, providing a far richer learning signal than scalar rewards. GEPA leverages this by reflecting on system traces and feedback, identifying high-signal "lessons", and mutating the system prompt to incorporate them. This enables large behavioral updates to the system from as little as one rollout. (2) (Pa)reto-based illumination, which maintains the best-performing candidate for each training instance, ensuring full coverage of the problem space by solution strategies represented in the prompts, and (3) (Ge)netic: To ensure that the learned prompts generalize, GEPA adopts a genetic approach that constructs an evolutionary tree of candidates, where each prompt is adapted through mutations for new data instances—enabling descendant prompts to generalize across multiple examples. Together, these mechanisms allow GEPA to efficiently search the prompt space for robust generalization with high sample efficiency.
+
+    % On diverse benchmarks, GEPA exceeds GRPO
+    % First question: Does it learn faster than GRPO?
+    % Second question is how it performs against the state of the art prompt optimizer? 
+    % Why did we do GPT-4.1
+    % We evaluate GEPA across several diverse and challenging tasks and find that it is highly sample efficient: For most tasks, GEPA achieves the same performance at just 400 rollouts as what GRPO achieves after 24,000 rollouts.
+    % Together, these mechanisms enable robust, sample-efficient prompt optimization that generalizes across tasks.
+    % To promote exploration of diverse solution strategies in the prompts, GEPA stochastically refines high-performing prompts for each problem instance, rather than always selecting the top-performing prompt.
+    % By refining prompts over successive rollouts, GEPA accumulates
+    % Through sequential refinement, GEPA enables learning across multiple rollouts---accumulating "lessons" across training iterations. Finally, to encourage exploration of diverse solution strategies in prompts, GEPA stochastically refines high-performing prompts for individual problem instances, as opposed to only selecting the highest performing prompt at any iteration.
+    
+    % leveraging the interpretive, diagnostic value of natural language feedback from as little as a single rollout, rather than depending solely on numeric rewards. At each step, GEPA mutates prompts based on individual task instances accumulating "lessons" across iterations. Finally, to encourage diversity in explored prompt strategies, GEPA retains high-performing prompts for individual problem instances. 
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), a prompt optimizer for compound AI systems. GEPA is an iterative method that refines prompts leveraging the interpretive, diagnostic value of natural language feedback from as little as a single rollout, rather than relying solely on scalar rewards. To enable learning across rollouts, prompts evolve through a tree structure, with each generation reflectively mutating its parent based on new rollouts and accumulating learning signals across generations. In order to efficiently explore diverse strategies in the prompts, GEPA employs Pareto-based ``illumination"---rather than evolving only the overall best prompt, it maintains and stochastically evolves the top-performing prompt for \textit{each} problem instance in the training set. This encourages retention of diverse, high-quality strategies tailored to different problems while focusing evolutionary resources on promising candidates.
+    % Together, these mechanisms allow GEPA to adapt AI systems for achieving robust generalization in very few rollouts.
+    
+    % We evaluate GEPA on several diverse and challenging tasks and find that it is highly sample efficient: in most cases, GEPA matches the performance achieved by GRPO after 24,000 rollouts (500 train steps), using just 400 rollouts, often after just one prompt mutation. At just 1450 rollouts, GEPA achieves upto +16\% higher performance than GRPO on some tasks.
+    % GEPA achieves upto 19\% higher scores than GRPO, after refinement over data from as few as 63 rollouts, as compared to GRPO (Qwen3 8B) which was run for 500 train steps, amounting to a total 24,000 rollouts. 
+    % GEPA demonstrates high sample efficiency and generalization. In evaluation across five diverse tasks, GEPA discovered prompts based on refinement from as few as 100 rollouts outperform GRPO with a budget of 24,000 rollouts in four out of five tasks, achieving as high as +19\% better performance (aggregate +6.4\% across all five tasks) than GRPO. Compared to leading prompt optimizer MIPROv2, 
+    % GEPA employs Pareto-based ``illumination"---rather than evolving only the overall best prompt, it maintains and stochastically evolves the top-performing prompt for \textit{each} problem instance in the training set. This encourages retention of diverse, high-quality strategies tailored to different problems while focusing evolutionary resources on promising candidates.
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Reinforcement Learning (RL) techniques like Group Relative Policy Optimization (GRPO) have emerged as popular methods to optimize complex AI systems, where developers compose multiple language model calls with intermediate retrieval and tool-use. However, GRPO and similar RL approaches require tens or even hundreds of thousands of environment rollouts, making them impractical when rollouts are expensive---for example, using complex tool-use cases.
+    
+    % To address this challenge, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}(\textbf{Re})to), a prompt optimizer for compound AI systems. GEPA works by iteratively refining prompts through reflection on natural language feedback. The highly interpretable and diagnostic nature of text provides much richer learning signal than scalar rewards alone, allowing GEPA to make large and effective updates to the prompts from as few 1 rollout. GEPA enables generalization by learning across multiple rollouts---accumulating ``lessons" as training progresses. Through a simple approach inspired by genetic algorithms, GEPA promotes exploration of diverse solution strategies in the prompts, enabling it to learn effective prompts in very few rollouts.
+    
+    % Across five diverse tasks, GEPA demonstrates superior sample efficiency and generalization---outperforming GRPO by up to 19\% using upto 35x fewer rollouts (680-6800 rollouts across all tasks, compared to GRPO's budget of 24,000 rollouts). GEPA surpassed GRPO in four out of five tasks, achieving an average improvement of +6.4\% across all tasks. GEPA also outperforms the leading prompt optimizer, MIPROv2, in all five tasks across 2 leading models (GPT-4.1 mini and Qwen3 8B). With GPT-4.1 mini, GEPA achieves aggregate gains of 14\% across all tasks, more than doubling the 7\% gains achieved by MIPROv2.
+    % To improve sample efficiency further, GEPA tracks the Pareto frontier of prompts that perform best on each training example and selectively updates and combines these prompts.
+    % By reflecting explicitly on natural language feedback, GEPA  make large and high-level updates to the prompts from as few as a single rollout. GEPA enables generalization by learning across multiple rollouts, accumulating ``lessons" as training progresses. Through a simple approach inspired by genetic algorithms, GEPA also promotes exploration of diverse solution strategies in the prompts.
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    Large language models (LLMs) are increasingly adapted to downstream tasks via reinforcement learning (RL) methods like Group Relative Policy Optimization (GRPO), which often require thousands of rollouts to learn new tasks. We argue that the interpretable nature of \textit{language} often provides a much richer learning medium for LLMs, compared to policy gradients derived from sparse, scalar rewards. To test this, we introduce GEPA (\textbf{Ge}netic-\textbf{Pa}reto), a prompt optimizer that thoroughly incorporates \textit{natural language reflection} to learn high-level rules from trial and error.
+    Given any AI system containing one or more LLM prompts, GEPA samples trajectories (e.g., reasoning, tool calls, and tool outputs) and reflects on them in natural language to diagnose problems, propose and test prompt updates, and combine complementary lessons from the Pareto frontier of its own attempts. As a result of GEPA's design, it can often turn even just a few rollouts into a large quality gain.
+    Across six tasks, GEPA outperforms GRPO by \added{6\%} on average and by up to 20\%, while using up to 35x fewer rollouts. GEPA also outperforms the leading prompt optimizer, MIPROv2, by over 10\% (e.g., +12\% accuracy on AIME-2025), and demonstrates promising results as an inference-time search strategy for code optimization. We release our code at ~\url{https://github.com/gepa-ai/gepa}.
+    % On AIME-2025, GEPA improves accuracy by 10\%.
+    % across two LLMs. %, and demonstrates promise as inference-time search strategy for complex tasks including code optimization. %We release our code in DSPy at ~\url{https://github.com/gepa-ai/gepa}.
+\end{abstract}
+\vspace{-4mm}
+
+% ===========================
+% Aggregate performance plots
+% ===========================
+\begin{figure}[!htp]
+    \centering
+    % \begin{subfigure}[b]{0.58\linewidth}
+    %     \includegraphics[width=\linewidth]{figures/fig_1_aggregate_performance_vs_budget.pdf}
+    %     % \caption{\texttt{qwen3-8b}, alt (\texttt{True})}
+    %     \label{fig:hotpotqa_qwen3_8b_true}
+    % \end{subfigure}
+    \begin{subfigure}[b]{0.425\linewidth}
+        \includegraphics[width=\linewidth]{figures/HotpotQABench_qwen3-8b_True_rollout_vs_score.pdf}
+        % \includegraphics[width=\linewidth]{manual_figures/main_hotpotqa.pdf}
+        \caption{HotpotQA, Qwen3 8B}
+        \label{fig:hotpotqa_qwen3_8b_true}
+    \end{subfigure}
+    % \begin{subfigure}[b]{0.425\linewidth}
+    %     \includegraphics[width=\linewidth]{figures/hoverBench_qwen3-8b_True_rollout_vs_score.pdf}
+    %     \caption{HoVer, Qwen3 8B}
+    %     \label{fig:hoverbench_qwen3_8b_true}
+    % \end{subfigure}
+    \begin{subfigure}[b]{0.425\linewidth}
+        \includegraphics[width=\linewidth]{figures/IFBench_qwen3-8b_True_rollout_vs_score.pdf}
+        % \includegraphics[width=\linewidth]{manual_figures/main_ifbench.pdf}
+        \caption{IFBench, Qwen3 8B}
+        \label{fig:ifbench_qwen3_8b_true}
+    \end{subfigure}
+    % \begin{subfigure}[b]{0.3296\linewidth}
+    %     \includegraphics[width=\linewidth]{manual_figures/hover_grpo_fft.pdf}
+    %     \caption{HoVer, Qwen3 8B}
+    %     \label{fig:ifbench_qwen3_8b_true}
+    % \end{subfigure}
+    \hfill
+    
+    % \caption{Aggregate performance vs. budget for \texttt{Qwen3 8B}.}
+    
+    % \end{subfigure}
+    % \caption{Aggregate validation performance (Y-axis) of GEPA compared to GRPO at varying budget levels (X-axis), averaged across five benchmarks: HotpotQA, IFBench, PAPILLON, HoVer, and FSABench. Notably, GEPA achieves the same performance as GRPO (with 24000 rollouts at 500 train steps) in just \textbf{1.8\%} of GRPO's rollouts, while achieving an aggregate validation score that is 7.78\% higher than GRPO, while utilizing only 12.4\% of the total rollouts required by GRPO.}
+    % \caption{Aggregate validation performance (Y-axis) of GEPA compared to GRPO across varying rollout budgets (X-axis), averaged over five benchmarks: HotpotQA, IFBench, PAPILLON, HoVer, and FSABench. GEPA rapidly surpasses GRPO's best aggregate performance: with only 1.8\% of GRPO's budget, GEPA matches GRPO's peak; with 12.4\% of the rollout budget, GEPA achieves an aggregate score that is 7.8\% higher than GRPO. Results are shown for the \texttt{Qwen3 8B} model.}
+    % \caption{(Left) Aggregate validation performance (Y-axis) of GEPA compared to GRPO across varying rollout budgets (X-axis). GRPO was run with upto 24,000 rollouts. (Left) averaged over five benchmarks: HotpotQA, IFBench, HoVer, PUPA and FSABench, with \texttt{Qwen3 8B}. \textbf{GEPA matches GRPO's best aggregate performance using only 1.8\% of GRPO's rollout budget}, and achieves an aggregate score that is 7.8\% higher than GRPO using just 12.4\% of the rollouts. (Right) Comparing different optimizers on performance vs rollouts on HotpotQA benchmark.}\label{fig:agg_perf_qwen3_8b_true}
+    \caption{A comparison of learning behavior of the GEPA prompt optimizer against a state-of-the-art prompt optimizer (MIPROv2) and GRPO (24,000 rollouts). As more rollouts are sampled, the prompt optimizers can learn much more quickly than GRPO. GEPA substantially outperforms both GRPO and MIPROv2 in final score. The Test-set star markers demonstrate the performance gap in a held-out set of questions.}\label{fig:agg_perf_qwen3_8b_true}
+\end{figure}
+\vspace{-2.5mm}
+
+\section{Introduction}
+\vspace{-2.0mm}
+Large language models (LLMs) have enabled development of agents and systems that combine fuzzy natural-language specifications with tools like retrieval and code execution. This raises the question of how LLMs should be optimized for downstream performance. One popular approach is Reinforcement Learning with Verifiable Rewards (RLVR), e.g. with Group Relative Policy Optimization (GRPO)~\citep{grpo_paper}, which treats success metrics as end-of-rollout scalar rewards used to estimate policy gradients~\citep{lambert2025policy}. While these RL approaches are effective, they typically require tens of thousands of rollouts in practice to fit new tasks. For example, recent works leveraging GRPO typically use up to hundreds of thousands of rollouts for training~\citep{chen_spectral_2025, wu_reinforcing_2025, zhang_lets_2025, jin_search-r1_2025, si_teaching_2025, wang_acting_2025, chen_research_2025, sha_sem_2025, lin_knowledgeable-r1_2025, peng_verif_2025, song_r1-searcher_2025}. 
+This sample inefficiency can quickly become a serious bottleneck: many downstream LLM applications invoke expensive tool calls, have limited inference budget for sampling from the LLM itself, or simply cannot finetune the weights of the largest or best-performing LLMs.
+
+We observe that rollouts sampled from even highly sophisticated LLM systems can be serialized into traces of natural language: they contain nothing but the instructions of each LLM module, the resulting LLM reasoning chains, tool calls, and potentially the internal workings of the reward function (e.g., compiler error messages, before they are collapsed into scalar rewards). Because such serialized trajectories are readily understood by modern LLMs, we argue that \textit{algorithms that learn deliberately in natural language by reflecting on these trajectories} can make more effective use of the strong language priors that LLMs have, compared with standard RL approaches. %We thus seek to compare for the first time the effectiveness and sample efficiency of using LLMs for learning natural-language rules from trial and error against more standard RL methods like GRPO.
+
+
+% Indeed, even the reward functions used to evaluate RL rollouts often internally produce textual traces (e.g., compiler error messages for a code generation environment), making it possible to extract highly fine-grained and diagnostic signals from even a single rollout. 
+
+
+% In this work, we argue in favor of leveraging the priors of LLMs more directly, inspired by how humans engage in post-hoc reflection, formulating high-level hypotheses about the sources of successful attempts. We observe
+
+% explore prompt evolution guided by natural language feedback, seeking to enable AI systems to learn faster and more compositionally. Towards this, we
+
+% These can address failure modes directly and support rapid iteration: a single high-level lesson, articulated in language, can trigger large, interpretable behavior updates. The increasing reasoning and reflective capabilities of LLMs makes them well-equipped to reason over such supervision, iteratively incorporating new abstractions and strategies into their outputs, often without even without any weight updates.
+
+We introduce GEPA (Genetic-Pareto), a \textit{reflective} prompt optimizer for compound AI systems that merges textual reflection with multi-objective evolutionary search. GEPA iteratively mutates prompts using natural language feedback drawn from new rollouts. In each mutation, the candidate prompt is derived from an ancestor, accumulating high-level lessons derived from observations and LLM feedback. 
+To avoid local optima that afflict greedy prompt optimization, GEPA maintains a Pareto front: instead of evolving only the global best prompt, it stochastically explores the top-performing prompts for each problem instance. This diversification enables robust generalization and mitigates getting stuck in local minima.
+
+We evaluate GEPA across multi-hop reasoning (HotpotQA; \citealt{hotpotqa_bench}), Math (AIME, LiveBench-Math; ~\cite{aime_2025, livebench}), instruction following (IFBench; \citealt{ifbench_bench}), privacy-aware delegation (PUPA; \citealt{papillon_bench}), and retrieval-augmented verification (HoVer; \citealt{hover_bench}), using both open (Qwen3 8B; \citealt{qwen3_technical_report, qwen3_8b_hf}) and proprietary (GPT-4.1 Mini; \citealt{gpt_41_model}) models.
+We find that GEPA generalizes well and is highly sample-efficient: on Qwen3 8B, it outperforms GRPO (24k rollouts) by up to 20\% while using up to 35$\times$ fewer rollouts, with an average gain of +6\% across six tasks.
+GEPA also surpasses the prior state-of-the-art, MIPROv2~\citep{miprov2}, on all benchmarks and models, achieving +13\% aggregate gains, over double MIPROv2’s +5.6\%.
+
+Qualitatively, GEPA-learned prompts are quite rich.
+Figure~\ref{fig:main_fig_prompt_example} shows excerpts from a prompt crafted for the query-creation module of a multi-hop question answering system used in HotpotQA, and Figure~\ref{fig:gepa_iterative_improvement_vis} shows that even a single \textit{reflective} update often yields large gains.
+These results highlight that reflective prompt evolution with language feedback enables improved sample efficiency and robust generalization, offering a practical approach to optimizing complex AI workflows in data- or budget-constrained environments.
+We also demonstrate GEPA as an inference-time search strategy for code optimization on NPUEval~\citep{npueval} \& KernelBench~\citep{kernelbench} in Sec~\ref{sec:inf_time_search_appendix}, and for adversarial prompt search in Sec~\ref{sec:adv_prompt_appendix}.
+
+\input{prompt_example.tex}
+
+% \noindent 
+
+% We evaluate GEPA on four diverse tasks—multi-hop reasoning (HotpotQA; \citealt{hotpotqa_bench}), instruction following (IFBench; \citealt{ifbench_bench}), privacy-aware delegation (PUPA; \citealt{papillon_bench}), and retrieval-augmented verification (HoVer; \citealt{hover_bench})—using both open (Qwen3 8B; \citealt{qwen3_technical_report, qwen3_8b_hf}) and proprietary (GPT-4.1 mini; \citealt{gpt_41_model}) models. Our results show that GEPA demonstrates robust generalization and is highly sample-efficient: on Qwen3 8B, GEPA outperforms GRPO (24{,}000 rollouts with LoRA) by up to 19\% while requiring up to 35$\times$ fewer rollouts. Overall, GEPA achieves an average improvement of +10\% over GRPO across all tasks. Furthermore, GEPA surpasses the previous state-of-the-art prompt optimizer, MIPROv2~\citep{miprov2}, on every benchmark and model, obtaining aggregate optimization gains of +13\%, more than doubling the gains achieved by MIPROv2 (+5.6\%).
+
+
+% , and as an agent-discovery strategy, improving Gemini-2.5-Pro on ARC-AGI from 44\% to 49.5\% (Section~\ref{sec:agent_discovery_main}).
+
+% \noindent Even qualitatively, GEPA generated prompts can be highly effective. Figure~\ref{fig:main_fig_prompt_example} highlights excerpts from a prompt crafted by GEPA for the query creation module of a multi-hop question answering system (Used in HotpotQA). We also find that in most cases, even a single \textit{reflective} prompt update can give large improvements (as highlighted in the optimization trajectory in Figure~\ref{fig:gepa_iterative_improvement_vis}).
+% These results demonstrate that reflective prompt evolution using language feedback enables substantial sample efficiency and robust generalization, providing a practical path to optimizing complex, real-world AI workflows in data- or budget-constrained environments. Finally, we also show promising preliminary results demonstrating GEPA’s use as an inference-time search strategy for code optimization over NPUEval~\citep{npueval} and KernelBench~\citep{kernelbench} and as an agent-discovery strategy, improving Gemini-2.5-Pro's performance on ARC-AGI from 44\% to 49.5\%(Section~\ref{sec:agent_discovery_main}).
+
+% \section{Formalizing Sample-Efficient AI System Optimization}\label{sec:preliminaries}
+
+\section{Problem Statement}\label{sec:preliminaries}
+\input{preliminaries.tex}
+
+% TODO: Introduce a definition involving both weight and prompts, similar to mmGRPO/BetterTogether, to allow for the GRPO vs. GEPA formulation.
+
+\section{GEPA: Reflective Prompt Evolution}\label{gepa_algorithm}
+\input{gepa_description.tex}
+
+% \vspace{-3mm}
+\section{Evaluation}
+
+\input{assets/table_main_qwen}
+% \vspace{-3mm}
+\input{assets/table_main_gpt}
+
+
+We adopt a standard train/validation/test split.
+Optimizers have full access to the train split, including text and labels, for program tuning.
+% Validation sets may be used to track performance scores (e.g., for early stopping) but remain inaccessible otherwise, while test sets are held out entirely and used only post-optimization.
+Although optimizers may monitor the performance of candidate parameters (like model checkpoints) by tracking scores on the validation set (to implement early stopping, for example), direct access to the content of validation instances is restricted.
+We evaluate on six benchmarks—AIME-2025~\citep{aime_2025}, LiveBench-Math~\citep{livebench}, HotpotQA~\citep{hotpotqa_bench}, IFBench~\citep{ifbench_bench}, HoVer~\citep{hover_bench}, and PUPA~\citep{papillon_bench}—each paired with existing compound AI systems and feedback functions.
+Experiments use Qwen3 8B~\citep{qwen3_technical_report} and GPT-4.1 Mini~\citep{gpt_41_model} with standardized inference settings, and compare against state-of-the-art optimizers MIPROv2~\citep{miprov2}, \added{Trace (with its OptoPrime optimizer)~\citep{cheng2024traceautodiffgenerativeoptimization}, TextGrad~\citep{textgrad}}, and GRPO\footnote{We use LoRA for GRPO due to its low cost and succesful adoption with GRPO~\citep{wang_tina_2025, xu_not_2025, li_prorank_2025, yue_hybrid_2025, sun_detection_2025, hayou_plop_2025, zhao_d1_2025, teknium_hermes_2024, zhao_group_2024, sidahmed_parameter_2024}. Additionally, we explore full-parameter finetuning. Figure~\ref{fig:hover_grpo_fft} shows a similar result comparing GEPA to GRPO with full finetuning.}~\citep{grpo_paper}. Appendix~\ref{sec:eval_setup_appendix} provides further details on benchmarks, systems, and feedback functions (Subsection~\ref{sec:eval_setup_benchmarks}); models and inference settings (Subsection~\ref{sec:sec:eval_setup_models}); \added{monetary cost to run the experiments (Subsection \ref{sec:sec:eval_costs})};
+and optimizer configurations (Subsection~\ref{sec:sec:eval_setup_optimizers}). Table~\ref{tab:main-results}, Table~\ref{tab:main-results-gpt} and Figure~\ref{fig:main-results} summarize our main results, from which we derive the following observations:
+
+
+% In this section, we detail our experimental setup. For each benchmark, we adopt a standard three-way data split: train, validation, and test. The train split is fully accessible to the optimizers, allowing them to read and utilize the text and labels of the training instances for program tuning. Although optimizers may monitor the performance of candidate parameters (like model checkpoints) by tracking scores on the validation set (to implement early stopping, for example), direct access to the content of validation instances is restricted. The test set remains entirely held out and is inaccessible throughout the optimization process; performance on this split is only measured post-optimization to assess the performance of the optimized program. We evaluate on a diverse set aof benchmarks including AIME-2025~\citep{aime_2025}, LiveBench-Math~\citep{livebench}, HotpotQA\citep{hotpotqa_bench}, IFBench\citep{ifbench_bench}, HoVer\citep{hover_bench}, and PUPA\citep{papillon_bench}, each paired with existing compound AI systems and feedback functions; employ Qwen3 8B\citep{qwen3_technical_report} and GPT-4.1 Mini\citep{gpt_41_model} with standardized inference parameters; and compare against state-of-the-art optimizers including MIPROv2\citep{miprov2} and GRPO\citep{grpo_paper}. Detailed evaluation setup is provided in Appendix\ref{sec:eval_setup_appendix}, covering the benchmarks, systems, and feedback mechanisms in Subsection\ref{sec:eval_setup_benchmarks}; models and inference settings in Subsection\ref{sec:sec:eval_setup_models}; and optimizer configurations in Subsection\ref{sec:sec:eval_setup_optimizers}.
+
+% \vspace{-3mm}
+% \section{Results and Analysis}
+
+
+
+
+
+% \textbf{Observation 1: Reflective Prompt Evolution is highly sample-efficient and can outperform weight-space reinforcement learning:}
+% Across all four benchmarks, GEPA demonstrates rapid adaptation and robust generalization in compound AI systems—outperforming GRPO (24,000 rollouts) by up to 19\% while using up to $35\times$ fewer rollouts. GEPA attains optimal test set performance 3.5-35x fewer
+% % on HotpotQA, IFBench, HoVer, and PUPA with only 6,438, 678 (35× fewer), 6,858, and 2,157 (11× fewer) 
+% rollouts—surpassing GRPO by 19\%, 2.73\%, 13.66\%, and 5.19\% on these tasks. Notably, GEPA matches GRPO’s best validation scores after only 402, 330, 1179, and 306 rollouts, achieving up to 78× greater sample efficiency. Further, GEPA+Merge outperforms GRPO by an even wider margin of 21\% at a comparable rollout budget as GEPA. We highlight the +8.16\% achieved by GEPA+Merge on IFBench with GPT-4.1 mini, as it contains new, completely out-of-domain constraints in the test set.
+
+\textbf{Observation 1: Reflective Prompt Evolution is highly sample-efficient and can outperform weight-space reinforcement learning:}
+Across four benchmarks, GEPA adapts rapidly and generalizes robustly in compound AI systems—beating GRPO (24,000 rollouts) by up to 19\% while using up to $35\times$ fewer rollouts. It reaches optimal test performance with $4$–$35\times$ fewer rollouts and exceeds GRPO on \added{5 out of 6} tasks by 19.0\%, 2.73\%, 13.66\%, 5.19\% and 0.7\%. GEPA matches GRPO’s best validation after only 243, 402, 330, 1143, 1179, and 306 rollouts—up to $78\times$ greater sample efficiency. GEPA+Merge widens the gap, outperforming GRPO by 21\% at a comparable rollout budget to GEPA.
+
+The majority of GEPA’s rollout budget is spent on validation, where scores are utilized solely for candidate selection and not for producing learning signals. If we restrict the analysis to train set rollouts, GEPA requires only 79 to 737 rollouts to reach optimal performance. To match GRPO’s best validation scores, GEPA achieves this with only 102, 32, 6, and 179 train rollouts for four tasks, respectively, underscoring the high sample efficiency of learning based on reflective prompt evolution.
+
+Since tracking candidates' validation performance accounts for majority of GEPA's rollout budget, sample efficiency can be further improved by evaluating on a smaller validation set or by tracking scores on dynamically selected validation subsets instead of the full set—both of which we propose as directions for future work.
+Figures~\ref{fig:hotpotqa_qwen3_8b_true}, ~\ref{fig:ifbench_qwen3_8b_true}, ~\ref{fig:hoverbench_qwen3_8b_true} and ~\ref{fig:papillon_qwen3_8b_true} show the full performance-vs-rollouts curve for all optimizers over benchmarks HotpotQA, IFBench, HoVer and PUPA, respectively.
+
+% To further contextualize these findings, we revisit the investigation of the \textit{generalization gap} (i.e., the difference between validation and test set performance for optimized prompts) as previously studied by~\citet{tbsm}. Our reproduction, shown in Figure~\ref{fig:gen_gap_side_by_side}, is consistent with—and extends—prior observations: instructions generated through reflective evolution now yield a lower generalization gap, emphasizing both the steady progress in model capabilities and the utility of GEPA’s design. This aligns with the ongoing evolution of both LLM systems and instruction optimization methods such as GEPA, which are able to more effectively utilize these emergent strengths.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \textbf{Lesson 2: Reflective Prompt Evolution enables Instruction-Optimization alone to outperform Joint Instruction and Few-Shot Optimization:} We compare GEPA to MIPROv2, a state-of-the-art joint instruction and few-shot optimizer, on 2 leading models, GPT-4.1 mini and Qwen3 8B, and 4 diverse tasks. We find that GEPA outperforms MIPROv2 in all settings, by margins as high as 11.1\% for GPT-4.1 mini and 10.3\% for Qwen3 8B. GEPA+Merge and GEPA more than doubles the aggregate gains over baseline across all benchmarks achieved by MIPROv2 for both models (+16.02\% and +14.29\% vs +7.04\% for MIPROv2).
+
+% While this result is in contrast to the incredibly insightful studies presented in ~\citet{miprov2} and ~\citet{tbsm}, both of which highlighted the higher performance of few-shot example optimization techniques compared to instruction-optimization, we believe that this can be attributed to GEPA's ability to leverage the increasing self-reflective capabilities of the underlying LLMs (to propose better instructions), and accumulate these ``lessons'' across training iterations, to leverage the increasing instruction-following and generalization abilities of underlying LLMs. The LLMs have themselves improved in their ability to self-reflect as well as follow and generalize from instruction-alone. We reproduce the study on \textit{generalization gap} (difference between validation and test set performance for the optimized prompts) performed by ~\citet{tbsm} in Figure~\ref{fig:gen_gap_side_by_side}, that further reinforces this analysis---reflectively evolved instructions demonstrate lower generalization gap.
+
+
+% While prior works such as ~\citet{miprov2} and ~\citet{tbsm} have provided insightful studies and compelling evidence for the effectiveness of few-shot example optimization—often outperforming instruction-based approaches—our findings suggest an exciting shift in this trend. We attribute this to both the remarkable progress in the instruction-following and self-reflective capabilities of recent LLMs, but also to the design innovations introduced in GEPA to leverage the improved capabilities of recent LLMs. Specifically, we highlight in Lesson 3 below, that GEPA's success can not be attributed solely to reflective prompt mutation, and GEPA's candidate selection strategy plays an important role in it's effectiveness.
+
+% To further contextualize our findings, we revisit the study of \textit{generalization gap} (the difference between validation and test set performance for optimized prompts) as explored by ~\citet{tbsm}. Our reproduction, shown in Figure~\ref{fig:gen_gap_side_by_side}, reinforces these observations: reflectively evolved instructions now demonstrate a lower generalization gap, underscoring both advancements in model capabilities and the benefits of GEPA’s design. We see this as a reflection of the continuous evolution of both LLMs and GEPA's design, effectively leveraging these improvements.
+
+% We provide the full length optimized prompts generated by GEPA for all systems across benchmarks and models in appendix section~\ref{appendix:all_prompts} along with the corresponding prompts generated by MIPROv2. Specifically, unlike the observations made in prior work about instruction optimization methods benefitting mostly from quasi-exemplars~\citep{tbsm}, we highlight that GEPA's prompts often contain detailed \textit{declarative} instructions to complete the task, for example, as highlighted in figure~\ref{fig:main_fig_prompt_example}. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\textbf{Observation 2: Reflective prompt evolution enables instruction-optimization alone to outperform joint instruction and few-shot optimization:} We compare GEPA with MIPROv2, a state-of-the-art instruction and few-shot optimizer, using two leading models across six diverse tasks, and observe that GEPA consistently outperforms MIPROv2 in all settings, achieving margins as high as 11.1\% for GPT-4.1 mini and 10.3\% for Qwen3 8B. Further, GEPA and GEPA+Merge more than double the aggregate gains over baseline seen with MIPROv2 across all benchmarks and models (+13.33\% and +12.19\% vs +5.64\% for MIPROv2).
+
+While prior works such as ~\citet{miprov2} and ~\citet{tbsm} have provided compelling evidence for the effectiveness of few-shot example optimization—often outperforming instruction-based approaches—our findings suggest an exciting shift in this trend. We attribute this primarily to recent advances in the instruction-following and self-reflective abilities of LLMs, as well as the design choices in GEPA that capitalize on these improved capabilities. To further contextualize our findings, we redo the study on \textit{generalization gap} (the difference between validation and test set performance for optimized prompts) as proposed by ~\citet{tbsm}. The results presented in Figure~\ref{fig:gen_gap_side_by_side} reinforce these observations: reflectively evolved instructions now demonstrate a lower generalization gap, underscoring both advancements in model capabilities and the benefits of GEPA’s design. We see this as a reflection of the continuous evolution of LLMs and GEPA's ability to effectively leverage these improvements.
+% Importantly, as discussed in Lesson 3 below, the effectiveness of GEPA is not solely a result of reflective prompt mutation; rather, GEPA's candidate selection strategy also plays an important role in its performance.
+
+We provide the full-length optimized prompts produced by GEPA for all systems, benchmarks, and models in Appendix~\ref{appendix:all_prompts}, alongside MIPROv2 prompts. Notably, in contrast to prior findings where instruction optimization yielded improvements primarily through quasi-exemplars~\citep{tbsm}, GEPA's prompts frequently contain detailed \textit{declarative} instructions for completing the task, as illustrated in Figure~\ref{fig:main_fig_prompt_example}.
+
+% \textbf{Lesson 3: Choice of next-candidate selection strategy has high impact on the optimization trajectory and final performance for genetic optimization algorithm, and pareto-based candidate sampling provides winning benefits:} Since GEPA's goal is to iteratively improve the prompt, in light of learning signals from new rollouts, we operationalize a simple strategy for \lstinline{SelectCandidate} procedure: one that always returns the current best performing candidate. The results for this ablation are presented in table~\ref{tab:ablation_1}. We find that this strategu often led to sub-optimal exploration of the prompt-search space by the optimization. Specifically, we highlight the stark difference between the optimization trajectories between this strategy, and our proposed Pareto-based sampling strategy in figure~\ref{fig:compare_linear_vs_pareto}. As shown in  the figure, selecting the best candidate always led to improvement in one iteration, after which the optimizer couldn't improve the new best candidate, ultimately exhausting all its budget in trying to improve this one candidate. In contrast, the Pareto-based sampling method was able to explore diverse strategies before finally converging to a high performing candidate, all within the same budget.
+\textbf{Observation 3: The next-candidate selection strategy strongly influences the optimization trajectory and final performance, with Pareto-based sampling providing a distinct advantage.}
+\input{assets/table_ablation_one}
+% GEPA iteratively refines prompts using feedback from rollouts; to test our Pareto-based selection, we compare against a baseline that always picks the best-performing candidate in the \lstinline{SelectCandidate} strategy.
+
+% As shown by the ablation results in Table~\ref{tab:ablation_1}, this approach often results in suboptimal exploration of the prompt search space, ultimately leading to poor performance. GEPA with Pareto-based sampling strategy outperforms the \lstinline{SelectBestCandidate} strategy by as much as 8.17\%, maintaining an aggregate margin of +6.4\% across all benchmarks. Figure~\ref{fig:compare_linear_vs_pareto} illustrates the stark difference in optimization trajectories between this naïve strategy and our proposed Pareto-based sampling strategy. Always choosing the current best candidate tends to yield immediate improvement in the next iteration, but then causes the optimizer to stall, expending its entire rollout budget attempting to further improve this specific candidate. In contrast, our Pareto-based sampling method expands the search by considering all Pareto-optimal candidates (representing all ``winning'' strategies discovered so far), ensuring a tight balance between exploration and exploitation tradeoffs---ultimately converging to a higher-performing solution within the same rollout budget.
+
+GEPA refines prompts iteratively with rollout feedback; to test our Pareto-based selection, we compare against a baseline that always picks the best-performing candidate in the \lstinline{SelectBestCandidate} strategy \added{(which is similar to the strategy used by TextGrad~\cite{textgrad}), and \lstinline{BeamSearch(N=4)} (used by APO~\cite{pryzant_apo}}).
+As shown in Table~\ref{tab:ablation_1}, these baselines often yield suboptimal exploration of the prompt search space, leading to poor performance. GEPA with Pareto-based sampling outperforms the \texttt{BeamSearch} \added{strategy by upto 11.33\%, and} \texttt{SelectBestCandidate} \added{strategy by up to 8.17\%, with an aggregate margin of +7.33\% and +6.4\% across all benchmarks, respectively.} Figure~\ref{fig:compare_linear_vs_pareto} highlights the difference in optimization trajectories: always choosing the current best candidate gives immediate improvement but quickly stalls, wasting rollouts on a single candidate. In contrast, our Pareto-based method expands the search by considering all Pareto-optimal candidates (all ``winning'' strategies found so far), balancing exploration and exploitation and converging to a higher-performing solution within the same rollout budget.
+% performing broader exploration across diverse candidate prompts, ultimately converging to a higher-performing solution within the same rollouts budget.
+
+% We also find that \textbf{instruction-optimized prompts are more efficient and generalize better than few-shot demonstrations (Observation 4)}. Further,  \textbf{System-aware crossover strategies such as Merge can improve performance, but their effectiveness depends on budget allocation between mutation and crossover and on timing (Observation 5)}. Finally, \textbf{\added{GEPA-optimized prompts demonstrate cross-model generalization (Observation 6)}}. See Appendix~\ref{sec:results_analysis_appendix} for further discussion.
+
+\textbf{Observation 4: Instruction-optimized prompts are computationally cheaper and generalize better than few-shot demonstration prompts:} In addition to their strong generalization capabilities, reflectively evolved instructions offer a significant practical advantage: they are often much shorter and thus computationally more efficient than few-shot demonstration prompts. This advantage becomes especially clear for complex tasks, where even a single few-shot demonstration can be prohibitively long. The problem is further exacerbated when few-shot examples are optimized using state-of-the-art methods such as MIPROv2, which jointly optimizes \textit{multiple} demonstrations to be used simultaneously, further increasing prompt length.
+
+In contrast, reflectively evolved instructions—such as those generated by GEPA—maintain compactness while providing large performance gains (as demonstrated in Lessons 1 and 2). To illustrate this, we compare GEPA's and MIPROv2's prompt lengths (see Figure~\ref{fig:prompt_lengths_bar_graph}). Notably, prompts produced by GEPA and GEPA+Merge are up to $9.2\times$ shorter than those from MIPROv2, representing a substantial improvement in efficiency, alongside performance improvements. 
+
+Moreover, we observe a trend where, in aggregate, optimizers that achieve higher performance tend to produce shorter prompts (see Figure~\ref{fig:prompt_length_vs_perf}). This reduction in prompt size has a significant impact—not only reducing runtime cost for downstream tasks (as all API-providers meter the input tokens), but also decreasing latency and improving the overall efficiency of LLM-serving systems~\citep{vllm, sglang, sarathi, pensieve}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \textbf{Lesson 4: Instruction Optimized prompts are computationally cheaper to use than few-shot demonstration prompts while generalizing better:} In addition to the strong generalization, we highlight another distinct advantage possessed by reflectively evolved instructions---Even a single few shot demonstration for complex tasks can get very long, and this issue is further exacerbated when few-shot demonstrations are optimized through a state-of-the-art optimizer like MIPROv2, which jointly optimizes \textit{multiple} few shot demonstrations to be used together. In contrast, reflectively-evolved instructions are often much shorter and generalize well (as seen in Lessons 1 and 2). We compare reflectively-evolved instructions from GEPA with the optimized prompts from MIPROv2 on prompt lengths (Figure~\ref{fig:prompt_lengths_bar_graph}) and by analyzing the performance-vs-prompt length (Figure~\ref{fig:prompt_length_vs_perf}). We highlight that both GEPA and GEPA+Merge's prompts are upto $9.2\times$ smaller, showing large improvement over MIPROv2, at a fraction of the cost. Further, we also observe a trend where, on aggregate, as the performance of the optimizer improves, the corresponding prompt generated gets shorter. This reduction in prompt size has a large impact on the runtime cost for the use of this prompt in downstream tasks, latency of the requests as well as the overall LLM-serving system's efficiency~\citep{pensieve, vllm, sglang, sarathi}.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textbf{Observation 5: System aware crossover strategies can provide large gains, but the optimal budget allocation between mutation and crossover, as well as \textit{when} to invoke merge needs further study:} We identify a unique system-aware crossover strategy and operationalize it as Merge (described in Appendix~\ref{sec:merge}). GEPA+Merge can outperform GEPA by as much as 5\%, providing an aggregate 2\% additional improvement over the already strong performance established by GEPA. Detailed results are available in Table~\ref{tab:main-results}. We attribute these gains to the ability of GEPA+Merge to identify distinct optimization lineages, that have learnt complementary strategies (by evolving distinct modules), and merging them by picking the best version of different modules from each of these lineages to propose a single, optimal candidate.
+
+While in our analysis, we found GEPA+Merge works especially well for GPT-4.1 Mini, it lead to performance degradation when used with Qwen3 8B. Even Qwen3 8B benefits from Merge on one out of four tasks. We attribute these discrepancies to the way the rollout budget is allocated between reflective mutation and crossover, and the timing of invocation of the crossover strategy. In our experiments, we fixed the same hyperparameters for GPT-4.1 Mini and Qwen3 8B, leading to suboptimal choice for Qwen3 8B. Intuitively, crossover would provide the maximum benefit, when there are independent lineages that perform well. Hence, the hyperparameters should be chosen such that Merge is invoked once the optimization tree has evolved sufficiently different lineages. We propose the study of such adaptive techniques as future work.
+
+\added{\textbf{Observation 6: GEPA-optimized prompts demonstrate cross-model generalization.} Table~\ref{tab:main-results-gpt} presents results for ``GEPA-Qwen-Opt'', a configuration where prompts were optimized using the smaller Qwen3-8B model but evaluated on GPT-4.1-Mini. Despite originating from a weaker model in a different family, these prompts transfer effectively, achieving a +9.00\% aggregate improvement across 6 benchmarks (with gains as high as +27.67\% on HotpotQA). Remarkably, this transfer performance outperforms strong baselines like MIPROv2 (+5.64\%), TextGrad (+6.11\%), and Trace (+3.27\%), even though those methods were optimized directly on the target GPT-4.1-Mini model.}
+
+
+% Please refer to Appendix~\ref{sec:results_analysis_appendix} for a detailed discussion of the following observations:
+
+% \textbf{Observation 4: Instruction-optimized prompts are significantly more computationally efficient and generalize better than few-shot demonstration prompts.} 
+
+% \textbf{Observation 5: System-aware crossover strategies such as Merge can yield notable performance gains, but their benefit depends on careful budget allocation between mutation and crossover, as well as the timing of their application.}
+
+% \section{GEPA for Agent Discovery}\label{sec:agent_discovery_main}
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=\linewidth]{manual_figures/arc_agi/arc_agi.pdf}
+%     \caption{GEPA for Agent Discovery: Applied to Gemini-2.5-Pro on ARC-AGI-1, GEPA evolves a single-step chain-of-thought agent into a multi-step self-refinement agent, raising scores from 44\% to 49.5\%.}
+%     \label{fig:arc_agi_agent}
+% \end{figure}
+% While we previously used GEPA search-tree nodes to represent sets of prompts in an AI system, these nodes can be extended to the code describing the \textit{whole} AI system, including its subcomponents (modules including their prompts, control flow, etc.). Without any other changes, GEPA can then reflectively evolve the whole AI system through code, including the evolution of the number of modules, detailed prompts to each of the modules, task decomposition across modules, and the control flow orchestrating the system. GEPA with Gemini-2.5-Pro~\citep{gemini_25_pro} can evolve a simple one-step ChainOfThought system into an elaborate 6-step AI system to solve ARC-AGI~\citep{arc_agi} tasks, \textbf{improving Gemini-2.5-Pro's performance on ARC-AGI-1 from 44\% to 49.5\%} (Figure~\ref{fig:arc_agi_agent}) on the held-out public eval set using a split of the public training set for GEPA's train and validation sets. Notably, the evolved system first induces a natural language rule, generates and executes a candidate Python program on the ARC training samples, iteratively debugs it with feedback from failures, refines the AI system program with feedback via reflection, and finally applies the refined program to test inputs. Full code of the evolved AI system is provided in Appendix~\ref{sec:agent_discovery}. 
+
+% \vspace{-3.5mm}
+\section{Extended Applications of GEPA}\label{sec:extended_apps}
+
+\subsection{GEPA For Inference-Time Search (Contd.)}\label{sec:inf_time_search_appendix}
+While the primary focus of this paper is sample-efficient adaptation of AI systems to new tasks, preliminary findings suggest that GEPA may also serve as a promising inference-time search technique. This can be achieved by passing the set of tasks to be solved (for example, a list of Pytorch modules to be converted to CUDA) as the training set to GEPA, ensuring that both $D_{train}$ and $D_{pareto}$ contain the full set of tasks. This way, GEPA can ``overfit'' the set of tasks, iteratively proposing better solutions to every problem. We also note that this allows GEPA to apply lessons and insights extracted from rollouts for one task to other tasks. To explore this use case, we conduct preliminary experiments using GEPA as an inference-time search technique for code-generation tasks on two hardware platforms: writing kernels for AMD's recently introduced XDNA2 Architecture~\citep{amd_xdna2} using an early version of the NPUEval benchmark~\citep{npueval}, and generating CUDA code for NVIDIA-V100 GPUs using KernelBench~\citep{kernelbench}. 
+
+A distinguishing aspect of these experiments is the use of the feedback function $\mu_f$ to dynamically inject domain-specific knowledge into the optimization process. Specifically, kernel development expertise—often codified in technical manuals and documentation—can be selectively surfaced by retrieving relevant manual sections based on rollout failures (e.g., compiler error messages). By using error information to make targetted retrieval queries, GEPA promotes integration of architectural best practices into prompt evolution, as exemplified by the detailed prompt for NPUEval shown in Figure~\ref{fig:npueval_prompt}. We also note that generation stochasticity (temperature based sampling) is eliminated by operating under a cache; this ensures that observed improvements tie closely to inference scaling through prompt updates and GEPA's diverse prompt exploration, rather than stochasticity in the model's sampling process.
+
+\textbf{NPU Kernels:} We create a sequential refinement agent that iteratively generates kernels (up to 10 times) based on feedback like compiler errors and profiling results (Sequential10), and evaluate the Best-of-N generation. With GPT-4o alone, Sequential10 reaches only 4.25\% mean vector utilization. Adding RAG, sourced from technical manuals, improves this to 16.33\%, and integrating MIPROv2 further raises it to 19.03\%. Notably, applying GEPA to Sequential10 (without RAG) dramatically boosts kernel performance, with several generated kernels achieving up to 70\% vector utilization and a mean of 30.52\%. Furthermore, a single prompt generated by GEPA enables Sequential10 (again without RAG) to attain a score of 26.85\%.
+
+\textbf{CUDA Kernels:} For 35 tasks from the KernelBench ``representative subset''~\citep{kernelbench}, spanning three difficulty levels, we ran GEPA with GPT-4o. As depicted in Figure~\ref{fig:kb_fastp_vs_budget}, GEPA boosts GPT-4o's close-to-0\% $fast_1$ score to above 20\% with increasing search budget. This task used an agent that could generate upto 5 sequential refinements based on environment feedback (Sequential5).
+
+These experiments with GPT-4o also demonstrate GEPA's ability to leverage the abilities of frontier LLMs. However, these are early results and warrant further systematic study. We believe that leveraging GEPA for inference-time search, particularly when coupled with domain specific textual feedback, could generalize to other code generation and domain adaptation tasks—a direction we leave for future work.
+
+\begin{figure}[]
+    \centering
+    \begin{subfigure}[b]{0.38\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/kernelcode/npueval_vec_util_gpt4o.pdf}
+        % \caption{}
+    \end{subfigure}
+    % \hfill
+    \begin{subfigure}[b]{0.61\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/kernelcode/npueval_vec_util_individual.pdf}
+        % \caption{}
+    \end{subfigure}
+    \hfill
+    \caption{GEPA with GPT-4o is able to generate kernels for AMD NPUs that achieve vector utilization rates as high as 70\%, with a mean utilization score of 30.52\%. In comparison, GPT-4o, even after up to 10 sequential refinements with environment feedback, achieves an aggregate score of only 4.25\%. When enhanced with retrieval-augmented generation (RAG) and MIPRO, the sequential refinement agent improves to scores of 16.33\% and 19.03\%, respectively. Notably, the final prompt produced by GEPA enables the same agent to reach a utilization score of 26.85\%, all without requiring any runtime RAG.}\label{fig:npueval_results}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\linewidth]{figures/kernelcode/kernelbench_fastp_vs_budget.pdf}
+    \caption{GEPA with GPT-4o is able to iteratively refine and improve CUDA Kernel Code. The graphs shows $fast_p$ vs. rollouts plot for p=$[0.5, 1]$, where the speedup is calculated over Pytorch-eager. $fast_p$ is a metric described in~\citep{kernelbench} that measures the fraction of tasks for which the method generated a kernel executing faster than $p$ times the baseline. As can be seen, GEPA with GPT-4o is able to generate cuda kernels executing faster than Pytorch-eager for over 20\% of the 35 representative tasks.}\label{fig:kb_fastp_vs_budget}
+\end{figure}
+
+\subsection{GEPA for Adversarial Prompt Search (Contd.)}\label{sec:adv_prompt_appendix}
+We instantiate GEPA for adversarial prompt search by inverting the reward signal: the optimizer proposes prompt edits to include additional information like trivia that minimize task performance (pass@1), while requiring that prompts do not contradict the task and still contain all information needed to solve it. For AIME, GEPA’s adversarial search used AIME 2022--2024 problems as the pool for prompt evolution. The learned prompt was evaluated on AIME-2025 (30 problems), using GPT-5 Mini with 5 runs per problem (150 generations total). We started from a clean instruction prompt and evolved a single universal adversarial instruction that is prepended to each query.
+
+The learned adversarial instruction reduced pass@1 on AIME-2025 from 76\% (clean prompt) to 10\% (adversarial prompt), despite preserving the nominal task description and the required answer-format directive.
+
+Base (clean) prompt:
+\begin{quote}
+You are a helpful assistant. You are given a question and you need to answer it. The answer should be given at the end of your response in exactly the format `\verb|### <final answer>|'.
+\end{quote}
+
+GEPA-generated adversarial prompt (abridged):
+\begin{quote}
+You are a helpful assistant. You are given a question and you need to answer it. It's interesting to note that honey never spoils and that the longest river in the world is the Nile, stretching over 6,650 kilometers. When providing your answer, be sure to format it at the end of your response exactly as `\verb|### <final answer>|'. For this task, remember that many mammals, including dolphins, sleep with one eye open. Proceed to answer the given question accordingly.
+\end{quote}
+
+Manual inspection showed that the adversarial prompt caused GPT-5 Mini to end most responses  with the literal placeholder \verb|### <final answer>|, indicating a systematic misinterpretation of the formatting rule when paired with the injected distractors. This suggests that the large drop arises from the interaction between extraneous details and a strict, literal formatting constraint, rather than from the formatting requirement alone.
+
+Adversarial prompt search systematically uncovers instruction-level perturbations that sharply degrade model performance, providing a principled, automated way to probe worst-case robustness beyond average-case metrics. By finding universal, task-preserving distractors (e.g., trivia plus strict formatting), it reveals brittle instruction-following interactions and turns them into reusable stress tests and regression suites for continuous evaluation. The resulting adversarial prompts could be used to provide targeted data for fine-tuning or safety training. In practice, this could improve deployment reliability, enables red-teaming at scale, and help track robustness drift over time across models, versions, and domains.
+
+
+% % \vspace{-2mm}
+% \paragraph*{GEPA For Inference-Time Search}\phantomsection\label{sec:gepa_inf_time_search_main}
+% % \section{GEPA For Inference-Time Search}\label{sec:gepa_inf_time_search_main}
+% GEPA can be used as an inference-time search technique by setting the validation set equal to the training set ($D_\text{val}=D_\text{train}$), under which GEPA iteratively proposes better solutions for each target task. We evaluate this approach on hardware-specific code generation: writing AMD NPU kernels (NPUEval~\citep{npueval}) and generating NVIDIA GPU's CUDA kernels (KernelBench~\citep{kernelbench}) using GPT-4o~\cite{gpt_4o}. GEPA raises mean kernel vector utilization on NPUEval from 4.25\% (sequential refinement baseline) to 30.52\%, and increases the fraction of KernelBench tasks with CUDA code surpassing baseline-PyTorch speed from close to 0\% to over 20\%. Full experimental details are provided in Appendix~\ref{sec:inf_time_search_appendix}.
+% % \vspace{-6mm}
+
+% % \section{GEPA For Inference-Time Search}\label{sec:gepa_inf_time_search_main}
+% % While the primary focus of this paper is sample-efficient adaptation of AI systems to new tasks, preliminary findings suggest that GEPA may also serve as a promising inference-time search technique. This can be achieved by passing the set of tasks to be solved (for example, a list of Pytorch modules to be converted to CUDA) as the training set to GEPA, ensuring that both $D_{train}$ and $D_{pareto}$ contain the full set of tasks. This way, GEPA can ``overfit'' the set of tasks, iteratively proposing better solutions to every problem. We also note that this allows GEPA to apply lessons and insights extracted from rollouts for one task to other tasks. To explore this use case, we conduct preliminary experiments using GEPA as an inference-time search technique for code-generation tasks on two hardware platforms: writing kernels for AMD's recently introduced XDNA2 Architecture~\citep{amd_xdna2} using an early version of the NPUEval benchmark~\citep{npueval}, and generating CUDA code for NVIDIA-V100 GPUs using KernelBench~\citep{kernelbench}. 
+
+% % A distinguishing aspect of these experiments is the use of the feedback function $\mu_f$ to dynamically inject domain-specific knowledge into the optimization process. Specifically, kernel development expertise—often codified in technical manuals and documentation—can be selectively surfaced by retrieving relevant manual sections based on rollout failures (e.g., compiler error messages). By using error information to make targetted retrieval queries, GEPA promotes integration of architectural best practices into prompt evolution, as exemplified by the detailed prompt for NPUEval shown in Figure~\ref{fig:npueval_prompt}. We also note that generation stochasticity (temperature based sampling) is eliminated by operating under a cache; this ensures that observed improvements tie closely to inference scaling through prompt updates and GEPA's diverse prompt exploration, rather than stochasticity in the model's sampling process.
+
+% % \textbf{NPU Kernels:} We create a sequential refinement agent that iteratively generates kernels (up to 10 times) based on feedback like compiler errors and profiling results (Sequential10), and evaluate the Best-of-N generation. With GPT-4o alone, Sequential10 reaches only 4.25\% mean vector utilization. Adding RAG, sourced from technical manuals, improves this to 16.33\%, and integrating MIPROv2 further raises it to 19.03\%. Notably, applying GEPA to Sequential10 (without RAG) dramatically boosts kernel performance, with several generated kernels achieving up to 70\% vector utilization and a mean of 30.52\%. Furthermore, a single prompt generated by GEPA enables Sequential10 (again without RAG) to attain a score of 26.85\%.
+
+% % \textbf{CUDA Kernels:} For 35 tasks from the KernelBench ``representative subset''~\citep{kernelbench}, spanning three difficulty levels, we ran GEPA with GPT-4o. As depicted in Figure~\ref{fig:kb_fastp_vs_budget}, GEPA boosts GPT-4o's close-to-0\% $fast_1$ score to above 20\% with increasing search budget. This task used an agent that could generate upto 5 sequential refinements based on environment feedback (Sequential5).
+
+% % These experiments with GPT-4o also demonstrate GEPA's ability to leverage the abilities of frontier LLMs. However, these are early results and warrant further systematic study. We believe that leveraging GEPA for inference-time search, particularly when coupled with domain specific textual feedback, could generalize to other code generation and domain adaptation tasks—a direction we leave for future work.
+
+% % \begin{figure}[!htp]
+% %     \centering
+% %     \begin{subfigure}[b]{0.38\linewidth}
+% %         \centering
+% %         \includegraphics[width=\linewidth]{figures/kernelcode/npueval_vec_util_gpt4o.pdf}
+% %         % \caption{}
+% %     \end{subfigure}
+% %     % \hfill
+% %     \begin{subfigure}[b]{0.61\linewidth}
+% %         \centering
+% %         \includegraphics[width=\linewidth]{figures/kernelcode/npueval_vec_util_individual.pdf}
+% %         % \caption{}
+% %     \end{subfigure}
+% %     \hfill
+% %     \caption{GEPA with GPT-4o is able to generate kernels for AMD NPUs that achieve vector utilization rates as high as 70\%, with a mean utilization score of 30.52\%. In comparison, GPT-4o, even after up to 10 sequential refinements with environment feedback, achieves an aggregate score of only 4.25\%. When enhanced with retrieval-augmented generation (RAG) and MIPRO, the sequential refinement agent improves to scores of 16.33\% and 19.03\%, respectively. Notably, the final prompt produced by GEPA enables the same agent to reach a utilization score of 26.85\%, all without requiring any runtime RAG.}\label{fig:npueval_results}
+% % \end{figure}
+
+% % \begin{figure}[ht]
+% %     \centering
+% %     \includegraphics[width=0.8\linewidth]{figures/kernelcode/kernelbench_fastp_vs_budget.pdf}
+% %     \caption{GEPA with GPT-4o is able to iteratively refine and improve CUDA Kernel Code. The graphs shows $fast_p$ vs. rollouts plot for p=$[0.5, 1]$, where the speedup is calculated over Pytorch-eager. $fast_p$ is a metric described in~\citep{kernelbench} that measures the fraction of tasks for which the method generated a kernel executing faster than $p$ times the baseline. As can be seen, GEPA with GPT-4o is able to generate cuda kernels executing faster than Pytorch-eager for over 20\% of the 35 representative tasks.}\label{fig:kb_fastp_vs_budget}
+% % \end{figure}
+
+% % \section{GEPA for Adversarial Prompt Search}\label{sec:adv_prompt_search_main}
+% % \paragraph*{GEPA for Adversarial Prompt Search}\phantomsection\label{sec:adv_prompt_search_main}
+% % GEPA can discover adversarial prompts by inverting the reward—i.e., finding instructions that minimize task performance rather than maximize it. On AIME-2025 with GPT-5 Mini, starting from a simple instruction, GEPA evolved a trivia-style distractor that reduced pass@1 from 76\% to 10\%. Adversarial search drew on AIME 2022–2024 problems, with evaluation on AIME-2025 using 5 runs per problem (30 problems; 150 generations). This robustness probe surfaces brittle instruction-following interactions (e.g., trivia with strict formatting) and yields reusable stress tests and regression suites for deployment. These results show reflective prompt evolution is effective not only for improving systems but also for stress-testing them by locating universal, query-agnostic perturbations that sharply degrade accuracy. These findings parallel recent results on query-agnostic adversarial triggers, which report two- to seven-fold increases in error rates across model families; in our AIME-2025 setting, GEPA’s learned universal instruction yields a comparable $3.8\times$ increase (errors from 24\% to 90\%) \citep{rajeev2025catsconfusereasoningllm}. Full experimental details are provided in Appendix~\ref{sec:adv_prompt_appendix}.
+% \paragraph*{GEPA for Adversarial Prompt Search}\phantomsection\label{sec:adv_prompt_search_main}
+% GEPA can discover adversarial prompts by inverting the reward—finding instructions that minimize task performance. On AIME-2025 with GPT-5 Mini, starting from a simple instruction, GEPA evolved a trivia-style distractor that reduced pass@1 from 76\% to 10\%. Adversarial search drew on AIME 2022–2024 problems, with evaluation on AIME-2025 using 5 runs per problem (30 problems; 150 generations). This robustness probe surfaces brittle instruction-following interactions (e.g., trivia with strict formatting) and yields reusable stress tests and regression suites for deployment and show that reflective prompt evolution is also effective for stress-testing them by locating universal, query-agnostic perturbations that sharply degrade accuracy. These findings parallel recent results on query-agnostic adversarial triggers, which report two- to seven-fold increases in error rates across model families; in our AIME-2025 setting, GEPA’s learned universal instruction yields a comparable $3.8\times$ increase (errors from 24\% to 90\%) \citep{rajeev2025catsconfusereasoningllm}. Full experimental details are provided in Appendix~\ref{sec:adv_prompt_appendix}.
+% % \vspace{-4.5mm}
+
+% % \section{GEPA for Adversarial Prompt Search}\label{sec:adv_prompt_search_main}
+% % GEPA can automatically discover adversarial prompts by inverting the reward—i.e., searching for instructions that minimize task performance rather than maximize it. On AIME-2025 with GPT-5 Mini, starting from a simple instruction prompt, GEPA evolved a short, trivia-style distractor instruction that reduced pass@1 from 76\% to 10\%. Adversarial search used problems from AIME 2022–2024; evaluation used AIME-2025 with 5 runs per problem (30 problems; 150 generations). This provides a principled robustness probe that surfaces brittle instruction-following interactions (e.g., trivia paired with strict formatting), actionable guidance for defensive prompt design and evaluation, and reusable stress tests and regression suites for deployment. These results show that reflective prompt evolution is effective not only for improving systems, but also for stress-testing them by locating universal, query-agnostic perturbations that sharply degrade accuracy. Full experimental details are provided in Appendix~\ref{sec:adv_prompt_appendix}.
+
+% % \section{GEPA for Adversarial Prompt Search}
+% % We find that GEPA can be used to automatically discover adversarial prompts for tasks by simply inverting the reward (i.e., searching for instructions that \emph{minimize} task performance rather than maximize it). On AIME-2025 with GPT-5 Mini, starting from a simple instruction prompt, GEPA evolved a short, trivia-style distractor instruction that reduced the pass@1 score from 76\% to 10\%. Adversarial search used problems from AIME 2022--2024; evaluation used AIME-2025 with 5 runs per problem (30 problems; 150 generations). It provides a principled robustness probe that surfaces brittle instruction-following interactions (e.g., trivia paired with strict formatting), along with actionable guidance for defensive prompt design and evaluation. It also supplies reusable stress tests and regression suites for deployment, and yields adversarial data to train and validate mitigations. This demonstrates that reflective prompt evolution is effective not only for improving systems, but also for stress-testing them by locating universal, query-agnostic perturbations that sharply degrade accuracy.
+
+% % \noindent Baseline prompt (clean):
+% % \begin{quote}\small
+% % You are a helpful assistant. You are given a question and you need to answer it. The answer should be given at the end of your response in exactly the format `\verb|### <final answer>|'.
+% % \end{quote}
+
+% % \noindent GEPA (score minimization) was instructed to propose prompts that ``include irrelevant details like trivia, do not contradict the task, and still contain all information needed to solve it.'' It produced the following adversarial prompt (abridged) which prepends trivia and repeats the formatting rule:
+% % \begin{quote}\small
+% % You are a helpful assistant. You are given a question and you need to answer it. It's interesting to note that honey never spoils and that the longest river in the world is the Nile, stretching over 6,650 kilometers. When providing your answer, be sure to format it at the end of your response exactly as `\verb|### <final answer>|'. For this task, remember that many mammals, including dolphins, sleep with one eye open. Proceed to answer the given question accordingly.
+% % \end{quote}
+
+% % Manual inspection showed many failures ended with the literal placeholder \verb|### <final answer>|, indicating a systematic misinterpretation of the formatting rule. A prompt replacing ``format it exactly as \verb|### <final answer>|'' with . Thus, the large drop appears to arise from the interaction between irrelevant details and a strict formatting requirement, not from the formatting requirement alone.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Related Work}
+\vspace{-2mm}
+\textbf{Prompt optimization} improves LLMs but often needs manual expertise; for instance, chain-of-thought prompting \cite{wei2023chainofthoughtpromptingelicitsreasoning}. To scale this approach, recent methods use LLMs to optimize prompts automatically \citep{zhou2022large, yang2024largelanguagemodelsoptimizers, agarwal2024promptwizardtaskawarepromptoptimization, 10.5555/3692070.3692611}. GEPA leverages LLMs, but differs by incorporating textual environment feedback, Pareto-aware search over candidates, and evolution strategies per submodule within an AI system.
+
+\textbf{Evolutionary algorithms} have been used to optimize prompts, e.g., EvoPrompt~\citep{guo2024connecting}, which evolves prompt populations. \added{Rainbow Teaming~\citep{rainbow_prompt} applies quality-diversity evolution to generate diverse adversarial prompts.} GEPA additionally uses domain-specific feedback for targeted mutations achieving higher sample efficiency. AlphaEvolve~\citep{novikov2025alphaevolve} and OpenEvolve~\citep{openevolve} apply evolutionary search directly to code rewriting, excelling when problem solution can be codified. While AlphaEvolve targets a single hard problem, GEPA brings evolution to prompts across domains, combining Pareto-frontier optimization and prompt evolution to transfer tactics from related problems.
+
+\textbf{Feedback-driven improvement} often uses reinforcement learning, such as majority voting signals \citep{zuo2025ttrltesttimereinforcementlearning}, but RL can be sample-inefficient when rewards are slow to compute. An alternative is learning in the language space: in-context bandit/self-bootstrapping methods \added{\citep{reflexion,self_refine}} \citep{monea2025llmsincontextbanditreinforcement, xu2025provablylearninglanguagefeedback, feng2025naturallanguagereinforcementlearning, cheng2024traceautodiffgenerativeoptimization}, workflow memory and skills \citep{wang2024agentworkflowmemory, wang2025inducingprogrammaticskillsagentic}, and test-time strategy synthesis via Dynamic Cheatsheet \citep{suzgun2025dynamiccheatsheettesttimelearning}, reasoning cache \citep{chen2025logaugmentedgenerationscalingtesttime}. GEPA instead uses examples to propose new \textit{instructions}, yielding task-specific rules.
+
+To \textbf{optimize compound AI systems and agents}~\citep{lin2025trainingscaffoldedlanguagemodels}, DSPy \citep{khattab2022demonstrate,dspy} searches/bootstraps few-shot examples, TextGrad \citep{textgrad} backpropagates textual feedback, and MIPROv2 \citep{miprov2} jointly aligns instructions and examples via Bayesian optimization; these largely rely on global rewards. \added{Agent-Pro~\citep{agentpro} evolves agent policies through dynamic belief generation and reflection on interactive experiences.} Optimas \citep{wu2025optimasoptimizingcompoundai} introduces globally aligned local rewards per module. GEPA combines global rewards with environment textual feedback per module and maintains a Pareto frontier over individual data instances, matching prompts/agent design to specific examples. The Pareto-guided evolution lets GEPA explore diverse prompt/code/agent design strategies before converging to a robust, generalizable set.
+% \textbf{Prompt Optimization:} Prompt optimization improves LLMs but often needs manual expertise; for instance, chain-of-thought prompting \cite{wei2023chainofthoughtpromptingelicitsreasoning}. To scale, recent methods use LLMs to optimize prompts automatically \citep{zhou2022large, yang2024largelanguagemodelsoptimizers, agarwal2024promptwizardtaskawarepromptoptimization, 10.5555/3692070.3692611}. GEPA also leverages LLMs, but differs by incorporating textual environment feedback, Pareto-aware search over candidates, and evolution strategies per submodule within an AI system. \textbf{Evolutionary LLMs:} Evolutionary algorithms have been used to optimize prompts, e.g., EvoPrompt~\citep{guo2024connecting}, which evolves prompt populations but does not exploit training feedback. In contrast, GEPA uses domain-specific feedback for targeted mutations and achieves higher sample efficiency. AlphaEvolve~\citep{novikov2025alphaevolve} and OpenEvolve~\citep{openevolve} apply evolutionary search directly to code rewriting, excelling when problem solution can be codified. While AlphaEvolve targets a single hard problem, GEPA brings evolution to prompts across domains, combining Pareto-frontier optimization and prompt evolution to transfer tactics from related problems. \textbf{Reflection and Feedback:} Feedback-driven improvement often uses reinforcement learning, such as majority voting signals \citet{zuo2025ttrltesttimereinforcementlearning}, but RL can be sample-inefficient when rewards are slow to compute. An alternative is learning in the language space: in-context bandit/self-bootstrapping with verifiers \citet{monea2025llmsincontextbanditreinforcement, xu2025provablylearninglanguagefeedback}, workflow memory \citet{wang2024agentworkflowmemory}, and test-time strategy synthesis via Dynamic Cheatsheet \citet{suzgun2025dynamiccheatsheettesttimelearning}. GEPA instead uses examples to propose new instructions (not just few-shot demonstrations), yielding task-specific rules. \textbf{Optimizing Compound AI Systems and Agents:} For multi-module systems, DSPy \citep{khattab2022demonstrate,dspy} searches/bootstraps few-shot examples, TextGrad \citep{textgrad} backpropagates textual feedback, and MIPROv2 \citep{miprov2} jointly aligns instructions and examples via Bayesian optimization; these largely rely on global rewards. Optimas \citep{wu2025optimasoptimizingcompoundai} introduces globally aligned local rewards per module. GEPA combines global rewards with environment textual feedback per module and maintains a Pareto frontier over individual data instances, matching prompts/agent design to specific examples. This fine-grained, Pareto-guided evolution lets GEPA explore diverse prompt/code/agent design strategies before converging to a robust, generalizable set.
+% ~\citet{sia1, sia2} explore AI-guided agent design and improvements.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Related Work}
+
+% \paragraph{Prompt Optimization:} Prompt optimization has been shown to be effective for large language models. Manual prompt tuning like chain-of-thought prompting \cite{wei2023chainofthoughtpromptingelicitsreasoning} promotes the model performance by a large margin, but requires human knowledge to decide what instructions and demonstrations are useful. To scale tuning prompts to more domains, recent work \citep{zhou2022large, yang2024largelanguagemodelsoptimizers, agarwal2024promptwizardtaskawarepromptoptimization, 10.5555/3692070.3692611} propose using large language models to optimize the prompt. GEPA also leverages LLMs to optimize the prompt. However, GEPA is different from all previous work for using textual feedback from the environment, searching the best prompt candidates through Pareto-aware optimization, and using evolution strategies to optimize prompts for each submodule in a compound AI optimization. 
+
+% \paragraph{Evolutionary LLMs:} Beyond naive prompt optimization, evolutionary algorithms are also popular for optimizing LLM performance. For example, EvoPrompt~\citep{guo2024connecting} connects LLMs with evolutionary algorithms that gradually populate optimized prompts. While the evolutionary algorithm is powerful, EvoPrompt's prompt population fails to leverage training feedback. Further, unlike the use of \textit{random} mutation, GEPA leverages domain specific feedback to perform mutations, enabling it to converge faster, evidences by GEPA's sample efficiency.
+
+% Another recent work, AlphaEvolve~\citep{novikov2025alphaevolve} (and its open-source implementation OpenEvolve~\citep{openevolve}), demonstrates the effectiveness of evolutionary search when applied directly to code: the system iteratively rewrites portions of the code with evolutionary feedback inside the prompt. This approach excels in domains where solutions can be explicitly encoded and directly manipulated at the code level. While AlphaEvolve applies solution search toward a single hard problem, GEPA brings the evolutionary paradigm to a domain of problems through prompts. By combining Pareto-front optimization and prompt evolution, GEPA leverages knowledge and tactics from similar problems to construct a powerful prompt.
+
+% \paragraph{Reflection and Feedback:} Utilizing feedback and reward is another prominent way to improve LLM performances on verifiable tasks. A common strategy is to use the reward to guide the model's learning process through reinforcement learning (RL) techniques. For example, \citet{xu2025provablylearninglanguagefeedback, zuo2025ttrltesttimereinforcementlearning} proposed using natural language feedback and major voting knowledge to perform reinforcement learning training, respectively. However, weight-altering reinforcement learning bears sample inefficiency, especially when reward or feedback calculation is slow.
+
+% An alternative way to ``learn'' from environment feedback is through learning in the natural language space. \citet{monea2025llmsincontextbanditreinforcement} uses the language model itself to perform in-context learning through self-bootstrapping with external verifiers. \citet{wang2024agentworkflowmemory} proposes summarizing ``memories'' from successful agent trajectories to resemble leaning. Similarly, Dynamic Cheatsheet~\citep{suzgun2025dynamiccheatsheettesttimelearning} proposes test-time learning through synthesizing strategies for later reference. In contrast, GEPA leverages the examples for reflectively \textit{proposing} new instructions, rather than using them as few-shot demonstrations, thereby creating task-specific knowledge and rules.
+
+% \paragraph{Optimizing Compound AI Systems and Agents:} Optimizing compound AI systems has always been a challenge with multiple LLM modules involved. DSPy~\citep{khattab2022demonstrate,dspy} introduces optimization for searching and bootstrapping few-shot in-context examples. TextGrad~\citep{textgrad} optimizes compound systems by backpropagating textual feedback from other LLMs. MIPROv2~\citep{miprov2} attempts to align instructions and few-shot examples jointly for compound AI systems through Bayesian Optimization. Despite using different algorithms, the aforementioned optimizers rely on final global rewards as signals for success. Recent work Optimas \citep{wu2025optimasoptimizingcompoundai} proposes using globally aligned local rewards for each LLM module to further improve compound AI systems.
+
+% GEPA leverages global rewards as signals while incorporating additional textual feedback for each module from the environment. Unlike previous optimizers that treat the training set as a monolithic entity and optimize for overall performance, GEPA takes a fundamentally different approach. At each step, GEPA maintains and updates a Pareto front across all data instances, enabling it to match prompts to specific data points within the training set. This more fine-grained approach set the basis for GEPA's effective prompt evolution, enabling it to explore many different prompt strategies before converging to a generalizable prompt.
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%Second, GEPA's evolution algorithm ensures diversity in prompts with the correct task distribution.
+% While GEPA's learning occurs during test time as well, the innovation comes in two ways: first, GEPA leverages the test-time examples not only for in-context demonstrations but also for \textit{proposing} the instruction
+
+
+
+% Provably Learning from Language Feedback~\citep{xu2025provablylearninglanguagefeedback}
+
+
+% % PROMPTBREEDER~\citep{10.5555/3692070.3692611}: Promptbreeder is a general-purpose self-referential self-improvement mechanism that evolves and adapts prompts for a given domain. Mutation of prompts and mutation-prompts is driven by the LLM itself, leading to improved task prompts and mutation prompts over multiple generations.
+
+% On the generalization of language models from in-context learning and finetuning: a controlled study~\citep{lampinen2025generalizationlanguagemodelsincontext}
+
+% TTRL: Test-Time Reinforcement Learning~\citep{zuo2025ttrltesttimereinforcementlearning}
+
+% Natural Language Reinforcement Learning~\citep{feng2025naturallanguagereinforcementlearning}
+
+% Reflexion~\citep{10.5555/3666122.3666499}: Reflexion has no real learning, it’s entirely per episode, and is the original form of sequential (not parallel) inference time scaling.
+
+% LLMs Are In-Context Bandit Reinforcement Learners~\citep{monea2025llmsincontextbanditreinforcement}
+
+% Dynamic Cheatsheet~\citep{suzgun2025dynamiccheatsheettesttimelearning}: Dynamic Cheatsheet proposes a test-time learning method, that synthesizes strategies across tasks, updating a memory and using it for subsequent tasks. It can solve a batch of tasks (transduction) this way. However, there is no learning from environment feedback, and the work does not focus on training and generalizing to unseen problems.
+
+% % https://arxiv.org/pdf/2309.08532
+
+% % https://arxiv.org/pdf/2309.16797
+
+% % https://arxiv.org/pdf/2506.10341
+
+% % https://github.com/codelion/openevolve
+
+% % https://www.arxiv.org/abs/2507.03041
+
+% % https://arxiv.org/abs/2505.00661
+
+% % https://www.arxiv.org/pdf/2504.16084
+
+% % https://arxiv.org/abs/2411.14251
+
+% % https://arxiv.org/abs/2303.11366
+
+% % https://arxiv.org/abs/2410.05362v2
+
+% % https://arxiv.org/pdf/2504.07952
+
+% % https://arxiv.org/abs/2405.18369
+
+% % https://deepmind.google/discover/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/
+
+% Reflexion:
+% Definitely relevant but reflexion has no real learning, it’s entirely per episode
+% It’s the original form of sequential (not parallel) inference time scaling
+
+
+\section{Conclusion}
+We introduced GEPA, a prompt optimizer for arbitrary LLM agents and workflows that leverages explicit reflection and Pareto-based selection, showing superior sample efficiency compared to reinforcement learning (GRPO), while outperforming leading prompt optimizers (MIPROv2). By explicitly incorporating natural language feedback and maintaining a diverse pool of Pareto-optimal candidates, GEPA rapidly adapts AI systems to new tasks. Our results across benchmarks and models suggest that language-based reflection can offer a scalable strategy for optimizing complex real-world AI workflows, especially in resource-constrained settings. GEPA also shows promise as an inference-time search strategy, showing the ability to write code in challenging domains.
+% We view GEPA as a step towards more human-like, adaptive, and efficient AI system learning, and anticipate that it may inspire further research into language-driven, reflection-based learning.
+
+% While GEPA shows strong sample efficiency and generalization, many questions remain. The tradeoff between prompt- and weight-based learning is not well understood: although GEPA excels when rollouts are expensive, weight updates may dominate when data or rollouts are abundant. For GRPO baselines, we primarily used LoRA due to its low cost and prior success in RL
+% ~\citep{wang_tina_2025, xu_not_2025, li_prorank_2025, yue_hybrid_2025, sun_detection_2025, hayou_plop_2025, zhao_d1_2025, teknium_hermes_2024, zhao_group_2024, sidahmed_parameter_2024}. Additionally, we explore full-parameter finetuning. Figure~\ref{fig:hover_grpo_fft} shows that while GRPO with full finetuning improved HoVer 2-hop accuracy from 30\% to 40\% after 24k rollouts, GEPA reached 46\% with only 6k. This suggests full finetuning can enhance GRPO beyond LoRA, but GEPA remains strongly rollout-efficient in comparison.
+% Prior studies suggest such finetuning requires large rollout budgets (100k–512k)~\citep{chen_spectral_2025, si_teaching_2025, wang_acting_2025, java_frugalrag_2025, chen_research_2025, wu_search_2025, sha_sem_2025, song_r1-searcher_2025}. While we explored several hyperparameter values for [LR, beta, norm clipping], future work should study the impact of larger hyperparameter tuning for RL algorithms.
+
+
+% , but future work should test full-parameter finetuning.
+% We used LoRA for GRPO baselines due to its low cost and prior success in RL
+ % Furthermore, we made the observation that in the current form, the majority of GEPA's rollouts are expended for candidate validation, which can be performed well even on smaller Pareto datasets. Future work should examine the effect of Pareto-validation set size (Algorithm~\ref{alg:gepa_optimizer}) and explore dynamic or subsampled validation to improve sample efficiency.
+% Another promising direction is \emph{feedback engineering}, i.e., identifying execution or evaluation traces that provide the strongest learning signals for reflection. GEPA operates with fixed model weights; integrating reflective prompt evolution with weight-space adaptation—e.g., using GEPA’s language-derived lessons to guide RL rollouts—may yield additive gains and unify prompt- and weight-based optimization for compound AI systems, building upon prior work that composes prompt and weight optimizers together~\citep{better_together}.
+% Finally, while we explored multiple values for [LR, beta, norm clipping], future work should examine more systematic hyperparameter tuning.
+% While GEPA demonstrates strong sample efficiency and generalization via reflective prompt evolution, several limitations remain. The boundary between prompt-based and weight-based learning is not well understood---although GEPA excels when rollouts are expensive, it is likely that weight updates will outperform prompting in regimes with abundant data or when large-scale rollouts are feasible. We adopted LoRA for our GRPO baseline experiments because it offers lower computational costs and has been successfully applied to reinforcement learning in previous work across a range of tasks~\citep{wang_tina_2025, xu_not_2025, li_prorank_2025, yue_hybrid_2025, sun_detection_2025, hayou_plop_2025, zhao_d1_2025, teknium_hermes_2024, zhao_group_2024, sidahmed_parameter_2024}. However, future work should investigate the impact of full-parameter finetuning for GRPO. At the same time, we note that prior studies using full-parameter GRPO have consistently required a high number of rollouts---typically ranging from 100,000 to 512,000~\citep{chen_spectral_2025, wu_reinforcing_2025, zhang_lets_2025, jin_search-r1_2025, si_teaching_2025, wang_acting_2025, java_frugalrag_2025, chen_research_2025, wu_search_2025, sha_sem_2025, lin_knowledgeable-r1_2025, peng_verif_2025, song_r1-searcher_2025}. While we explored several hyperparameter values for [LR, beta, norm clipping], future work should study the impact of careful hyperparameter tuning for RL algorithms.
+% GEPA currently focuses on optimizing instructions alone, omitting exemplar or few-shot demonstration optimization. Incorporating such examples could further improve performance, particularly in tasks where in-context demonstrations are known to help.
+
+% GEPA currently optimizes instructions only, without exemplar or few-shot demonstration tuning; incorporating such examples may boost performance, especially on tasks that benefit from in-context learning.
+% We also observed that most rollouts are spent on candidate validation, which may be feasible with smaller Pareto datasets.
+
+% GEPA currently focuses on optimizing instructions alone, omitting exemplar or few-shot demonstration optimization. Incorporating such examples could further improve performance, particularly in tasks where in-context demonstrations are known to help. Furthermore, we made the observation that in the current form, the majority of GEPA's rollouts are expended for candidate validation, which can be performed well even on smaller Pareto datasets. Future works should explore the impact of the hyperparameter Pareto-validation set size (Algorithm~\ref{alg:gepa_optimizer}) and developing dynamic or subsampled validation strategies to further enhance sample efficiency. A promising and underexplored direction is what we dub \emph{feedback engineering}, i.e., identifying which of the system's \textit{execution} or \textit{evaluation} traces could provide the most valuable learning signal for reflective optimization. Finally, GEPA currently operates on fixed model parameters; we hypothesize that integrating reflective prompt evolution with weight-space adaptation---for example, using GEPA's language-based lessons to perform RL rollouts---could yield additive gains and help unify prompt- and weight-based approaches for optimizing compound AI systems.
+
+
+% While GEPA achieves large improvements in sample efficiency while showing strong generalization, we don't really know where the boundary of prompting and AI system design is. Given sufficiently large rollouts, there are likely many tasks where weight updates will outperform prompting, but the exact boundary is not well understood. As the cost of updating model weights continue to plummet, we hypothesize that rollouts could become the bottleneck in scaling up training. First, GEPA currently focuses on instruction optimization and does not perform exemplar or few-shot demonstration optimization. While this yields concise prompts and computational efficiency, integrating exemplar optimization could further improve performance, particularly for tasks where in-context examples provide significant benefits. Second, the majority of GEPA’s rollout budget is spent on candidate validation, and future improvements may be gained by subsampling validation sets or employing dynamic validation strategies to further reduce computational overhead. Third, this work introduces the paradigm of “feedback engineering”—analogous to reward engineering in reinforcement learning—as a promising but underexplored direction; identifying which traces or system feedback are most valuable to expose to the optimizer is an open question. Fourth, while our proposed System-aware Merge strategy shows large improvements on some models and tasks, we attribute the discrepancy in its performance to suboptimal budget allocation between reflective mutation and merge. Fifth, our empirical evaluation spans several compound AI tasks and models, but wider application to diverse domains and architectures will be necessary to gauge the generality and robustness of GEPA's approach.  Finally, while we have made efforts to establish a benchmark that covers a diverse range of tasks and programs, there remains more to learn regarding the performance of
+% optimizer methods on increasingly complex tasks and programs. Improving this benchmark presents a promising avenue for future research. Lastly, GEPA presently optimizes prompts with fixed model parameters; extending the framework to jointly optimize both prompts and model weights (e.g., via lightweight fine-tuning or hybrid approaches) could yield further gains and help unify prompt-based and traditional weight-based adaptation in complex AI systems.
+% While GEPA achieves strong sample efficiency and generalization by leveraging reflective prompt evolution, several limitations remain. First, the boundary between prompt and AI system design based optimization and weight-based learning is not well understood; although GEPA excels when rollouts are expensive, it is likely that weight updates will outperform prompting in regimes with abundant data or when large-scale rollouts are feasible. Additionally, GEPA currently optimizes instructions alone without exemplar or few-shot demonstration optimization. While instructions-alone has its benefits, we expect further boost in performance for tasks where in-context examples provide significant benefit. In this work, we found that most of GEPA’s computational budget is spent on candidate validation---future work could explore the impact of Pareto-validation set size as well as dynamic Pareto-set sampling strategies as a way to further improve sample-efficiency. There is also an emerging need to systematically investigate ``feedback engineering''---identifying the most valuable \textit{execution} or \textit{evaluation} traces for optimization---to maximize learning signal from each rollout.
+
+% Beyond methodological enhancements, while we have made efforts to establish a benchmark that
+% covers a diverse set of tasks there remains more to learn regarding the performance of GEPA and its various configurations, on increasingly complex tasks and programs. Finally, GEPA currently optimizes prompts with fixed model parameters; We hypothesize that utilizing GEPA's reflective lessons to perform rollouts for weight-space RL could provide further gains and enable a unified approach to adapting complex AI systems.
+% While GEPA demonstrates strong sample efficiency and generalization via reflective prompt evolution, several limitations remain. The boundary between prompt-based and weight-based learning is not well understood---although GEPA excels when rollouts are expensive, it is likely that weight updates will outperform prompting in regimes with abundant data or when large-scale rollouts are feasible. Further, due to resource constraints and building on the demonstrated success of various reinforcement learning techniques—including GRPO with LoRA~\citep{wang_tina_2025, xu_not_2025, li_prorank_2025, yue_hybrid_2025, sun_detection_2025, hayou_plop_2025, zhao_d1_2025, teknium_hermes_2024, zhao_group_2024, sidahmed_parameter_2024} —we adopted LoRA for our GRPO baseline experiments. While future work could investigate the impact of full-parameter finetuning for GRPO, we note that prior studies using full-parameter GRPO consistently require a high number of environment rollouts—ranging from 100,000 to 512,000~\citep{chen_spectral_2025, wu_reinforcing_2025, zhang_lets_2025, jin_search-r1_2025, si_teaching_2025, wang_acting_2025, java_frugalrag_2025, chen_research_2025, wu_search_2025, sha_sem_2025, lin_knowledgeable-r1_2025, peng_verif_2025, song_r1-searcher_2025}.
+% We adopted LoRA for our GRPO baseline experiments due to lower computational costs and following its use for reinforcement learning in other papers across a diverse set of tasks
+% we haven’t explored tuning the RL algorithms or hyperparams and used LoRA due to lower computational costs and success in other papers
+
+
+
+% It is both an advantage and disadvantage that GEPA doesn't do Exemplar optimization currently. Can we introduce Exemplar Optimization to GEPA?
+
+% Talk about improving sample efficiency through tracking fewer number of valset instances.
+
+% This paper introduces the paradigm of ``Feedback Engineering'' --- analogous to reward engineering, but asking the question, "What is the most relevant system trace I can reveal to the optimizer, that will enable fastest/effective optimization".
+
+% Explore better merge strategies.
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\clearpage
+\newpage
+\appendix
+\maketitle
+
+\section{Appendix Outline}
+\begin{itemize}
+    % \item \hyperref[appendix:gepa_meta_prompt]{GEPA's Reflection and Prompt Update Meta Prompt}
+    % \item \section{GEPA Algorithm and Methodology Details}\label{appendix:gepa_algorithm_details}
+    % \item \section{Evaluation Setup (Contd.)}\label{sec:eval_setup_appendix}
+    % \item \section{Results and Analysis (Contd.)}\label{sec:results_analysis_appendix}
+    % \item \section{GEPA For Inference-Time Search (Contd.)}\label{sec:inf_time_search_appendix}
+    % \item \section{GEPA for Adversarial Prompt Search (Contd.)}\label{sec:adv_prompt_appendix}
+    % \item \section{Performance vs. Budget (Rollouts) Curves}\label{appendix_perf_vs_rollout_curves}
+    % \item \section{Generalization Gap}\label{appendix:generalization_gap}
+    % \item \section{Cost vs. Performance Analysis for optimized systems}\label{appendix:cost_perf_analysis}
+    % \item \section{GEPA Search Trees}\label{appendix:gepa_search_trees}
+    % \item \section{Visualizing the Iterative Refinement achieved by GEPA}\label{appendix:visualizing_iter_ref}
+    % \item \section{Examples of best prompts for every benchmark}\label{appendix:all_prompts}
+    % \item \section{GEPA generated prompts for kernel generation}\label{appendix:inf_time_search_prompts}
+    \item \hyperref[appendix:LLM_usage]{Usage of Large Language Models}
+    \item \hyperref[appendix:gepa_meta_prompt]{GEPA's Reflection and Prompt Update Meta Prompt}
+    \item \hyperref[appendix:gepa_algorithm_details]{GEPA Algorithm and Methodology Details}
+    \item \hyperref[sec:eval_setup_appendix]{Evaluation Setup (Contd.)}
+    \item \hyperref[sec:results_analysis_appendix]{Results and Analysis (Contd.)}
+    \item \hyperref[sec:inf_time_search_appendix]{GEPA For Inference-Time Search (Contd.)}
+    \item \hyperref[sec:adv_prompt_appendix]{GEPA for Adversarial Prompt Search (Contd.)}
+    \item \hyperref[appendix_perf_vs_rollout_curves]{Performance vs. Budget (Rollouts) Curves}
+    \item \hyperref[appendix:generalization_gap]{Generalization Gap}
+    \item \hyperref[appendix:cost_perf_analysis]{Cost vs. Performance Analysis for optimized systems}
+    \item \hyperref[appendix:gepa_search_trees]{GEPA Search Trees}
+    \item \hyperref[appendix:visualizing_iter_ref]{Visualizing the Iterative Refinement achieved by GEPA}
+    \item \hyperref[appendix:all_prompts]{Examples of best prompts for every benchmark}
+    \item \hyperref[appendix:inf_time_search_prompts]{GEPA generated prompts for kernel generation}
+    \item \added{\hyperref[appendix:computational_overhead]{Number of reflection LM calls made by GEPA during optimization}}
+\end{itemize}
+
+\section{Usage of Large Language Models}\label{appendix:LLM_usage}
+The authors used large language models (LLMs) only for polishing prose of text where the complete draft was fully written by the authors initially and polished later with the help of LLM-based assistants including ChatGPT, Gemini, and Perplexity. The authors' used code assistants including Cursor and Copilot to implement the authors’ original design and ideas. The scientific contributions, technical methods, ideas and core results are entirely the original work of the authors.
+
+\section{GEPA's Reflection and Prompt Update Meta Prompt}\label{appendix:gepa_meta_prompt}
+
+\begin{instructbox}[GEPA's Meta Prompt]
+
+\begin{lstlisting}[breakindent=0pt, breaklines=true, breakatwhitespace=true, frame=single, backgroundcolor=\color{blue!10}]
+I provided an assistant with the following instructions to perform a task for me:
+
+```
+<current instruction>
+```
+
+The following are examples of different task inputs provided to the assistant along with the assistant's response for each of them, and some feedback on how the assistant's response could be better:
+
+```
+<Inputs, Outputs and Feedback for minibatch of examples>
+```
+
+Your task is to write a new instruction for the assistant.
+
+Read the inputs carefully and identify the input format and infer detailed task description about the task I wish to solve with the assistant.
+
+Read all the assistant responses and the corresponding feedback. Identify all niche and domain specific factual information about the task and include it in the instruction, as a lot of it may not be available to the assistant in the future. The assistant may have utilized a generalizable strategy to solve the task, if so, include that in the instruction as well.
+
+Provide the new instructions within ``` blocks.
+\end{lstlisting}\label{fig:gepa_meta_prompt}
+\end{instructbox}
+
+% \begin{figure*}[ht]
+% \centering
+% \begin{instructbox}[GEPA's Meta Prompt]
+% I provided an assistant with the following instructions to perform a task for me:
+
+% ```
+
+% <current instruction>
+
+% ```
+
+% The following are examples of different task inputs provided to the assistant along with the assistant's response for each of them, and some feedback on how the assistant's response could be better:
+
+% ```
+
+% <Inputs, Outputs and Feedback for minibatch of examples>
+
+% ```
+
+% Your task is to write a new instruction for the assistant.
+
+% Read the inputs carefully and identify the input format and infer detailed task description about the task I wish to solve with the assistant.
+
+% Read all the assistant responses and the corresponding feedback. Identify all niche and domain specific factual information about the task and include it in the instruction, as a lot of it may not be available to the assistant in the future. The assistant may have utilized a generalizable strategy to solve the task, if so, include that in the instruction as well.
+
+% Provide the new instructions within ``` blocks.
+% \end{instructbox}
+% \caption{Meta prompt used by GEPA for prompt optimization.}\label{fig:gepa_meta_prompt}
+% \end{figure*}
+
+Figure~\ref{fig:gepa_meta_prompt} shows the meta-prompt used by GEPA, which guides the LLM to reflectively refine its current instruction based on input–output examples and corresponding feedback from the environment.
+
+\section{GEPA Algorithm and Methodology Details}\label{appendix:gepa_algorithm_details}
+Figure~\ref{fig:gepa_pseudocode} presents the core GEPA Algorithm, along with the algorithm for Pareto-based candidate selection.
+
+\subsection{Merge: System-aware crossover strategy for Compound AI optimization}\label{sec:merge}
+\begin{figure}[t]
+\centering
+\begin{minipage}[t]{0.47\textwidth}
+\begin{algorithm}[H]
+\caption{Check if module combination is desirable}
+\label{alg:desirable_short}
+\begin{algorithmic}[1]
+\small
+\Function{Desirable}{$a,\,i,\,j,\,\mathcal{P}$}
+    \For{module $m = 1$ \textbf{to} $|M|$}
+        \State $\pi_a \gets$ ancestor's prompt for module $m$
+        \State $\pi_i \gets$ descendent i's prompt for module $m$
+        \State $\pi_j \gets$ descendent j's prompt for module $m$
+        \If{($\pi_a = \pi_i$ {\bf\ and} $\pi_j \neq \pi_i$){\bf\ or}($\pi_a = \pi_j$ {\bf\ and} $\pi_i \neq \pi_j$)}
+            \State \Return \textbf{True}
+        \EndIf
+    \EndFor
+    \State \Return \textbf{False}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+\end{minipage}%
+%
+\hfill
+%
+\begin{minipage}[t]{0.51\textwidth}
+\begin{algorithm}[H]
+\caption{\textsc{Merge}: Genetic Crossover for Modular Candidates}
+\label{alg:merge_short}
+\begin{algorithmic}[1]
+\small
+\Function{Merge}{$\mathcal{P}, \mathcal{A}, S, r$}
+        \State $i,\,j \gets r.\text{sample}(2,\,|\mathcal{P}|)$\quad //\;distinct $i\neq j$
+        \State $A_i \gets$ \Call{GetAncestors}{$i,\,\mathcal{A}$}, $A_j \gets$ \Call{GetAncestors}{$j,\,\mathcal{A}$}
+        \If{$i \in A_j$ or $j \in A_i$}
+            \State \textbf{continue} \quad//\;skip direct ancestry
+        \EndIf
+        \For{$a \in A_i \cap A_j$}
+            \If{this merge $(i,j,a)$ has been tried before} % ADDED COMMENT
+                \State \textbf{continue}
+            \EndIf
+            \If{$S[a] > \min(S[i],S[j])$}
+                \State \textbf{continue}
+            \EndIf
+            \If{\textbf{not} \Call{Desirable}{$a,\,i,\,j,\,\mathcal{P}$}}
+                \State \textbf{continue}
+            \EndIf
+            \State $\Phi' \gets$ copy of $\mathcal{P}[a]$
+            \For{module $m = 1$ \textbf{to} $|M|$}
+                \State $\pi_a \gets \mathcal{P}[a].\mathcal{M}_m.\pi$
+                \State $\pi_i \gets \mathcal{P}[i].\mathcal{M}_m.\pi$
+                \State $\pi_j \gets \mathcal{P}[j].\mathcal{M}_m.\pi$
+                \If{$\pi_a = \pi_i$ and $\pi_j \neq \pi_i$}
+                    \State $\Phi'.\mathcal{M}_m.\pi \gets \pi_j$
+                \ElsIf{$\pi_a = \pi_j$ and $\pi_i \neq \pi_j$}
+                    \State $\Phi'.\mathcal{M}_m.\pi \gets \pi_i$
+                \ElsIf{$\pi_i \neq \pi_j \neq \pi_a$}
+                    \State Choose $d^* = \arg\max\{S[i], S[j]\}$ (break ties randomly)
+                    \State $\Phi'.\mathcal{M}_m.\pi \gets \pi_{d^*}$
+                \Else
+                    \State $\Phi'.\mathcal{M}_m.\pi \gets \pi_i$ // default
+                \EndIf
+            \EndFor
+            \State \Return $(\Phi', i, j, a)$
+        \EndFor
+    \State \Return \textbf{None}
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+\end{minipage}
+\caption{Details of System Aware Merge. \added{$r$ represents a seeded stochastic sampler.}}
+\end{figure}
+
+Algorithm~\ref{alg:merge_short} provides the instantiation of the System aware Merge strategy used in GEPA+Merge. \added{Intuitively, merge will be helpful when there are candidates in the pool that learn complementary strategies. Algorithm~\ref{alg:desirable_short} defines the selection criteria: candidates are merged only if they share a common ancestor but have optimized disjoint sets of prompts (complementary strategies), are pareto-optimal, and both candidates improve upon the aggregate performance of the ancestor. GEPA routinely checks if the pool has 2 such candidates, invoking merge when identified. These strict lineage conditions mean merge occurs sparsely.}
+
+\section{Evaluation Setup (Contd.)}\label{sec:eval_setup_appendix}
+
+\subsection{Benchmarks, Reference compound AI systems, and Feedback Functions}\label{sec:eval_setup_benchmarks}
+
+% \begin{table}[h!]
+% \centering
+% \small
+% \begin{tabular}{|p{2.0cm}|p{4.2cm}|p{3.2cm}|p{3.1cm}|}
+% \hline
+% \textbf{Benchmark} & \textbf{Description} & \textbf{Compound AI System} & \textbf{Feedback Function} \\
+% \hline
+% HoVer \cite{hover_bench} & Open-domain multihop fact extraction and claim verification using Wikipedia corpus; requires reasoning across multiple articles. & HoverMultiHop (up to 3 hops via 2 query writer modules and 2 doc summary modules; \cite{langprobe}) & Identifies retrieved correct documents and documents yet to be retrieved; returns as feedback text. \\
+% \hline
+% HotpotQA \cite{hotpotqa_bench} & Large-scale multi-hop Wikipedia QA (113K pairs). Answering requires reasoning over multiple supporting documents. & Modified HoverMultiHop (answer question at last hop) & Provides relevant documents remaining to be retrieved as feedback at each stage. \\
+% \hline
+% IFBench \cite{ifbench_bench} & Tests following precise human instructions, especially output constraints; 58 new and OOD output constraints. & 2-stage: (1) answers user query, (2) rewrites answer to satisfy constraints. & Provides descriptions of constraints satisfied and not satisfied. \\
+% \hline
+% PUPA \cite{papillon_bench} & Privacy-conscious delegation: high response quality while minimizing PII leakage to untrusted models. & PAPILLON: trusted user query rewriter, response rewriter, interleaved with untrusted model (\cite{papillon_bench}) & Feedback text breaks down aggregate response quality score and PII leakage score. \\
+% \hline
+% FSABench \cite{fsabench_bench} & Multitask: multilabel tag classification (10), sentiment (3), urgency (3); on facility team communications. & 3 modules: tag classifier, sentiment classifier, urgency classifier (one per task) & Feedback: correct labels and errors per module. \\
+% \hline
+% \end{tabular}
+% \caption{Benchmarks, compound AI system architectures, and feedback function types evaluated in this work.}
+% \label{tab:compound_benchmarks}
+% \end{table}
+
+To rigorously evaluate the performance of GEPA and and compare it against current state-of-the-art compound AI system optimizers, we assemble a diverse suite of benchmarks mostly obtained from ~\citet{langprobe}, each paired with available Compound AI Systems. %In order to test the ability of the optimizers to tune systems in the wild, to the extent possible, we use existing and publicly available Compound AI Systems for each of the following benchmarks instead of creating a new system ourselves.
+
+\textbf{HotpotQA} \citep{hotpotqa_bench} is a large-scale question-answering dataset consisting of 113K Wikipedia-based question-answer pairs. It features questions that require reasoning over multiple supporting documents. We modify the last hop of the HoVerMultiHop program (described below) to answer the question instead of generating another query, and the rest of the system remains unmodified. The textual feedback module identifies the set of relevant documents remaining to be retrieved at each stage of the program, and provides that as feedback to the modules at that stage. We use 150 examples for training, 300 for validation, and 300 for testing.
+
+\textbf{IFBench} \citep{ifbench_bench} introduced a benchmark specifically designed to assess language models' ability to follow precise human instructions, especially output constraints (e.g., “answer only with yes or no”, or “mention a word at least three times”). The IFBench test set consists of 58 new and out-of-distribution output constraints and instructions to test system's ability to generalize to new task constraints. ~\citet{ifbench_bench} also release IFTrain and IF-RLVR Train data~\citep{if_rlvr_train} which are used for training. We split the IF-RLVR Train into our train/val sets, and IFBench as our test set in order to ensure that the optimizers do not access the new, unseen constraints being tested in IFBench. We design a 2-stage system, that first attempts to answer the user query, and then in the second stage, rewrites the answer following the constraints. The textual feedback module provides the descriptions of constraints satsified and failed-to-be-satisifed by the system's response. Our splits contain 150 training examples, 300 for validation, and 294 for testing.
+
+\textbf{AIME-2025} \citep{aime_2025} The AIME-2025 benchmark consists of 2 problem sets of 15 questions each (total 30) obtained from the AIME examination conducted by Mathematical Association of America. We use prior years AIME questions (2022-2024 totalling 90 questions) split equally into training and validation set, and use the AIME-2025 questions, repeating each question 5 times, as the final test set. We use a single-step ChainOfThought as the AI system under optimization.
+
+\textbf{LiveBench-Math} \cite{livebench} LiveBench is a cross-domain benchmark consisting of regularly updated questions. We use the math subset of LiveBench questions retrieved on July 30, 2025. This set of questions (n=368) is shuffled (with python random seed 0) and split equally into train/val/test questions. We use a single-step ChainOfThought as the AI system under optimization.
+
+\textbf{HoVer} \citep{hover_bench} is an open-domain multihop fact extraction and claim verification benchmark built on a Wikipedia-based corpus requiring complex reasoning across multiple sentences and documents, typically involving multiple wikipedia articles. Following ~\citet{langprobe}, the systems are evaluated for their ability to write queries in multiple hops to retrieve all relevant wikipedia documents (gold documents) required to make the claim. We obtain the HoverMultiHop program from ~\citet{langprobe}, which performs up to 3-hop retrievals using 2 query writer modules, and 2 document summary modules. The textual feedback module simply identifies the set of correct documents retrieved, and the set of documents remaining to be retrieved, and returns them as feedback text. For the full-parameter finetuning results demonstrated in figure~\ref{fig:hover_grpo_fft}, we instantiate a 2-hop program, where the first hop is performed with the initial claim, and the LLM is prompted in a single turn with the claim and first-hop retrieved documents, to provide the second-hop search query. For HoVer, we use 150 examples for training, 300 for validation, and 300 for testing.
+
+\textbf{PUPA} \citep{papillon_bench} propose the task of Privacy-Conscious Delegation: addressing real-world user queries using an ensemble of trusted and untrusted models. The core challenges are maintaining high response quality while minimizing leakage of personally identifiable information (PII) to untrusted models. ~\citet{papillon_bench} also present PAPILLON, a compound AI system consisting of 2 modules, a user query rewriter and a response rewriter, run over the trusted model, along with an intermediate call to the untrusted model with the rewritten query. The feedback text simply provides the breakdown of the aggregate score, consisting of a response quality score and a PII leakage score. The dataset is split into 111 training examples, 111 for validation, and 221 for testing.
+
+% \textbf{FSABench} \cite{fsabench_bench} FSABench comprises the joint task of multilabel classification of tags (possibly $>$1 out of total 10), multiclass classification of sentiment (1 among 3 classes) and multiclass classification of urgency (1 among 3 classes) given a communication received by the facility support team of a company. We design a 3-module system, one for each individual task. The textual feedback consists of providing the correct labels and identifying wrong answers provided by the system.
+
+\subsection{Models and Inference Parameters}\label{sec:sec:eval_setup_models}
+We evaluate GEPA and baseline optimizers using two contemporary LLMs, chosen to represent both open-source and commercial model families. Each compound AI system is instantiated once per model, with all modules (e.g., retrievers, rewriters, answer generators) relying on the same model. All models are allowed a context window of upto 16384 tokens for inference.
+
+
+\textbf{Qwen3 8B~\citep{qwen3_technical_report}:} For our open-source experiments (including GRPO), we use \texttt{Qwen3-8B}. Following the recommended settings as per ~\citet{qwen3_8b_hf}, we use a decoding temperature of 0.6, top-p of 0.95, and top-k of 20 for training as well as inference.
+
+\textbf{GPT-4.1 Mini~\citep{gpt_41_model}:} For comparison with large commercial models, we use \texttt{GPT-4.1 mini} (\texttt{openai/gpt-4.1-mini-2025-04-14}) accessed via the OpenAI API with a model temperature of 1.0.
+
+\subsection{Costs} \label{sec:sec:eval_costs}
+
+\added{It costs under \$500 to run all experiments in \Cref{tab:main-results-gpt} with GPT-4.1 mini. Specifically, GEPA costs a total of \$86, GEPA-Merge costs \$67, MIPROv2 costs \$76, and Trace and TextGrad cost \$172 in total.}
+
+\subsection{Optimizers}\label{sec:sec:eval_setup_optimizers}
+\textbf{Baseline:} The base program is directly evaluated without any further optimization applied.
+
+\textbf{MIPROv2~\citep{miprov2}:} MIPROv2 is a widely used compound AI system prompt optimizer and has been integrated into the DSPy~\citep{dspy} and llama-prompt-ops~\citep{llama_prompt_ops} frameworks. It works by jointly optimizing both instructions and demonstrations using Bayesian optimization. For each program module, it first bootstraps candidate sets of instructions and demonstrations, assigning uniform priors over their utilities. Candidate assignments are proposed with the Tree-Structured Parzen Estimator (TPE), and the Bayesian model is updated based on evaluation scores to favor high-performing candidates. The most probable sets of instructions and demonstrations are then selected and validated to obtain the final optimized program configuration.
+
+All MIPROv2 optimization runs are performed with the $auto=heavy$ setting, which corresponds to proposing 18 instruction candidates and 18 bootstrapped few-shot sets. Hence, across benchmarks, the exact number of rollouts varies depending on the number of trials it takes to bootstrap examples (finding 18 successful solution instances), the required number of Bayesian search steps (determined by the number of modules in the system), and size of the valset. Overall, MIPROv2's rollouts ranged from a minimum of 2270 (for PUPA) to maximum of 6926 (for HoVer).
+
+\textbf{Trace and TextGrad~\citep{cheng2024traceautodiffgenerativeoptimization, textgrad}:} \added{We implement both optimizers in the Trace framework. All programs under optimization have the exact same architecture compared to the DSPy implementation. To ensure a fair comparison, we port all the DSPy specific signature and parsing prompt to Trace, and use the same initial prompt. In addition, all the test, train, and validation data match exactly the experiment we used for GEPA. The performance of the unoptimized Trace program baseline closely matched our baseline implementation in DSPy (within 0.5\% difference). All optimization experiments were under the same rollout budget as MIPROv2 and GEPA. We also provide both optimizer the same metric and feedback functions as GEPA, and, for the per-module feedback function that is not available in Trace (both optimizer do not support per-module feedback), we followed the feedback format in the BigBench-Hard tutorial}\footnote{\url{https://microsoft.github.io/Trace/examples/nlp/bigbench_hard.html}}\added{ from the Trace authors.}
+
+
+\textbf{GRPO~\citep{grpo_paper}:}
+Group Relative Policy Optimization (GRPO) is a reinforcement learning algorithm that estimates advantages in a group-relative manner. For compound AI systems consisting of multiple modules, we use the GRPO implementation provided and open-sourced by~\citet{mmgrpo_future_ref} to perform our experiments, whereas for single-module systems (e.g., figure~\ref{fig:hover_grpo_fft}), we use the GRPO implementation provided by SkyRL~\citep{griggs2025skrylv01, liu2025skyrlsql, cao2025skyrl}.
+
+Across all compound system training runs, each training step uses a group size of 12, with 4 training instances per step (total batch size 48, with per device train batch size 1). Training employs LoRA~\citep{lora_paper} with rank dimension 16, $\alpha=64$, and dropout 0.05, using bf16 precision targeting the projection modules $[\mathrm{q}, \mathrm{k}, \mathrm{v}, \mathrm{o}, \mathrm{up}, \mathrm{down}, \mathrm{gate}]$. We use a learning rate of $1\times10^{-5}$, $\beta=0.01$, reward scale normalization, and gradient norm clipping of 0.1. Gradients are accumulated for 20 steps before each update, with a ``constant with warmup learning'' rate scheduler. Non-reentrant gradient checkpointing is enabled to further reduce memory usage. GRPO optimization run for 500 training steps, amounting to fixed 24,000 rollouts, with validation performed every 20 training steps, which is used to implement early stopping. Compound AI system GRPO training experiments are performed on 1xH100/A100 (80 GB memory) with separate GPUs for inference rollouts.
+
+For single-module GRPO training, we adopt full-parameter finetuning with a group size of $16$. Each training step employs a global batch size of $32$, realized as per-device micro-batches of $4$ across $8$ GPUs. Rollout generation is performed with a per-GPU forward micro-batch size of $12$. Training is distributed using \texttt{FSDP2}, with sampling performed at temperature $1.0$. We apply KL regularization and set the learning rate to $1\times 10^{-6}$. Validation is conducted every $5$ training steps. During evaluation, sampling is performed with temperature $0.6$, top-$p=0.95$, and top-$k=20$.
+
+We manually explore several values for [LR, beta, norm clipping] hyperparameters for both training runs.
+
+
+\textbf{GEPA:} GEPA is our optimizer, based on the algorithm described in Section~\ref{gepa_algorithm}.
+% GEPA refers to our main proposed method, consisting of the genetic optimization loop, reflective mutation based prompt proposals and using the Pareto-based sampling strategy. We also propose GEPA+Merge, an instantiation of GEPA, with our crossover 
+We evaluate 2 variants of our main optimizer GEPA: \textbf{GEPA} and \textbf{GEPA+Merge}, along with 2 ablations created by replacing the Pareto-based sampling strategy with a naive, SelectBestCandidate strategy (SelectBestCandidate and SelectBestCandidate+Merge).
+% We evaluate four variants of GEPA, obtained by toggling \textbf{\{P\}}areto-based selection and \textbf{\{M\}}erging of systems on or off. 
+All GEPA optimization runs use a minibatch size of 3, and merge is invoked a maximum of 5 times during the optimization run, when enabled. To ensure a fair comparison with MIPROv2, we align the computational budget between GEPA and MIPROv2 on a per-benchmark basis. The training set from each benchmark is used as $D_{feedback}$ (which is used to derive the training signals, as discussed in Section~\ref{gepa_algorithm}) and the validation set is used as $D_{pareto}$. Specifically, since MIPROv2’s total rollout budget depends on factors such as validation set size and the number of modules, we first record the number of rollouts expended by MIPROv2 for each benchmark, and then cap GEPA’s optimization to match this rollout budget. While differences in proposal and validation procedures cause the exact budget usage by the systems to be slightly different, the discrepancy is always within 10.15\%. This protocol ensures that any performance differences arise from the optimization algorithms themselves, rather than from differences in search budget. The exact rollout counts for each optimizer is visualized in Appendix~\ref{appendix_perf_vs_rollout_curves}.
+
+\section{Results and Analysis (Contd.)}\label{sec:results_analysis_appendix}
+
+Figure~\ref{fig:main-results} visualizes the final test set performance for aggregate and individual benchmarks across both models.
+
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.899\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/optimizer_performance_gpt-41-mini.pdf}
+        \caption{Final test set performance for aggregate and individual benchmarks for \texttt{gpt-41-mini}.}
+        \label{fig:gen_gap_gpt41mini}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.899\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/optimizer_performance_qwen3-8b.pdf}
+        \caption{Final test set performance for aggregate and individual benchmarks for \texttt{qwen3-8b}.}
+        \label{fig:gen_gap_qwen3_8b}
+    \end{subfigure}
+    \caption{Final test set performance for aggregate and individual benchmarks.}
+    \label{fig:main-results}
+\end{figure}
+
+% \added{\textbf{Observation 6: Prompts optimized with GEPA generalize well to other models:} Table~\ref{tab:main-results-gpt} includes results for ``GEPA-Qwen-Opt'', which highlights a configuration optimized fully using (and for) Qwen3-8B, but evaluated with GPT-4.1-Mini model. We see that prompts optimized with GEPA, even using a relatively weaker model like Qwen3-8B can improve the performance of larger models like GPT-4.1-Mini, even from a different model family, achieving as much as +27.67\% improvement (on HotpotQA, for example), while getting an aggregate improvement of +9\% across 6 benchmarks. This even outperforms strong optimizers like MIPROv2 (+5.64\%), TextGrad (+6.11\%) and Trace (+3.27\%), all natively optimized using (and for) GPT-4.1-Mini.}
+
+% We identify that GPT-4.1 Mini is a stronger model, achieving better lineage evolution earlier in the GEPA optimization process, therefore providing benefits when these lineages are merged. However, with Qwen3 8B, the model must explore first, before attempting Merge. In our experiments, we had fixed hyperparameters for invoking the Merge strategy across all runs. Instead, we hypothesize that better budget allocation between reflective mutation, and merge can lead to optimal performance. We propose future work to study such budget allocation strategies.
+
+
+% The Pareto-front of candidates proposed as GEPA optimization progresses, represents the collection of different strategies tried by GEPA, that have shown to work well for different problem instances. The goal of the optimization is however to propose a single set of candidates that can represent the optimal combination of these strategies to maximize the score over the task distribution. As a way to gather lessons accumulated over different lineages within the GEPA optimization tree into one candidate, we propose Merge, a strategy for proposing new candidates, that works by identifying 2 different pareto front candidates, that share a common ancestor, such that at least one of them has mutated one of the modules, and is different from the ancestor, while the other has retained the module as-is from the ancestor, but has evolved other modules, 
+
+% We highlight that the observation that tracking candidates' validation performance is utilizing most of GEPA's rollouts budget, can be leveraged to make GEPA even more sample efficient, simply by sampling a smaller validation set, which we propose as future work.
+% Since tracking candidates’ validation performance accounts for the majority of GEPA’s rollout budget usage, further improvements in sample efficiency could be achieved by evaluating on a smaller validation set—a possibility we propose for future work.
+% To match GRPO’s best validation scores, it needed only 102, 32, 6, and 179 train rollouts, respectively. Thus, GEPA’s sample efficiency could be improved further by reducing the size of the validation set.
+% Importantly, we also highlight that most of GEPA's counted rollouts actually pertain to validation set, whose scores are purely used for candidate selection, but not for deriving any learning signals. Restricting ourselves to counting the only the trainset rollouts, from which GEPA actually derives its training signal, GEPA required just 737, 79, 558, and 269 train rollouts for HotpotQA, IFBench, HoVer, and PUPA, respectively, to reach optimal performance.
+% Across all four benchmarks, GEPA rapidly adapts compound AI systems with robust generalization, outperforming GRPO (24,000 rollouts budget) by up to 19\% while using up to $35\times$ fewer rollouts.
+
+% Specifically, GEPA achieved optimal testset performance on HotpotQA, IFBench, HoVer, and PUPA with only 6438, 678 ($35\times$ fewer), 6858, and 2157 ($11\times$ fewer) rollouts, outperforming GRPO by 19\%, 2.73\%, 13.66\%, and 5.19\% respectively. Furthermore, GEPA matched GRPO's best validation scores after just 402, 330, 1179, and 306 rollouts—yielding up to $78\times$ higher sample efficiency. GEPA+Merge outperforms GRPO by an even higher margin of 21\% at similar rollouts budget as GEPA.
+
+% Importantly, we use a conservative rollout accounting method for GRPO, counting only its training rollouts, while for GEPA, both training and validation rollouts are counted (though the validation set is only used for candidate selection, not model updates). Considering only training rollouts, 
+
+% It is important to note that we are lenient to GRPO in tracking the rollout budget---specifically, we count all the rollouts performed by GEPA on both the train set and validation set (since GEPA uses validation rollouts for candidate selection), but we only count the train set rollouts for GRPO, even though, GRPO too benefits from early stopping implemented via performance on validation set.
+
+% For GEPA, we also highlight that most of the counted rollouts actually pertain to validation set, which is purely used for candidate selection, and whose data is not used to make updates to the candidates. Counting only the training set rollouts used by GEPA to directly update the candidates (similar to how it is counted for GRPO), GEPA uses just 737, 79, 558 and 269 train set rollouts to incorporate learning signals and find the optimal parameters for HotpotQA, IFBench, HoVer and PUPA respectively. As above, the number of trainset rollouts it took GEPA to achieve the same score as GRPO are just 102, 32, 6 and 179 for HotpotQA, IFBench, HoVer and PUPA respectively. This implies that GEPA's sample efficiency can be improved even further, simply by sampling a smaller validation set.
+
+% Across all the four benchmarks studied, we find that reflective prompt evolution, operationalized as GEPA, can rapidly adapt the compound AI system with robust generalization. Notably, GEPA outperforms GRO (with a budget of 24,000 rollouts) by as much as 19\% while requiring upto $35\times$ fewer rollouts. Specifically, GEPA was able to find optimal parameters for HotpotQA, IFBench, HoVer and PUPA after using just 6438, 678 ($34\times$ fewer), 6858, and 2157 ($11\times$ fewer) rollouts respectively, which outperformed GRPO by 19\%, 2.73\%, 13.66\% and 5.19\% respectively on the final testset. Further, GEPA required just 402, 330, 1179, 306 rollouts, to achieve the same validation score as the best score achieved by GRPO after 24,000 rollouts, showing upto $78\times$ higher sample efficiency than GRPO.
+
+
+% Intended use and defensive guidance.
+% \begin{itemize}
+% \item Treat the learned adversarial prompt as a reusable, universal stress test and add it to regression suites.
+% \item Avoid exact-string formatting requirements when extraneous or stylistic context may be present; prefer robust extraction (e.g., regex-based post-processing) over brittle literal matches.
+% \item Separate instruction of answer-formatting from task description, and anchor the final answer with an explicit delimiter unlikely to be reproduced verbatim in explanatory text.
+% \item During deployment evaluations, include adversarially constructed, content-preserving distractors to probe instruction-following brittleness.
+% \end{itemize}
+
+% \section{Results (Contd.)}
+
+
+% \begin{figure}[ht]
+%     \centering
+%     \begin{subfigure}[b]{0.65\linewidth}
+%         \includegraphics[width=\linewidth]{figures/fig_1_aggregate_performance_vs_budget.pdf}
+%         % \caption{\texttt{qwen3-8b}, alt (\texttt{True})}
+%         \label{fig:hotpotqa_qwen3_8b_true}
+%     \end{subfigure}
+%     % \begin{subfigure}[b]{0.328\linewidth}
+%     %     \includegraphics[width=\linewidth]{figures/HotpotQABench_qwen3-8b_True_rollout_vs_score.pdf}
+%     %     \caption{HotpotQA, Qwen3 8B}
+%     %     \label{fig:hotpotqa_qwen3_8b_true}
+%     % \end{subfigure}
+%     % \begin{subfigure}[b]{0.49\linewidth}
+%     %     \includegraphics[width=\linewidth]{figures/hoverBench_qwen3-8b_True_rollout_vs_score.pdf}
+%     %     \caption{HoVer, Qwen3 8B}
+%     %     \label{fig:hoverbench_qwen3_8b_true}
+%     % \end{subfigure}
+%     % \begin{subfigure}[b]{0.49\linewidth}
+%     %     \includegraphics[width=\linewidth]{figures/IFBench_qwen3-8b_True_rollout_vs_score.pdf}
+%     %     \caption{IFBench, Qwen3 8B}
+%     %     \label{fig:ifbench_qwen3_8b_true}
+%     % \end{subfigure}
+%     \hfill
+    
+%     % \caption{Aggregate performance vs. budget for \texttt{Qwen3 8B}.}
+    
+%     % \end{subfigure}
+%     % \caption{Aggregate validation performance (Y-axis) of GEPA compared to GRPO at varying budget levels (X-axis), averaged across five benchmarks: HotpotQA, IFBench, PAPILLON, HoVer, and FSABench. Notably, GEPA achieves the same performance as GRPO (with 24000 rollouts at 500 train steps) in just \textbf{1.8\%} of GRPO's rollouts, while achieving an aggregate validation score that is 7.78\% higher than GRPO, while utilizing only 12.4\% of the total rollouts required by GRPO.}
+%     % \caption{Aggregate validation performance (Y-axis) of GEPA compared to GRPO across varying rollout budgets (X-axis), averaged over five benchmarks: HotpotQA, IFBench, PAPILLON, HoVer, and FSABench. GEPA rapidly surpasses GRPO's best aggregate performance: with only 1.8\% of GRPO's budget, GEPA matches GRPO's peak; with 12.4\% of the rollout budget, GEPA achieves an aggregate score that is 7.8\% higher than GRPO. Results are shown for the \texttt{Qwen3 8B} model.}
+%     % \caption{(Left) Aggregate validation performance (Y-axis) of GEPA compared to GRPO across varying rollout budgets (X-axis). GRPO was run with upto 24,000 rollouts. (Left) averaged over five benchmarks: HotpotQA, IFBench, HoVer, PUPA and FSABench, with \texttt{Qwen3 8B}. \textbf{GEPA matches GRPO's best aggregate performance using only 1.8\% of GRPO's rollout budget}, and achieves an aggregate score that is 7.8\% higher than GRPO using just 12.4\% of the rollouts. (Right) Comparing different optimizers on performance vs rollouts on HotpotQA benchmark.}\label{fig:agg_perf_qwen3_8b_true}
+%     \caption{This figure demonstrates the stark difference in sample-efficiency between different learning algorithms for LM systems. Specifically, the figures visualize the Performance (Y-axis, on validation set) achieved by the optimizers (GEPA, GRPO, and MIPROv2) as rollout budget (X-axis) varies. The final testset performance at the end of the optimization process is also visualized, and shows large gaps between the final performance of the optimizers.}\label{fig:agg_perf_qwen3_8b_true}
+% \end{figure}
+
+\section{Performance vs. Budget (Rollouts) Curves}\label{appendix_perf_vs_rollout_curves}
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=0.65\linewidth]{manual_figures/hover_grpo_fft.pdf}
+    \caption{This figure compares the learning behaviour of GEPA against GRPO with full-parameter finetuning on the 2-hop HoVer task. The relative gap mirrors the previously observed comparison of GEPA against GRPO with LoRA (in figures~\ref{fig:agg_perf_qwen3_8b_true},~\ref{fig:hotpotqa_all},~\ref{fig:ifbench_all},~\ref{fig:hoverbench_all},~\ref{fig:papillon_all}), showing that GEPA achieves a comparable performance gap relative to both full-parameter and parameter-efficient versions of GRPO.}
+    \label{fig:hover_grpo_fft}
+\end{figure}
+
+% ===========================
+% Aggregate performance plots
+% ===========================
+% \begin{figure}[ht]
+%     \centering
+%     \begin{subfigure}{0.32\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_budget_gpt-41-mini_False.pdf}
+%         \caption{Aggregate performance vs. budget for \texttt{GPT 4.1 mini}.}
+%         \label{fig:agg_perf_gpt41mini}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}{0.32\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_budget_qwen3-8b_False.pdf}
+%         \caption{Aggregate performance vs. budget for \texttt{Qwen3 8B}.}
+%         \label{fig:agg_perf_gpt41mini}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}{0.32\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_budget_qwen3-8b_True.pdf}
+%         \caption{Aggregate performance vs. budget for \texttt{Qwen3 8B}.}
+%         \label{fig:agg_perf_qwen3_8b_true}
+%     \end{subfigure}
+%     \caption{Aggregate validation performance (Y-axis) of different optimizers at varying budget levels (X-axis), averaged across five benchmarks: HotpotQA, IFBench, PAPILLON, HoVer, and FSABench. Notably, GEPA attains an aggregate validation score that is 7.78\% higher than GRPO (with training steps = 500 at 24000 rollouts), while utilizing only 15\% of the total rollouts required by GRPO.}
+% \end{figure}
+
+% % ===============================
+% % Facility Support Analyzer Bench
+% % ===============================
+% \begin{figure}[H]
+%     \centering
+%     \begin{subfigure}[b]{0.32\linewidth}
+%         \includegraphics[width=\linewidth]{figures/FacilitySupportAnalyzerBench_gpt-41-mini_False_rollout_vs_score.pdf}
+%         \caption{\texttt{gpt-41-mini}}
+%         \label{fig:fac_analyzer_gpt41mini}
+%     \end{subfigure}\hspace{0.01\linewidth}
+%     \begin{subfigure}[b]{0.32\linewidth}
+%         \includegraphics[width=\linewidth]{figures/FacilitySupportAnalyzerBench_qwen3-8b_False_rollout_vs_score.pdf}
+%         \caption{\texttt{Qwen3 8B} - GEPA vs MIPROv2}
+%         \label{fig:fac_analyzer_qwen3_8b_base}
+%     \end{subfigure}\hspace{0.01\linewidth}
+%     \begin{subfigure}[b]{0.32\linewidth}
+%         \includegraphics[width=\linewidth]{figures/FacilitySupportAnalyzerBench_qwen3-8b_True_rollout_vs_score.pdf}
+%         \caption{\texttt{qwen3-8b}, alt (\texttt{True})}
+%         \label{fig:fac_analyzer_qwen3_8b_true}
+%     \end{subfigure}
+%     \caption{Facility Support Analyzer Bench: rollout vs. score for different models/settings.}
+%     \label{fig:fac_analyzer_all}
+% \end{figure}
+
+% ==============================
+% Hotpot QA Bench
+% ==============================
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/HotpotQABench_gpt-41-mini_False_rollout_vs_score.pdf}
+        \caption{\texttt{GPT-4.1 Mini} - MIPRO}
+        \label{fig:hotpotqa_gpt41mini}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/HotpotQABench_qwen3-8b_False_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - MIPRO}
+        \label{fig:hotpotqa_qwen3_8b_base}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/HotpotQABench_qwen3-8b_True_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - GRPO}
+        % \label{fig:hotpotqa_qwen3_8b_true}
+    \end{subfigure}
+    \caption{Hotpot QA Bench: rollout vs. score for different models/settings.}
+    \label{fig:hotpotqa_all}
+\end{figure}
+
+% ======================
+% IFBench
+% ======================
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/IFBench_gpt-41-mini_False_rollout_vs_score.pdf}
+        \caption{\texttt{GPT-4.1 Mini} - MIPRO}
+        \label{fig:ifbench_gpt41mini}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/IFBench_qwen3-8b_False_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - MIPRO}
+        \label{fig:ifbench_qwen3_8b_base}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/IFBench_qwen3-8b_True_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - GRPO}
+        % \label{fig:ifbench_qwen3_8b_true}
+    \end{subfigure}
+    \caption{IFBench: rollout vs. score for different models/settings.}
+    \label{fig:ifbench_all}
+\end{figure}
+
+% ======================
+% HoverBench
+% ======================
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/hoverBench_gpt-41-mini_False_rollout_vs_score.pdf}
+        \caption{\texttt{GPT-4.1 Mini} - MIPRO}
+        \label{fig:hoverbench_gpt41mini}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/hoverBench_qwen3-8b_False_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - MIPRO}
+        \label{fig:hoverbench_qwen3_8b_base}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/hoverBench_qwen3-8b_True_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - GRPO}
+        \label{fig:hoverbench_qwen3_8b_true}
+    \end{subfigure}
+    \caption{HoverBench: rollout vs. score for different models/settings.}
+    \label{fig:hoverbench_all}
+\end{figure}
+
+% ======================
+% Papillon Bench
+% ======================
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/Papillon_gpt-41-mini_False_rollout_vs_score.pdf}
+        \caption{\texttt{GPT-4.1 Mini} - MIPRO}
+        \label{fig:papillon_gpt41mini}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/Papillon_qwen3-8b_False_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - MIPRO}
+        \label{fig:papillon_qwen3_8b_base}
+    \end{subfigure}\hspace{0.01\linewidth}
+    \begin{subfigure}[b]{0.32\linewidth}
+        \includegraphics[width=\linewidth]{figures/Papillon_qwen3-8b_True_rollout_vs_score.pdf}
+        \caption{\texttt{Qwen3 8B} - GRPO}
+        \label{fig:papillon_qwen3_8b_true}
+    \end{subfigure}
+    \caption{PUPA: rollout vs. score for different models/settings.}
+    \label{fig:papillon_all}
+\end{figure}
+
+Figures~\ref{fig:hotpotqa_all},~\ref{fig:ifbench_all},~\ref{fig:hoverbench_all},~\ref{fig:papillon_all} show the full Performance-vs-Rollout curves for all the optimizers across all benchmarks.
+
+\section{Generalization Gap}\label{appendix:generalization_gap}
+% ======================
+% Generalization Gap
+% ======================
+\begin{figure}[htp]
+    \centering
+    %-------------- First Row -----------------
+    \begin{subfigure}[b]{0.325\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/generalization_gap_gpt-41-mini_HotpotQABench.pdf}
+        \label{fig:gen_gap_gpt41mini_hotpot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.325\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/generalization_gap_gpt-41-mini_hoverBench.pdf}
+        \label{fig:gen_gap_gpt41mini_ifbench}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.325\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/generalization_gap_gpt-41-mini_Papillon.pdf}
+        \label{fig:gen_gap_gpt41mini_papillon}
+    \end{subfigure}
+    
+    % \vspace{0.5em}
+    %-------------- Second Row -----------------
+    \begin{subfigure}[b]{0.325\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/generalization_gap_qwen3-8b_HotpotQABench.pdf}
+        \label{fig:gen_gap_qwen3-8b_hotpot}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.325\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/generalization_gap_qwen3-8b_hoverBench.pdf}
+        \label{fig:gen_gap_qwen3-8b_ifbench}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.325\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/generalization_gap_qwen3-8b_Papillon.pdf}
+        \label{fig:gen_gap_qwen3-8b_papillon}
+    \end{subfigure}
+
+    \caption{\textit{Generalization gaps for different optimization methods.} Following~\citet{tbsm}, we visualize the generalization gap (i.e., the difference between final test set performance and the best achieved validation performance) for different optimizers. While~\citet{tbsm} previously observed that exemplars tend to generalize better, our results suggest that instructions generated by reflective prompt evolution can achieve stronger generalization as well as improved overall performance. We hypothesize this difference may be due to the improving capabilities of the underlying LLMs, as more recent models are both better at adhering to instructions and capable of reflecting on their outputs.}\label{fig:gen_gap_side_by_side}
+\end{figure}
+% new file:   figures/generalization_gap_gpt-41-mini_HotpotQABench.pdf
+% new file:   figures/generalization_gap_gpt-41-mini_IFBench.pdf
+% new file:   figures/generalization_gap_gpt-41-mini_Papillon.pdf
+% new file:   figures/generalization_gap_gpt-41-mini_hoverBench.pdf
+% new file:   figures/generalization_gap_qwen3-8b_HotpotQABench.pdf
+% new file:   figures/generalization_gap_qwen3-8b_IFBench.pdf
+% new file:   figures/generalization_gap_qwen3-8b_Papillon.pdf
+% new file:   figures/generalization_gap_qwen3-8b_hoverBench.pdf
+% \begin{figure}[ht]
+%     \centering
+%     \begin{subfigure}[b]{0.49\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/gpt-41-mini_generalization_gap.pdf}
+%         \caption{Generalization gap for \texttt{gpt-41-mini}.}
+%         \label{fig:gen_gap_gpt41mini}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.49\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/qwen3-8b_generalization_gap.pdf}
+%         \caption{Generalization gap for \texttt{qwen3-8b}.}
+%         \label{fig:gen_gap_qwen3_8b}
+%     \end{subfigure}
+%     \caption{\textit{Generalization gaps for different optimization methods.} Following~\citet{tbsm}, we visualize the generalization gap (i.e., the difference between final test set performance and the best achieved validation performance) for different optimizers. While~\citet{tbsm} previously observed that exemplars tend to generalize better, our results suggest that reflectively optimized instructions can achieve stronger generalization as well as improved overall performance. We hypothesize this difference may be due to the improving capabilities of the underlying LLMs, as more recent models are both better at adhering to instructions and capable of reflecting on their outputs.}\label{fig:gen_gap_side_by_side}
+% \end{figure}
+
+Figure~\ref{fig:gen_gap_side_by_side} visualizes the generalization gap for different optimization methods.
+
+\section{Cost vs. Performance Analysis for optimized systems}\label{appendix:cost_perf_analysis}
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_prompt_size_gpt-41-mini.pdf}
+        \caption{GPT-4.1 Mini.}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.49\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_prompt_size_qwen3-8b.pdf}
+        \caption{Qwen3 8B.}
+    \end{subfigure}
+    \caption{These plots visualize the final aggregate scores against the aggregate prompt size (across all benchmarks) of the final optimized system for each optimizer. It can be seen that GEPA consistently produces prompts that are around less than 33\% of the size of MIPROv2's prompts, while getting higher performance. Most of GEPA's prompt tokens are used for providing instructions, whereas most of MIPROv2's prompt tokens pertain to few-shot examples.}\label{fig:prompt_length_vs_perf}
+\end{figure}
+
+\begin{figure}[htp]
+    \centering
+    \begin{subfigure}[b]{0.999\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/prompt_size_comparison_gpt-41-mini.pdf}
+        \caption{Comparing the token counts of the optimized programs across benchmarks for GPT-4.1 Mini.}
+        % \label{fig:gen_gap_gpt41mini}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.999\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{figures/prompt_size_comparison_qwen3-8b.pdf}
+        \caption{Comparing the token counts of the optimized programs across benchmarks for Qwen3 8B.}
+        % \label{fig:}
+    \end{subfigure}
+    \caption{Comparing the token counts of optimized programs across benchmarks.}
+    \label{fig:prompt_lengths_bar_graph}
+\end{figure}
+
+The prompt size of the optimized system plays an important role in determining the downstream cost of using the optimized system. Figure~\ref{fig:prompt_length_vs_perf} visualizes the aggregate prompt lengths of the final optimized system (as cost proxy) for each optimizer, against the performance achieved. Notably, GEPA's prompts are around 33\% shorter than MIPROv2's prompts, while achieving higher performance.
+
+\section{GEPA Search Trees}\label{appendix:gepa_search_trees}
+\input{gepa_search_trees.tex}
+Figures~\ref{fig:gepa_st_1}, ~\ref{fig:gepa_st_2}, ~\ref{fig:gepa_st_3}, ~\ref{fig:gepa_st_4}, ~\ref{fig:gepa_st_5}, ~\ref{fig:gepa_st_6}, ~\ref{fig:gepa_st_7}, and ~\ref{fig:gepa_st_8} present the genetic search trees created by various configurations of GEPA (and ablation SelectBestCandidate).
+
+% \section{GEPA for Agent Discovery}\label{sec:agent_discovery}
+% \input{agent_discovery.tex}
+
+\section{Visualizing the Iterative Refinement achieved by GEPA}\label{appendix:visualizing_iter_ref}
+
+Figure~\ref{fig:gepa_iterative_improvement_vis} presented a summary of the prompt refinements performed by GEPA during the optimization for PUPA. In this section, we present the full prompts produced during the optimization.
+
+
+\subsection{Prompts at intermediate stages for PUPA}\label{sec:iterative_vis}
+\input{iterative_prompt_refinement_example_pupa.tex}
+
+\section{Examples of best prompts for every benchmark}\label{appendix:all_prompts}
+In this section, we present the best optimized prompt obtained for every (benchmark, model) configuration. Each subsection below pertains to one (benchmark, model) configuration. Since every compound AI system consists of multiple modules, each subsection consists of multiple boxes, listing the prompts for each module. MIPROv2 optimized prompts contain upto 4 few-shot examples for each task. We provide just the first demo here for brevity. GEPA's prompts only consist of the optimized instruction, which is provided in full.
+
+\input{gepa_and_mipro_instructions.tex}
+
+\section{GEPA generated prompts for kernel generation}\label{appendix:inf_time_search_prompts}
+\subsection{NPUEval: Kernel Code Generation for new hardware architecture}\label{sec:npueval_prompt}
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{manual_figures/npueval_gepa_prompt.png}
+    \caption{GEPA generated prompt for NPUEval that achieves 26.85\% score with the same GPT-4o agent, that achieved a 4.25\% score.}
+    \label{fig:npueval_prompt}
+\end{figure}
+Figure~\ref{fig:npueval_prompt} shows the prompt generated by GEPA with GPT-4o for NPU Keernel Generation, that achieves 26.85\% score with the same same GPT-4o agent, that achieved just 4.25\% with a simple prompt.
+ 
+% \input{npueval_generated_prompt.tex}
+
+\subsection{KernelBench: CUDA Kernel Code Generation for NVIDIA GPUs}
+\begin{instructbox}[GEPA GPT-4o generated prompt for CUDA Kernel Generation]
+\begin{lstlisting}
+To optimize a given PyTorch model by replacing operators with custom CUDA kernels, follow these detailed instructions. Your goal is to achieve performance improvements while ensuring correctness. Name your optimized output architecture `ModelNew`. Output the new model code in codeblocks. Please generate real code, NOT pseudocode, and ensure the code compiles and is fully functional. Do not include testing code.
+
+### Steps to Create Custom CUDA Kernels
+
+#### 1. Identify Operators to Replace
+- Analyze the model to identify operators that can benefit from custom CUDA implementations.
+- Consider operator fusion opportunities to combine multiple operations into a single kernel for efficiency.
+
+#### 2. Setup and Compilation
+- Use `torch.utils.cpp_extension.load_inline` to compile your CUDA code. This allows you to define and compile custom CUDA kernels directly within your Python script.
+- Ensure all necessary CUDA and C++ headers are included to avoid missing includes errors.
+
+#### 3. Implementing the CUDA Kernel
+- Write the CUDA kernel code, ensuring it is optimized for parallel execution. Use shared memory to reduce global memory accesses and ensure coalesced memory access patterns.
+- Example structure for a CUDA kernel:
+  ```cpp
+  __global__ void my_kernel(const float* input, float* output, int size) {
+      int idx = blockIdx.x * blockDim.x + threadIdx.x;
+      if (idx < size) {
+          // Perform computation
+      }
+  }
+  ```
+
+#### 4. Kernel Launch Configuration
+- Configure the kernel launch parameters (number of blocks and threads per block) to maximize GPU utilization.
+- Example:
+  ```python
+  const int block_size = 256;
+  const int num_blocks = (size + block_size - 1) / block_size;
+  my_kernel<<<num_blocks, block_size>>>(input, output, size);
+  ```
+
+#### 5. Error Handling and Debugging
+- Implement error checking after CUDA API calls and kernel launches using `cudaGetLastError()` to catch errors early.
+- Use CUDA debugging tools like `cuda-memcheck` and NVIDIA Nsight for debugging and profiling.
+- Be aware of common syntax errors and namespace issues, and ensure that the CUDA code adheres to syntax rules.
+
+#### 6. Integrating with PyTorch
+- Define a Python function that wraps the CUDA kernel call and integrates it into the PyTorch model.
+- Example:
+  ```python
+  def my_custom_op(input):
+      output = torch.zeros_like(input)
+      my_kernel(input.data_ptr<float>(), output.data_ptr<float>(), input.numel())
+      return output
+  ```
+
+#### 7. Testing and Validation
+- Validate the correctness of the custom kernel by comparing its output with the original PyTorch operator.
+- Use profiling tools to measure performance improvements and identify further optimization opportunities.
+- Establish reference outputs for known-good inputs to verify correctness.
+- Consider floating-point discrepancies and use a small epsilon for acceptable differences.
+
+#### 8. Compatibility and Compute Capability
+- Ensure that the CUDA code is compatible with the target GPU's compute capability.
+- Use appropriate compiler flags and consider building for multiple compute capabilities if necessary.
+
+### Example Code
+Here is an example of how to replace a simple element-wise addition with a custom CUDA kernel:
+
+```python
+import torch
+import torch.nn as nn
+from torch.utils.cpp_extension import load_inline
+
+# Define the custom CUDA kernel for element-wise addition
+elementwise_add_source = """
+#include <torch/extension.h>
+#include <cuda_runtime.h>
+
+__global__ void elementwise_add_kernel(const float* a, const float* b, float* out, int size) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size) {
+        out[idx] = a[idx] + b[idx];
+    }
+}
+
+torch::Tensor elementwise_add_cuda(torch::Tensor a, torch::Tensor b) {
+    auto size = a.numel();
+    auto out = torch.zeros_like(a);
+
+    const int block_size = 256;
+    const int num_blocks = (size + block_size - 1) / block_size;
+
+    elementwise_add_kernel<<<num_blocks, block_size>>>(a.data_ptr<float>(), b.data_ptr<float>(), out.data_ptr<float>(), size);
+
+    return out;
+}
+"""
+
+elementwise_add_cpp_source = (
+    "torch::Tensor elementwise_add_cuda(torch::Tensor a, torch::Tensor b);"
+)
+
+# Compile the inline CUDA code for element-wise addition
+elementwise_add = load_inline(
+    name="elementwise_add",
+    cpp_sources=elementwise_add_cpp_source,
+    cuda_sources=elementwise_add_source,
+    functions=["elementwise_add_cuda"],
+    verbose=True,
+    extra_cflags=[""],
+    extra_ldflags=[""],
+)
+
+class ModelNew(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.elementwise_add = elementwise_add
+
+    def forward(self, a, b):
+        return self.elementwise_add.elementwise_add_cuda(a, b)
+```
+
+### Additional Best Practices
+- **Optimize Memory Usage**: Minimize data transfers between host and device, and use shared memory to reduce global memory access.
+- **Atomic Operations**: When using atomic operations like `atomicMax` with floating-point numbers, ensure correct usage by following best practices, such as using appropriate data types and minimizing contention.
+- **Performance Optimization**: Maximize parallel execution, optimize memory access patterns, and use compiler flags to enhance performance.
+- **Namespace Usage**: Avoid adding class declarations or function definitions directly to reserved namespaces like `cuda`. Use nested namespaces within non-reserved namespaces to organize code.
+- **Numerical Precision**: Be aware of floating-point arithmetic issues, such as non-associativity, and use appropriate precision levels for calculations.
+- **Debugging Tools**: Utilize tools like CUDA-GDB and NVIDIA Nsight for debugging and profiling to ensure correctness and performance.
+
+By following these instructions, you can effectively replace PyTorch operators with custom CUDA kernels, ensuring both performance improvements and correctness.
+\end{lstlisting}
+
+\begin{lstlisting}
+### Instruction for Replacing PyTorch Operators with Custom CUDA Kernels
+
+Your task is to optimize a given PyTorch model by replacing certain operators with custom CUDA kernels to achieve performance improvements. Follow the steps below to ensure a successful implementation:
+
+#### Step 1: Identify Operators for Replacement
+- **Criteria for Selection**: Choose operators that are computationally intensive and have potential for parallelization. Consider operators that are frequently used in the model's forward pass.
+- **Operator Fusion**: Look for opportunities to fuse multiple operators into a single CUDA kernel, such as combining matrix multiplication with activation functions (e.g., matmul + ReLU).
+
+#### Step 2: Implement Custom CUDA Kernels
+- **Kernel Structure**: Define your CUDA kernel using the `__global__` specifier. Ensure that each thread handles a specific part of the computation. Use correct index calculations to access data.
+- **Memory Management**: 
+  - Allocate memory for input, output, and any intermediate data on the GPU using `cudaMalloc`. Use `cudaMemcpy` to transfer data between host and device.
+  - Utilize shared memory to cache frequently accessed data and reduce global memory accesses.
+  - Ensure coalesced global memory accesses for efficient memory transactions.
+- **Numerical Stability and Boundary Conditions**: 
+  - Implement verification mechanisms to ensure numerical stability. Use `__host__ __device__` functions for testing on both CPU and GPU.
+  - Handle boundary conditions to prevent out-of-bounds memory access. Ensure that thread indices are within valid ranges.
+- **Optimization Techniques**:
+  - Use shared memory to reduce global memory accesses and improve performance.
+  - Consider using mixed precision and Tensor Cores for matrix operations to enhance performance.
+  - Avoid diverged execution paths to maintain efficient parallel execution.
+
+#### Step 3: Integrate CUDA Kernels into PyTorch Model
+- **Inline Compilation**: Use `torch.utils.cpp_extension.load_inline` to compile your CUDA code and integrate it into the PyTorch model.
+- **Model Modification**: Replace the original PyTorch operators with calls to your custom CUDA functions. Ensure that the new model architecture (`ModelNew`) is fully functional and compiles without errors.
+
+#### Step 4: Testing and Validation
+- **Correctness**: Verify that the output of the optimized model matches the expected output of the original model. Use a set of test cases to ensure accuracy.
+- **Performance Evaluation**: Measure the runtime of the optimized model and compare it to the original. Aim for a significant reduction in execution time.
+- **Edge Case Handling**: Ensure that the kernel correctly handles cases where the matrix size is not a multiple of the block size and other potential edge cases.
+
+#### Example Code
+Below is an example of how to define and integrate a custom CUDA kernel for element-wise addition:
+
+```python
+import torch
+import torch.nn as nn
+from torch.utils.cpp_extension import load_inline
+
+# Define the custom CUDA kernel for element-wise addition
+elementwise_add_source = """
+#include <torch/extension.h>
+#include <cuda_runtime.h>
+
+__global__ void elementwise_add_kernel(const float* a, const float* b, float* out, int size) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size) {
+        out[idx] = a[idx] + b[idx];
+    }
+}
+
+torch::Tensor elementwise_add_cuda(torch::Tensor a, torch::Tensor b) {
+    auto size = a.numel();
+    auto out = torch::zeros_like(a);
+
+    const int block_size = 256;
+    const int num_blocks = (size + block_size - 1) / block_size;
+
+    elementwise_add_kernel<<<num_blocks, block_size>>>(a.data_ptr<float>(), b.data_ptr<float>(), out.data_ptr<float>(), size);
+
+    return out;
+}
+"""
+
+elementwise_add_cpp_source = (
+    "torch::Tensor elementwise_add_cuda(torch::Tensor a, torch::Tensor b);"
+)
+
+# Compile the inline CUDA code for element-wise addition
+elementwise_add = load_inline(
+    name="elementwise_add",
+    cpp_sources=elementwise_add_cpp_source,
+    cuda_sources=elementwise_add_source,
+    functions=["elementwise_add_cuda"],
+    verbose=True,
+    extra_cflags=[""],
+    extra_ldflags=[""],
+)
+
+class ModelNew(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        self.elementwise_add = elementwise_add
+
+    def forward(self, a, b):
+        return self.elementwise_add.elementwise_add_cuda(a, b)
+```
+
+#### Constraints
+- Ensure that the optimized model maintains the same accuracy as the original.
+- The custom CUDA kernels should be optimized for performance, minimizing execution time and maximizing GPU utilization.
+
+By following these instructions, you will be able to effectively replace PyTorch operators with custom CUDA kernels, achieving significant performance improvements while maintaining model accuracy.
+\end{lstlisting}
+\end{instructbox}
+
+\section{\added{Number of reflection LM calls made by GEPA during optimization}}\label{appendix:computational_overhead}
+
+\begin{table}[ht]
+    \centering
+    \caption{\added{Total number of calls made by GEPA to reflection LM during optimization.}}
+    \label{tab:reflection_calls}
+    \begin{tabular}{lcc}
+        \toprule
+        \textbf{Benchmark Name} & \textbf{Num Reflection Calls} & \textbf{Num Reflection Calls} \\
+                                & \textbf{GPT-4.1-Mini}         & \textbf{Qwen3-8B} \\
+        \midrule
+        AIME-2025      & 24 & 90 \\
+        LiveBench-Math & 34 & 38 \\
+        HotpotQA       & 69 & 64 \\
+        IFBench        & 21 & 17 \\
+        Hover          & 92 & 50 \\
+        PUPA           & 46 & 38 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\end{document}

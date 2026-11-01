@@ -1,0 +1,158 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{coevorsi-layout}[2026/10/14 CoEvo-RSI manuscript layout]
+
+\PassOptionsToPackage{table}{xcolor}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{tgheros}
+\usepackage{XCharter}
+\usepackage[authoryear,round]{natbib}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{listings,breakable,skins}
+\usepackage{listings}
+\usepackage[
+  a4paper,
+  left=2.5cm,
+  right=2.5cm,
+  top=2.8cm,
+  bottom=2.5cm,
+  headheight=16pt,
+  headsep=10pt,
+  footskip=24pt
+]{geometry}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{afterpage}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage[xcharter,bigdelims,vvarbb]{newtxmath}
+\SetMathAlphabet{\mathbf}{normal}{OT1}{cmr}{bx}{n}
+\usepackage{adjustbox}
+\usepackage{tabularx}
+\usepackage{csquotes}
+\usepackage{pifont}
+\usepackage{titlesec}
+\usepackage{titling}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{xltabular}
+\usepackage{eso-pic}
+\usepackage{xspace}
+\usepackage{setspace}
+
+\definecolor{tealblue}{RGB}{16, 102, 102}
+\definecolor{tealblueLight}{RGB}{232, 245, 244}
+\definecolor{brightteal}{RGB}{45, 170, 165}
+\definecolor{headerbg}{RGB}{240, 242, 245}
+\definecolor{goodgreen}{RGB}{40, 140, 60}
+\definecolor{badred}{RGB}{200, 50, 50}
+\definecolor{principlebg}{RGB}{248, 249, 250}
+\definecolor{ourrowbg}{RGB}{237,247,238}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=tealblue,
+  citecolor=brightteal,
+  urlcolor=brightteal
+}
+\urlstyle{same}
+
+\newcommand{\coevorsibodyfont}{\fontsize{10.5pt}{13.7pt}\selectfont}
+\newcommand{\coevorsiabstractfont}{\fontsize{9.8pt}{12.6pt}\selectfont}
+\newcommand{\coevorsisectionfont}{\fontsize{13pt}{15.5pt}\selectfont}
+\newcommand{\coevorsisubsectionfont}{\fontsize{11.2pt}{13.8pt}\selectfont}
+\newcommand{\coevorsisubsubsectionfont}{\fontsize{10.5pt}{13.2pt}\selectfont}
+
+\AtBeginDocument{\coevorsibodyfont}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 0.5pt}
+\setlength{\emergencystretch}{2em}
+\setlength{\jot}{3pt}
+\setlength{\abovedisplayskip}{8pt plus 2pt minus 2pt}
+\setlength{\belowdisplayskip}{8pt plus 2pt minus 2pt}
+\setlength{\abovedisplayshortskip}{4pt plus 2pt}
+\setlength{\belowdisplayshortskip}{6pt plus 2pt minus 1pt}
+
+\pretitle{\par\begingroup\centering}
+\posttitle{\par\endgroup\vspace{0.55em}}
+\preauthor{\par\begingroup\centering\coevorsibodyfont}
+\postauthor{\par\endgroup\vspace{0.4em}}
+\predate{}
+\postdate{}
+
+\titleformat{\section}{\coevorsisectionfont\bfseries\color{tealblue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\coevorsisubsectionfont\bfseries\color{tealblue}}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}{\coevorsisubsubsectionfont\bfseries\color{tealblue}}{\thesubsubsection}{0.7em}{}
+\titleformat{\paragraph}[runin]{\coevorsibodyfont\bfseries\color{tealblue}}{}{0pt}{}
+
+\titlespacing*{\section}{0pt}{2.8ex plus 0.8ex minus 0.4ex}{0.8ex}
+\titlespacing*{\subsection}{0pt}{2.3ex plus 0.6ex minus 0.3ex}{0.55ex}
+\titlespacing*{\subsubsection}{0pt}{1.9ex plus 0.5ex minus 0.2ex}{0.4ex}
+\titlespacing*{\paragraph}{0pt}{1.3ex plus 0.4ex minus 0.2ex}{0.65em}
+
+\renewenvironment{abstract}
+  {\par\vspace{0.3em}
+   \begin{tcolorbox}[
+     enhanced,
+     width=0.96\textwidth,
+     center,
+     colback=tealblueLight,
+     colframe=tealblueLight,
+     boxrule=0pt,
+     arc=2pt,
+     left=10pt,
+     right=10pt,
+     top=6pt,
+     bottom=7pt,
+     before skip=0pt,
+     after skip=0pt
+   ]
+   {\centering
+     \fontsize{10.5pt}{12.2pt}\selectfont\bfseries\color{tealblue}Abstract\par}
+   \vspace{0.1em}
+   \coevorsiabstractfont\setlength{\parindent}{0pt}\setlength{\parskip}{3pt}\ignorespaces}
+  {\end{tcolorbox}\par\vspace{0.1em}}
+
+\setlist[itemize]{
+  itemsep=2.5pt,
+  parsep=0pt,
+  topsep=4pt,
+  partopsep=0pt,
+  leftmargin=*
+}
+
+\DeclareCaptionFont{coevorsicaption}{\fontsize{9.2pt}{11.5pt}\selectfont}
+\DeclareCaptionFont{coevorsisubcaption}{\fontsize{8.7pt}{10.7pt}\selectfont}
+\captionsetup{
+  font=coevorsicaption,
+  labelfont=bf,
+  skip=5.5pt
+}
+\captionsetup[table]{
+  font=coevorsicaption,
+  skip=4pt
+}
+\captionsetup[subfigure]{
+  font=coevorsisubcaption
+}
+
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.07}
+\renewcommand{\floatpagefraction}{0.78}
+
+\newcommand{\cmark}{\textcolor{goodgreen}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{badred}{\ding{55}}}
+

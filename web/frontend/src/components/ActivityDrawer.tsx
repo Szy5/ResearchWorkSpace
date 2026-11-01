@@ -5,6 +5,7 @@ import { JobState, StagedCandidate } from '../hooks/useBatchGeneration'
 import { jobStatusLabel, jobTargetLabel } from '../utils/jobLabels'
 import { normalizeQuotes } from '../utils/textFormat'
 import { CandidateStatusBadge } from './CandidateCard'
+import JobSteps from './JobSteps'
 
 type Props = {
   open: boolean
@@ -48,7 +49,13 @@ function JobCard({
         <JobStatusChip status={job.status} />
         <span className="text-[11px] text-muted">{new Date(job.created_at).toLocaleTimeString()}</span>
       </div>
-      {job.progress ? <p className="mt-2 text-xs leading-5 text-body">{normalizeQuotes(job.progress)}</p> : null}
+      {job.steps && job.steps.length > 0 ? (
+        <div className="mt-3">
+          <JobSteps steps={job.steps} compact />
+        </div>
+      ) : job.progress ? (
+        <p className="mt-2 text-xs leading-5 text-body">{normalizeQuotes(job.progress)}</p>
+      ) : null}
       {job.status === 'failed' && job.error ? <p className="mt-1 text-xs text-error">{job.error}</p> : null}
     </li>
   )

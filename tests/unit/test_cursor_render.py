@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from paper_wiki.publishing.cursor_render import render_blog_html
+from paper_wiki.publishing.cursor_render import render_blog_html, render_markdown_html
 from paper_wiki.publishing.exceptions import CursorRenderError, HTMLValidationError
 
 
@@ -15,6 +15,7 @@ class FakeSettings:
         self.project_root = root
         self.cursor_headless_binary = "agent"
         self.cursor_headless_timeout_seconds = 5.0
+        self.cursor_api_key = "test-cursor-key"
         self.cursor_render_theme = "摸鱼绿"
         self.cursor_render_prompt_path = "blog_html_render_v1.py"
 
@@ -50,6 +51,16 @@ def test_render_blog_html_missing_summary_raises(tmp_path: Path) -> None:
         render_blog_html("Demo", settings)
 
 
+def test_render_blog_html_missing_api_key_raises(tmp_path: Path) -> None:
+    settings = _make_settings(tmp_path)
+    settings.cursor_api_key = None
+    _make_summary(tmp_path)
+
+    with patch.dict("os.environ", {"CURSOR_API_KEY": ""}, clear=False):
+        with pytest.raises(CursorRenderError, match="CURSOR_API_KEY"):
+            render_blog_html("Demo", settings)
+
+
 def test_render_blog_html_success_picks_new_html_file(tmp_path: Path) -> None:
     settings = _make_settings(tmp_path)
     artifact_dir = _make_summary(tmp_path)
@@ -71,6 +82,26 @@ def test_render_blog_html_success_picks_new_html_file(tmp_path: Path) -> None:
     prompt_arg = command[8]
     assert "摸鱼绿" in prompt_arg
     assert str(artifact_dir / "summary.md") in prompt_arg
+    assert mock_run.call_args.kwargs["env"]["CURSOR_API_KEY"] == "test-cursor-key"
+
+
+def test_render_markdown_html_copies_to_preferred_name(tmp_path: Path) -> None:
+    settings = _make_settings(tmp_path)
+    out_dir = tmp_path / "artifacts" / "Demo" / "wechat"
+    out_dir.mkdir(parents=True)
+    md = out_dir / "article.md"
+    md.write_text("# Demo\n\nBody\n", encoding="utf-8")
+
+    def fake_run(command, **kwargs):
+        (out_dir / "article_排版_摸鱼绿.html").write_text("<section>ok</section>", encoding="utf-8")
+        return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
+
+    with patch("paper_wiki.publishing.cursor_render.subprocess.run", side_effect=fake_run):
+        result = render_markdown_html(md, settings, preferred_name="article.html")
+
+    assert result == out_dir / "article.html"
+    assert result.read_text(encoding="utf-8") == "<section>ok</section>"
+    assert (out_dir / "article_排版_摸鱼绿.html").is_file()
 
 
 def test_render_blog_html_nonzero_exit_raises(tmp_path: Path) -> None:

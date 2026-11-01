@@ -1,0 +1,55 @@
+\begin{figure*}[t]
+\centering
+\addtocounter{figure}{1}
+\begin{minipage}[t]{0.245\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/RQ2_cwq_v2.pdf}\\[-2pt]
+  {\small (a) CWQ Hit@1}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/RQ2_extraction_rate_v2.pdf}\\[-2pt]
+  {\small (b) Extraction rate}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/RQ2_reward_proposer_v2.pdf}\\[-2pt]
+  {\small (c) Proposer reward}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.245\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/RQ2_reward_solver_v2.pdf}\\[-2pt]
+  {\small (d) Solver reward}
+\end{minipage}
+\caption{\textbf{Training dynamics of role ablations.} Proposer-only and Solver-only denote w/o Solver update and w/o Proposer update. (a) Validation Hit@1 on CWQ. (b) Question-extraction rate of the Proposer. (c--d) Proposer and Solver rewards.}
+\label{fig:role_ablation}
+\vspace{1mm}
+\begin{minipage}[t]{0.48\textwidth}
+  \vspace{0pt}
+  \centering
+  \includegraphics[width=\linewidth]{figures/RQ4_unseen_schema_f1.pdf}\par
+  \refstepcounter{figure}
+  \makeatletter
+  \def\@currentlabelname{EoG vs. KG-R1 on unseen schema}
+  \makeatother
+  \label{fig:unseen_schema}
+  \addcontentsline{lof}{figure}{\protect\numberline{\thefigure}{\textbf{EoG vs.\ KG-R1$^\dagger$ on unseen schema.} F1 (\%) of EoG and KG-R1$^\dagger$ trained on each dataset with Qwen-2.5-7B-Instruct.}}
+  \noindent{\small\raggedright\textbf{Figure \thefigure: EoG vs.\ KG-R1$^\dagger$ on unseen schema. F1 (\%) of EoG and KG-R1$^\dagger$ trained on each dataset with Qwen-2.5-7B-Instruct.}\par}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \vspace{0pt}
+  \centering
+  \includegraphics[width=\linewidth]{figures/RQ1_carbench_domain_v2.pdf}\par
+  \addtocounter{figure}{-3}
+  \refstepcounter{figure}
+  \makeatletter
+  \def\@currentlabelname{Results on IndustryCarBench}
+  \makeatother
+  \label{fig:carbench}
+  \addcontentsline{lof}{figure}{\protect\numberline{\thefigure}{\textbf{Results on IndustryCarBench.} Hit@1 and F1 (\%) of EoG and baselines with Qwen-2.5-7B-Instruct.}}
+  \noindent{\small\raggedright\textbf{Figure \thefigure: Results on IndustryCarBench. Hit@1 and F1 (\%) of EoG and baselines with Qwen-2.5-7B-Instruct.}\par}
+  \addtocounter{figure}{2}
+\end{minipage}
+
+\end{figure*}

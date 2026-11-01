@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Meta-Harness",
+      "authors": "Lee et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "\"Meta-Harness\" 直接在下游基准上做整包 harness 进化，是 ModularRSI 的主要对照；当前论文正是针对其难以区分可迁移改进与基准特定适应的问题，改用 benchmark-disjoint 的模块化信用分配。"
+    },
+    {
+      "title": "AHE",
+      "authors": "Lin et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "\"AHE\" 已识别 harness 内功能不同的组件，但仍在联合 harness-level 流程中进化，未独立归因和优化各机制，这直接推动 ModularRSI 将五个模块拆开独立进化。"
+    },
+    {
+      "title": "HarnessFix",
+      "authors": "Chen et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "\"HarnessFix\" 从执行轨迹改进失败定位，却未把识别出的缺陷显式指派给责任 harness 机制，这直接暴露了 ModularRSI 所要解决的 mechanism-level credit assignment 缺口。"
+    },
+    {
+      "title": "Living Harness",
+      "authors": "Du et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "\"Living Harness\" 展示交互式 agent evolver 可从经验持续修改执行 harness，启发 ModularRSI 将 harness 自进化视为长期执行机制改进，并以模块化方式约束修改范围。"
+    },
+    {
+      "title": "Recursive Self-Evolving Agents via Held-Out Selection",
+      "authors": "Michael Nguyen, Quoc Nguyen, Paul Vuong",
+      "year": 2026,
+      "arxiv_id": "2606.28374",
+      "role": "Foundation",
+      "relationship_sentence": "\"Recursive Self-Evolving Agents with Held-out Evaluation\" 用 held-out 设置区分可迁移自改进与对评测集的适应，为 ModularRSI 的 benchmark-disjoint evolution protocol 及外部 2,000 任务设计提供了直接框架。"
+    },
+    {
+      "title": "Evolving Agents in the Dark: Retrospective Credit Assignment",
+      "authors": "Pan et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "\"Evolving Agents in the Dark\" 从历史轨迹做回顾式诊断，启发 ModularRSI 对同任务成功/失败轨迹做对比并跨任务聚合反复出现的执行缺陷。"
+    }
+  ],
+  "synthesis_narrative": "围绕 harness 的递归自改进，已有工作从不同侧面逼近核心问题：\"Meta-Harness\" 把整包 harness 放到下游基准上进化，虽能提升任务表现，却让可迁移的机制改进与基准特定适应混在一起；\"AHE\" 已意识到 harness 内存在功能不同的组件，但仍以联合 harness-level 流程更新，缺少对责任机制的独立归因；\"HarnessFix\" 进一步从执行轨迹定位失败，却没有把缺陷显式映射到应修改的 harness 机制。与此同时，\"Living Harness\" 展示了交互式 agent evolver 持续修改执行机制的可能性，\"Recursive Self-Evolving Agents with Held-out Evaluation\" 用 held-out 设置区分可迁移自改进与评测集适应，\"Evolving Agents in the Dark\" 则从历史轨迹做回顾式诊断，提示可用成功/失败对比聚合反复出现的执行缺陷。这些工作共同暴露出一个缺口：粗粒度任务奖励和整包更新无法同时回答“改哪里”和“改什么”。ModularRSI 因而把 harness 拆成五个功能模块并独立进化，在同任务成功/失败轨迹上做对比、跨任务聚合证据，再用与下游基准不相交的 2,000 个外部任务训练；这正好把前作中的模块意识、失败定位、held-out 评估和轨迹诊断综合成机制级与行为级的双层信用分配。"
+}

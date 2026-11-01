@@ -1,0 +1,16 @@
+{
+  "primary_pattern": "P01",
+  "primary_pattern_name": "Gap-Driven Reframing",
+  "secondary_patterns": [
+    "P04",
+    "P03",
+    "P09"
+  ],
+  "secondary_pattern_names": [
+    "Modular Pipeline Composition",
+    "Representation Shift & Primitive Recasting",
+    "Inference-Time Control & Guided Sampling"
+  ],
+  "confidence": "high",
+  "reasoning": "该论文从离线经验挖掘在真实在线流中仅有一次性机会、上下文噪声大的局限出发，将问题重构为在线 harness 学习，使冻结 agent 通过更新外部 harness 持续改进，故主模式为 P01。方法上将求解器反思与演化器更新组织为可复用技能编译流水线，并把经验载体从被动检索转为 general/topic 结构化技能表示，同时属于不改模型参数的推理时外部自适应，故次模式为 P04、P03、P09。"
+}

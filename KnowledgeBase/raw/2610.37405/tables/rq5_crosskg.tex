@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.1}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{l l l c c}
+    \toprule
+    \multirow{2}{*}{\textbf{Method}}
+    & \multirow{2}{*}{\textbf{Train KG}}
+    & \multirow{2}{*}{\textbf{Backbone}}
+    & \textbf{WebQSP} & \textbf{WebQSP} \\
+    & & & \textbf{train} & \textbf{Hit@1} \\
+    \midrule
+    ToG~\cite{ToG}          & None     & GPT-4                & No  & 82.6 \\
+    RoG~\cite{RoG}          & Freebase & LLaMA2-Chat-7B       & Yes & 85.7 \\
+    KG-R1~\cite{KG-R1}      & Freebase & Qwen2.5-3B-Instruct  & Yes & 82.8 \\
+    \midrule
+    FoG SFT-only            & Wikidata & Qwen3-4B-Instruct    & No  & 71.6 \\
+    \textbf{FoG full}       & Wikidata & Qwen3-4B-Instruct    & No  & 77.2 \\
+    \bottomrule
+\end{tabular}}
+\caption{\textbf{Zero-shot cross-KG transfer to Freebase (WebQSP).} Methods developed on Freebase are reference points, not matched baselines.}
+\label{tab:rq5_crosskg}
+\vspace{-5mm}
+\end{table}

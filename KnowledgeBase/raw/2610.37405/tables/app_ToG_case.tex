@@ -1,0 +1,52 @@
+\begin{table*}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.3}
+\caption{\textbf{Case study of ToG.} The trajectory reaches the correct answer while covering only the first part of the gold evidence.}
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.95\textwidth}}
+\rowcolor{gray!20}
+\textbf{Question:} Which airline flies the \textbf{Embraer 195} and is based at the airport named after \textbf{Margaret Kenyatta}'s father? \\[4pt]
+
+\rowcolor{blue!10}
+\texttt{Reasoning chains:}
+
+\textbf{Turn 1:}
+
+  `Margaret Kenyatta -> father -> Jomo Kenyatta`;
+  `Margaret Kenyatta -> country of citizenship -> Kenya`;
+  `Embraer 195 -> subclass of -> E-Jet`;
+  `Margaret Kenyatta -> occupation -> diplomat`;
+  `Margaret Kenyatta -> occupation -> politician`;
+  
+\textbf{Turn 2:}
+
+ `Kenya -> named after -> Mount Kenya`;
+ `diplomat -> named after -> Diplomatstaden`;
+ `E-Jet -> manufacturer -> Embraer`;
+ `politician -> category combines topics -> Category:Dutch politicians`;
+ `Jomo Kenyatta -> country of citizenship -> Kenya`;
+ 
+\textbf{Turn 3:}
+
+ `Mount Kenya -> country -> Kenya`;
+ `Embraer -> headquarters location -> São José dos Campos`;
+ `Category:Dutch politicians -> is a list of -> human`;
+ `Kenya -> named after -> Mount Kenya`;
+ `Diplomatstaden -> located in the administrative territorial entity -> Stockholm Municipality`;
+ 
+\textbf{Turn 4:}
+
+ `Kenya -> named after -> Mount Kenya`;
+ `Mount Kenya -> country -> Kenya`;
+ `Kenya -> capital -> Nairobi`;
+ `São José dos Campos -> country -> Brazil`;
+ `São José dos Campos -> located in the administrative territorial entity -> São Paulo`; \\
+
+\rowcolor{red!30}
+\texttt{<answer>}First, the airline that flies the Embraer 195 is Kenya Airways. Second, the airport named after Margaret Kenyatta's father is Jomo Kenyatta International Airport. The answer is \{Kenya Airways\}\texttt{</answer>}\\
+\end{tabular}
+
+\label{tab:togcase}
+\end{table*}

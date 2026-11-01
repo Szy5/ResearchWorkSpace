@@ -1,0 +1,43 @@
+\section{Potential Risks}
+\algname{} evolves skill libraries that are injected into agent prompts as procedural guidance. The learned skills are designed to capture task-solving patterns such as navigation flows, tool-use procedures, verification steps, and recovery strategies. In our experiments, all benchmarks are run in sandboxed environments with no access to real user data, external accounts, or production systems. Therefore, the evaluated setting poses minimal practical risk beyond standard benchmark execution.
+
+\section{Use Or Create Scientific Artifacts}
+Our work uses five established public benchmarks: WebArena-Infinity, TerminalBench2, SWE-bench Lite, CL-Bench, and TAU-Bench. We do not modify the benchmarks themselves. We use foundation models (Claude and other models) via their standard AWS Bedrock APIs. We will release the \algname{} pipeline code and all evolved skill libraries upon publication.
+
+\subsection{Cite Creators Of Artifacts}
+All benchmarks and models are properly cited in the main text.
+
+\subsection{Discuss The License For Artifacts}
+All benchmark resources used in this work are publicly available under their respective research or open-source licenses. In particular, WebArena Infinity and TAU-Bench are released under MIT licenses, WebArena is released under Apache-2.0, and CL-Bench is released under a custom evaluation-only license. Our pipeline code will be released under the MIT License.
+
+\subsection{Artifact Use Consistent With Intended Use}
+All benchmarks are used for their intended purpose of evaluating agent capabilities. The foundation models are used via their standard APIs in accordance with their terms of service.
+
+\subsection{Data Contains Personally Identifying Info Or Offensive Content}
+The benchmarks use synthetic or sanitized scenarios. SWE-bench uses public GitHub issues. To our knowledge, none contain personally identifying information or offensive content.
+
+\section{Computational Experiments}\label{sec:app-compute}
+
+\subsection{Compute Budget}
+The full experimental suite is computationally expensive because it covers multiple benchmarks, solver models, evolution settings, and ablation configurations. Across all main experiments and diagnostic runs, the total API cost was on the order of \(\$100\mathrm{K}\). For a single benchmark configuration, we typically run 16 parallel workers. Depending on benchmark complexity, task timeout, and environment overhead, one full run takes approximately 2--8 hours of wall-clock time. Web and tool-use benchmarks are usually faster, while software-engineering and command-line tasks tend to take longer because they require repository setup, Docker execution, test running, or verifier calls.
+
+\subsection{Experimental Setup And Hyper-params}
+Key hyperparameters are described in Appendix~\ref{app:details}. We use fixed random seeds (42) for task shuffling to ensure reproducibility.
+
+\subsection{Descriptive Statistics}
+We report pass rate (\%) as the primary metric across all benchmarks. For statistical reliability, we report results over the full task set for each benchmark rather than subsampling. The performance is averaged over three runs.
+
+\subsection{Parameters For Packages}
+
+The project primarily used AWS Bedrock API for foundation model inference, together with standard AWS infrastructure services such as EC2, S3, EBS/FSx, CloudWatch, IAM, and VPC. The software environment used Python 3.10+, boto3 1.34+, botocore 1.34+, PyTorch 2.0+, CUDA 12.0+, Docker, and Ubuntu 24.04.
+
+\section{AI Assistants In Research Or Writing}
+
+This paper studies LLMs as the research object and uses frozen LLM backbones
+for experimental inference. These models are not used to create new benchmark
+labels or to fabricate experimental results. Reported numerical results come
+from the experimental code and are checked by the authors.
+
+AI assistant tools were used for polishing manuscript. They were not used to
+decide scientific claims, select reported results, or replace author
+verification.

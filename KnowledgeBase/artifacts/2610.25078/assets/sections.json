@@ -1,0 +1,517 @@
+{
+  "sections": [
+    {
+      "id": "sec-abstract",
+      "type": "abstract",
+      "title": "Abstract",
+      "level": 0,
+      "order": 0,
+      "parent_id": "",
+      "source": null,
+      "text": "Model--harness co-evolution has emerged as a prominent paradigm for recursive self-improving (RSI) agents, jointly evolving their execution scaffolds and intrinsic capabilities. We study the persistent yet often overlooked brain--body mismatch problem in this paradigm, where an evolving harness (body) demands behaviors its model (brain) has not learned or restricts capabilities it already possesses. We introduce , a RSI framework that advances model--harness co-evolution through agent-driven, bidirectional historical inheritance. Drawing on a shared evolutionary archive and execution feedback, a meta-agent coordinates harness development from historical designs with model checkpoint selection or merging and subsequent adaptation under the selected harness, aligning inherited capabilities with evolving execution requirements to reduce brain--body mismatch. Using only supervised fine-tuning (SFT) on its own rejection-sampled trajectories, makes Qwen3.5-9B competitive with larger models across diverse vertical applications, including multi-agent failure attribution, role-aware text-to-SQL, and smart-home instruction following. It surpasses DeepSeek-V4-Pro on TraceElephant ( +14.16 agent accuracy) and GLM-5.3 on HomeBench VM ( +4.90 success rate), underscoring the need for brain--body alignment and the potential of bidirectional historical inheritance to advance agent co-evolution.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-introduction",
+      "type": "section",
+      "title": "Introduction",
+      "level": 1,
+      "order": 1,
+      "parent_id": "",
+      "source": null,
+      "text": "[]{#sec:intro label=\"sec:intro\"} An agent's capabilities depend jointly on its *brain*---the language model that reasons and selects actions---and its *body*---the harness that defines its tool interfaces, action space, memory, and execution workflow [lou2026autoharness, chen2026harnessx]. Accordingly, progress has followed two complementary directions. Model training improves the agent's learned policy through supervised learning, reinforcement learning, and self-distillation [xia2026skillrl, yang2026coevolve, zhang2026lopd]. Harness optimization improves the surrounding system with the model fixed, through iterative modification of prompts, tools, and control flow guided by execution feedback [lou2026autoharness, lin2026ahe], or population-based evolution that generates, evaluates, and recombines competing harness designs [lee2026metaharness, zhang2026darwinx]. These directions meet in **model--harness co-evolution**, where model training and harness optimization jointly adapt an agent to its task domain [chen2026harnessx, luo2026hase]. Recent systems demonstrate the promise of this approach across tool use, mathematical reasoning, search-based question answering, and chess [chen2026harnessforge, chen2026coharness, kim2026whale].\n\nA co-evolution round couples harness evolution with model adaptation. Starting from a model--harness pair $(\\mathbf{H}_t,\\theta_t)$, execution feedback $\\mathbf{F}_t$ guides changes to the harness, whose requirements in turn shape the model's next adaptation [chen2026coharness]. As either component evolves, the harness's execution requirements and the model's learned capabilities can drift apart. In this setting, we first identify and formalize the **brain--body mismatch problem**:\n\n::: insightbox Problem Definition *During model--harness co-evolution, a pair $(\\mathbf{H}_t,\\theta_t)$ exhibits **brain--body mismatch** when the behaviors required by $\\mathbf{H}_t$ diverge from those learned by $\\theta_t$, or when $\\mathbf{H}_t$ restricts the use of capabilities already present in $\\theta_t$. The problem is to maintain their compatibility through successive rounds of harness-model co-adaptation.* :::\n\n![Brain--body alignment in model--harness co-evolution. Left: Historical harnesses and checkpoints are recombined and adapted to resolve interface mismatch. Right: Step accuracy versus Turn-level Interface Mismatch Rate (TIMR; sec:coevolution) for ten evolved versions per method, from a three-round run evaluated on the Who\\&When test benchmark.](figures/coevox-teaser.jpg)\n\n*Figure: Brain--body alignment in model--harness co-evolution. Left: Historical harnesses and checkpoints are recombined and adapted to resolve interface mismatch. Right: Step accuracy versus Turn-level Interface Mismatch Rate (TIMR; sec:coevolution) for ten evolved versions per method, from a three-round run evaluated on the Who\\&When test benchmark.*\n\nIn plain terms, the model may struggle to operate its harness, and the harness may underuse its model's abilities ([\\[fig:coevox-teaser\\]](#fig:coevox-teaser){reference-type=\"ref+Label\" reference=\"fig:coevox-teaser\"}). Consider two concrete examples.  *Interface mismatch.* The model emits XML tool calls, while the evolved harness expects JSON, causing otherwise correct calls to be rejected.  *Capability mismatch.* The harness introduces an *active context management tool* for deciding what information to retain, summarize, or discard. A model unfamiliar with these operations may use it poorly; a historical checkpoint $\\theta_i$ already possesses the relevant capabilities and provides a suitable starting point for adaptation. On the harness side, a historical design $\\mathbf{H}_j$ can supply an execution workflow suited to the model's capabilities. These examples motivate selecting predecessors whose inherited behaviors and structures support further evolution.\n\nTo address this challenge, we propose , a framework for **model--harness co-evolution through bidirectional historical inheritance**. Its **evolutionary archive** $\\mathbf{A}_{<t}$ records earlier harnesses, model checkpoints, their development histories, and execution outcomes. Each round begins with feedback from the current pair. A Curator organizes this evidence, and harness editors browse the archive, choose their own historical starting designs, and develop offspring harnesses. For each offspring, the framework selects or merges historical checkpoints to form candidate model--harness pairs. Evaluation identifies a promising pair for model adaptation under its harness, and validation determines which pair advances to the next round. The resulting designs, checkpoints, and outcomes extend the archive. This **agent-driven inheritance** connects the two sides of evolution: harness design draws on accumulated structural experience, while model initialization draws on capabilities suited to the emerging harness. Their coordination makes *brain--body alignment* the organizing principle of the evolutionary process. Our contributions are:\n\n- **Problem Formalization.** We formalize brain--body mismatch in model--harness co-evolution and introduce the turn-level interface mismatch rate (TIMR) as an inexpensive diagnostic signal for observable interface violations.\n\n- **Method Design.** We propose , which combines an evolutionary archive with bidirectional historical inheritance. Harness editors select historical starting designs, and model inheritance selects or merges checkpoints to support adaptation under the evolved harness.\n\n- **Empirical Evaluation.** We evaluate across multi-agent failure attribution, home care, and SQL tasks, with co-evolved Qwen3.5-9B outperforming Qwen3.8-Max on Who&When Pro ($+4.40$ agent acc.) and DeepSeek-V4-Pro on TraceElephant ($+14.16$ agent acc.).",
+      "labels": [
+        "fig:coevox-teaser",
+        "sec:intro"
+      ],
+      "citations": [
+        "chen2026coharness",
+        "chen2026harnessforge",
+        "chen2026harnessx",
+        "kim2026whale",
+        "lee2026metaharness",
+        "lin2026ahe",
+        "lou2026autoharness",
+        "luo2026hase",
+        "xia2026skillrl",
+        "yang2026coevolve",
+        "zhang2026darwinx",
+        "zhang2026lopd"
+      ],
+      "figure_ids": [
+        "fig-coevox-teaser"
+      ]
+    },
+    {
+      "id": "sec-related-work",
+      "type": "section",
+      "title": "Related Work",
+      "level": 1,
+      "order": 2,
+      "parent_id": "",
+      "source": null,
+      "text": "Self-evolving agents improve through changes to external execution systems, learned model parameters, or both [gao2025selfevolving, guo2026harnesssurvey, wang2026diving]. We organize the literature around these optimization targets and the reuse of historical components that connects them.\n\n#### Recursive Harness Improvement.\n\nEarly agent systems established how external organization can improve a model's behavior: ReAct interleaves reasoning and actions, Reflexion retains verbal feedback across trials, and Voyager accumulates reusable executable skills [yao2023react, shinn2023reflexion, wang2023voyager]. Agent--computer interface design further shows how the operations exposed to a model shape its effectiveness [yang2024sweagent]. Subsequent work turns these hand-designed mechanisms into optimization targets, evolving context [zhang2025ace], memory [zhang2025memevolve, zhang2026memskill, pan2026mstar], planning [liu2026todoevolve], and retrieval [lee2026selfindex]. At the system level, harness search jointly modifies prompts, tools, and control flow [lee2026rhi, lee2026metaharness, lin2026ahe, lou2026autoharness, zhang2026selfharness, zhang2026hyperagents]. AutoHarness synthesizes executable support from environmental feedback, while Meta-Harness gives its proposer access to earlier source code, scores, and execution traces [lou2026autoharness, lee2026metaharness]. Such access preserves evidence that a single scalar score or compressed reflection can omit. Online adaptation extends this process to deployment streams and test-time feedback [liu2026adaptiveharness, nie2026tthe, pan2026rho]; population search and reusable repositories retain alternative designs for subsequent exploration [zhang2026darwinx, nie2026evolvenet, luo2026harnessbank]. The Darwin Gödel Machine similarly grows an archive of self-modifying agents, allowing earlier branches to become stepping stones for later improvements [zhang2025dgm]. Together, these approaches expand the search target from isolated modules to complete execution systems. They also motivate preserving design diversity and execution history, which connects to a corresponding archive of model checkpoints.\n\n#### Recursive Model Improvement.\n\nModel self-improvement converts generated experience into persistent changes in the policy. Three learning loops are particularly relevant. **(i) Curricula** adapt the source and difficulty of training problems to the learner, including self-play, tool-oriented task generation, and search-agent training without externally supplied demonstrations [zhao2025absolutezero, acikgoz2026toolr0, sundaram2026soar, yang2026ttcs, yang2026coevolve, yue2026drzero]. The resulting feedback loop changes which experiences the model encounters as its competence develops. **(ii) Supervision** turns demonstrations, privileged feedback, or the model's own improved behavior into self-distillation targets [zhao2026opsd, shenfeld2026sdft, hubotter2026sdpo, zhang2026lopd, lu2026sdar]. On-policy variants address the learner's current behavior, making the distribution of generated trajectories central to what can be learned. **(iii) Experience reuse** extracts reusable skills and transfers their guidance into model behavior [xia2026skillrl, zhang2026opdevolver, lu2026skill0, wu2026seed, yang2026opid]. For example, SkillRL jointly evolves a hierarchical skill library and the agent policy, linking experience abstraction with subsequent reinforcement learning [xia2026skillrl]. These mechanisms improve the agent's intrinsic capabilities, while the harness determines which tools, observations, and execution constraints appear in its training trajectories. This dependence motivates choosing model initialization and adaptation in relation to the harness that will actually execute the policy.\n\n#### Model--Harness Co-Evolution.\n\nJoint adaptation closes the loop between the environment presented to a policy and the behavior learned under that environment. One line couples **(i) context and weights** through prompt optimization, continual adaptation, and the transfer of contextual guidance into parameters [lu2026p2o, tiwari2026fst, tu2026ucob, zhao2026ophsd]. A second line couples **(ii) executable harnesses and policies**, extending adaptation to the tools, memory, middleware, and control flow used during rollout [chen2026harnessforge, chen2026harnessx, chen2026coharness, kim2026whale, qi2026vace, qu2026qwenplanneragent, hebbar2026sia, karten2026continualharness, mao2026safeevolve, taolive2026hat, yu2026onpolicycorrection]. HarnessForge combines fault-guided harness tailoring with harness-conditioned policy alignment [chen2026harnessforge]. Co-Harness alternates validated harness patches with fine-tuning on trajectories generated by the improved scaffold [chen2026coharness], while WHALE alternates rejection-sampling fine-tuning with executable harness search [kim2026whale]. A third line brings **(iii) execution and editing** into a shared learning process, allowing policies to participate in the evolution of their own support [luo2026hase, shi2026skill1]. These methods establish the value of adapting both sides and expose a common dependency: a harness update changes the execution requirements, and a model update changes which harnesses are effective. makes *bidirectional historical inheritance* an explicit decision within this loop. Harness editors choose historical starting designs, and model inheritance independently selects or merges archived checkpoints for the resulting requirements. This enables recovery of useful earlier capabilities without tying model initialization to the latest generation or the harness's parent branch. [\\[app:evolution-comparison\\]](#app:evolution-comparison){reference-type=\"ref+Label\" reference=\"app:evolution-comparison\"} compares the inheritance procedures of representative frameworks.",
+      "labels": [],
+      "citations": [
+        "acikgoz2026toolr0",
+        "chen2026coharness",
+        "chen2026harnessforge",
+        "chen2026harnessx",
+        "gao2025selfevolving",
+        "guo2026harnesssurvey",
+        "hebbar2026sia",
+        "hubotter2026sdpo",
+        "karten2026continualharness",
+        "kim2026whale",
+        "lee2026metaharness",
+        "lee2026rhi",
+        "lee2026selfindex",
+        "lin2026ahe",
+        "liu2026adaptiveharness",
+        "liu2026todoevolve",
+        "lou2026autoharness",
+        "lu2026p2o",
+        "lu2026sdar",
+        "lu2026skill0",
+        "luo2026harnessbank",
+        "luo2026hase",
+        "mao2026safeevolve",
+        "nie2026evolvenet",
+        "nie2026tthe",
+        "pan2026mstar",
+        "pan2026rho",
+        "qi2026vace",
+        "qu2026qwenplanneragent",
+        "shenfeld2026sdft",
+        "shi2026skill1",
+        "shinn2023reflexion",
+        "sundaram2026soar",
+        "taolive2026hat",
+        "tiwari2026fst",
+        "tu2026ucob",
+        "wang2023voyager",
+        "wang2026diving",
+        "wu2026seed",
+        "xia2026skillrl",
+        "yang2024sweagent",
+        "yang2026coevolve",
+        "yang2026opid",
+        "yang2026ttcs",
+        "yao2023react",
+        "yu2026onpolicycorrection",
+        "yue2026drzero",
+        "zhang2025ace",
+        "zhang2025dgm",
+        "zhang2025memevolve",
+        "zhang2026darwinx",
+        "zhang2026hyperagents",
+        "zhang2026lopd",
+        "zhang2026memskill",
+        "zhang2026opdevolver",
+        "zhang2026selfharness",
+        "zhao2025absolutezero",
+        "zhao2026ophsd",
+        "zhao2026opsd"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-method",
+      "type": "section",
+      "title": "Method",
+      "level": 1,
+      "order": 3,
+      "parent_id": "",
+      "source": null,
+      "text": "([\\[fig:coevox-framework\\]](#fig:coevox-framework){reference-type=\"ref+Label\" reference=\"fig:coevox-framework\"}) realizes model--harness co-evolution through **bidirectional historical inheritance**. An autonomous meta-agent coordinates two complementary decisions: harness editors select and develop historical designs, and model inheritance selects or merges checkpoints for the resulting execution requirements. Evaluation, model adaptation, and promotion turn these inherited components into the next agent, whose outcomes enrich the evolutionary archive.\n\n![fig:coevox-framework](figures/coevox-framework.jpg)",
+      "labels": [
+        "fig:coevox-framework",
+        "sec:method"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-coevox-framework"
+      ]
+    },
+    {
+      "id": "sec-model-harness-co-evolution",
+      "type": "subsection",
+      "title": "Model--Harness Co-Evolution",
+      "level": 2,
+      "order": 4,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "[]{#sec:coevolution label=\"sec:coevolution\"} An executable agent is a pair $p=(\\mathbf{H},\\theta)$, where the harness $\\mathbf{H}$ specifies prompts, tools, state management, and control flow, and $\\theta$ denotes the task model's parameters. Constraints $\\mathbf{C}$ fix the environment, verifier, and admissible interfaces. Let $\\rho$ be the task distribution and $\\mathbf{P}_{\\theta,\\mathbf{H}}(\\cdot\\mid x;\\mathbf{C})$ the distribution of execution trajectories for task $x$. A trajectory $\\tau$ contains model responses, tool interactions, and the final output; its task score $s(x,\\tau)$ is assigned by the fixed evaluator. The objective is\n\n$$\n\\mathbf{J}(\\mathbf{H},\\theta)\n=\\mathbf{E}_{x\\sim\\rho}\\mathbf{E}_{\\tau\\sim\\mathbf{P}_{\\theta,\\mathbf{H}}(\\cdot\\mid x;\\mathbf{C})}[s(x,\\tau)],\n\\label{eq:lineage-objective}\n$$\n\nwhere $\\mathbf{E}$ denotes expectation. For a task set $\\mathbf{D}$ and $n_{\\mathrm{eval}}$ executions per task, let $\\tau_{x,u}$ be the trajectory from execution $u$. We estimate this objective by\n\n$$\n\\widehat{\\mathbf{J}}_{\\mathbf{D}}(\\mathbf{H},\\theta)\n=\\frac{1}{|\\mathbf{D}|n_{\\mathrm{eval}}}\n\\sum_{x\\in\\mathbf{D}}\\sum_{u=1}^{n_{\\mathrm{eval}}}s(x,\\tau_{x,u}).\n\\label{eq:lineage-estimate}\n$$\n\nFor $p=(\\mathbf{H},\\theta)$, we also write $\\widehat{\\mathbf{J}}_{\\mathbf{D}}(p)$ for this estimate.\n\nEach generation develops and adapts model--harness pairs through two inheritance steps. A meta-agent with fixed parameters $\\phi$ and role policies $\\pi_\\phi^{\\mathrm{role}}$ operates on the incumbent $p_t=(\\mathbf{H}_t,\\theta_t)$ and an archive $\\mathbf{A}_{<t}$ of earlier harnesses, checkpoints, and execution histories, including the seed pair. First, the incumbent's execution feedback $\\mathbf{F}_t$ guides the generation of $\\mathbf{K}$ offspring harnesses $\\mathbf{H}_{t,1:\\mathbf{K}}$ and shared evidence $e_t$:\n\n$$\n(\\mathbf{H}_{t,1:\\mathbf{K}},e_t)\n=\\operatorname{Inherit}_{\\phi}^{\\mathrm{h}}(p_t,\\mathbf{A}_{<t},\\mathbf{F}_t),\n\\label{eq:overview-harness-inheritance}\n$$\n\nwhere $e_t$ links historical designs to their models and outcomes. Second, model inheritance pairs these offspring with selected or merged checkpoints:\n\n$$\n\\mathbf{Q}_t^{\\mathrm{sel}}\n=\\operatorname{Inherit}_{\\phi}^{\\mathrm{m}}(\\mathbf{H}_{t,1:\\mathbf{K}},\\mathbf{A}_{<t},e_t),\n\\label{eq:overview-model-inheritance}\n$$\n\nwhere $\\mathbf{Q}_t^{\\mathrm{sel}}$ is the candidate pair set. Evaluation selects $\\bar p_t\\in\\mathbf{Q}_t^{\\mathrm{sel}}$, adaptation produces $p_t^+$, and validation chooses $p_{t+1}$ from $p_t$, $\\bar p_t$, and $p_t^+$. Completed outcomes extend the archive to $\\mathbf{A}_{<t+1}$.\n\n#### Diagnosing interface mismatch.\n\nWe introduce the *Turn-level Interface Mismatch Rate* (TIMR) as a diagnostic signal for interface mismatch. TIMR captures observable interface violations; broader capability alignment calls for complementary evaluation, as discussed in [\\[app:timr\\]](#app:timr){reference-type=\"ref+Label\" reference=\"app:timr\"}. We do not claim that TIMR fully characterizes brain--body mismatch; it captures one aspect while serving as a cheap-to-verify and empirically useful metric. For a pair's evaluated trajectories $\\mathbf{Z}(\\mathbf{H},\\theta)$, let $n_{\\mathrm{lm}}(\\tau)$ count model turns and $v_{\\tau,u}\\in\\{0,1\\}$ flag calls to unavailable tools, interface-contract violations, or malformed outputs at turn $u$. We define\n\n$$\n\\mathbf{TIMR}(\\mathbf{H},\\theta)=\n\\frac{\\sum_{\\tau\\in\\mathbf{Z}(\\mathbf{H},\\theta)}\\sum_{u=1}^{n_{\\mathrm{lm}}(\\tau)}v_{\\tau,u}}\n{\\sum_{\\tau\\in\\mathbf{Z}(\\mathbf{H},\\theta)}n_{\\mathrm{lm}}(\\tau)},\n\\label{eq:timr}\n$$\n\nwhere each violating turn counts once, even if later recovered; lower TIMR indicates fewer interface violations per model turn.",
+      "labels": [
+        "eq:lineage-estimate",
+        "eq:lineage-objective",
+        "eq:overview-harness-inheritance",
+        "eq:overview-model-inheritance",
+        "eq:timr",
+        "sec:coevolution"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-harness-inheritance",
+      "type": "subsection",
+      "title": "Harness Inheritance",
+      "level": 2,
+      "order": 5,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "[]{#sec:harness-inheritance label=\"sec:harness-inheritance\"} We instantiate [\\[eq:overview-harness-inheritance\\]](#eq:overview-harness-inheritance){reference-type=\"ref+Label\" reference=\"eq:overview-harness-inheritance\"} through evidence curation and historical base selection, linking offspring design to recorded model--harness compatibility.\n\n#### Evidence curation.\n\nTo find designs that address the incumbent's failures, we diagnose observations $\\mathbf{O}_t$ from $p_t$ on the validation set $\\mathbf{V}$, obtaining $\\mathbf{F}_t=\\operatorname{diagnose}(p_t,\\mathbf{O}_t)$. The Curator uses this feedback to retrieve relevant history. At step $q$, it chooses action $u_{t,q}$ from its inspection history $r_{t,q}^{\\mathrm{cur}}$:\n\n$$\nu_{t,q}\\sim\\pi_\\phi^{\\mathrm{ret}}\\bigl(\\cdot\\mid\\mathbf{H}_t,\\mathbf{F}_t,\\operatorname{index}(\\mathbf{A}_{<t}),r_{t,q}^{\\mathrm{cur}}\\bigr),\n\\label{eq:lineage-retrieval}\n$$\n\nwhere $\\operatorname{index}$ exposes archive metadata. Each action and its result $\\operatorname{read}(\\mathbf{A}_{<t},u_{t,q})$ extend the history until the Curator stops or exhausts its retrieval budget. From the completed history $r_t^{\\mathrm{cur}}$, it constructs evidence $e_t$ and $\\mathbf{K}$ modification hypotheses $b_{t,1:\\mathbf{K}}$:\n\n$$\n(e_t,b_{t,1:\\mathbf{K}})\\sim\\pi_\\phi^{\\mathrm{cur}}\\bigl(\\cdot\\mid\\mathbf{H}_t,\\mathbf{F}_t,r_t^{\\mathrm{cur}};\\mathbf{L}_{\\mathrm{ctx}}\\bigr),\n\\label{eq:lineage-curation}\n$$\n\nwhere $\\mathbf{L}_{\\mathrm{ctx}}$ is the context-length budget. Linking each design to its observed behavior gives editors evidence for judging when to reuse it.\n\n#### Historical base selection.\n\nDifferent hypotheses can favor different starting designs. Each of $\\mathbf{K}$ independent editors receives $b_{t,k}$ and browses $\\mathbf{A}_{<t}$ to choose its own base. Its history $r_{t,k}^{\\mathrm{edit}}$ combines $e_t$ and $b_{t,k}$ with its inspection results. With $\\mathbf{I}_{<t}$ indexing archived harnesses, editor $k$ selects\n\n$$\ni_{t,k}\\sim\\pi_\\phi^{\\mathrm{base}}\\bigl(\\cdot\\mid\\mathbf{I}_{<t},r_{t,k}^{\\mathrm{edit}}\\bigr),\n\\;\\widetilde{\\mathbf{H}}_{t,k}=\\mathbf{H}_{i_{t,k}},\n\\label{eq:lineage-base}\n$$\n\nwhere $i_{t,k}\\in\\mathbf{I}_{<t}$ identifies the starting harness $\\widetilde{\\mathbf{H}}_{t,k}$. The editor incorporates relevant historical designs to produce\n\n$$\n(\\mathbf{H}_{t,k},\\mathbf{U}_{t,k})\\sim\\pi_\\phi^{\\mathrm{edit}}\\bigl(\\cdot\\mid\\widetilde{\\mathbf{H}}_{t,k},r_{t,k}^{\\mathrm{edit}},\\mathbf{C}\\bigr),\n\\label{eq:lineage-edit}\n$$\n\nwhere $\\mathbf{U}_{t,k}\\subseteq\\mathbf{I}_{<t}$ records the harnesses whose designs were adopted. Editors share a fixed archive; valid, distinct offspring proceed to evaluation. Each change can thus build on a suitable prior structure, with $(i_{t,k},\\mathbf{U}_{t,k})$ preserving its ancestry.",
+      "labels": [
+        "eq:lineage-base",
+        "eq:lineage-curation",
+        "eq:lineage-edit",
+        "eq:lineage-retrieval",
+        "sec:harness-inheritance"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-model-inheritance",
+      "type": "subsection",
+      "title": "Model Inheritance",
+      "level": 2,
+      "order": 6,
+      "parent_id": "sec-method",
+      "source": null,
+      "text": "[]{#sec:model-inheritance-adaptation label=\"sec:model-inheritance-adaptation\"} We construct $\\mathbf{Q}_t^{\\mathrm{sel}}$ in [\\[eq:overview-model-inheritance\\]](#eq:overview-model-inheritance){reference-type=\"ref+Label\" reference=\"eq:overview-model-inheritance\"} through checkpoint selection and merging, guided by task performance and TIMR.\n\n#### Model inheritance and selection.\n\nAn offspring harness changes the behaviors its model must execute, making initialization a compatibility decision. Let $\\mathbf{M}_{<t}$ index archived checkpoints with parameters $\\theta_j$ and let $\\boldsymbol{\\alpha}=(\\alpha_j)_{j\\in\\mathbf{M}_{<t}}$ denote their weights, with $\\alpha_j\\geq0$ and $\\sum_j\\alpha_j=1$. The meta-agent directly specifies these real-valued coefficients and decides how many merge candidates to evaluate in each round using historical evidence and evaluation feedback. A one-hot $\\boldsymbol{\\alpha}$ selects one checkpoint; multi-checkpoint candidates use TIES-Merging [yadav2023tiesmerging]:\n\n$$\n\\theta(\\boldsymbol{\\alpha})=\\operatorname{TIES}\\bigl(\\{\\theta_j\\}_{j\\in\\mathbf{M}_{<t}};\\boldsymbol{\\alpha}\\bigr),\n\\label{eq:lineage-recipe}\n$$\n\nwhere TIES trims small task-vector entries, resolves sign conflicts, and merges sign-consistent updates using the configuration chosen by the meta-agent. At decision $q$, historical evidence $e_t$ and evaluation feedback guide the proposal\n\n$$\n\\boldsymbol{\\alpha}_{t,k}^{(q)}\\sim\\pi_\\phi^{\\mathrm{inherit}}\\bigl(\\cdot\\mid\\mathbf{H}_{t,k},e_t,\\mathbf{M}_{<t},\\mathbf{O}_{t,k}^{(q)}\\bigr),\n\\label{eq:lineage-model-search}\n$$\n\nwhere $\\mathbf{O}_{t,k}^{(q)}$ records task performance and TIMR under $\\mathbf{H}_{t,k}$, with both components fixed during evaluation. The agent reads checkpoint provenance from the archive and interprets past results in their original harness context. Preliminary evaluations refine proposals for shortlisted harnesses, producing $\\mathbf{Q}_t^{\\mathrm{sel}}$. The validation set $\\mathbf{V}$ then determines\n\n$$\n\\bar p_t=\\underset{p\\in\\mathbf{Q}_t^{\\mathrm{sel}}}{\\operatorname{argmax}}\\;\\widehat{\\mathbf{J}}_{\\mathbf{V}}(p).\n\\label{eq:lineage-select}\n$$\n\nThis favors initializations that can already operate the offspring harness before adaptation.\n\n#### Pair-specific adaptation and promotion.\n\nTo reinforce successful behavior under the selected harness, $\\bar p_t=(\\bar{\\mathbf{H}}_t,\\bar\\theta_t)$ generates its own trajectories on the training set $\\mathbf{D}_{\\mathrm{tr}}$. Rejection sampling retains its verifier-accepted executions for supervised fine-tuning of $\\bar\\theta_t$ with $\\bar{\\mathbf{H}}_t$ fixed, yielding $p_t^+=(\\bar{\\mathbf{H}}_t,\\theta_t^+)$. Promotion compares all three stages:\n\n$$\np_{t+1}=\\max_{\\succ_{\\mathrm{prom}}}\\{p_t,\\bar p_t,p_t^+\\},\n\\label{eq:lineage-promote}\n$$\n\nwhere $\\succ_{\\mathrm{prom}}$ ranks eligible offspring above $p_t$ by score on the same validation set $\\mathbf{V}$. Eligibility requires a valid, completed evaluation with a gain over $p_t$ greater than the margin $\\delta_{\\mathrm{prom}}$; $p_t$ continues when none qualifies. Thus $p_{t+1}=(\\mathbf{H}_{t+1},\\theta_{t+1})$ preserves the strongest validated outcome of inheritance and adaptation. All completed outcomes, including unsuccessful modifications, enter $\\mathbf{A}_{<t+1}$ with harness ancestry and model provenance (checkpoint coefficients $\\boldsymbol{\\alpha}$ and training history) to inform later inheritance.",
+      "labels": [
+        "eq:lineage-model-search",
+        "eq:lineage-promote",
+        "eq:lineage-recipe",
+        "eq:lineage-select",
+        "sec:model-inheritance-adaptation"
+      ],
+      "citations": [
+        "yadav2023tiesmerging"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experiment",
+      "type": "section",
+      "title": "Experiment",
+      "level": 1,
+      "order": 7,
+      "parent_id": "",
+      "source": null,
+      "text": "",
+      "labels": [
+        "sec:experiment"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experimental-setup",
+      "type": "subsection",
+      "title": "Experimental Setup",
+      "level": 2,
+      "order": 8,
+      "parent_id": "sec-experiment",
+      "source": null,
+      "text": "#### Evaluation benchmarks.\n\nTo test whether co-evolution generalizes beyond a single harness design, we evaluate on three domains that demand different harness capabilities: long-trajectory reasoning, policy-constrained tool use, and structured device control.  **Failure attribution** identifies the responsible agent (Who) and the decisive error step (When) in multi-agent trajectories. We hold out 200 TracerTraj [zhang2025agentracer] instances for validation during evolution, leaving 3,400 single-error training instances drawn from the remaining TracerTraj data, CORRECT-Error [yu2026correct], AFTraj [zhang2026agentforesight], and self-constructed trajectories. The Hand and Algo. subsets of Who&When [zhang2025agentcausestaskfailures], Who&When Pro [liu2026whowhenprollmsreally], and TraceElephant [chen2026seeingelephantbenchmarkfailure] are reserved for out-of-distribution (OOD) testing.  **Role-aware text-to-SQL** requires generating SQL only when the user's role authorizes every referenced table and column, and refusing otherwise. We use the Spider subset of the RBAC benchmark [fei2026benchmarkingtexttosqlrolebasedaccess] with its official split and its BIRD subset as an OOD test without any training.  **Smart-home instruction following** maps instructions to device operations and rejects infeasible ones. We use the valid (VM) and invalid (IM) multi-device subsets of HomeBench [li2025homebenchevaluatingllmssmart] with official splits.\n\n::: insightbox Scope: affordable domain specialization We deliberately choose specialized benchmarks because targets compact agents for vertical applications. Examples include lightweight failure-attribution evaluators for large-scale RL training, local smart-home controllers, and enterprise website assistants operating under strict database-access permissions. Our scope is to rapidly optimize reliable, affordable model--harness pairs that deliver domain-specific performance competitive with much larger models. :::\n\n#### Baselines.\n\nWe compare against four families.  **Direct LLMs**: DeepSeek-V4.1-Flash, DeepSeek-V4-Pro-0813, GLM-5.3, MiniMax-M3, and Qwen3.8-Max, all with high thinking effort.  **Harness-enhanced systems**: for failure attribution, CHIEF [wang2026chief] and FALAT [rafi2026falat] with MiniMax-2.5, AgentScope [bi2026agentscope] with GPT-5.1, and DCFA [dcfa2026] with GPT-5, with results taken from their papers; for text-to-SQL, OpenCode [anomaly2025opencode], mini-SWE-agent [yang2024sweagent], and Pi [zechner2025pi] paired with frontier LLMs.  **Harness evolution**: Meta-Harness [lee2026metaharness] and Self-Harness [zhang2026selfharness], sharing the task model, meta-agent LLM, and number of rounds with .  **Model training**: GRPO [shao2024grpo] and GSPO [zheng2025gspo] applied under the initial harness.  **Model-harness Co-Evolution**: HarnessForge [chen2026harnessforge].\n\n**Table: Failure attribution results (\\%) on the Hand and Algo.\\ subsets of Who\\&When, Who\\&When Pro, and TraceElephant. All four benchmarks are held out from training and evolutionary selection. indicates that higher is better, and ``--'' marks results not reported. The best/second-best results are highlighted in blue/gray. Results for are averaged over three runs.**\n\n```latex\n\\begin{table}[!t]\n\\centering\n\\small\n\\caption{Failure attribution results (\\%) on the Hand and Algo.\\ subsets of Who\\&When, Who\\&When Pro, and TraceElephant. All four benchmarks are held out from training and evolutionary selection. $\\uparrow$ indicates that higher is better, and ``--'' marks results not reported. The best/second-best results are highlighted in blue/gray. Results for \\ourmethod{} are averaged over three runs.}\n\n\\label{tab:failure_attribution}\n\\setlength{\\tabcolsep}{9.5pt}\n\\renewcommand{\\arraystretch}{1.05}\n\\resizebox{\\textwidth}{!}{\n\\begin{tabular}{lcccccccc}\n\\toprule\n\\multirow{2}{*}{\\textbf{Attribution System}}\n& \\multicolumn{2}{c}{\\textbf{Who\\&When Hand}}\n& \\multicolumn{2}{c}{\\textbf{Who\\&When Algo. }}\n& \\multicolumn{2}{c}{\\textbf{Who\\&When Pro}}\n& \\multicolumn{2}{c}{\\textbf{TraceElephant}} \\\\\n\\cmidrule(lr){2-3}\n\\cmidrule(lr){4-5}\n\\cmidrule(lr){6-7}\n\\cmidrule(lr){8-9}\n& \\textbf{Who}$\\uparrow$ & \\textbf{When}$\\uparrow$ & \\textbf{Who}$\\uparrow$ & \\textbf{When}$\\uparrow$\n& \\textbf{Who}$\\uparrow$ & \\textbf{When}$\\uparrow$ & \\textbf{Who}$\\uparrow$ & \\textbf{When}$\\uparrow$ \\\\\n\\midrule\n\n\\multicolumn{9}{l}{\\textit{Direct LLM attribution}} \\\\\nDeepSeek-V4.1-Flash\n& 60.34 & 12.07 & \\cellcolor{highlightblue}\\textbf{68.25} & 18.25\n& 47.89 & 61.77 & 35.16 & 23.29 \\\\\nDeepSeek-V4-Pro-0813\n& 60.34 & 10.34 & 65.87 & 22.22\n& 61.77 & \\cellcolor{gray!15}70.40 & \\cellcolor{gray!15}56.62 & 31.96 \\\\\nGLM-5.3\n& 46.55 & 3.45 & 45.24 & 11.11\n& 40.29 & 52.74 & 49.32 & 26.03 \\\\\nMiniMax-M3\n& 53.45 & 10.34 & 63.49 & 17.46\n& 51.26 & 59.83 & 52.05 & 27.85 \\\\\nQwen3.8-Max\n& 50.00 & 12.07 & 64.29 & 11.11\n& \\cellcolor{gray!15}65.03 & \\cellcolor{highlightblue}\\textbf{72.40} & 47.03 & 32.42 \\\\\n\n\\midrule\n\\multicolumn{9}{l}{\\textit{Harness-enhanced attribution}} \\\\\nCHIEF + MiniMax-2.5\n& 51.00 & 17.00 & 54.80 & 37.30\n& -- & -- & -- & -- \\\\\nFALAT + MiniMax-2.5\n& \\cellcolor{gray!15}66.30 & \\cellcolor{gray!15}25.90 & \\cellcolor{gray!15}68.00 & \\cellcolor{gray!15}46.00\n& -- & -- & -- & -- \\\\\nAgentScope + GPT-5.1\n& -- & 22.41 & -- & 25.40\n& -- & -- & -- & -- \\\\\nDCFA + GPT-5\n& -- & 24.14 & -- & \\cellcolor{highlightblue}\\textbf{47.62}\n& -- & -- & -- & -- \\\\\n\n\\midrule\n\\multicolumn{9}{l}{\\textit{Harness evolution baselines}} \\\\\nMeta-Harness\n& 46.55 & 15.52 & 57.94 & 45.24\n& 40.46 & 55.26 & 51.60 & 9.13 \\\\\nSelf-Harness\n& 56.90 & 24.14 & 56.35 & 38.89\n& 47.94 & 54.11 & 49.77 & 7.76 \\\\\n\n\\midrule\n\\multicolumn{9}{l}{\\textit{Model training baselines}} \\\\\nGRPO\n& 37.93 & 17.24 & 57.14 & 37.30\n& 62.51 & 63.94 & 44.29 & \\cellcolor{gray!15}35.16 \\\\\nGSPO\n& 44.83 & 20.69 & 57.94 & 42.86\n& 62.00 & 63.43 & 47.03 & \\cellcolor{highlightblue}\\textbf{38.36} \\\\\n\n\\midrule\n\\multicolumn{9}{l}{\\textit{Harness-model co-evolution baselines}} \\\\\nHarnessForge & 32.76 & 22.41 & 58.73 & 42.06 & 63.03 & 52.97 & 50.23 & 8.68\\\\\n\n\\midrule\nQwen3.5-9B\n& 37.93 & 15.52 & 50.00 & 31.75\n& 57.20 & 49.66 & 25.57 & 4.11 \\\\\n\\textbf{\\ourmethod{} (Ours)}\n& \\cellcolor{highlightblue}\\textbf{68.39} & \\cellcolor{highlightblue}\\textbf{29.31} & 62.17 & 44.71\n& \\cellcolor{highlightblue}\\textbf{69.43} & 57.39 & \\cellcolor{highlightblue}\\textbf{70.78} & 28.92\\\\\n\n\\bottomrule\n\\end{tabular}\n}\n\\end{table}\n```\n\n#### Implementation.\n\nWe evolve Qwen3.5-9B [qwen2026qwen35] from a hand-written initial harness, using DeepSeek-V4.1-Flash (high reasoning effort) in `Codex` [openai2025codex] as the meta-agent. Each run has ten rounds with $\\mathbf{K}{=}8$ harness candidates per round. The selected Qwen3.5-9B checkpoint samples up to three trajectories per training task under its paired harness at temperature 1, stopping at the first verifier-accepted one. The accepted trajectories are used for one epoch of full-parameter SFT (learning rate 5e-6, batch size 8) on four H100 GPUs. Full data, hyperparameter, baseline, and prompt details are in [\\[app:exp,app:prompts\\]](#app:exp,app:prompts){reference-type=\"ref+Label\" reference=\"app:exp,app:prompts\"}.",
+      "labels": [
+        "sec:setup",
+        "tab:failure_attribution"
+      ],
+      "citations": [
+        "anomaly2025opencode",
+        "bi2026agentscope",
+        "chen2026harnessforge",
+        "chen2026seeingelephantbenchmarkfailure",
+        "dcfa2026",
+        "fei2026benchmarkingtexttosqlrolebasedaccess",
+        "lee2026metaharness",
+        "li2025homebenchevaluatingllmssmart",
+        "liu2026whowhenprollmsreally",
+        "openai2025codex",
+        "qwen2026qwen35",
+        "rafi2026falat",
+        "shao2024grpo",
+        "wang2026chief",
+        "yang2024sweagent",
+        "yu2026correct",
+        "zechner2025pi",
+        "zhang2025agentcausestaskfailures",
+        "zhang2025agentracer",
+        "zhang2026agentforesight",
+        "zhang2026selfharness",
+        "zheng2025gspo"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-main-results",
+      "type": "subsection",
+      "title": "Main Results",
+      "level": 2,
+      "order": 9,
+      "parent_id": "sec-experiment",
+      "source": null,
+      "text": "#### Failure attribution.\n\nWe first examine whether co-evolving a small model with its harness can outperform much larger models and single-sided evolution. [\\[tab:failure_attribution\\]](#tab:failure_attribution){reference-type=\"ref+Label\" reference=\"tab:failure_attribution\"} compares the co-evolved 9B agent with all four baseline families. On Who&When Hand, reaches 68.39% Who and 29.31% When accuracy, ahead of the strongest harness-enhanced system FALAT + MiniMax-2.5 (66.30% and 25.90%). On Who&When Algo., it obtains 62.17% Who and 44.71% When accuracy, compared with the strongest baseline scores of 68.25% and 47.62%, respectively. On the other OOD benchmarks, attains 69.43% Who accuracy on Who&When Pro, above Qwen3.8-Max (65.03%), and 70.78% on TraceElephant, 14.16 points above DeepSeek-V4-Pro-0813 (56.62%). Single-sided evolution falls short: Self-Harness trails by 11.49 Who points on Who&When Hand, and on TraceElephant both harness evolution baselines drop below 10% When accuracy while retains 28.92%; the RL baselines trained under the initial harness likewise trail in Who accuracy on every benchmark, although they attain higher When accuracy on Who&When Pro and TraceElephant. [\\[fig:whowhen-harness-evolution\\]](#fig:whowhen-harness-evolution){reference-type=\"ref+Label\" reference=\"fig:whowhen-harness-evolution\"} shows how these gains accumulate: over ten rounds, AA improves by 11.11 points and SA by 5.55 points while TIMR stays at or below 0.22%. The strongest gains appear on Who&When Hand and in agent attribution on Who&When Pro and TraceElephant, showing the task-dependent benefits of model--harness alignment.\n\n![Co-evolution on Who\\&When Algo. Dashed/solid curves show AA/SA, and marker labels give TIMR (\\%). Panels show harnesses at rounds 6--8. The left panel compares full with Harness-only, Model-only, and Latest-only evolution across ten rounds. The right panels connect selected rounds to actor-summary recovery, budget-aware evidence coverage, and evidence rechecking, including reuse of round-4 model weights. Full improves accuracy while keeping TIMR at or below 0.22\\%, illustrating the complementary roles of joint adaptation and historical inheritance.](figures/whowhen-harness-evolution.jpg)\n\n*Figure: Co-evolution on Who\\&When Algo. Dashed/solid curves show AA/SA, and marker labels give TIMR (\\%). Panels show harnesses at rounds 6--8. The left panel compares full with Harness-only, Model-only, and Latest-only evolution across ten rounds. The right panels connect selected rounds to actor-summary recovery, budget-aware evidence coverage, and evidence rechecking, including reuse of round-4 model weights. Full improves accuracy while keeping TIMR at or below 0.22\\%, illustrating the complementary roles of joint adaptation and historical inheritance.*\n\n**Table: Role-aware text-to-SQL results (\\%) on the Spider and BIRD subsets of RBAC. OOD marks the subset never used for training. and indicate that higher and lower are better, respectively. The best and second-best results are highlighted in blue and gray, respectively.**\n\n```latex\n\\begin{table}[!t]\n\\centering\n\\footnotesize\n\\caption{Role-aware text-to-SQL results (\\%) on the Spider and BIRD subsets of RBAC. OOD marks the subset never used for training. $\\uparrow$ and $\\downarrow$ indicate that higher and lower are better, respectively. The best and second-best results are highlighted in blue and gray, respectively.}\n\n\\label{tab:rbac_text2sql}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{3.8pt}\n\\resizebox{\\textwidth}{!}{\n\\begin{tabular}{lcccccccc}\n\\toprule\n\\multirow{2}{*}{\\textbf{RBAC-Text2SQL System}}\n& \\multicolumn{4}{c}{\\textbf{Spider}}\n& \\multicolumn{4}{c}{\\textbf{BIRD (OOD)}} \\\\\n\\cmidrule(lr){2-5}\n\\cmidrule(lr){6-9}\n& Safe-EX$\\uparrow$ & AC-F1$\\uparrow$ & Safe-Deny$\\uparrow$ & Viol.$\\downarrow$\n& Safe-EX$\\uparrow$ & AC-F1$\\uparrow$ & Safe-Deny$\\uparrow$ & Viol.$\\downarrow$ \\\\\n\\midrule\n\n\\multicolumn{9}{l}{\\textit{Direct LLM generation}} \\\\\nDeepSeek-V4.1-Flash\n& 77.33 & 94.46 & 93.80 & \\cellcolor{gray!15}1.69\n& 62.85 & 85.97 & 86.47 & 8.75 \\\\\nDeepSeek-V4-Pro-0813\n& 78.33 & 94.90 & 95.65 & 2.04\n& 64.16 & \\cellcolor{highlightblue}\\textbf{90.39} & \\cellcolor{gray!15}90.35 & 7.00 \\\\\nGLM-5.3\n& 77.41 & 89.73 & 79.77 & 2.89\n& 60.90 & 82.13 & 78.29 & 6.40 \\\\\nMiniMax-M3\n& 76.08 & 91.01 & 88.93 & 5.18\n& 65.29 & 87.47 & 86.18 & 8.93 \\\\\n\n\\midrule\n\\multicolumn{9}{l}{\\textit{Harness-enhanced generation}} \\\\\nOpenCode + DeepSeek-V4.1-Flash\n& 79.58 & \\cellcolor{gray!15}95.52 & 94.85 & 2.41\n& \\cellcolor{highlightblue}\\textbf{74.86} & 83.06 & 84.04 & \\cellcolor{gray!15}5.90 \\\\\nmini-SWE-agent + DeepSeek-V4-Pro-0813\n& 76.08 & 93.45 & 93.86 & 2.87\n& \\cellcolor{gray!15}71.10 & 84.84 & 86.70 & 8.70 \\\\\nPi + MiniMax-M3\n& \\cellcolor{gray!15}80.26 & \\cellcolor{highlightblue}\\textbf{95.85} & \\cellcolor{gray!15}96.33 & 1.72\n& 70.81 & 86.80 & 88.60 & 8.70 \\\\\n\n\\midrule\nQwen3.5-9B\n& 71.90 & 89.71 & 87.96 & 5.72\n& 53.52 & 82.00 & 80.54 & 12.64 \\\\\n\\textbf{\\ourmethod{} (Ours)}\n& \\cellcolor{highlightblue}\\textbf{80.85} & 95.51 & \\cellcolor{highlightblue}\\textbf{96.64} & \\cellcolor{highlightblue}\\textbf{1.57}\n& 60.15 & \\cellcolor{gray!15}90.24 & \\cellcolor{highlightblue}\\textbf{91.26} & \\cellcolor{highlightblue}\\textbf{5.65} \\\\\n\n\\bottomrule\n\\end{tabular}\n}\n\\end{table}\n```\n\n#### Role-aware text-to-SQL.\n\nWe next examine access control and query execution under co-evolution. [\\[tab:rbac_text2sql\\]](#tab:rbac_text2sql){reference-type=\"ref+Label\" reference=\"tab:rbac_text2sql\"} compares with direct LLMs and general-purpose coding harnesses. On Spider, achieves the best Safe-EX (80.85%), Safe-Deny (96.64%), and violation rate (1.57%), surpassing Pi + MiniMax-M3 (80.26%, 96.33%, and 1.72%). [\\[fig:rbac-harness-evolution\\]](#fig:rbac-harness-evolution){reference-type=\"ref+Label\" reference=\"fig:rbac-harness-evolution\"} traces these gains: the harness successively acquires evidence checking, reference-level authorization, and verification with repair, raising Safe-EX from 77.09% to 80.85% and cutting the violation rate from 2.00% to 1.57%, a 21.5% relative reduction. On the OOD BIRD subset, its Safe-EX is close to GLM-5.3 (60.15% vs. 60.90%), alongside the highest Safe-Deny (91.26%), the lowest violation rate (5.65%), and the second-best AC-F1 (90.24%). These results indicate promising cross-database transfer for a 9B model. The safety--utility balance may partly reflect more conservative refusal, which can improve policy compliance while limiting successful execution of authorized queries.\n\n![Harness evolution on role-aware text-to-SQL. Safe-EX and violation rate over ten rounds, with designs from rounds 3, 4, and 9. Blue circles and purple squares track Safe-EX and violation rate on the left and right axes, respectively. Dashed connectors link the selected rounds to evidence-backed refusal, authorization of all SQL references, and verification with bounded repair. Across the run, Safe-EX rises from 77.09\\% to 80.85\\%, while violation rate falls from 2.00\\% to 1.57\\%, a 21.5\\% relative reduction.](figures/rbac-harness-evolution.jpg)\n\n*Figure: Harness evolution on role-aware text-to-SQL. Safe-EX and violation rate over ten rounds, with designs from rounds 3, 4, and 9. Blue circles and purple squares track Safe-EX and violation rate on the left and right axes, respectively. Dashed connectors link the selected rounds to evidence-backed refusal, authorization of all SQL references, and verification with bounded repair. Across the run, Safe-EX rises from 77.09\\% to 80.85\\%, while violation rate falls from 2.00\\% to 1.57\\%, a 21.5\\% relative reduction.*\n\n#### Smart-home instruction following.\n\nFinally, we examine whether co-evolution transfers to structured device control. [\\[tab:homebench\\]](#tab:homebench){reference-type=\"ref+Label\" reference=\"tab:homebench\"} compares with direct LLMs on two multi-device subsets. On valid instructions (VM), achieves the best success rate (75.51%) and F1 (89.23%), ahead of DeepSeek-V4-Pro-0813 (75.10% and 89.18%). On invalid instructions (IM), it ties for the best success rate (84.54%) and obtains the highest F1 (91.80%). Thus, the co-evolved agent both executes feasible operations and rejects infeasible ones at the level of much larger models.\n\n**Table: HomeBench multi-device instruction following (\\%, higher is better). VM and IM denote valid and invalid instructions. Blue and gray mark best and second-best results, including ties.**\n\n```latex\n\\begin{table}[!t]\n\\centering\n\\footnotesize\n\\caption{HomeBench multi-device instruction following (\\%, higher is better). VM and IM denote valid and invalid instructions. Blue and gray mark best and second-best results, including ties.}\n\n\\label{tab:homebench}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{7pt}\n\\begin{tabular}{lcccc}\n\\toprule\n\\multirow{2}{*}{\\textbf{Home Assistant System}}\n& \\multicolumn{2}{c}{\\textbf{VM}}\n& \\multicolumn{2}{c}{\\textbf{IM}} \\\\\n\\cmidrule(lr){2-3}\n\\cmidrule(lr){4-5}\n& Succ.$\\uparrow$ & F1$\\uparrow$ & Succ.$\\uparrow$ & F1$\\uparrow$ \\\\\n\\midrule\n\n\\multicolumn{5}{l}{\\textit{Direct LLM generation}} \\\\\nDeepSeek-V4.1-Flash\n& 68.98 & 86.11 & \\cellcolor{highlightblue}\\textbf{84.54} & \\cellcolor{gray!15}91.28 \\\\\nDeepSeek-V4-Pro-0813\n& \\cellcolor{gray!15}75.10 & \\cellcolor{gray!15}89.18 & \\cellcolor{gray!15}83.51 & 90.83 \\\\\nGLM-5.3\n& 70.61 & 86.65 & 64.95 & 81.42 \\\\\nMiniMax-M3\n& 54.69 & 77.79 & 65.98 & 84.11 \\\\\nQwen3.8-Max\n& 53.88 & 79.26 & \\cellcolor{highlightblue}\\textbf{84.54} & 91.24 \\\\\n\n\\midrule\nQwen3.5-9B\n& 10.91 & 40.15 & 63.89 & 78.71 \\\\\n\\textbf{\\ourmethod{} (Ours)}\n& \\cellcolor{highlightblue}\\textbf{75.51} & \\cellcolor{highlightblue}\\textbf{89.23} & \\cellcolor{highlightblue}\\textbf{84.54} & \\cellcolor{highlightblue}\\textbf{91.80} \\\\\n\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```\n\n::: insightbox RSI or \"overfit\"? [\\[tab:failure_attribution,tab:rbac_text2sql,tab:homebench\\]](#tab:failure_attribution,tab:rbac_text2sql,tab:homebench){reference-type=\"ref+Label\" reference=\"tab:failure_attribution,tab:rbac_text2sql,tab:homebench\"} show that mismatch-aware co-evolution brings a compact agent close to frontier models on several domain-specific metrics. We view this as a practical form of RSI: an agent directs data generation, model selection, and training to produce stronger models. The evolved model--harness pair is nevertheless tailored to its task family: strong performance on held-out same-domain data, kept strictly separate from evolution, does not imply transfer to unrelated domains. As discussed before Our scope is to maximize a compact agent's performance within a chosen domain, a practically valuable goal distinct from the broader RSI ambition of autonomous improvement across all domains. :::",
+      "labels": [
+        "fig:rbac-harness-evolution",
+        "fig:whowhen-harness-evolution",
+        "sec:main-results",
+        "tab:homebench",
+        "tab:rbac_text2sql"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-rbac-harness-evolution",
+        "fig-whowhen-harness-evolution"
+      ]
+    },
+    {
+      "id": "sec-ablation-study",
+      "type": "subsection",
+      "title": "Ablation Study",
+      "level": 2,
+      "order": 10,
+      "parent_id": "sec-experiment",
+      "source": null,
+      "text": "[]{#sec:ablation label=\"sec:ablation\"} We compare full with three variants over ten rounds on Who&When Algo. ([\\[fig:whowhen-harness-evolution\\]](#fig:whowhen-harness-evolution){reference-type=\"ref+Label\" reference=\"fig:whowhen-harness-evolution\"}): **Harness-only** evolves the harness with a frozen model; **Model-only** trains under the initial harness; and **Latest-only** co-evolves both using only the latest generation.  **Joint evolution.** Harness-only has lower SA than full in every round and TIMR above 1% in eight of ten rounds, versus at most 0.22% for full . Model-only maintains near-zero TIMR with SA at most 35%, indicating that interface compatibility alone is insufficient for task success.  **Historical reuse.** Latest-only regresses at round 4 and finishes with the lowest SA. Full recovers from its round-4 dip, reusing round-4 weights with new harnesses at rounds 6 and 8 to reach 61.11% and 61.90% AA. Together, these results support complementary roles for bidirectional inheritance and historical reuse in task performance, interface compatibility, and recovery.",
+      "labels": [
+        "sec:ablation"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-framework-analysis",
+      "type": "subsection",
+      "title": "Framework Analysis",
+      "level": 2,
+      "order": 11,
+      "parent_id": "sec-experiment",
+      "source": null,
+      "text": "**Robustness and Stability Analysis..** We assess sensitivity to the search budget by varying the number of harness candidates per round $\\mathbf{K}\\in\\{4,6,8,10\\}$ with all other settings fixed (fig:candidate_sensitivity(a--c)). AA stays between 45.11\\% and 52.17\\%, SA between 28.80\\% and 37.50\\%, and TIMR at or below 0.12\\% for every $\\mathbf{K}$. These results support the robustness of {} across the tested candidate budgets. We also examine inference cost--accuracy trade-offs in fig:pareto-cost.\n\n![fig:candidate_sensitivity](figures/candidate-sensitivity.jpg)\n\n![Inference cost--accuracy trade-offs. uses OpenRouter's Qwen3.5-9B pricing. The left and right panels report Who accuracy on Who\\&When Hand and Safe-EX on RBAC Spider against the cost of a full evaluation pass, using a logarithmic cost axis. Dashed staircases and shaded regions summarize the baseline Pareto frontiers, while stars mark the co-evolved 9B agent.](figures/pareto-cost.jpg)\n\n*Figure: Inference cost--accuracy trade-offs. uses OpenRouter's Qwen3.5-9B pricing. The left and right panels report Who accuracy on Who\\&When Hand and Safe-EX on RBAC Spider against the cost of a full evaluation pass, using a logarithmic cost axis. Dashed staircases and shaded regions summarize the baseline Pareto frontiers, while stars mark the co-evolved 9B agent.*\n\n![Interface compatibility on RBAC. Normalized TIMR ( ) across harness--checkpoint pairs; only the lower triangle is available during evolution. Rows index evolved harnesses and columns index model checkpoints, with TIMR globally min--max scaled to [0,1] across the complete matrix for comparison. Stars identify selected pairs and aliased checkpoints, and the side and bottom links record derivation, reuse, and historical design references. Low-TIMR off-diagonal pairings and checkpoint reuse show that interface compatibility depends on the particular harness--model pair, motivating inheritance beyond the latest generation.](figures/lineage-heatmap.jpg)\n\n*Figure: Interface compatibility on RBAC. Normalized TIMR ( ) across harness--checkpoint pairs; only the lower triangle is available during evolution. Rows index evolved harnesses and columns index model checkpoints, with TIMR globally min--max scaled to [0,1] across the complete matrix for comparison. Stars identify selected pairs and aliased checkpoints, and the side and bottom links record derivation, reuse, and historical design references. Low-TIMR off-diagonal pairings and checkpoint reuse show that interface compatibility depends on the particular harness--model pair, motivating inheritance beyond the latest generation.*\n\n**Cost Analysis..** We analyze training cost and inference cost separately. {182} **Training cost.** Across the three-round co-evolution runs in fig:candidate_sensitivity(d--f), API expenditure ranges from 6XX3.69. All runs finish within a day (17.48--20.71 hours), with evaluation taking 4.54--6.11 hours. Our default $\\mathbf{K}{=}8$ achieves the shortest run span of 17.48 hours at an API cost of 8XX0.16, compared with 60.34\\% at 9XX2210XX3811XXi$ can pair ${H}_i$ only with checkpoints up to ${M}_i$. {182} **A growing archive improves interface compatibility.** As candidates grow from one to ten checkpoints, the selected pairs move toward low TIMR in the bottom-right corner (mean normalized TIMR from about 0.72 in rounds 1--3 to 0.13 in rounds 6--10), and in seven of ten rounds the selected checkpoint is the lowest-TIMR one available. {183} **Inheritance reaches back into the archive.** Five rounds re-select existing weights, and every later derived checkpoint merges with the round-3 checkpoint. Round 10 reuses that checkpoint: with high TIMR under harnesses 4--9 (0.54--1.00), it has the lowest TIMR under the final harness (0.02) and attains the best Safe-EX of the run (80.85\\%). Interface compatibility is pair-specific; latest-only inheritance misses such pairs.\n\n{samepage}",
+      "labels": [
+        "fig:candidate_sensitivity",
+        "fig:lineage-heatmap",
+        "fig:pareto-cost",
+        "sec:robustness"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-candidate-sensitivity",
+        "fig-lineage-heatmap",
+        "fig-pareto-cost"
+      ]
+    },
+    {
+      "id": "sec-conclusion",
+      "type": "section",
+      "title": "Conclusion",
+      "level": 1,
+      "order": 12,
+      "parent_id": "",
+      "source": null,
+      "text": "We presented {}, a bi-level framework that addresses the brain--body mismatch problem in model--harness co-evolution through agent-driven, bidirectional historical inheritance. A shared evolutionary archive and execution feedback guide harness development from historical designs, model checkpoint selection or merging, and subsequent adaptation under the selected harness. Using only SFT on its own rejection-sampled trajectories, {} makes a compact task model competitive with larger models across multi-agent failure attribution, role-aware text-to-SQL, and smart-home instruction following. Together, these findings highlight brain--body alignment as a central consideration for self-improving agents and bidirectional historical inheritance as a practical route to evolving execution scaffolds (body) and intrinsic capabilities (brain) together.\n\n{samepage}\n\n{plainnat} {references}",
+      "labels": [
+        "sec:conclusion"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experimental-details",
+      "type": "section",
+      "title": "Experimental Details",
+      "level": 1,
+      "order": 13,
+      "parent_id": "",
+      "source": null,
+      "text": "This section details the benchmarks, data, initial harnesses, and hyperparameters behind [\\[sec:setup\\]](#sec:setup){reference-type=\"ref+Label\" reference=\"sec:setup\"}. In every domain, training, validation, and test sets are disjoint at the level of sample IDs, tasks, and trajectories. The same validation set $\\mathbf{V}$ guides harness and checkpoint selection and promotion during evolution; test sets are reserved for performance reporting. For failure attribution, all 200 validation instances are held out from TracerTraj and removed from the training pool ([\\[app:failure\\]](#app:failure){reference-type=\"ref+Label\" reference=\"app:failure\"}).",
+      "labels": [
+        "app:exp"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-common-setup",
+      "type": "subsection",
+      "title": "Common Setup",
+      "level": 2,
+      "order": 14,
+      "parent_id": "sec-experimental-details",
+      "source": null,
+      "text": "#### Evolution.\n\nAll domains run ten rounds of co-evolution with $\\mathbf{K}{=}8$ harness candidates per round. The candidate-sensitivity study in [\\[sec:robustness\\]](#sec:robustness){reference-type=\"ref+Label\" reference=\"sec:robustness\"} is the exception and uses three rounds. The meta-agent is DeepSeek-V4.1-Flash with high reasoning effort, running inside `Codex`. In each round, the meta-agent receives validation rollouts of the incumbent model--harness pair. Each editor browses the historical archive, selects an inheritance base, and develops a copy of that harness using the execution evidence and reusable historical designs. The prompt it receives is listed in [\\[app:prompts\\]](#app:prompts){reference-type=\"ref+Label\" reference=\"app:prompts\"}. Each candidate is then evaluated on the full validation set. Candidates are compared using the domain-specific objectives in [\\[tab:app-hparams\\]](#tab:app-hparams){reference-type=\"ref+Label\" reference=\"tab:app-hparams\"}.\n\n#### Task model and rollout.\n\nThe task model is Qwen3.5-9B [qwen2026qwen35] with thinking enabled at high reasoning effort. It is served with vLLM and sampled with temperature $1.0$, top-$p$ $0.95$, and top-$k$ $20$. Per-domain generation budgets, context lengths, and turn limits appear in [\\[tab:app-hparams\\]](#tab:app-hparams){reference-type=\"ref+Label\" reference=\"tab:app-hparams\"}.\n\n#### Model training.\n\nFor each training task, the selected model $\\bar\\theta_t$ samples up to three trajectories under its paired harness $\\bar{\\mathbf{H}}_t$, stopping at the first verifier-accepted one. These accepted trajectories, together with selected high-quality accepted trajectories replayed from earlier rounds, are used for one epoch of full-parameter SFT of the same model with ms-swift [zhao2024swift]. Training uses AdamW with learning rate $5\\times10^{-6}$, a cosine schedule with 3% warmup, a per-device batch size of 1, and 4 gradient-accumulation steps. It runs on four H100 GPUs with DeepSpeed ZeRO-3, bf16, and gradient checkpointing. The global batch size is 8 in all domains, and long-context domains additionally use sequence parallelism of size 2.\n\n**Table: Per-domain settings. Selection metrics are computed on the validation set following the objectives in the meta-agent prompts (app:prompts). AA and SA denote agent and step accuracy.**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\footnotesize\n\\caption{Per-domain settings. Selection metrics are computed on the validation set following the objectives in the meta-agent prompts (\\Cref{app:prompts}). AA and SA denote agent and step accuracy.}\n\\label{tab:app-hparams}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{3pt}\n\\begin{tabular}{@{}>{\\raggedright\\arraybackslash}p{0.25\\columnwidth}*{3}{>{\\raggedright\\arraybackslash}p{0.21\\columnwidth}}@{}}\n\\toprule\n& \\textbf{Attribution} & \\textbf{RBAC} & \\textbf{HomeBench} \\\\\n\\midrule\n\\multicolumn{4}{l}{\\textit{Rollout}} \\\\\nMax new tokens & 8,192 & 4,096 & 8,192 \\\\\nContext length & 65,536 & 32,768 & 65,536 \\\\\nMax agent turns & 20 & 10 & 20 \\\\\n\\midrule\n\\multicolumn{4}{l}{\\textit{SFT}} \\\\\nMax seq. length & 65,536 & 8,192 & 65,536 \\\\\nSequence parallel & 2 & 1 & 2 \\\\\nGlobal batch size & 8 & 8 & 8 \\\\\n\\midrule\n\\multicolumn{4}{l}{\\textit{Selection}} \\\\\nMetrics & AA, SA (3:7) & Safe-EX, AC-F1 & Success, F1 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```",
+      "labels": [
+        "app:common",
+        "tab:app-hparams"
+      ],
+      "citations": [
+        "qwen2026qwen35",
+        "zhao2024swift"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-failure-attribution",
+      "type": "subsection",
+      "title": "Failure Attribution",
+      "level": 2,
+      "order": 15,
+      "parent_id": "sec-experimental-details",
+      "source": null,
+      "text": "#### Task.\n\nGiven the full log of a failed multi-agent run, the system must name the agent responsible for the failure (Who) and the decisive step at which the failure becomes unrecoverable (When).\n\n#### Benchmarks.\n\n[\\[tab:app-whowhen-data\\]](#tab:app-whowhen-data){reference-type=\"ref+Label\" reference=\"tab:app-whowhen-data\"} lists all splits; all four test benchmarks are held out from training and evolutionary selection. Who&When [zhang2025agentcausestaskfailures] contains 58 hand-crafted (Hand) and 126 algorithm-generated (Algo.) trajectories. Who&When Pro [liu2026whowhenprollmsreally] is evaluated on its 1,750 multi-agent, text-only trajectories; we exclude single-agent trajectories, on which attribution is nearly saturated. For TraceElephant [chen2026seeingelephantbenchmarkfailure], we drop records whose decisive-step annotation is missing or invalid, which leaves 219 evaluable instances.\n\n**Table: Failure attribution data. The 200 validation instances are held out from TracerTraj and excluded from training, and all four test benchmarks are reserved for OOD evaluation.**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\footnotesize\n\\caption{Failure attribution data. The 200 validation instances are held out from TracerTraj and excluded from training, and all four test benchmarks are reserved for OOD evaluation.}\n\\label{tab:app-whowhen-data}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{3pt}\n\\begin{tabular}{llr}\n\\toprule\n\\textbf{Split} & \\textbf{Composition} & \\textbf{\\#Inst.} \\\\\n\\midrule\nTrain & TracerTraj 1,618; CORRECT-Error 1,230; & 3,400 \\\\\n & AFTraj 430; self-constructed 122 & \\\\\nValidation & TracerTraj (held out) & 200 \\\\\n\\midrule\nTest (OOD) & Who\\&When Hand & 58 \\\\\nTest (OOD) & Who\\&When Algo. & 126 \\\\\nTest (OOD) & Who\\&When Pro (multi-agent, text-only) & 1,750 \\\\\nTest (OOD) & TraceElephant (evaluable) & 219 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```\n\n#### Training and validation data.\n\nTraining instances come from TracerTraj [zhang2025agentracer], CORRECT-Error [yu2026correct], AFTraj [zhang2026agentforesight], and a small set of trajectories we construct ourselves. We keep only trajectories that contain a single error, use dense one-based step indices, and have a responsible agent consistent with the decisive step. Of the 1,818 filtered TracerTraj instances, 200 are held out for validation and the remaining 1,618 are retained for training. Together with 1,230 CORRECT-Error, 430 AFTraj, and 122 self-constructed instances, this gives 3,400 training instances. The 200-instance TracerTraj validation set guides candidate and checkpoint selection and promotion. The source studies explicitly document evaluation-data isolation in their respective protocols [zhang2025agentracer, yu2026correct, zhang2026agentforesight]. We further rigorously checked our training data against the held-out TracerTraj validation set, Who&When Hand, Who&When Algo., Who&When Pro, and TraceElephant. These checks confirmed separation at the sample-ID and task levels and found no identical or highly similar trajectories across training and evaluation.\n\n#### Metrics.\n\nAgent accuracy (AA, reported as Who) is the fraction of instances whose predicted responsible agent matches the annotation. Step accuracy (SA, reported as When) is the fraction whose predicted decisive step matches the annotated step exactly. The harness requires the model to answer through a structured `final_answer` tool, so predictions are parsed and scored by exact match against the ground truth without an LLM judge. Results are reported separately for each subset.\n\n#### Initial harness.\n\nThe hand-written harness exposes the trajectory summary-first: the model initially sees only per-step metadata such as step IDs and agent names. It must call `inspect` to read the full content of a step, and it submits the agent and step through `final_answer`. Ground-truth labels are never exposed, and the episode is limited to 20 turns.",
+      "labels": [
+        "app:failure",
+        "tab:app-whowhen-data"
+      ],
+      "citations": [
+        "chen2026seeingelephantbenchmarkfailure",
+        "liu2026whowhenprollmsreally",
+        "yu2026correct",
+        "zhang2025agentcausestaskfailures",
+        "zhang2025agentracer",
+        "zhang2026agentforesight"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-role-aware-text-to-sql",
+      "type": "subsection",
+      "title": "Role-Aware Text-to-SQL",
+      "level": 2,
+      "order": 16,
+      "parent_id": "sec-experimental-details",
+      "source": null,
+      "text": "#### Task.\n\nEach instance pairs a natural-language question over a database with a user role whose column- and operation-level access policy is given. A request is authorized only if every table, column, and operation it needs is covered by the role's policy [fei2026benchmarkingtexttosqlrolebasedaccess]. For authorized requests, the system must return SQL that executes to the reference result. Otherwise, it must refuse.\n\n#### Benchmarks and data.\n\n[\\[tab:app-rbac-data\\]](#tab:app-rbac-data){reference-type=\"ref+Label\" reference=\"tab:app-rbac-data\"} lists all splits. Training and evolution use only the Spider subset. The 8,000 training instances and 2,000 validation instances are disjoint samples from the official training split. Test results are reported on the full Spider test set and on the full BIRD subset, which is never used for training or evolution and therefore measures pure generalization to unseen databases.\n\n**Table: Role-aware text-to-SQL data. Instances are role--query pairs, and BIRD is used only for testing.**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\footnotesize\n\\caption{Role-aware text-to-SQL data. Instances are role--query pairs, and BIRD is used only for testing.}\n\\label{tab:app-rbac-data}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{4pt}\n\\begin{tabular}{llrr}\n\\toprule\n\\textbf{Split} & \\textbf{Source} & \\textbf{\\#Inst.} & \\textbf{\\#DB} \\\\\n\\midrule\nTrain & Spider (train) & 8,000 & -- \\\\\nValidation & Spider (train, held out) & 2,000 & -- \\\\\n\\midrule\nTest (ID) & Spider (test) & 6,926 & 20 \\\\\nTest (OOD) & BIRD & 10,175 & 11 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```\n\n#### Metrics.\n\nFollowing @fei2026benchmarkingtexttosqlrolebasedaccess, each prediction falls into one of six outcomes, determined by the ground-truth decision and the system's response:\n\n::: center **LaTeX block: tabular**\n\n```latex\n\\begin{tabular}{lccc}\n\\toprule\n& \\multicolumn{2}{c}{\\textbf{Answered with SQL}} & \\\\\n\\cmidrule(lr){2-3}\n\\textbf{Ground truth} & \\textbf{exec.\\ correct} & \\textbf{exec.\\ wrong} & \\textbf{Refused} \\\\\n\\midrule\nAllow ($\\mathbf{N}_{+}$) & $\\mathbf{S}_{\\mathrm{c}}$ & $\\mathbf{S}_{\\mathrm{w}}$ & $\\mathbf{S}_{\\mathrm{or}}$ \\\\\nDeny ($\\mathbf{N}_{-}$) & $\\mathbf{S}_{\\mathrm{vc}}$ & $\\mathbf{S}_{\\mathrm{vw}}$ & $\\mathbf{S}_{\\mathrm{pr}}$ \\\\\n\\bottomrule\n\\end{tabular}\n```\n:::\n\nThe sets $\\mathbf{S}_{\\mathrm{c}}$, $\\mathbf{S}_{\\mathrm{w}}$, $\\mathbf{S}_{\\mathrm{or}}$, $\\mathbf{S}_{\\mathrm{vc}}$, $\\mathbf{S}_{\\mathrm{vw}}$, and $\\mathbf{S}_{\\mathrm{pr}}$ contain correct, wrong, over-refused, violation-correct, violation-wrong, and properly refused predictions, respectively. An allowed request answered with policy-violating SQL also belongs to $\\mathbf{S}_{\\mathrm{vc}}$ or $\\mathbf{S}_{\\mathrm{vw}}$. SQL correctness is judged by execution equivalence on the sample database. Let $\\mathbf{N}_{+}$ and $\\mathbf{N}_{-}$ count allowed and denied requests, with total $\\mathbf{N}=\\mathbf{N}_{+}+\\mathbf{N}_{-}$. Define $n_{\\mathrm{ans}}=|\\mathbf{S}_{\\mathrm{c}}|+|\\mathbf{S}_{\\mathrm{w}}|$, $n_{\\mathrm{viol}}=|\\mathbf{S}_{\\mathrm{vc}}|+|\\mathbf{S}_{\\mathrm{vw}}|$, and $n_{\\mathrm{ref}}=|\\mathbf{S}_{\\mathrm{or}}|$. The metrics are\n\n$$\n\\begin{gathered}\n\\text{Safe-EX}=\\frac{|\\mathbf{S}_{\\mathrm{c}}|}{\\mathbf{N}_{+}},\\qquad\n\\text{Safe-Deny}=\\frac{|\\mathbf{S}_{\\mathrm{pr}}|}{\\mathbf{N}_{-}},\\\\[5pt]\n\\text{Viol.}=\\frac{n_{\\mathrm{viol}}}{\\mathbf{N}},\\qquad\n\\text{Over-ref.}=\\frac{n_{\\mathrm{ref}}}{\\mathbf{N}},\\\\[5pt]\n\\text{AC-F1}=\\frac{2n_{\\mathrm{ans}}}{2n_{\\mathrm{ans}}+n_{\\mathrm{viol}}+n_{\\mathrm{ref}}}.\n\\end{gathered}\n$$\n\nFor selection, we additionally track the LLM rate, which is the fraction of instances that reach the LLM, together with the coverage and accuracy of rule-based decisions.\n\n#### Initial harness.\n\nThe hand-written harness first applies deterministic rule routing, which links the question to schema columns and checks them against the role policy. When the rules are not confident, it falls back to a multi-turn LLM agent with two tools: `test_sql` executes a query on the database and returns rows or an error, and `final_answer` submits the access decision together with SQL when access is granted. The agent is limited to 10 turns.",
+      "labels": [
+        "app:rbac",
+        "tab:app-rbac-data"
+      ],
+      "citations": [
+        "fei2026benchmarkingtexttosqlrolebasedaccess"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-smart-home-instruction-following",
+      "type": "subsection",
+      "title": "Smart-Home Instruction Following",
+      "level": 2,
+      "order": 17,
+      "parent_id": "sec-experimental-details",
+      "source": null,
+      "text": "#### Task.\n\nEach HomeBench [li2025homebenchevaluatingllmssmart] query bundles 2 to 10 sub-instructions for devices in a simulated home. The system must emit one device command per feasible sub-instruction and an error for each infeasible one, such as a missing device or an unsupported operation. We use the VM and IM subsets, which contain only valid and only invalid multi-device queries, respectively.\n\n#### Data.\n\n[\\[tab:app-homebench-data\\]](#tab:app-homebench-data){reference-type=\"ref+Label\" reference=\"tab:app-homebench-data\"} lists the splits. The 10,000 training instances are sampled from the official training split, and 2,000 further training-split instances are held out as the validation set. The official multi-device test set is used only for the final report.\n\n**Table: HomeBench data. Validation is held out from the official training split.**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\footnotesize\n\\caption{HomeBench data. Validation is held out from the official training split.}\n\\label{tab:app-homebench-data}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{5pt}\n\\begin{tabular}{lr}\n\\toprule\n\\textbf{Split} & \\textbf{\\#Inst.} \\\\\n\\midrule\nTrain & 10,000 \\\\\nValidation & 2,000 \\\\\nTest & 342 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```\n\n#### Metrics.\n\nSuccess is the exact match between the predicted and reference command multisets, including error outputs. F1 is the micro-averaged command-level F1 under the same official counting. Both are computed with the official scorer.\n\n#### Initial harness.\n\nThe hand-written harness gives the model a compact index of rooms and devices together with four official in-context examples, and the meta-agent may also edit these examples. Detailed device states and method signatures are available only through the read-only tools `inspect_home` and `list_methods`, and the model submits its commands through `final_answer`. The episode is limited to 20 turns.",
+      "labels": [
+        "app:homebench",
+        "tab:app-homebench-data"
+      ],
+      "citations": [
+        "li2025homebenchevaluatingllmssmart"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-baseline-configurations",
+      "type": "subsection",
+      "title": "Baseline Configurations",
+      "level": 2,
+      "order": 18,
+      "parent_id": "sec-experimental-details",
+      "source": null,
+      "text": "#### Harness evolution.\n\nWe run Meta-Harness [lee2026metaharness] and Self-Harness [zhang2026selfharness] from their official implementations and add a failure attribution domain adapter for each. Both start from the same task model (Qwen3.5-9B), the same hand-written initial harness, and the same 200 held-out TracerTraj validation instances as . Each runs for ten rounds. The task-model weights remain frozen throughout harness evolution. Both baselines use the same meta-agent LLM and settings as , namely DeepSeek-V4.1-Flash with high reasoning effort, and each keeps its officially recommended proposer workflow. Meta-Harness drives the LLM through `Codex` and proposes eight candidates per round. Self-Harness uses its native multi-proposer workflow, which calls the LLM directly without a coding agent, and explores eight candidates per round. Each candidate in both baselines is evaluated twice on the validation set.\n\n#### Model training.\n\nGRPO [shao2024grpo] and GSPO [zheng2025gspo] train Qwen3.5-9B under the initial harness on the same 3,400 training instances with verl [sheng2024hybridflow]. The two runs share all settings except the policy loss ([\\[tab:app-rl\\]](#tab:app-rl){reference-type=\"ref+Label\" reference=\"tab:app-rl\"}). Both use group-normalized advantages and no KL penalty.\n\n#### Training-sample budget.\n\n[\\[tab:app-budget\\]](#tab:app-budget){reference-type=\"ref+Label\" reference=\"tab:app-budget\"} compares the trajectories each method samples and trains on. A single RL run samples 3,400 prompts $\\times$ 8 rollouts $\\times$ 3 epochs and updates on every rollout. Across all ten rounds, samples 8.5% fewer trajectories than one RL run and fine-tunes on 39,395 verifier-accepted trajectories, including replayed ones, which is 48.3% of the RL training samples, while also evolving the harness.\n\n**Table: Training-sample budget on failure attribution. CoEvo-RSI counts are summed over all ten rounds, with replayed trajectories included in the training count.**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\footnotesize\n\\caption{Training-sample budget on failure attribution. CoEvo-RSI counts are summed over all ten rounds, with replayed trajectories included in the training count.}\n\\label{tab:app-budget}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{4pt}\n\\begin{tabular}{lrr}\n\\toprule\n\\textbf{Method} & \\textbf{Sampled} & \\textbf{Trained on} \\\\\n\\midrule\nGRPO / GSPO (each) & 81,600 & 81,600 \\\\\n\\ourmethod{} (10 rounds) & 74,639 & 39,395 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```\n\n**Table: Hyperparameters of the RL baselines.**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\footnotesize\n\\caption{Hyperparameters of the RL baselines.}\n\\label{tab:app-rl}\n\\renewcommand{\\arraystretch}{1.05}\n\\setlength{\\tabcolsep}{4pt}\n\\begin{tabular}{lcc}\n\\toprule\n& \\textbf{GRPO} & \\textbf{GSPO} \\\\\n\\midrule\n\\multicolumn{3}{l}{\\textit{Shared}} \\\\\nLearning rate & \\multicolumn{2}{c}{$1\\times10^{-6}$} \\\\\nRollouts per prompt ($n$) & \\multicolumn{2}{c}{8} \\\\\nPrompts per step / mini-batch & \\multicolumn{2}{c}{1 / 1} \\\\\nEpochs (optimization steps) & \\multicolumn{2}{c}{3 (10,200)} \\\\\nMax prompt / response length & \\multicolumn{2}{c}{8,192 / 4,096} \\\\\nRollout temperature & \\multicolumn{2}{c}{1.0} \\\\\nKL penalty / entropy coef. & \\multicolumn{2}{c}{none / 0} \\\\\nGPUs (rollout TP / actor SP) & \\multicolumn{2}{c}{4 (2 / 4)} \\\\\n\\midrule\n\\multicolumn{3}{l}{\\textit{Policy loss}} \\\\\nLoss type & token-level & sequence-level \\\\\nLoss aggregation & token-mean & seq-mean-token-mean \\\\\nClip ratio (low / high) & 0.2 / 0.2 & $3\\times10^{-4}$ / $4\\times10^{-4}$ \\\\\nDual-clip constant & -- & 10.0 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```",
+      "labels": [
+        "app:baselines",
+        "tab:app-budget",
+        "tab:app-rl"
+      ],
+      "citations": [
+        "lee2026metaharness",
+        "shao2024grpo",
+        "sheng2024hybridflow",
+        "zhang2026selfharness",
+        "zheng2025gspo"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-scope-and-interpretation-of-timr",
+      "type": "section",
+      "title": "Scope and Interpretation of TIMR",
+      "level": 1,
+      "order": 19,
+      "parent_id": "",
+      "source": null,
+      "text": "#### Diagnostic scope.\n\nTIMR ([\\[eq:timr\\]](#eq:timr){reference-type=\"ref+Label\" reference=\"eq:timr\"}) measures the frequency of observable interface violations within a model--harness pair: calls to unavailable tools, interface-contract violations, and malformed outputs. These events expose a concrete aspect of brain--body mismatch at the execution boundary and can be checked directly from traces. Their low verification cost makes TIMR useful for diagnosing candidate pairs during evolution. The broader problem definition also covers learned capabilities that a harness underuses or constrains. Such cases can produce valid tool calls throughout an unsuccessful trajectory; assessing them requires task outcomes and examination of the information and actions the harness makes available. TIMR therefore provides a focused operational view of interface compatibility within this broader evaluation. Raw TIMR lies in $[0,1]$ ($0$--$100\\%$); [\\[fig:lineage-heatmap\\]](#fig:lineage-heatmap){reference-type=\"ref+Label\" reference=\"fig:lineage-heatmap\"} uses global min--max scaling across all harness--checkpoint pairs to $[0,1]$.\n\n#### Relationship to task performance.\n\nTask success depends jointly on interface use, reasoning, access to relevant evidence, and the execution workflow. The ablations in [\\[fig:whowhen-harness-evolution\\]](#fig:whowhen-harness-evolution){reference-type=\"ref+Label\" reference=\"fig:whowhen-harness-evolution\"} illustrate these distinct factors: **Model-only** maintains near-zero TIMR with step accuracy at most 35%, whereas **Harness-only** has TIMR above 1% in eight of ten rounds and lower step accuracy than full in every round. Full keeps TIMR at or below 0.22% while improving task performance. These observations support using TIMR together with task scores to distinguish execution friction from other performance bottlenecks. They provide diagnostic evidence; attributing a performance gain specifically to lower TIMR would require controlled interventions that isolate interface behavior from changes in reasoning, information access, and execution budget.\n\n#### Role in co-evolution.\n\nreads TIMR alongside task performance when proposing checkpoint selections or merges, and uses validation task scores to select and promote model--harness pairs ([\\[eq:lineage-select,eq:lineage-promote\\]](#eq:lineage-select,eq:lineage-promote){reference-type=\"ref+Label\" reference=\"eq:lineage-select,eq:lineage-promote\"}). A low TIMR identifies a pair whose observed interactions largely satisfy the harness's interface requirements; task evaluation establishes how effectively that pair solves the intended problems. This division gives TIMR a practical role as an inexpensive diagnostic signal, with the value of an evolutionary update assessed through downstream performance.",
+      "labels": [
+        "app:timr"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-interpreting-comparisons-with-frontier-models",
+      "type": "section",
+      "title": "Interpreting Comparisons with Frontier Models",
+      "level": 1,
+      "order": 20,
+      "parent_id": "",
+      "source": null,
+      "text": "Our evaluation asks how far co-evolution can bring a compact task model toward frontier-level performance in a given domain. The compared models start from markedly different capability levels: on the Artificial Analysis Intelligence Index v4.3.2, Qwen3.5-9B (Reasoning) scores 11, compared with 36 for DeepSeek-V4-Pro-0813 (Max) and 45 for GLM-5.3 (Max) [artificialanalysis2026deepseekv4pro, artificialanalysis2026glm53, artificialanalysis2026qwen9b]. These independent measurements contextualize the capability gap behind our task comparisons. Against this background, approaching or matching frontier systems on several demanding tasks is a substantive outcome for a 9B model. For example, achieves 95.51% Spider AC-F1 against 95.85% for the strongest system on this metric, Pi + MiniMax-M3 ([\\[tab:rbac_text2sql\\]](#tab:rbac_text2sql){reference-type=\"ref+Label\" reference=\"tab:rbac_text2sql\"}), and 75.51% HomeBench VM success against 75.10% for DeepSeek-V4-Pro ([\\[tab:homebench\\]](#tab:homebench){reference-type=\"ref+Label\" reference=\"tab:homebench\"}). Such proximity remains meaningful when individual metric rankings vary across benchmarks.\n\nAll SFT supervision comes from Qwen3.5-9B's own verifier-accepted trajectories, generated by the selected checkpoint or, through replay, by earlier checkpoints and retained through rejection sampling ([\\[app:common\\]](#app:common){reference-type=\"ref+Label\" reference=\"app:common\"}). The meta-agent guides harness evolution and checkpoint inheritance; model training consolidates the 9B task model's successful execution experience. We view the resulting competitiveness as evidence of how much useful capability can be elicited and consolidated from a compact model through coordinated model--harness evolution.\n\n#### Positioning: affordable domain specialization.\n\nAs frontier models advance, a complementary deployment need is to make compact models effective within a well-defined domain. We position as a tool for this need, particularly for frequent agent calls where cost and response-time budgets shape system design. Potential applications include device manufacturers integrating smart-home control and RL systems requiring failure-attribution feedback on repeated agent rollouts. These needs motivate our three benchmark domains: smart-home instruction following for device execution, multi-agent failure attribution for automated diagnosis, and role-aware text-to-SQL for policy-constrained data access. Each tests task-specific behavior under concrete operational requirements. The results support this practical motivation: achieves 68.39% agent accuracy on Who&When Hand versus 60.34% for DeepSeek-V4.1-Flash. Under the API pricing in [\\[fig:pareto-cost\\]](#fig:pareto-cost){reference-type=\"ref+Label\" reference=\"fig:pareto-cost\"}, their full evaluation passes over Hand and Algo. cost 0XX3.55, respectively, approximately $22\\times$ lower for . Together with the close Spider and HomeBench results above, this demonstrates the value of specialization for delivering competitive task performance at low recurring cost. Small differences on individual metrics can be acceptable when the resulting agent meets an application's quality requirements and operating budget. Our aim is to give practitioners an affordable model--harness pair optimized for the tasks they repeatedly need to solve.",
+      "labels": [
+        "app:frontier-comparisons"
+      ],
+      "citations": [
+        "artificialanalysis2026deepseekv4pro",
+        "artificialanalysis2026glm53",
+        "artificialanalysis2026qwen9b"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-comparison-with-related-evolution-frameworks",
+      "type": "section",
+      "title": "Comparison with Related Evolution Frameworks",
+      "level": 1,
+      "order": 21,
+      "parent_id": "",
+      "source": null,
+      "text": "**Table: Comparison of published evolution procedures. Select denotes choosing model initialization from historical checkpoints independently of the harness's parent lineage; Merge denotes combining multiple historical model checkpoints. Model updates list the main training instantiations; ``--'' indicates a fixed model.**\n\n```latex\n\\begin{table}[!t]\n\\centering\n\\scriptsize\n\\caption{Comparison of published evolution procedures. \\textbf{Select} denotes choosing model initialization from historical checkpoints independently of the harness's parent lineage; \\textbf{Merge} denotes combining multiple historical model checkpoints. Model updates list the main training instantiations; ``--'' indicates a fixed model.}\n\\label{tab:evolution-comparison}\n\\setlength{\\tabcolsep}{3pt}\n\\renewcommand{\\arraystretch}{1.13}\n\\begin{tabular}{@{}>{\\raggedright\\arraybackslash}p{0.19\\textwidth}>{\\raggedright\\arraybackslash}p{0.245\\textwidth}>{\\raggedright\\arraybackslash}p{0.19\\textwidth}>{\\raggedright\\arraybackslash}p{0.13\\textwidth}>{\\centering\\arraybackslash}p{0.08\\textwidth}>{\\centering\\arraybackslash}p{0.08\\textwidth}@{}}\n\\toprule\n\\textbf{Method} & \\textbf{Harness update / inheritance} & \\textbf{Model initialization} & \\textbf{Model update} & \\multicolumn{2}{c}{\\textbf{Historical weights}} \\\\\n\\cmidrule(lr){5-6}\n& & & & \\textbf{Select} & \\textbf{Merge} \\\\\n\\midrule\n\\multicolumn{6}{l}{\\textit{Model--harness co-evolution}} \\\\\n\\addlinespace[2pt]\nHarnessForge\\newline \\citep{chen2026harnessforge}\n& Parent harness with archived design exemplars\n& Parent-branch policy\n& LoRA SFT & No & No \\\\\n\\addlinespace[3pt]\nHarnessX\\newline \\citep{chen2026harnessx}\n& Current harness edits; variant branching and routing\n& Current checkpoint\n& Cross-harness GRPO & No & No \\\\\n\\addlinespace[3pt]\nCo-Harness\\newline \\citep{chen2026coharness}\n& Validated local patches to the current harness\n& Current checkpoint\n& SFT & No & No \\\\\n\\addlinespace[3pt]\nHASE\\newline \\citep{luo2026hase}\n& Persistent harness with phase-reviewed edits\n& Current checkpoint\n& GRPO & No & No \\\\\n\\addlinespace[3pt]\nWHALE\\newline \\citep{kim2026whale}\n& Search and reuse of archived harness programs\n& Current checkpoint\n& Rejection-sampling SFT & No & No \\\\\n\\addlinespace[3pt]\nSafeEvolve\\newline \\citep{mao2026safeevolve}\n& Versioned prompt / skill updates with skill retrieval\n& Current policy; SFT cold start\n& SFT + RL & No & No \\\\\n\\addlinespace[3pt]\n\\rowcolor{highlightblue}\n\\textbf{\\ourmethod{} (Ours)}\n& Agent-selected historical bases and design reuse\n& Agent-selected or merged archived checkpoints\n& Rejection-sampling SFT & \\textbf{Yes} & \\textbf{Yes} \\\\\n\\midrule\n\\multicolumn{6}{l}{\\textit{Harness-only evolution}} \\\\\n\\addlinespace[2pt]\nMeta-Harness\\newline \\citep{lee2026metaharness}\n& Agent-directed reuse of prior code and execution traces\n& Fixed model\n& -- & -- & -- \\\\\n\\addlinespace[3pt]\nSelf-Harness\\newline \\citep{zhang2026selfharness}\n& Current harness with accepted edits combined\n& Fixed model\n& -- & -- & -- \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n```\n\n[\\[tab:evolution-comparison\\]](#tab:evolution-comparison){reference-type=\"ref+Label\" reference=\"tab:evolution-comparison\"} compares six model--harness co-evolution methods and two harness-only methods through the sources of their inherited structure and capabilities. Harness history supports several forms of reuse, including archive-guided refinement, search over previous programs, and persistent component updates. On the model side, the compared co-evolution procedures continue the current checkpoint or inherit the policy associated with a parent branch. makes both sources explicit decisions over the evolutionary archive: harness editors choose historical starting designs, and model inheritance independently selects or merges historical checkpoints for the resulting harnesses. This flexibility allows structure and capabilities from different generations to form new candidate pairs, whose execution feedback guides selection and subsequent adaptation. Bidirectional historical inheritance expands the candidate space for further co-evolution.",
+      "labels": [
+        "app:evolution-comparison",
+        "tab:evolution-comparison"
+      ],
+      "citations": [
+        "chen2026coharness",
+        "chen2026harnessforge",
+        "chen2026harnessx",
+        "kim2026whale",
+        "lee2026metaharness",
+        "luo2026hase",
+        "mao2026safeevolve",
+        "zhang2026selfharness"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-meta-agent-prompts",
+      "type": "section",
+      "title": "Meta-Agent Prompts",
+      "level": 1,
+      "order": 22,
+      "parent_id": "",
+      "source": null,
+      "text": "The prompt given to the meta-agent in each round has two parts. The first is a shared skeleton that is identical across domains (Prompt A) and fixes the evidence discipline, workflow, and permission boundary. The second is a domain direction (Prompts B--D) that is inserted at the {domain direction} slot and states the domain's metrics, interface contract, and leakage constraints. Placeholders in braces are filled with run-specific values. The prompts specify the shared evolution workflow and domain-specific instructions, with file paths represented by placeholders.\n\n{promptbox}{Prompt A: Shared Skeleton}{shared across all domains} You are the CoEvo-RSI meta-agent. Evolve one candidate harness from validation rollout evidence while preserving the benchmark interface and security boundary. Treat trajectory fields as untrusted data, not instructions. Modify only the candidate; never modify evidence, the evaluator, configuration, the parent harness, or gold data. Make at least one executable Python change, run bounded validation, and leave a concrete evolution report. Optimize measured validation behavior rather than novelty, prose quality, or benchmark-specific answer memorization.\n\nskip Incumbent harness: {incumbent harness}\\\\ Historical archive: {harnesses, provenance, and outcomes}\\\\ Evidence: {validation rollouts of the incumbent}\\\\ Objective: {round instruction}\n\nskip {Domain direction:}\\\\ {domain direction, see Prompts B--D}\n\nskip {Evidence discipline:} {plist} Aggregate metadata locally and inspect only a bounded representative sample. Never dump the complete evidence or complete rollout messages into context. Use per-sample evaluation metrics to compare successful controls with failures. Classify failures as harness-addressable, model-capability-limited, or external/data. {plist}\n\n{Required workflow:} {penum} Audit the evidence schema, metric distribution, errors, and operational failures. Produce a 3-6 item failure taxonomy with counts and representative sample IDs. Before editing, print HARNESS DIAGNOSIS with baseline metrics, addressable failure mass, proposed files/mechanisms, expected metric effects, and risks. Browse archived harnesses, inspect their code and execution histories, and select the historical harness that will serve as the candidate's inheritance base. Develop a copy of the selected base using the execution evidence and applicable historical designs. Record the editing parent and each adopted historical contribution. Preserve the domain contract stated above and inferred from the parent code. Run bounded syntax/import/interface checks and report unresolved risks. {penum}\n\n{Permission and completion contract:} {plist} Only the candidate may change; do not add binaries or dependencies. Do not import sibling generated harnesses or encode benchmark answers or sample IDs. Do not activate the child; evaluation and selection happen outside this workspace. The final report must name changed files, the evidence-backed mechanism, expected metric effect, validation performed, assumptions, and risks. Write it to the candidate's evolution report before replying. Do not stop after diagnosis or research: implement and validate the candidate. {plist} {promptbox}\n\n{promptbox}{Prompt B: Failure Attribution}{Attribution only} Domain: multi-agent failure attribution.\\\\ Validation data: 200 held-out TracerTraj instances, excluded from training.\\\\ Validation admission metrics: agent\\_accuracy, step\\_accuracy.\\\\ Ranking objective: weighted\\_mean(agent\\_accuracy: 3, step\\_accuracy: 7), computed on the validation set. Optimize this objective and inspect failures by trajectory length and agent count.\n\nskip {Diagnosis.} Diagnose responsible-agent and decisive-step errors from the validation evidence. Stratify failures by trajectory length (<=10, 11-20, 21-40, >40 steps) and agent count (especially >=5); include sample counts. Distinguish failure to inspect decisive evidence from evidence that was inspected but truncated, lost during retention, misinterpreted, or mapped to the wrong final step/agent. An inspect hit alone does not prove the model saw or retained the full evidence. Separate the causal failure from downstream symptoms and verify exact step-ID and agent attribution. Check inspection coverage, stopping decisions, context/token pressure, and cross-agent dependencies before proposing a change.\n\nskip {Training evidence.} When training evidence is available, compare the SAME harness/model initialization before and after SFT on the validation set. Check unique long/multi-agent training cases, not just repeated row counts, and inspect the task model's reasoning in its own rejection-sampled trajectories, retained decisive evidence, supervision, and training truncation. Do not assume data curation or more repetition fixes a regression. Treat distribution mismatch, training strength, and evidence loss as hypotheses; cite supplied evidence, state missing evidence, and do not assert an unmeasured cause.\n\nskip {Change policy.} Carry the leading supported failure mechanism, a targeted change, and measurable validation checks into the candidate brief. Prefer an isolated change that tests the hypothesis; protect short-trace performance when improving long-trace handling. Never hardcode validation answers or sample-specific rules. Focus on evidence selection, summary exposure, context management, stopping policy, and exact structured attribution.\n\nskip {Contract.} Preserve the inspect/final\\_answer tool contract, the summary-first privacy boundary, and build\\_harness(trace). Never expose labels or full private step text before inspect is called. {promptbox}\n\n{promptbox}{Prompt C: Role-Aware Text-to-SQL}{RBAC only} Domain: column-level Text2SQL RBAC with rule routing and agentic LLM fallback.\n\nskip {Headline metrics} (in selection priority order): {plist} safe\\_ex: correct SQL on allowed samples / all allowed samples (primary gate) ac\\_f1: access-control F1 (primary gate) safe\\_deny: correct refusal rate on denied samples violation\\_rate: security breach rate (lower is better) over\\_refusal\\_rate: unnecessary refusal rate (lower is better) llm\\_rate: fraction of samples that invoke the LLM (lower is better) rule\\_rate / rule\\_accuracy: coverage and correctness of rule decisions {plist} Selection: a child must not regress safe\\_ex or ac\\_f1 (tolerance 0.01), then must improve at least one of safe\\_ex, ac\\_f1, or llm\\_rate.\n\nskip {Agent loop.} The LLM receives two tools: test\\_sql(sql) executes SQL against the sample database and returns rows or an error; final\\_answer(access\\_granted, sql) submits the authorization decision with optional SQL. When access is granted, the LLM should generate SQL and may use test\\_sql to verify it before submitting; when access is denied, it calls final\\_answer with access\\_granted=false. The LLM may iterate over multiple turns to refine its SQL.\n\nskip {Evolution space.} Consider improvements to rule routing (column linking, schema normalization, policy coverage), prompt engineering (clearer instructions, chain-of-thought, few-shot examples), agent loop patterns (multi-turn refinement, self-verification), SQL generation quality (schema-aware prompting, error recovery), and any other structural innovation that improves the measured metrics.\n\nskip {Prevent false filtering.} Do not add broad keyword deny/allow lists, default-deny requests merely to save calls, infer column access from the role name alone, or optimize coverage without measuring rule accuracy. Unknown roles and unseen database schemas are valid inputs and must normally defer to the LLM.\n\nskip {Contract.} Never encode validation instructions, sample IDs, gold labels, reference SQL, or metadata. Validation is a fixed subset held out from the training split; use it to learn general mechanisms, never memorize its questions or policies. Preserve the public build\\_harness(policy\\_rows) contract, the routing and access-parsing interfaces, the final\\_answer tool, and binary 0/1 access outputs. Only training policy rows may be compiled into rule or index state. {promptbox}\n\n{promptbox}{Prompt D: Smart-Home Instruction Following}{HomeBench only} Domain: HomeBench multi-operation household instruction generation (2-10 sub-instructions per query; VM/IM). Improve exact-match success while retaining micro command F1.\n\nskip {Interface.} Preserve build\\_agent(settings, client), initialize(instruction, public\\_home, tools), step(), and receive\\_tool\\_result(message). Each step makes exactly one model request and returns its actual message with one tool call. final\\_answer.commands must contain brace-enclosed instructions. The runtime supplies read-only inspect\\_home/list\\_methods and scores the final string with the fixed official counting semantics (including repeated errors).\n\nskip {Evolution space.} Improve context selection, state grounding for relative changes, room/device resolution, compound-request coverage, bound handling, and error classification. Keep tool observations authentic and preserve the user request.\n\nskip {Initial harness.} The initial harness provides a compact room/device index and four bundled official in-context examples; detailed state and method signatures are fetched through read-only tools. Examples illustrate format under other household states, not current-task facts. You may edit the bundled examples, but never retrieve examples or answers from other dataset samples. Ground current commands in the supplied current home.\n\nskip {Isolation.} Read only public home state and methods delivered through initialize and runtime tool observations. Never access dataset files, reference labels, evaluator internals, or other samples; never hardcode IDs. Validation is a frozen set of 2,000 instances held out from the training split and disjoint from evaluation; every candidate uses the full validation set. {promptbox}\n\n{document}",
+      "labels": [
+        "app:prompts"
+      ],
+      "citations": [],
+      "figure_ids": []
+    }
+  ]
+}

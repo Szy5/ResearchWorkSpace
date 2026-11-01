@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, Query
 from fastapi.responses import FileResponse
 
 from paper_wiki.core.config import Settings
+from paper_wiki.core.progress import StepSpec
 from paper_wiki.core.validation import validate_slug
 from paper_wiki.discovery import search as discovery_search
 from paper_wiki.ingestion.pipeline import IngestPipeline
@@ -24,6 +25,7 @@ from paper_wiki.web.schemas.paper import (
 )
 from paper_wiki.web.services.job_manager import JobManager
 from paper_wiki.web.services.paper_repository import PaperRepository
+from paper_wiki.web.services.progress_messages import ingest_step_specs
 
 router = APIRouter(prefix="/api/papers", tags=["papers"])
 
@@ -105,6 +107,7 @@ def ingest_paper(
         slug=clean_slug,
         target=target,
         task=_ingest_task(clean_slug, payload, pipeline_factory),
+        steps=ingest_step_specs(payload.only),
     )
     return JobResponse.model_validate(job.model_dump())
 
@@ -144,7 +147,8 @@ def fetch_paper(
         )
         return result.model_dump(mode="json")
 
-    job = job_manager.submit(slug=payload.arxiv_id, target="fetch", task=task)
+    steps = ingest_step_specs(None, with_fetch=True) if payload.and_ingest else [StepSpec("fetch", "下载论文源码", "arXiv")]
+    job = job_manager.submit(slug=payload.arxiv_id, target="fetch", task=task, steps=steps)
     return JobResponse.model_validate(job.model_dump())
 
 
@@ -164,6 +168,7 @@ def batch_ingest(
                 slug=clean_slug,
                 target="ingest",
                 task=_ingest_task(clean_slug, ingest_payload, pipeline_factory),
+                steps=ingest_step_specs(None),
             )
         else:
 
@@ -176,6 +181,11 @@ def batch_ingest(
                 )
                 return result.model_dump(mode="json")
 
-            job = job_manager.submit(slug=item.arxiv_id, target="fetch_and_ingest", task=task)
+            job = job_manager.submit(
+                slug=item.arxiv_id,
+                target="fetch_and_ingest",
+                task=task,
+                steps=ingest_step_specs(None, with_fetch=True),
+            )
         jobs.append(JobResponse.model_validate(job.model_dump()))
     return jobs

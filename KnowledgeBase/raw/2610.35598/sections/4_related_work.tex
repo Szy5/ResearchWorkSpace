@@ -1,0 +1,10 @@
+\section{Related Work}
+\label{sec:related}
+\input{tables/method_comparison}
+
+\paragraph{Knowledge-graph-augmented reasoning.}
+Retrieval-based methods~\citep{RoG,SubGraphRAG,GCR,S-Path-RAG,TARD,RPO-RAG,WhentoTrust,GNN-RAG,PathMind,STEM,DBLP:conf/nips/YuLGTZ25,D-RAG} retrieve paths, triples, or subgraphs in one shot, training-free agents~\citep{ToG,PoG,Paths-over-Graph,Open-WorldKG-RAG,StructGPT,RFKG-CoT,Generate-on-Graph,iQUEST,Enrich-on-Graph,DMAR,CoG-Blueprints,DBLP:conf/acl/PolonuerVANCCZ26,Search-on-Graph,KG-IRAG,GoT} prompt a frozen LLM to explore the graph over multiple turns, and trained agents~\citep{KG-R1,Search-on-Graph-R1,Graph-RFT,ReasoningbyExploration,SymAgent,GraphWalker,KBQA-R1,kg-agent,kbqa-o1,EoG,GraphScout,DBLP:conf/acl/SongSYX26,KG-Reasoner,KG-Hopper} learn exploration from question--answer data with RL. These methods either keep exploration fixed or learn it from annotations on one KG, whereas EoG trains graph reasoning on the target KG alone, without question--answer annotations.
+
+\paragraph{Training data for graph reasoning.}
+Benchmarks such as WebQSP~\citep{webqsp}, CWQ~\citep{cwq}, and GrailQA~\citep{grailqa} are annotated by experts familiar with the KG schema at a high cost, and GraphWalker~\citep{GraphWalker} scales up data with random walks and closed-source LLMs; both fix their topology mix before training. Self-play lets LLMs pose and solve their own questions in code and math reasoning~\citep{absolutezero,rzero} and search agents~\citep{searchselfplay,DrZero}, but their knowledge comes from model parameters or unstructured text. Without annotations or closed-source models, EoG generates its own tasks on the KG through self-play, with exact answers from query execution and topologies that advance with the Solver (Table~\ref{tab:comparison}), improving the graph reasoning of LLMs.
+

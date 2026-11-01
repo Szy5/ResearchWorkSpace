@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "Think-on-Graph: Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+      "authors": "Sun et al.",
+      "year": 2024,
+      "arxiv_id": "2307.07697",
+      "role": "Gap Identification",
+      "relationship_sentence": "ToG 揭示了基于多个 LLM 模块、反复调用大模型的 KG 路径搜索会累积巨大的 token 与延迟开销，当前论文正是针对这一成本瓶颈，用单 agent 的多轮 RL 交互替代其昂贵的模块化流程。"
+    },
+    {
+      "title": "Reasoning on Graphs: Faithful and Interpretable Large Language Model Reasoning",
+      "authors": "Luo et al.",
+      "year": 2024,
+      "arxiv_id": "2310.01061",
+      "role": "Gap Identification",
+      "relationship_sentence": "RoG 通过针对特定 KG 的微调与图 schema 绑定的推理流程，暴露了方法难以跨新 KG 迁移的缺陷，当前论文据此提出训练后可在未见 KG 上即插即用、无需重训的迁移目标。"
+    },
+    {
+      "title": "ReKnoS: Retrieval-Augmented Generation over Knowledge Graphs",
+      "authors": "Wang et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "ReKnoS 作为当前论文重点对比的多模块 KG-RAG 基线，其分阶段的规划与检索流程在准确率上虽有优势却 token 成本高昂，当前论文以更少生成 token 取得更高准确率来直接超越它。"
+    },
+    {
+      "title": "Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning",
+      "authors": "Jin et al.",
+      "year": 2025,
+      "arxiv_id": "2503.09516",
+      "role": "Inspiration",
+      "relationship_sentence": "Search-R1 证明用 outcome-based RL 训练 LLM 在推理过程中自主调用检索工具可端到端优化检索增强行为，当前论文直接借鉴这一思路，把检索环境从搜索引擎替换为 KG 查询服务器。"
+    },
+    {
+      "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+      "authors": "DeepSeek-AI et al.",
+      "year": 2025,
+      "arxiv_id": "2501.12948",
+      "role": "Inspiration",
+      "relationship_sentence": "DeepSeek-R1 展示的纯 RL 驱动推理能力训练范式，为当前论文采用端到端 RL 而非监督式模块微调来塑造单 agent 的推理—检索交替行为提供了核心方法论依据。"
+    },
+    {
+      "title": "ToolLLM: Facilitating Large Language Models to Master 16000+ Real-world APIs",
+      "authors": "Qin et al.",
+      "year": 2023,
+      "arxiv_id": "2307.16789",
+      "role": "Related Problem",
+      "relationship_sentence": "ToolLLM 探索了多轮工具调用中 LLM 依据环境反馈逐步决策的问题设定，当前论文将其扩展为以 KG 为环境的逐步检索动作，并要求每步检索信息融入后续推理与生成。"
+    },
+    {
+      "title": "The Value of Semantic Parse Labeling for Knowledge Base Question Answering",
+      "authors": "Yih et al.",
+      "year": 2016,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "该工作构建的 WebQSP 数据集为 KGQA 提供了标准的实体与多跳问题定义，当前论文将其作为训练与评测核心基准，用以度量准确率与跨 KG 迁移性能。"
+    }
+  ],
+  "synthesis_narrative": "在 KG-RAG 领域，ToG 通过让大模型在多轮中于知识图谱上试探性扩展推理路径，展示了图结构检索对多跳推理的提升，但其每一步都依赖大型基础模型的反复调用，token 与延迟开销随阶段累积；RoG 则通过针对特定图谱 schema 的微调与关系路径生成获得良好可解释性，却把性能牢牢绑定在训练所用的 KG 域与实体关系类型上。ReKnoS 沿袭分阶段规划—检索—生成的模块化范式，进一步凸显了高准确率背后高昂的推理成本。与此同时，Search-R1 给出了关键洞见：用 outcome-based RL 端到端训练 LLM，使其在推理中自主发起检索并把结果融入思考，可在单一策略中统一检索与推理；DeepSeek-R1 则证明了纯 RL 即可激发模型的逐步推理能力；ToolLLM 更早地探索了多轮工具调用中依据环境反馈逐步决策的问题设定。作为基础，WebQSP 提供了标准的实体级、多跳 KGQA 评测定义。\n\n将这些线索汇聚起来，一个清晰的缺口浮现：既有 KG-RAG 要么用昂贵且 schema 绑定的多模块流水线，要么缺乏能跨图谱迁移的统一策略。当前论文正是把 Search-R1 的单策略 RL 检索思想、DeepSeek-R1 的 RL 推理范式与 ToolLLM 的多轮工具交互设定，移植到以 KG 为环境的设定中，用单一 agent 的推理—检索交替取代模块化协调，从而在 WebQSP 等基准上以更小模型、更少 token 同时实现高效率与无需重训的即插即用迁移，成为这一谱系下自然的下一步。"
+}

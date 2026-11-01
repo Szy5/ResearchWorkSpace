@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Think-on-Graph: Deep and Responsible Reasoning of Large Language Model on Knowledge Graph",
+      "authors": "Jiashuo Sun et al.",
+      "year": 2023,
+      "arxiv_id": "2307.07697",
+      "role": "Gap Identification",
+      "relationship_sentence": "其训练-free 的多轮图探索策略由提示和冻结骨干固定，无法通过交互提升，这正是 EoG 用 Graph Self-Play 让同一 LLM 同时提出并求解问题所针对的缺口。"
+    },
+    {
+      "title": "GraphWalker: An LLM-based Graph Reasoning Framework for Knowledge Graph Question Answering",
+      "authors": "Ruilin Zhao et al.",
+      "year": 2024,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "其依赖随机游走与闭源 LLM 合成 QA、且离线固定拓扑混合，EoG 的 SVTS 与 Boundary-Aware Graph Curriculum 正是为去除闭源数据依赖并让拓扑随 Solver 能力演化而设计。"
+    },
+    {
+      "title": "KG-R1: A Reinforcement Learning Framework for Knowledge Graph Reasoning",
+      "authors": "Miao et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "其以人工标注 QA 做 RL 训练图探索，是 EoG 在无标注设定下要替代并超越的核心 RL baseline。"
+    },
+    {
+      "title": "Absolute Zero: Reinforced Self-play Reasoning with Zero Data",
+      "authors": "Andrew Zhao et al.",
+      "year": 2025,
+      "arxiv_id": "2505.03335",
+      "role": "Inspiration",
+      "relationship_sentence": "其无外部数据的自博弈可验证任务生成直接启发了 EoG 的 Graph Self-Play，将 Proposer-Solver 自演化从代码/数学迁移到 KG 拓扑。"
+    },
+    {
+      "title": "Teacher-Student Curriculum Learning",
+      "authors": "Tambet Matiisen et al.",
+      "year": 2017,
+      "arxiv_id": "1707.00183",
+      "role": "Inspiration",
+      "relationship_sentence": "其用学生表现方差奖励教师以把任务保持在能力边界的机制，直接塑造了 EoG 的 Boundary-Aware Graph Curriculum 以 Solver 分数方差奖励 Proposer。"
+    },
+    {
+      "title": "Query2box: Reasoning over Knowledge Graphs in Vector Space using Box Embeddings",
+      "authors": "Hongyu Ren et al.",
+      "year": 2020,
+      "arxiv_id": "2002.05969",
+      "role": "Foundation",
+      "relationship_sentence": "其将一阶逻辑查询形式化到 KG 上并定义答案集，为 EoG 的 SVTS 在图上采样拓扑并执行 FOL 查询以获得正确且完备答案集提供了理论框架。"
+    }
+  ],
+  "synthesis_narrative": "多跳图推理的研究首先由 \"Think-on-Graph\" 等训练-free agent 推进：它们让冻结 LLM 在 KG 上逐步选择关系与实体，但探索策略由提示和骨干模型固定，无法从交互中积累经验；\"GraphWalker\" 则用随机游走加闭源 LLM 合成问答数据再以 RL 训练图探索，然而数据生成依赖闭源模型，且拓扑混合在训练前固定；\"KG-R1\" 进一步把 KG 当作交互环境，用人工标注的问答做 RL，说明标注是训练信号的核心瓶颈。与此同时，复杂查询回答中的 \"Query2box\" 将一阶逻辑查询形式化到 KG 上，为在图上采样推理拓扑并执行逻辑查询、得到 sound and complete 答案集提供了基础。自博弈方向，\"Absolute Zero\" 证明模型可以在没有外部数据时通过提出并求解可验证任务自我提升；课程学习方向，\"Teacher-Student Curriculum Learning\" 用学生表现的方差奖励教师，使任务停留在学生能力边界。将二者结合，一个自然机会浮现：若把自博弈从代码/数学迁移到 KG，并用 FOL 查询保证问题可验证，再用学生分数方差动态选择拓扑，就能在无标注 KG 上同时解决数据来源和难度自适应问题。当前论文正是在这些具体机制上综合：以 Graph Self-Play 替代固定探索和标注数据，以 SVTS 继承 FOL 查询的可验证性，以 Boundary-Aware Graph Curriculum 把教师-学生课程中的方差奖励落到图拓扑上，从而让训练任务随 Solver 能力演化。"
+}

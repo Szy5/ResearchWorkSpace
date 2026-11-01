@@ -138,6 +138,7 @@ artifacts/{paper-slug}/
 | --------------------------------- | ------------------ | --------------------------------------------- | -------------------------- |
 | `\title{}`                        | 标题                 | `manifest.json` 的 `paper.title` | 不新增 `paper.json`，避免元数据多头维护 |
 | `\author{}` / conference template | 作者                 | `manifest.json` 的 `paper.authors` | 只保留一份主要人类可改入口              |
+| `\affiliations{}` / `\affil{}` / `\institute{}` / `\author` 内单位行 | 作者单位 | `manifest.json` 的 `paper.affiliations` | 尽力提取，只保留像机构名的行；可能为空 |
 | `\begin{abstract}`                | 摘要                 | `assets/paper.md`, `assets/sections.json`     | summary、检索、快速预览            |
 | `\section` / `\subsection`        | 章节树和章节正文           | `assets/sections.json`                        | 结构化阅读、LLM 输入、下游导航          |
 | 普通段落                              | 规范化正文              | `assets/paper.md`, `assets/sections.json`     | 避免下游重复清洗 LaTeX             |
@@ -215,6 +216,7 @@ flowchart TD
   "paper": {
     "title": "GraphWalker: ...",
     "authors": ["Alice Zhang", "Bob Li"],
+    "affiliations": ["Example University"],
     "abstract": "Parser-extracted abstract text."
   },
   "source": {

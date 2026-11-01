@@ -30,6 +30,22 @@ TARGET_SECTIONS: dict[str, list[str]] = {
 # 这样在截断时能优先保留最影响语义产物质量的信息。
 ASSEMBLY_ORDER = ["abstract", "introduction", "method", "related_work", "experiments"]
 
+_AFFILIATION_COMMANDS = ("affiliations", "affiliation", "affil", "institute", "institution", "address")
+_INSTITUTION_RE = re.compile(
+    r"universit|institut|college|school|academy|laborator|\blabs?\b|research|department|\bdept\b|"
+    r"cent(?:er|re)\b|\binc\b|\bltd\b|corporation|\bcorp\b|company|\b(?:google|microsoft|meta|deepmind|openai|"
+    r"anthropic|alibaba|tencent|baidu|bytedance|huawei|nvidia|amazon|apple|ibm|salesforce|xiaomi|meituan|"
+    r"kuaishou|jd|ant group|sensetime|shanghai ai)\b|大学|学院|研究院|研究所|实验室|公司|中心",
+    re.IGNORECASE,
+)
+
+
+def _looks_like_person(name: str) -> bool:
+    """排除 MBZUAI、PolyU、MIT CSAIL 这类混在作者行里的机构缩写。"""
+    if len(name) < 2 or name.isupper():
+        return False
+    return " " in name or "-" in name or any(ord(char) > 0x2E80 for char in name)
+
 
 class LaTeXParser:
     """将 raw/{slug}/ 中的 LaTeX 源码整理成适合 LLM 消费的论文文本。"""
@@ -86,6 +102,13 @@ class LaTeXParser:
             abstract=self._strip_latex_noise(abstract),
             entry_file=str(entry.relative_to(paper_dir)),
         )
+
+    def extract_people(self, paper_dir: Path) -> tuple[list[str], list[str]]:
+        """只读地从 raw LaTeX 中提取 (作者, 单位)，不解析正文。"""
+        paper_dir = paper_dir.resolve()
+        self._source_files = []
+        merged = self._strip_comments(self._inline_inputs(self._find_entry_file(paper_dir), paper_dir))
+        return self._extract_authors(merged), self._extract_affiliations(merged)
 
     def _find_entry_file(self, paper_dir: Path) -> Path:
         """定位主 tex 文件；优先常见文件名，其次寻找包含 \\begin{document} 的文件。"""
@@ -362,10 +385,33 @@ class LaTeXParser:
 
     def _extract_command(self, text: str, command: str) -> str:
         """提取 \\title / \\author 这类命令，手动计数花括号以兼容嵌套命令。"""
-        match = re.search(rf"\\{command}\s*\{{", text, flags=re.DOTALL)
-        if not match:
-            return ""
-        start = match.end() - 1
+        raw = self._extract_command_raw(text, command)
+        return self._clean_inline_latex(raw) if raw else ""
+
+    def _extract_command_raw(self, text: str, command: str) -> str:
+        args = next(self._iter_command_args(text, command), None)
+        return args[0] if args else ""
+
+    def _iter_command_args(self, text: str, command: str, n_args: int = 1):
+        """依次产出每处 \\command{...}{...} 的前 n_args 个花括号参数（未清洗）。"""
+        for match in re.finditer(rf"\\{command}\*?\s*(?:\[[^\]]*\])?\s*\{{", text):
+            args: list[str] = []
+            position = match.end() - 1
+            while len(args) < n_args:
+                closing = self._matching_brace(text, position)
+                if closing is None:
+                    break
+                args.append(text[position + 1 : closing])
+                position = closing + 1
+                while position < len(text) and text[position].isspace():
+                    position += 1
+                if position >= len(text) or text[position] != "{":
+                    break
+            if len(args) == n_args:
+                yield args
+
+    @staticmethod
+    def _matching_brace(text: str, start: int) -> int | None:
         depth = 0
         for index in range(start, len(text)):
             char = text[index]
@@ -374,22 +420,101 @@ class LaTeXParser:
             elif char == "}" and (index == 0 or text[index - 1] != "\\"):
                 depth -= 1
                 if depth == 0:
-                    return self._clean_inline_latex(text[start + 1 : index])
-        return ""
+                    return index
+        return None
+
+    def _has_separate_affiliations(self, text: str) -> bool:
+        return any(re.search(rf"\\{command}\*?\s*(?:\[[^\]]*\])?\s*\{{", text) for command in _AFFILIATION_COMMANDS) or (
+            "\\icmlaffiliation" in text
+        )
+
+    def _author_lines(self, raw: str, *, keep_markers: bool = False) -> list[list[str]]:
+        """把 \\author 块按 \\And 分组，每组按 \\\\ / 换行 / 表格列切成清洗后的行。"""
+        raw = re.sub(r"\$[^$]*\$", " ", raw)
+        raw = re.sub(
+            r"\\(?:thanks|footnote|footnotetext|email|texttt|url|href|corref|fnref|tnoteref|orcidlink|"
+            r"hspace|vspace|hskip|vskip|includegraphics|IEEEauthorrefmark|inst)\*?\s*(?:\[[^\]]*\])?\s*"
+            r"\{(?:[^{}]|\{[^{}]*\})*\}",
+            " ",
+            raw,
+        )
+        if not keep_markers:
+            raw = re.sub(r"\\textsuperscript\s*\{(?:[^{}]|\{[^{}]*\})*\}", " ", raw)
+        raw = re.sub(r"\\(?:begin|end)\{(?:tabular|center|minipage)\*?\}(?:\{[^{}]*\}|\[[^\]]*\])*", "\n", raw)
+        raw = re.sub(r"\\['`^\"~=.]\{?([A-Za-z])\}?", r"\1", raw)
+        raw = re.sub(r"\\(?:footnotemark|quad|qquad|hfill|newline|par)\b(?:\[[^\]]*\])?", " ", raw).replace("~", " ")
+        raw = raw.replace("\\&", "\x00")
+        groups = re.split(r"\\(?:AND|And|and)\b", raw)
+        result: list[list[str]] = []
+        for group in groups:
+            lines = []
+            for line in re.split(r"\\\\(?:\[[^\]]*\])?|\n|&", group):
+                cleaned = self._clean_inline_latex(line).replace("\x00", "&")
+                cleaned = re.sub(r"^(?:organization|addressline|institution)\s*=\s*", "", cleaned)
+                cleaned = re.sub(r"\[[^\]]*\]|[*†‡§¶]+|\\", " ", cleaned)
+                cleaned = re.sub(r"\s+", " ", cleaned).strip(" ,;")
+                if cleaned:
+                    lines.append(cleaned)
+            if lines:
+                result.append(lines)
+        return result
+
+    @staticmethod
+    def _looks_like_affiliation(line: str) -> bool:
+        return "@" in line or bool(_INSTITUTION_RE.search(line)) or bool(re.match(r"^\d+\s*\D", line))
 
     def _extract_authors(self, text: str) -> list[str]:
         """
-        从 author 命令中提取作者名，去掉邮箱、换行后的单位和简单上标编号。
+        从 author 命令中提取作者名，去掉邮箱、单位和简单上标编号。
+
+        论文另有 \\affiliations / \\affiliation / \\institute 等命令时，\\author 内所有行都视为作者；
+        否则（NeurIPS/ACL 风格）每个 \\And 分组只取第一行作者名，其余行是单位。
         """
-        raw = self._extract_command(text, "author")
-        if not raw:
+        icml = [self._clean_inline_latex(args[0]) for args in self._iter_command_args(text, "icmlauthor", 2)]
+        if icml:
+            return [name for name in icml if name]
+        blocks = [args[0] for args in self._iter_command_args(text, "author")]
+        if not blocks:
             return []
-        raw = re.sub(r"\$.*?\$", "", raw)
-        raw = re.sub(r"\\texttt\{.*?\}", "", raw)
-        raw = re.split(r"\\\\|\n", raw)[0]
-        chunks = re.split(r",|\\and| and ", raw)
-        authors = [re.sub(r"\b\d+\b", "", self._clean_inline_latex(chunk)).strip() for chunk in chunks]
-        return [author for author in authors if author and not author.startswith("^")]
+        separate = self._has_separate_affiliations(text)
+        authors: list[str] = []
+        for block in blocks:
+            for lines in self._author_lines(block):
+                for line in lines:
+                    if self._looks_like_affiliation(line):
+                        if separate:
+                            continue
+                        break
+                    for chunk in re.split(r",|;| and ", line):
+                        name = re.sub(r"\b\d+\b|(?<=[A-Za-z])\d+$", "", chunk.strip()).strip(" ,;")
+                        if _looks_like_person(name) and name not in authors:
+                            authors.append(name)
+        return authors
+
+    def _extract_affiliations(self, text: str) -> list[str]:
+        """尽力提取作者单位；只保留像机构名的行（大学、研究院、实验室、公司等）。"""
+        blocks: list[str] = []
+        for command in _AFFILIATION_COMMANDS:
+            blocks.extend(args[0] for args in self._iter_command_args(text, command))
+        blocks.extend(args[1] for args in self._iter_command_args(text, "icmlaffiliation", 2))
+        if not blocks:
+            lines = [
+                line
+                for args in self._iter_command_args(text, "author")
+                for group in self._author_lines(args[0])
+                for line in group[1:]
+            ]
+        else:
+            lines = [line for block in blocks for group in self._author_lines(block) for line in group]
+        affiliations: list[str] = []
+        for line in lines:
+            for part in re.split(r";|,\s*\d+(?=[A-Z])", line):
+                name = re.sub(r"^\d+\s*", "", part).strip(" ,;")
+                if not name or "@" in name or not _INSTITUTION_RE.search(name):
+                    continue
+                if name not in affiliations:
+                    affiliations.append(name)
+        return affiliations[:6]
 
     def _strip_comments(self, text: str) -> str:
         """去除 LaTeX 注释；保留转义百分号 \\%。"""

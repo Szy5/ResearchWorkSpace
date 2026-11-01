@@ -1,0 +1,125 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2608.15071",
+  "created_at": "2026-10-24T14:06:26.184081+00:00",
+  "updated_at": "2026-10-24T14:15:04.001366+00:00",
+  "paper": {
+    "title": "Evo-Harness: Context-to-Harness Skill Compilation for Self-Evolving Agents",
+    "authors": [
+      "Tianxin Wei",
+      "Zhan Shi",
+      "Minhua Lin",
+      "Bing He",
+      "Zewen Liu",
+      "Yisi Sang",
+      "Yuanchen Bei",
+      "Xuying Ning",
+      "Jiaru Zou",
+      "Ting-Wei Li",
+      "Xiao Lin",
+      "Yanjun Zhao",
+      "Chi Wang",
+      "Benoit Dumoulin",
+      "Dakuo Wang",
+      "Jingrui He",
+      "Hanqing Lu"
+    ],
+    "affiliations": [
+      "University of Illinois Urbana-Champaign",
+      "Amazon",
+      "The Pennsylvania State University",
+      "Emory University",
+      "Northeastern University"
+    ],
+    "abstract": "Learning from experience is critical for developing capable, self-improving large language model (LLM) agents. Existing methods typically extract knowledge from accumulated trajectories via reflection, memory, rules, or skills. However, agents in realistic environments continuously encounter novel tasks, often offering only a one-shot opportunity to improve. These executions yield rich but highly noisy contexts, entangling broadly useful lessons with task-specific artifacts. Critically, prior works rarely validate their effectiveness on complex real-world tasks or isolate the underlying drivers of improvement. To address these gaps, we formulate online harness learning, where a frozen agent improves by continually updating a structured harness across sequential tasks. This formulation enables a systematic study of key self-improvement factors through our proposed Evo-Harness. At its core, context-to-harness skill compilation distills noisy, single-shot executions into reusable skill harnesses for cross-domain and topic-level adaptation. To demonstrate the efficacy of one-shot skill compilation, we evaluate across five realistic benchmarks (TerminalBench2, SWE-bench, CL-Bench, -bench, WebArena-Infinity). Our extensive analysis demonstrates the effectiveness of and provides a principled understanding of how LLM agents can effectively learn on the fly. Our code is available at https://github.com/A-EVO-Lab/a-evolve/tree/release/evo-harnessLink.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "https://arxiv.org/abs/2608.15071",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": true,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-24",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2608.15071",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "867735f87447f30c288e8990375bffbe305180a995b7acd9a835ae6e38687456",
+        "bytes": 2674
+      },
+      {
+        "path": "sections_new/hd.tex",
+        "sha256": "534b7c2a94d6ba3debdf097cb111c6c1d230c727cf46a3961bd6bc1765cb3232",
+        "bytes": 852
+      },
+      {
+        "path": "sections_new/0-abs.tex",
+        "sha256": "6642a0b8177121f5c21a9ea3b64960484d4f4b536d7b76e773aae2dbc11db9a7",
+        "bytes": 9703
+      },
+      {
+        "path": "sections_new/1-intro.tex",
+        "sha256": "989dff4cb1ba00cbb7ce307240feab421293c8ae3f08ab290f54b4a56e9d520a",
+        "bytes": 5551
+      },
+      {
+        "path": "sections_new/2-related.tex",
+        "sha256": "fbab27505c472a9d14a10644a2b82eb46b1568a580b787503a24bb2240e51c22",
+        "bytes": 8460
+      },
+      {
+        "path": "sections_new/3-method.tex",
+        "sha256": "28bdb06222f60b8b83ec79d26cd99fa053bce3336025cc4b9fc93cfb11b397f7",
+        "bytes": 9030
+      },
+      {
+        "path": "sections_new/4-exp.tex",
+        "sha256": "c4c1cdddc152dcc77d5be3d70f1622ea7f2d71e32bba5ab520e8581f946a4ae4",
+        "bytes": 19586
+      },
+      {
+        "path": "sections_new/5-con.tex",
+        "sha256": "2c05cb82f02819b0e579d883867dc9f6c0315bc7d76c01a71aab1a45ba26ace6",
+        "bytes": 1196
+      },
+      {
+        "path": "sections_new/app.tex",
+        "sha256": "9b6920bb64d145363aaff47f4d050100c04a25ed687bef57bb6314d1d8a867ab",
+        "bytes": 16784
+      },
+      {
+        "path": "sections_new/checklist.tex",
+        "sha256": "d1b973395631d44d3e319a574635f2a3fce5480505e38407c74620eee8de374c",
+        "bytes": 4013
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 38,
+    "figures": 7,
+    "references": 53
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 3, column 2):\nunexpected end of input\n\n ^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 15, column 1):\nunexpected Tok (line 15, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 3, column 2):\nunexpected end of input\n\n ^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 15, column 1):\nunexpected Tok (line 15, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

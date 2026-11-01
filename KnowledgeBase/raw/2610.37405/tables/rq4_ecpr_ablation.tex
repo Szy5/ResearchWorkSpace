@@ -1,0 +1,35 @@
+\begin{table*}[t]
+\centering
+\renewcommand{\arraystretch}{1.1}
+\setlength{\tabcolsep}{6pt}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{l|cccc|cccc}
+    \toprule
+    \multirow{2}{*}{Variants}
+    & \multicolumn{4}{c|}{WikiWebQuestions}
+    & \multicolumn{4}{c}{GTSQA} \\
+    \cmidrule(l){2-9}
+    & F1 & Hit@1 & RetQ & Cov & F1 & Hit@1 & RetQ & Cov \\
+    \midrule
+    SFT only
+    & 59.95\sd{0.18} & 70.10\sd{0.24} & 79.42\sd{0.31} & 70.63\sd{0.29}
+    & 44.73\sd{0.22} & 46.19\sd{0.27} & 58.47\sd{0.33} & 49.85\sd{0.30} \\
+    SFT + RL w/o $R_{\text{ecpr}}$
+    & 63.87\sd{0.44} & 74.35\sd{0.53} & 83.17\sd{0.49} & 72.91\sd{0.56}
+    & 46.02\sd{0.49} & 46.97\sd{0.56} & 61.02\sd{0.52} & 51.43\sd{0.58} \\
+    SFT + RL w/o $R_{\text{step}}$
+    & 65.02\sd{0.33} & 76.48\sd{0.40} & 85.62\sd{0.38} & 77.25\sd{0.42}
+    & 47.96\sd{0.39} & 48.17\sd{0.47} & 63.18\sd{0.44} & 57.21\sd{0.46} \\
+    SFT + RL, $R_{\text{ecpr}}\!\rightarrow$ LLM-as-judge
+    & 64.95\sd{0.39} & 75.41\sd{0.51} & 84.03\sd{0.45} & 74.12\sd{0.50}
+    & 46.88\sd{0.43} & 48.25\sd{0.52} & 62.24\sd{0.48} & 53.36\sd{0.51} \\
+    \rowcolor{lightblue}
+    \textbf{SFT + RL (full FoG)}
+    & \best{66.41}\sd{0.27} & \best{76.93}\sd{0.38} & \best{86.35}\sd{0.35} & \best{78.34}\sd{0.37}
+    & \best{48.66}\sd{0.34} & \best{50.52}\sd{0.41} & \best{65.34}\sd{0.39} & \best{58.64}\sd{0.40} \\
+    \bottomrule
+\end{tabular}}
+\caption{\textbf{Ablation of training stages and reward terms.} The LLM-as-judge variant replaces $R_{\text{ecpr}}$ with a model-based process score. Mean and std.\ over three seeds.}
+\label{tab:rq4_ecpr_ablation}
+\vspace{-5mm}
+\end{table*}

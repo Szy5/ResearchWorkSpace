@@ -1,0 +1,92 @@
+\begin{table*}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.3}
+\caption{\textbf{Case study of FoG.} The trajectory recovers the complete gold evidence before answering.}
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.95\textwidth}}
+\rowcolor{gray!20}
+\textbf{Question:} Which airline flies the \textbf{Embraer 195} and is based at the airport named after \textbf{Margaret Kenyatta}'s father? \\[2pt]
+
+\rowcolor{blue!10}
+\texttt{<think>}I need to find an airline that satisfies two conditions: 1) flies the Embraer 195, and 2) is based at the airport named after Margaret Kenyatta's father. Let me start by exploring the relationships around the first given entity to understand what information is stored about Margaret Kenyatta in the knowledge graph.{</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} find\_outgoing\_relations(entity\_name=Margaret Kenyatta)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Outgoing relations for entity Margaret Kenyatta: country of citizenship, father, given name, instance of, mother, occupation, sex or gender......... \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} The outgoing triple shows that Margaret Kenyatta has a "father" in the knowledge graph. Let me find out who her father is by querying the triple that directly connects Margaret Kenyatta to her father. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} get\_tail\_entities(head\_entity\_name=Margaret Kenyatta, relation\_name=father)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Entities outgoing via relation father from entity Margaret Kenyatta: Jomo Kenyatta.......... \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} Now I know Jomo Kenyatta is Margaret Kenyatta's father. Next, I need to find the airport named after Jomo Kenyatta. Let me check what relationships exist for Jomo Kenyatta in the knowledge graph to see if there is an airport named after him. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} find\_incoming\_relations(entity\_name=Jomo Kenyatta) \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Incoming relations for entity Jomo Kenyatta: father,named after,spouse.......... \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} I see that some entities have "named after" pointing to Jomo Kenyatta. Let me find out what entities are named after Jomo Kenyatta in the knowledge graph. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} get\_head\_entities(tail\_entity\_name=Jomo Kenyatta, relation\_name=named after)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Entities incoming via relation named after from entity Jomo Kenyatta: Jomo Kenyatta International Airport, Kenyatta International Convention Centre \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>}  Great! I found that Jomo Kenyatta International Airport is named after Jomo Kenyatta. Now I need to find which airline is based at Jomo Kenyatta International Airport. Let me check what outgoing relationships exist for Jomo Kenyatta International Airport to see if there is an airline based there. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} find\_outgoing\_relations(entity\_name=Jomo Kenyatta International Airport)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Outgoing relations for entity Jomo Kenyatta International Airport: country, instance of, located in the administrative territorial entity, named after......... \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} I don't see a direct "airline based at" relationship listed for the airport. Let me check the incoming relationships to see if any airlines have "headquarters location" or similar relationships pointing to this airport. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} find\_incoming\_relations(entity\_name=Jomo Kenyatta International Airport).  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Incoming relations for entity Jomo Kenyatta International Airport: airline hub \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} Perfect! I found that some airlines have "airline hub" pointing to Jomo Kenyatta International Airport. Let me find out which airlines have Jomo Kenyatta International Airport as their airline hub. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} get\_head\_entities(tail\_entity\_name=Jomo Kenyatta International Airport, relation\_name=airline hub)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Entities incoming via relation airline hub from entity Jomo Kenyatta International Airport: Kenya Airways \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} Now I have Kenya Airways as the airline based at Jomo Kenyatta International Airport. Finally, I need to verify that Kenya Airways also flies the Embraer 195. Let me check what aircraft types Kenya Airways operates by looking at its outgoing relationships. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} find\_outgoing\_relations(entity\_name=Kenya Airways)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Outgoing relations for entity Kenya Airways: airline alliance, airline hub, country, instance of, item operated .........\texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>} I see that Kenya Airways has "item operated" as an outgoing relationship. Let me find out what items (likely aircraft) Kenya Airways operates. {</think>} \\
+
+\rowcolor{green!10}
+\texttt{<kg-query>} get\_tail\_entities(head\_entity\_name=Kenya Airways, relation\_name=item operated)  \texttt{</kg-query>} \\
+\rowcolor{yellow!10}
+\texttt{<information>} Entities outgoing via relation item operated from entity Kenya Airways: Boeing 737 Classic,Boeing 737 Next Generation,Boeing 767,Boeing 777,Boeing 787 Dreamliner,Embraer 195 \texttt{</information>} \\
+
+\rowcolor{blue!10}
+\texttt{<think>}  I now have enough grounded evidence to give the answer. \texttt{</think>} \\
+
+\rowcolor{green!30}
+\texttt{<answer>} ["Kenya Airways"] \texttt{</answer>} \\
+\end{tabular}
+
+\label{tab:fogcase}
+\end{table*}

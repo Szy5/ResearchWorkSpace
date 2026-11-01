@@ -1,0 +1,351 @@
+\begin{table*}[htp]
+\centering
+\caption{Benchmark results for different optimizers with Qwen3 8B. GEPA and GEPA+Merge achieve better performance than GRPO with far fewer rollouts on all benchmarks except AIME. For example, for IFBench, GEPA found optimal prompts after just 678 rollouts achieving 38.61\%, outperforming GRPO's test set score of 35.88\% with 24,000 rollouts.}
+\label{tab:main-results}
+\resizebox{0.96\textwidth}{!}{
+% \begin{tabular}{lcccccccc}
+% \toprule
+% \textbf{Qwen3 8B} & \added{\textbf{AIME-2025}} & \added{\textbf{LiveBench-Math}} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% % \midrule
+% % \multicolumn{7}{l}{\textbf{Qwen3-8B}} \\
+% \midrule
+% Baseline         & \added{27.33} & \added{48.70} & 42.33 & 36.90 & 35.33 & 80.82 & \added{45.23} & --- \\
+% MIPROv2          & \added{20.00} & \added{46.60} & 55.33 & 36.22 & 47.33 & 81.55 & \added{47.84} & \added{+2.61} \\
+% GRPO             & \added{\textbf{38.00}}   & \added{51.26}   & 43.33 & 35.88 & 38.67 & 86.66 & \added{48.91} & \added{+3.68} \\
+% % GEPAWLinear      & 58.33 & 30.44 & 45.33 & 85.45 & 54.89 & +6.04 \\
+% % GEPAWMergeWLinear& 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +10.59 \\
+% GEPA             & \added{32.00} & \added{\textbf{51.95}} & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \textbf{\added{54.85}} & +\textbf{\added{9.62}} \\
+% GEPA+Merge       & \added{32.00} & \added{\textbf{51.95}} & \textbf{64.33} & 28.23 & 51.67 & 86.26 & \added{52.40} & \added{+7.17} \\
+% \bottomrule
+% \end{tabular}
+\begin{tabular}{lcccccccc}
+\toprule
+\textbf{Qwen3 8B} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \added{\textbf{AIME-2025}} & \added{\textbf{LiveBench-Math}} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{Qwen3-8B}} \\
+\midrule
+Baseline & 42.33 & 36.90 & 35.33 & 80.82 & \added{27.33} & \added{48.70} & \added{45.23} & --- \\
+GRPO & 43.33 & 35.88 & 38.67 & 86.66 & \added{\textbf{38.00}} & \added{51.26} & \added{48.91} & \added{+3.68} \\
+MIPROv2 & 55.33 & 36.22 & 47.33 & 81.55 & \added{20.00} & \added{46.60} & \added{47.84} & \added{+2.61} \\
+% GEPAWLinear      & 58.33 & 30.44 & 45.33 & 85.45 & 54.89 & +6.04 \\
+% GEPAWMergeWLinear& 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +10.59 \\
+GEPA & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \added{32.00} & \added{\textbf{51.95}} & \textbf{\added{54.85}} & +\textbf{\added{9.62}} \\
+GEPA+Merge & \textbf{64.33} & 28.23 & 51.67 & 86.26 & \added{32.00} & \added{\textbf{51.95}} & \added{52.40} & \added{+7.17} \\
+\midrule
+\multicolumn{9}{l}{\added{Total optimization budget (\# rollouts)}} \\
+% \textit{GEPA (+Merge)} & \textit{6.9k} & \textit{3.6k} & \textit{7.1k} & \textit{2.4k} & \textit{1.8k} & \textit{1.8k} & \textit{3.9k} & --- \\
+\added{GEPA (+Merge)} & \added{6871} & \added{3593} & \added{7051} & \added{2426} & \added{1839} & \added{1839} & \added{3936} & --- \\
+\added{GRPO} & \added{24000} & \added{24000} & \added{24000} & \added{24000} & \added{24000} & \added{24000} & \added{24000} & --- \\
+% \textit{GEPA (+Merge)} & \textit{6871} & \textit{3593} & \textit{7051} & \textit{2426} & \textit{1839} & \textit{1839} & \textit{3936} & --- \\
+% \textit{GRPO} & \textit{24000} & \textit{24000} & \textit{24000} & \textit{24000} & \textit{24000} & \textit{24000} & \textit{24000} & --- \\
+% \midrule
+\bottomrule
+\end{tabular}
+}
+\end{table*}
+
+% \begin{table*}[th]
+% \centering
+% \caption{Benchmark results for different optimizers evaluated on GPT-4.1 Mini. As a prompt-optimization system, GEPA works off-the-shelf on \textit{closed-source} models as well, outperforming state-of-the-art prompt optimizers including MIPROv2 \added{(in 2 settings: Instruction-only optimization (``MIPROv2-No-Demos'') as well as joint instruction and few-shot optimization (``MIPROv2'')), Trace (with its OptoPrime optimizer), and TextGrad}. \added{Additionally, GEPA-optimized prompts demonstrate strong cross-model generalization: ``GEPA-Qwen-Opt''—optimized entirely for (and using) the weaker Qwen3-8B—achieves a +9\% gain when evaluated on GPT-4.1-Mini without modification, notably outperforming all baselines (MIPROv2, TextGrad, Trace) that optimized directly for (and using) GPT-4.1-Mini.}}
+% % Additionally, GEPA-optimized prompts generalize across models. ``GEPA-Qwen-Opt'' reports results of evaluating prompts optimized by GEPA for (and using) Qwen3-8B (config GEPA from table~\ref{tab:main-results}) but evaluated without modification on GPT-4.1-Mini.  Although the whole optimization process (including the reflection language model, and the rollout model for training and validation) used the less capable Qwen3 8B model, optimized prompts still show significant improvement (+9\%) over the baseline and even outperform other optimizers, all of which optimize for (and using) GPT-4.1-Mini
+% \label{tab:main-results-gpt}
+% \resizebox{0.96\textwidth}{!}{
+% % \begin{tabular}{lcccccccc}
+% % \toprule
+% % \textbf{GPT-4.1 Mini} & \textbf{AIME-2025} & \textbf{LiveBench-Math} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% % % \midrule
+% % % \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% % \midrule
+% % Baseline         & 49.33 & 58.20 & 38.00 & 47.79 & 46.33 & 78.57 & 53.03 & --- \\
+% % \added{Trace (OptoPrime)}  & \added{45.33} & \added{60.74} & \added{60.33} & \added{51.19} & \added{46.00} & \added{74.18} & \added{56.30} & \added{+3.27} \\
+% % \added{MIPROv2-No-Demos} & \added{48.67} & \added{60.97} & \added{38.00} & \added{52.04} & \added{51.33} & \added{91.85} & \added{57.14} & \added{+4.11} \\
+% % MIPROv2          & 51.33 & 61.84 & 58.00 & 49.15 & 48.33 & 83.37 & 58.67 & +5.64 \\
+% % \added{TextGrad}  & \added{46.67} & \added{63.84} & \added{62.33} & \added{48.64} & \added{47.67} & \added{85.68} & \added{59.14} & \added{+6.11} \\ 
+% % GEPA             & \textbf{59.33} & \textbf{64.13} & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 65.22 & +12.19 \\
+% % GEPA+Merge       & \textbf{59.33}* & \textbf{64.13}* & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{66.36} & +\textbf{13.33} \\
+% % \midrule
+% % \multicolumn{9}{l}{\added{Optimized with Qwen3-8B, evaluated on GPT-4.1-Mini}} \\
+% % \midrule
+% % \added{GEPA-Qwen-Opt}  & \added{52.67} & \added{59.31} & \added{65.67} & \added{49.83} & \added{54.67} & \added{90.05} & \added{62.03} & \added{+9.00} \\
+% % \bottomrule
+% % \end{tabular}
+% % }
+% \begin{tabular}{lcccccccc}
+% \toprule
+% \textbf{GPT-4.1 Mini} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{AIME-2025} & \textbf{LiveBench-Math} & \textbf{Aggregate} & \textbf{Improvement} \\
+% % \midrule
+% % \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% \midrule
+% Baseline & 38.00 & 47.79 & 46.33 & 78.57 & 49.33 & 58.20 & 53.03 & --- \\
+% \added{Trace (OptoPrime)} & \added{60.33} & \added{51.19} & \added{46.00} & \added{74.18} & \added{45.33} & \added{60.74} & \added{56.30} & \added{+3.27} \\
+% \added{MIPROv2-No-Demos} & \added{38.00} & \added{52.04} & \added{51.33} & \added{91.85} & \added{48.67} & \added{60.97} & \added{57.14} & \added{+4.11} \\
+% MIPROv2 & 58.00 & 49.15 & 48.33 & 83.37 & 51.33 & 61.84 & 58.67 & +5.64 \\
+% \added{TextGrad} & \added{62.33} & \added{48.64} & \added{47.67} & \added{85.68} & \added{46.67} & \added{63.84} & \added{59.14} & \added{+6.11} \\ 
+% GEPA & \textbf{69.00} & 52.72 & 51.67 & 94.47 & \textbf{59.33} & \textbf{64.13} & 65.22 & +12.19 \\
+% GEPA+Merge & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{59.33} & \textbf{64.13} & \textbf{66.36} & +\textbf{13.33} \\
+% \midrule
+% \multicolumn{9}{l}{\added{Optimized with Qwen3-8B, evaluated on GPT-4.1-Mini}} \\
+% \midrule
+% \added{GEPA-Qwen-Opt} & \added{65.67} & \added{49.83} & \added{54.67} & \added{90.05} & \added{52.67} & \added{59.31} & \added{62.03} & \added{+9.00} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \vspace{-4mm}
+% \end{table*}
+
+
+
+
+% \begin{table*}[tp]
+% \centering
+% \caption{Benchmark results for different optimizers over Qwen3 8B and GPT-4.1 Mini models across multiple tasks.}
+% \label{tab:main-results}
+% \resizebox{0.7\textwidth}{!}{
+% \begin{tabular}{lcccccc}
+% \toprule
+% \textbf{Model} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{Qwen3-8B}} \\
+% \midrule
+% Baseline         & 42.33 & 36.90 & 35.33 & 80.82 & 48.85 & --- \\
+% MIPROv2          & 55.33 & 36.22 & 47.33 & 81.55 & 55.11 & +6.26 \\
+% GRPO             & 43.33 & 35.88 & 38.67 & 86.66 & 51.14 & +2.29 \\
+% % GEPAWLinear      & 58.33 & 30.44 & 45.33 & 85.45 & 54.89 & +6.04 \\
+% % GEPAWMergeWLinear& 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +10.59 \\
+% GEPA             & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \textbf{61.28} & +\textbf{12.44} \\
+% GEPA+Merge       & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 57.62 & +8.78 \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% \midrule
+% Baseline         & 38.00 & 47.79 & 46.33 & 78.57 & 52.67 & --- \\
+% MIPROv2          & 58.00 & 49.15 & 48.33 & 83.37 & 59.71 & +7.04 \\
+% % GEPAWLinear      & 66.00 & 49.49 & 51.00 & 94.03 & 65.13 & +12.46 \\
+% % GEPAWMergeWLinear& 64.00 & 49.15 & 52.67 & 93.34 & 64.79 & +12.12 \\
+% GEPA             & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 66.97 & +14.29 \\
+% GEPA+Merge       & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{68.69} & +\textbf{16.02} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+
+
+
+% \begin{table*}[tp]
+% \centering
+% \caption{Benchmark results for different optimizers over Qwen3 8B and GPT-4.1 Mini models across multiple tasks.}
+% \label{tab:main-results}
+% \resizebox{0.7\textwidth}{!}{
+% \begin{tabular}{lcccccc}
+% \toprule
+% \textbf{Model} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{Qwen3-8B}} \\
+% \midrule
+% Baseline         & 42.33 & 36.90 & 35.33 & 80.82 & 48.85 & --- \\
+% MIPROv2          & 55.33 & 36.22 & 47.33 & 81.55 & 55.11 & +6.26 \\
+% GRPO             & 43.33 & 35.88 & 38.67 & 86.66 & 51.14 & +2.29 \\
+% % GEPAWLinear      & 58.33 & 30.44 & 45.33 & 85.45 & 54.89 & +6.04 \\
+% % GEPAWMergeWLinear& 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +10.59 \\
+% GEPA             & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \textbf{61.28} & +\textbf{12.44} \\
+% GEPA+Merge       & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 57.62 & +8.78 \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% \midrule
+% Baseline         & 38.00 & 47.79 & 46.33 & 78.57 & 52.67 & --- \\
+% MIPROv2          & 58.00 & 49.15 & 48.33 & 83.37 & 59.71 & +7.04 \\
+% % GEPAWLinear      & 66.00 & 49.49 & 51.00 & 94.03 & 65.13 & +12.46 \\
+% % GEPAWMergeWLinear& 64.00 & 49.15 & 52.67 & 93.34 & 64.79 & +12.12 \\
+% GEPA             & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 66.97 & +14.29 \\
+% GEPA+Merge       & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{68.69} & +\textbf{16.02} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+
+
+% \begin{figure}[ht]
+%     \centering
+%     \begin{subfigure}{0.49\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_budget_qwen3-8b_True_intro.pdf}
+%         \caption{Aggregate performance vs. budget for \texttt{Qwen3 8B}.}
+%         \label{fig:agg_perf_qwen3_8b_true}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}{0.49\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{figures/aggregate_performance_vs_budget_gpt-41-mini_False_intro.pdf}
+%         \caption{Aggregate performance vs. budget for \texttt{GPT 4.1 mini}.}
+%         \label{fig:agg_perf_gpt41mini}
+%     \end{subfigure}
+%     \caption{Aggregate validation performance (Y-axis) of different optimizers at varying budget levels (X-axis), averaged across five benchmarks: HotpotQA, IFBench, PAPILLON, HoVer, and FSABench. Notably, GEPA attains an aggregate validation score that is 7.78\% higher than GRPO (with training steps = 500 at 24000 rollouts), while utilizing only 15\% of the total rollouts required by GRPO. Per benchmark curves are presented in appendix~\ref{appendix_perf_vs_rollout_curves}.}\label{fig:main_results}
+% \end{figure}
+
+
+
+% \begin{table*}[ht]
+% \centering
+% \caption{Benchmark results for qwen3-8b and gpt-41-mini models across multiple tasks (no FSABench).}
+% \label{tab:main-results-no-fsa}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l|cccc|cc}
+% \toprule
+% \textbf{Model} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{Papillon} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{Qwen3-8B}} \\
+% \midrule
+% Baseline         & 42.33 & 36.90 & 35.33 & 80.82 & 48.85 & --- \\
+% MIPROv2          & 55.33 & 36.22 & 47.33 & 81.55 & 55.11 & +6.26 \\
+% GRPO             & 43.33 & 35.88 & 38.67 & 86.66 & 51.14 & +2.29 \\
+% % GEPAWLinear      & 58.33 & 30.44 & 45.33 & 85.45 & 54.89 & +6.04 \\
+% % GEPAWMergeWLinear& 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +10.59 \\
+% GEPA             & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \textbf{61.28} & +\textbf{12.44} \\
+% GEPA+Merge       & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 57.62 & +8.78 \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{GPT-4.1 mini}} \\
+% \midrule
+% Baseline         & 38.00 & 47.79 & 46.33 & 78.57 & 52.67 & --- \\
+% MIPROv2          & 58.00 & 49.15 & 48.33 & 83.37 & 59.71 & +7.04 \\
+% % GEPAWLinear      & 66.00 & 49.49 & 51.00 & 94.03 & 65.13 & +12.46 \\
+% % GEPAWMergeWLinear& 64.00 & 49.15 & 52.67 & 93.34 & 64.79 & +12.12 \\
+% GEPA             & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 66.97 & +14.29 \\
+% GEPA+Merge       & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{68.69} & +\textbf{16.02} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+% \begin{table*}[ht]
+% \centering
+% \caption{Benchmark results for qwen3-8b and gpt-41-mini models across multiple tasks (no FSABench).}
+% \label{tab:main-results-no-fsa}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l|cccc|cc}
+% \toprule
+% \textbf{Model} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{Qwen3 8B}} \\
+% \midrule
+% Baseline & 42.33 & 36.90 & 35.33 & 80.82 & 48.35 & --- \\
+% MIPROv2 & 55.33 & 36.22 & 47.33 & 81.55 & 55.61 & +7.26 \\
+% GRPO (24K steps) & 43.33 & 35.88 & 38.67 & 86.66 & 51.64 & +3.29 \\
+% % GEPA & 58.33 & 30.44 & 45.33 & 85.45 & 54.39 & +6.04 \\
+% % GEPA\{M\} & 62.00 & 37.76 & 47.67 & 90.29 & 59.43 & +11.08 \\
+% GEPA & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & \textbf{61.78} & +\textbf{13.43} \\
+% GEPA+Merge & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 57.12 & +8.77 \\
+% \midrule
+% \multicolumn{7}{l}{\textbf{GPT 4.1 mini}} \\
+% \midrule
+% Baseline & 38.00 & 47.79 & 46.33 & 78.57 & 52.17 & --- \\
+% MIPROv2 & 58.00 & 49.15 & 48.33 & 83.37 & 59.21 & +7.04 \\
+% % GEPA & 66.00 & 49.49 & 51.00 & 94.03 & 65.63 & +13.46 \\
+% % GEPA\{M\} & 64.00 & 49.15 & 52.67 & 93.34 & 64.79 & +12.62 \\
+% GEPA & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 66.97 & +14.80 \\
+% GEPA+Merge & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & \textbf{68.69} & +\textbf{16.52} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+% \begin{table*}[ht]
+% \centering
+% \caption{Benchmark results for qwen3-8b and gpt-41-mini models across multiple tasks. (Columns reordered)}
+% \label{tab:main-results-reordered}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l|ccccc|cc}
+% \toprule
+% \textbf{Model} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{FSABench} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{8}{l}{\textbf{Qwen3 8B}} \\
+% \midrule
+% Baseline & 42.33 & 36.90 & 35.33 & 80.82 & 71.42 & 53.36 & --- \\
+% MIPROv2 & 55.33 & 36.22 & 47.33 & 81.55 & 82.55 & 60.60 & +7.24 \\
+% GRPO (24K steps) & 43.33 & 35.88 & 38.67 & 86.66 & \textbf{90.64} & 59.04 & +5.68 \\
+% % GEPA & 58.33 & 30.44 & 45.33 & 85.45 & 85.00 & 60.91 & +7.55 \\
+% % GEPA\{M\} & 62.00 & 37.76 & 47.67 & 90.29 & 85.59 & 64.66 & +11.30 \\
+% GEPA & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & 82.16 & \textbf{65.46} & +\textbf{12.10} \\
+% GEPA+Merge & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 82.84 & 62.67 & +9.31 \\
+% \midrule
+% \multicolumn{8}{l}{\textbf{GPT 4.1 mini}} \\
+% \midrule
+% Baseline & 38.00 & 47.79 & 46.33 & 78.57 & 80.74 & 58.29 & --- \\
+% MIPROv2 & 58.00 & 49.15 & 48.33 & 83.37 & 87.65 & 65.30 & +7.01 \\
+% % GEPA & 66.00 & 49.49 & 51.00 & 94.03 & 87.11 & 69.53 & +11.24 \\
+% % GEPA\{M\} & 64.00 & 49.15 & 52.67 & 93.34 & \textbf{89.61} & 69.75 & +11.47 \\
+% GEPA & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 88.04 & 71.18 & +12.89 \\
+% GEPA+Merge & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & 88.53 & \textbf{72.66} & +\textbf{14.37} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+% \begin{table*}[ht]
+% \centering
+% \caption{Benchmark results for qwen3-8b and gpt-41-mini models across multiple tasks. (Columns reordered)}
+% \label{tab:main-results-reordered}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l|ccccc|cc}
+% \toprule
+% \textbf{Model} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Hover} & \textbf{PUPA} & \textbf{FSABench} & \textbf{Aggregate} & \textbf{Improvement} \\
+% \midrule
+% \multicolumn{8}{l}{\textbf{Qwen3 8B}} \\
+% \midrule
+% Baseline & 42.33 & 36.90 & 35.33 & 80.82 & 71.42 & 53.36 & --- \\
+% MIPROv2 & 55.33 & 36.22 & 47.33 & 81.55 & 82.55 & 60.60 & +7.24 \\
+% GRPO (24K steps) & 43.33 & 35.88 & 38.67 & 86.66 & \textbf{90.64} & 59.04 & +5.68 \\
+% GEPA & 58.33 & 30.44 & 45.33 & 85.45 & 85.00 & 60.91 & +7.55 \\
+% GEPA\{M\} & 62.00 & 37.76 & 47.67 & 90.29 & 85.59 & 64.66 & +11.30 \\
+% GEPA\{P\} & 62.33 & \textbf{38.61} & \textbf{52.33} & \textbf{91.85} & 82.16 & \textbf{65.46} & +\textbf{12.10} \\
+% GEPA\{M\}\{P\} & \textbf{64.33} & 28.23 & 51.67 & 86.26 & 82.84 & 62.67 & +9.31 \\
+% \midrule
+% \multicolumn{8}{l}{\textbf{GPT 4.1 mini}} \\
+% \midrule
+% Baseline & 38.00 & 47.79 & 46.33 & 78.57 & 80.74 & 58.29 & --- \\
+% MIPROv2 & 58.00 & 49.15 & 48.33 & 83.37 & 87.65 & 65.30 & +7.01 \\
+% GEPA & 66.00 & 49.49 & 51.00 & 94.03 & 87.11 & 69.53 & +11.24 \\
+% GEPA\{M\} & 64.00 & 49.15 & 52.67 & 93.34 & \textbf{89.61} & 69.75 & +11.47 \\
+% GEPA\{P\} & \textbf{69.00} & 52.72 & 51.67 & 94.47 & 88.04 & 71.18 & +12.89 \\
+% GEPA\{M\}\{P\} & 65.67 & \textbf{55.95} & \textbf{56.67} & \textbf{96.46} & 88.53 & \textbf{72.66} & +\textbf{14.37} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+% \begin{table*}[ht]
+% \centering
+% \caption{Benchmark results for qwen3-8b and gpt-41-mini models across multiple tasks.}
+% \label{tab:main-results}
+% \resizebox{\textwidth}{!}{
+% \begin{tabular}{l|ccccc|cc}
+% \toprule
+% \textbf{Model} & \textbf{FSABench} & \textbf{HotpotQA} & \textbf{IFBench} & \textbf{Papillon} & \textbf{Hover} & \textbf{Aggregate} & \textbf{Improvement} \\
+%  % & & \textbf{Bench} & & & \textbf{Bench} & & \\
+%  % & (\textit{FacilitySupportAnalyzerMM}) & (\textit{HotpotMultiHop}) & (\textit{IFBenchCoT2StageProgram}) & (\textit{PAPILLON}) & (\textit{HoverMultiHop}) & & \\
+% \midrule
+% \multicolumn{8}{l}{\textbf{Qwen3 8B}} \\
+% \midrule
+% Baseline & 71.42 & 42.33 & 36.90 & 80.82 & 35.33 & 53.36 & --- \\
+% MIPROv2 & 82.55 & 55.33 & 36.22 & 81.55 & 47.33 & 60.60 & +7.24 \\
+% GRPO (24K steps) & \textbf{90.64} & 43.33 & 35.88 & 86.66 & 38.67 & 59.04 & +5.68 \\
+% % GEPA & 85.00 & 58.33 & 30.44 & 85.45 & 45.33 & 60.91 & +7.55 \\
+% % GEPA\{M\} & 85.59 & 62.00 & 37.76 & 90.29 & 47.67 & 64.66 & +11.30 \\
+% GEPA & 82.16 & 62.33 & \textbf{38.61} & \textbf{91.85} & \textbf{52.33} & \textbf{65.46} & +\textbf{12.10} \\
+% GEPA+Merge & 82.84 & \textbf{64.33} & 28.23 & 86.26 & 51.67 & 62.67 & +9.31 \\
+% \midrule
+% \multicolumn{8}{l}{\textbf{GPT 4.1 mini}} \\
+% \midrule
+% Baseline & 80.74 & 38.00 & 47.79 & 78.57 & 46.33 & 58.29 & --- \\
+% MIPROv2 & 87.65 & 58.00 & 49.15 & 83.37 & 48.33 & 65.30 & +7.01 \\
+% % GEPA & 87.11 & 66.00 & 49.49 & 94.03 & 51.00 & 69.53 & +11.24 \\
+% % GEPA\{M\} & \textbf{89.61} & 64.00 & 49.15 & 93.34 & 52.67 & 69.75 & +11.47 \\
+% GEPA & 88.04 & \textbf{69.00} & 52.72 & 94.47 & 51.67 & 71.18 & +12.89 \\
+% GEPA+Merge & 88.53 & 65.67 & \textbf{55.95} & \textbf{96.46} & \textbf{56.67} & \textbf{72.66} & +\textbf{14.37} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table*}
+
+% On diverse benchmarks, GEPA exceeds GRPO
+% First question: Does it learn faster than GRPO?

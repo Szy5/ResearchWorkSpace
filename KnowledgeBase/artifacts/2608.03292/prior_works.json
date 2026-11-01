@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Hierarchical Evidence Graph Reasoning for Document VQA",
+      "authors": "Tito et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Inspiration",
+      "relationship_sentence": "This work introduces the concept of hierarchical evidence graph reasoning, which directly inspired the explicit evidence graph framework proposed in DocTrace."
+    },
+    {
+      "title": "Visual RAG: A Retrieval-Augmented Generation Approach for Document VQA",
+      "authors": "Yu et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "Visual RAG highlights the limitations of treating retrieved evidence as unordered, which motivated DocTrace to explicitly model evidence composition for improved reasoning."
+    },
+    {
+      "title": "mPLUGDocOwl: End-to-End Document Understanding",
+      "authors": "Hu et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Baseline",
+      "relationship_sentence": "DocTrace improves upon mPLUGDocOwl by addressing its implicit evidence aggregation, providing a structured approach to evidence localization and reasoning."
+    },
+    {
+      "title": "Group Relative Policy Optimization for Reinforcement Learning",
+      "authors": "Guo et al.",
+      "year": 2025,
+      "arxiv_id": "",
+      "role": "Foundation",
+      "relationship_sentence": "The Group Relative Policy Optimization method is foundational for the training paradigm in DocTrace, enabling task-specific optimization of evidence reasoning capabilities."
+    },
+    {
+      "title": "Agent-Based Document Interaction for VQA",
+      "authors": "Wang et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Related Problem",
+      "relationship_sentence": "This work on agent-based methods informs DocTrace's approach to structured evidence gathering, enhancing the reasoning process through explicit evidence modeling."
+    },
+    {
+      "title": "Long Document Visual Question Answering: Challenges and Opportunities",
+      "authors": "Liu et al.",
+      "year": 2026,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "This paper identifies the need for explicit reasoning structures in LongDocVQA, which directly influenced the development of the evidence graph reasoning approach in DocTrace."
+    }
+  ],
+  "synthesis_narrative": "\"DocTrace\" 的发展受到若干应对 \"Long Document Visual Question Answering (LongDocVQA)\" 挑战的关键先前工作的显著影响。例如，\"Tito et al.\" 提出的 \"hierarchical evidence graph reasoning\" 直接启发了 \"DocTrace\" 中的 \"explicit evidence graph framework\"，使其能够以结构化方式进行推理。此外，\"Yu et al.\" 在其 \"Visual RAG\" 工作中指出的无序证据检索局限，促使需要显式证据组合，而这正是 \"DocTrace\" 的核心创新。再者，基线方法 \"mPLUGDocOwl\" 虽然有效，但缺乏对证据依赖关系的显式建模，而 \"DocTrace\" 旨在纠正这一点。\"Guo et al.\" 提出的 \"Group Relative Policy Optimization\" 基础训练方法对于优化 \"DocTrace\" 的证据推理能力至关重要。最后，\"Wang et al.\" 关于基于智能体的文档交互的洞见，以及 \"Liu et al.\" 关于 \"LongDocVQA\" 挑战的洞见，共同强调了更透明、可验证推理过程的必要性，而 \"DocTrace\" 成功解决了这一问题。总体而言，这些工作揭示了 \"DocTrace\" 所利用的空白与机会，使其成为文档理解领域的自然进展。"
+}

@@ -176,6 +176,12 @@ describe('App', () => {
         if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
           return Response.json([])
         }
+        if (path === '/api/publishing/wechat/config') {
+          return Response.json({ configured: true, default_author: '', title_limit: 32, digest_limit: 120, author_limit: 8 })
+        }
+        if (path === '/api/papers/demo-paper/wechat') {
+          return Response.json(null)
+        }
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
     )
@@ -213,374 +219,95 @@ describe('App', () => {
     expect(document.querySelector('.image-lightbox-backdrop')).not.toBeNull()
   })
 
-  test('generating blog HTML fills the publish path and enables the send button', async () => {
-    let jobPolls = 0
-    let rendered = false
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
-        const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json(null)
-        }
-        if (path.startsWith('/api/papers?') || path === '/api/papers') {
-          return Response.json([paper])
-        }
-        if (path === '/api/papers/demo-paper/blog/render-html' && init?.method === 'POST') {
-          return Response.json({
-            job_id: 'job-html-1',
-            slug: 'demo-paper',
-            target: 'render_blog_html',
-            status: 'pending',
-            created_at: '2026-07-15T00:00:00+00:00',
-            started_at: null,
-            finished_at: null,
-            error: null,
-            result: null,
-            progress: null
-          })
-        }
-        if (path === '/api/jobs/job-html-1') {
-          jobPolls += 1
-          if (jobPolls < 2) {
-            return Response.json({
-              job_id: 'job-html-1',
-              slug: 'demo-paper',
-              target: 'render_blog_html',
-              status: 'running',
-              created_at: '2026-07-15T00:00:00+00:00',
-              started_at: '2026-07-15T00:00:01+00:00',
-              finished_at: null,
-              error: null,
-              result: null,
-              progress: '🎨 正在排版博客 HTML...'
-            })
-          }
-          rendered = true
-          return Response.json({
-            job_id: 'job-html-1',
-            slug: 'demo-paper',
-            target: 'render_blog_html',
-            status: 'succeeded',
-            created_at: '2026-07-15T00:00:00+00:00',
-            started_at: '2026-07-15T00:00:01+00:00',
-            finished_at: '2026-07-15T00:00:02+00:00',
-            error: null,
-            result: { slug: 'demo-paper', html_path: 'summary.html' },
-            progress: null
-          })
-        }
-        if (path === '/api/papers/demo-paper') {
-          return Response.json({
-            slug: paper.slug,
-            updated_at: paper.updated_at,
-            meta: {
-              title: paper.title,
-              authors: paper.authors,
-              abstract: paper.abstract,
-              year: paper.year,
-              venue: paper.venue,
-              arxiv_id: '',
-              tags: [],
-              reviewed: false,
-              meta_reviewed: false,
-              prior_works_reviewed: false,
-              added_date: '2026-07-14',
-              blog_html_path: rendered ? 'summary.html' : null,
-              blog_html_generated_at: rendered ? '2026-07-15T00:00:02+00:00' : null
-            },
-            summary: '# Demo Paper\n\nUseful notes.',
-            prior_works: null,
-            sci_pattern: null,
-            references_count: 1,
-            figures_count: 0,
-            sections_count: 3
-          })
-        }
-        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
-          return Response.json([])
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
-    )
-
+  test('paper detail opens the publish studio for that paper', async () => {
     const user = userEvent.setup()
     render(<App />)
     await user.click(await screen.findByText('全部论文'))
     await user.click(await screen.findByText('Demo Paper'))
-    await screen.findByText(/Useful notes/)
+    await screen.findByText(/Useful notes with/)
 
-    expect(screen.getByTitle('请先生成 HTML')).toBeDisabled()
+    await user.click(screen.getByText('发布到公众号'))
 
-    await user.click(screen.getByText('生成 HTML'))
-    await screen.findByText('🎨 正在排版博客 HTML...')
-
-    await waitFor(() => expect(screen.getByDisplayValue('summary.html')).toBeInTheDocument(), { timeout: 5000 })
-    await waitFor(() => expect(screen.getByTitle('Publish WeChat draft')).not.toBeDisabled(), { timeout: 5000 })
-  }, 10000)
-
-  function stubDemoPaperWithBlogHtml(blogHtmlPath: string | null, onPost?: (path: string) => void) {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
-        const path = String(url)
-        if (init?.method === 'POST') onPost?.(path)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json(null)
-        }
-        if (path.startsWith('/api/papers?') || path === '/api/papers') {
-          return Response.json([paper])
-        }
-        if (path === '/api/papers/demo-paper') {
-          return Response.json({
-            slug: paper.slug,
-            updated_at: paper.updated_at,
-            meta: {
-              title: paper.title,
-              authors: paper.authors,
-              abstract: paper.abstract,
-              year: paper.year,
-              venue: paper.venue,
-              arxiv_id: '',
-              tags: [],
-              reviewed: false,
-              meta_reviewed: false,
-              prior_works_reviewed: false,
-              added_date: '2026-07-14',
-              blog_html_path: blogHtmlPath,
-              blog_html_generated_at: blogHtmlPath ? '2026-07-15T00:00:00+00:00' : null
-            },
-            summary: '# Demo Paper\n\nUseful notes.',
-            prior_works: null,
-            sci_pattern: null,
-            references_count: 1,
-            figures_count: 0,
-            sections_count: 3
-          })
-        }
-        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
-          return Response.json([])
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
-    )
-  }
-
-  test('loading a paper that already has a rendered blog HTML shows its real path, not the blog.html default', async () => {
-    stubDemoPaperWithBlogHtml('existing_summary.html')
-
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(await screen.findByText('全部论文'))
-    await user.click(await screen.findByText('Demo Paper'))
-    await screen.findByText(/Useful notes/)
-
-    expect(screen.getByDisplayValue('existing_summary.html')).toBeInTheDocument()
-    expect(screen.queryByDisplayValue('blog.html')).not.toBeInTheDocument()
-    expect(screen.getByTitle('Publish WeChat draft')).not.toBeDisabled()
+    expect(await screen.findByRole('heading', { name: '公众号发布' })).toBeInTheDocument()
+    expect(await screen.findByText('还没有生成公众号版本')).toBeInTheDocument()
+    expect(screen.getByText('一键发布')).toBeEnabled()
   })
 
-  test('publishing sends the generated html path without exposing a cover-path field', async () => {
-    let publishBody: string | undefined
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
-        const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json(null)
-        }
-        if (path.startsWith('/api/papers?') || path === '/api/papers') {
-          return Response.json([paper])
-        }
-        if (path === '/api/papers/demo-paper/publish/wechat' && init?.method === 'POST') {
-          publishBody = String(init.body)
-          return Response.json({
-            slug: 'demo-paper',
-            title: 'Demo Paper',
-            media_id: 'media-1',
-            html_path: 'existing_summary.html',
-            thumb_media_id: 'thumb-1',
-            uploaded_image_count: 0,
-            rendered_html_path: null
-          })
-        }
-        if (path === '/api/papers/demo-paper') {
-          return Response.json({
-            slug: paper.slug,
-            updated_at: paper.updated_at,
-            meta: {
-              title: paper.title,
-              authors: paper.authors,
-              abstract: paper.abstract,
-              year: paper.year,
-              venue: paper.venue,
-              arxiv_id: '',
-              tags: [],
-              reviewed: false,
-              meta_reviewed: false,
-              prior_works_reviewed: false,
-              added_date: '2026-07-14',
-              blog_html_path: 'existing_summary.html',
-              blog_html_generated_at: '2026-07-15T00:00:00+00:00'
-            },
-            summary: '# Demo Paper\n\nUseful notes.',
-            prior_works: null,
-            sci_pattern: null,
-            references_count: 1,
-            figures_count: 0,
-            sections_count: 3
-          })
-        }
-        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
-          return Response.json([])
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
-    )
-
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(await screen.findByText('全部论文'))
-    await user.click(await screen.findByText('Demo Paper'))
-    await screen.findByText(/Useful notes/)
-
-    expect(screen.queryByPlaceholderText(/封面图路径/)).not.toBeInTheDocument()
-
-    await user.click(screen.getByTitle('Publish WeChat draft'))
-
-    await waitFor(() => expect(publishBody).toBeDefined())
-    const parsed = JSON.parse(publishBody as string)
-    expect(parsed.html_path).toBe('existing_summary.html')
-    expect(parsed.cover_path).toBeUndefined()
-    expect(parsed.title).toBe('Demo Paper')
-  })
-
-  test('regenerating an already-generated blog HTML asks for confirmation and respects cancel', async () => {
-    const postPaths: string[] = []
-    stubDemoPaperWithBlogHtml('existing_summary.html', (path) => postPaths.push(path))
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false)
-
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(await screen.findByText('全部论文'))
-    await user.click(await screen.findByText('Demo Paper'))
-    await screen.findByText(/Useful notes/)
-
-    await user.click(screen.getByText('生成 HTML'))
-
-    expect(confirmSpy).toHaveBeenCalledWith(expect.stringContaining('existing_summary.html'))
-    expect(postPaths).not.toContain('/api/papers/demo-paper/blog/render-html')
-
-    confirmSpy.mockRestore()
-  })
-
-  test('regenerating an already-generated blog HTML proceeds once confirmed', async () => {
-    let jobPolls = 0
-    const postPaths: string[] = []
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
-        const path = String(url)
-        if (init?.method === 'POST') postPaths.push(path)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json(null)
-        }
-        if (path.startsWith('/api/papers?') || path === '/api/papers') {
-          return Response.json([paper])
-        }
-        if (path === '/api/papers/demo-paper/blog/render-html' && init?.method === 'POST') {
-          return Response.json({
-            job_id: 'job-html-2',
-            slug: 'demo-paper',
-            target: 'render_blog_html',
-            status: 'pending',
-            created_at: '2026-07-15T00:00:00+00:00',
-            started_at: null,
-            finished_at: null,
-            error: null,
-            result: null,
-            progress: null
-          })
-        }
-        if (path === '/api/jobs/job-html-2') {
-          jobPolls += 1
-          if (jobPolls < 2) {
-            return Response.json({
-              job_id: 'job-html-2',
-              slug: 'demo-paper',
-              target: 'render_blog_html',
-              status: 'running',
-              created_at: '2026-07-15T00:00:00+00:00',
-              started_at: '2026-07-15T00:00:01+00:00',
-              finished_at: null,
-              error: null,
-              result: null,
-              progress: '🎨 正在排版博客 HTML...'
-            })
-          }
-          return Response.json({
-            job_id: 'job-html-2',
-            slug: 'demo-paper',
-            target: 'render_blog_html',
-            status: 'succeeded',
-            created_at: '2026-07-15T00:00:00+00:00',
-            started_at: '2026-07-15T00:00:01+00:00',
-            finished_at: '2026-07-15T00:00:02+00:00',
-            error: null,
-            result: { slug: 'demo-paper', html_path: 'existing_summary_v2.html' },
-            progress: null
-          })
-        }
-        if (path === '/api/papers/demo-paper') {
-          return Response.json({
-            slug: paper.slug,
-            updated_at: paper.updated_at,
-            meta: {
-              title: paper.title,
-              authors: paper.authors,
-              abstract: paper.abstract,
-              year: paper.year,
-              venue: paper.venue,
-              arxiv_id: '',
-              tags: [],
-              reviewed: false,
-              meta_reviewed: false,
-              prior_works_reviewed: false,
-              added_date: '2026-07-14',
-              blog_html_path: 'existing_summary.html',
-              blog_html_generated_at: '2026-07-15T00:00:00+00:00'
-            },
-            summary: '# Demo Paper\n\nUseful notes.',
-            prior_works: null,
-            sci_pattern: null,
-            references_count: 1,
-            figures_count: 0,
-            sections_count: 3
-          })
-        }
-        if (path.startsWith('/api/jobs?') || path === '/api/jobs') {
-          return Response.json([])
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
-    )
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true)
-
-    const user = userEvent.setup()
-    render(<App />)
-    await user.click(await screen.findByText('全部论文'))
-    await user.click(await screen.findByText('Demo Paper'))
-    await screen.findByText(/Useful notes/)
-
-    await user.click(screen.getByText('生成 HTML'))
-
-    expect(confirmSpy).toHaveBeenCalled()
-    expect(postPaths).toContain('/api/papers/demo-paper/blog/render-html')
-    await waitFor(() => expect(screen.getByDisplayValue('existing_summary_v2.html')).toBeInTheDocument(), {
-      timeout: 5000
+  test('one-click publish shows live steps and then the prepared package', async () => {
+    const baseFetch = globalThis.fetch
+    let prepareBody: Record<string, unknown> | null = null
+    let polls = 0
+    const steps = (done: boolean) => [
+      { key: 'read', label: '读取精读笔记', status: 'succeeded', external: null, detail: null, started_at: null, finished_at: null },
+      {
+        key: 'headline',
+        label: '生成标题与摘要',
+        status: done ? 'succeeded' : 'running',
+        external: 'LLM',
+        detail: null,
+        started_at: new Date().toISOString(),
+        finished_at: done ? new Date().toISOString() : null
+      },
+      { key: 'create_draft', label: '创建草稿', status: done ? 'succeeded' : 'pending', external: '微信 API', detail: null, started_at: null, finished_at: null }
+    ]
+    const job = (done: boolean) => ({
+      job_id: 'wx-1',
+      slug: 'demo-paper',
+      target: 'wechat_publish',
+      status: done ? 'succeeded' : 'running',
+      created_at: '2026-07-15T00:00:00+00:00',
+      started_at: '2026-07-15T00:00:00+00:00',
+      finished_at: done ? '2026-07-15T00:00:05+00:00' : null,
+      error: null,
+      result: null,
+      progress: null,
+      steps: steps(done)
     })
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
+        const path = String(url)
+        if (path === '/api/papers/demo-paper/wechat/prepare' && init?.method === 'POST') {
+          prepareBody = JSON.parse(String(init.body))
+          return Response.json(job(false), { status: 202 })
+        }
+        if (path === '/api/jobs/wx-1') {
+          polls += 1
+          return Response.json(job(polls >= 2))
+        }
+        if (path === '/api/papers/demo-paper/wechat' && polls >= 2) {
+          return Response.json({
+            slug: 'demo-paper',
+            title: 'Demo：一句话说清贡献',
+            digest: '导语',
+            author: null,
+            source_title: 'Demo Paper',
+            cover_source: 'generated',
+            cover_figure: null,
+            image_count: 1,
+            formula_count: 2,
+            warnings: [],
+            prepared_at: '2026-07-15T00:00:04+00:00',
+            published_at: '2026-07-15T00:00:05+00:00',
+            draft_media_id: 'draft-1',
+            stale: false
+          })
+        }
+        return baseFetch(url, init)
+      })
+    )
 
-    confirmSpy.mockRestore()
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(await screen.findByText('公众号发布'))
+    await user.click(await screen.findByText('Demo Paper'))
+    await user.click(await screen.findByText('一键发布'))
+
+    expect(await screen.findByText('正在请求 LLM')).toBeInTheDocument()
+    expect(prepareBody).toMatchObject({ publish: true, regenerate_headline: true })
+    await waitFor(() => expect(screen.getByDisplayValue('Demo：一句话说清贡献')).toBeInTheDocument(), { timeout: 5000 })
+    expect(screen.getByText(/已写入公众号草稿箱/)).toBeInTheDocument()
+    expect(screen.getByText('打开公众号后台草稿箱')).toBeInTheDocument()
   }, 10000)
 
   test('shows API errors from review actions', async () => {

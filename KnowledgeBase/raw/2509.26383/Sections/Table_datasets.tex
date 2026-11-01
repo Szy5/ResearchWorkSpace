@@ -1,0 +1,85 @@
+\begin{longtable}{p{2cm}|p{4cm}|p{6cm}} 
+\caption{Freebase knowledge graph dataset used for KGQA evaluation. All datasets share the same underlying Freebase knowledge graph structure with 4.9M entities and 663 relations.} 
+\label{tab:freebase_kg_datasets} \\ 
+\toprule 
+\textbf{Dataset} & \textbf{Entities} & \textbf{Relations} \\ 
+\midrule 
+\textbf{Freebase} & 
+\begin{minipage}[t]{5.2cm}
+{\footnotesize 
+- P!nk \\
+- Gender \\
+- Ice Cube \\
+- United States of America \\
+- Nemanja Mikic}
+\end{minipage} & 
+\begin{minipage}[t]{7cm}
+{\footnotesize 
+- broadcast.content.artist \\
+- people.person.nationality \\
+- music.artist\_genre\\
+- location.location.containedby \\
+- basketball.basketball.player\_position}
+\end{minipage} \\ 
+\midrule
+\multicolumn{3}{l}{\textbf{Questions}} \\
+\multicolumn{3}{p{12cm}}{\footnotesize 
+\begin{tabular}[t]{@{}p{13.5cm}@{}}
+\textbf{WebQSP (1,639 test questions):} \\
+Q: What does jamaican people speak? \\
+A: \textit{[Jamaican English, Jamaican Creole English Language]} \\[0.2em]
+\textbf{CWQ (3,531 test questions):} \\
+Q: Lou Seal is the mascot for the team that last won the World Series when? \\
+A: \textit{[2014 World Series]} \\[0.2em]
+\textbf{SimpleQA (21,687 test questions):} \\
+Q: Where is the madam satan located? \\
+A: \textit{[United States of America]} \\[0.2em]
+\textbf{GrailQA (13,231 test questions):} \\
+Q: Which play is produced by the illusion? \\
+A: \textit{[The Illusion]}
+\end{tabular}} \\ 
+\bottomrule 
+\end{longtable}
+
+\begin{longtable}{p{2cm}|p{4cm}|p{6cm}} 
+\caption{Wikidata knowledge graph datasets used for KGQA evaluation. All datasets share the same underlying Wikidata knowledge graph structure with 15M entities and 2.3K relations.} 
+\label{tab:wikidata_kg_datasets} \\ 
+\toprule 
+\textbf{Dataset} & \textbf{Entities} & \textbf{Relations} \\ 
+\midrule 
+\textbf{Wikidata} & 
+\begin{minipage}[t]{5.2cm}
+{\footnotesize 
+- Barack Obama \\
+- Germany \\
+- Albert Einstein \\
+- Microsoft \\
+- Paris}
+\end{minipage} & 
+\begin{minipage}[t]{7cm}
+{\footnotesize 
+- instance of \\
+- country \\
+- occupation \\
+- date of birth \\
+- place of birth}
+\end{minipage} \\ 
+\midrule
+\multicolumn{3}{l}{\textbf{Questions}} \\
+\multicolumn{3}{p{12cm}}{\footnotesize 
+\begin{tabular}[t]{@{}p{13.5cm}@{}}
+\textbf{T-Rex (2.2M test questions):} \\
+Q: What is the occupation of Albert Einstein? \\
+A: \textit{[Physicist]} \\[0.2em]
+
+\textbf{QALD-10en (250 test questions):} \\
+Q: Which companies were founded by Bill Gates? \\
+A: \textit{[Microsoft]} \\[0.2em]
+\end{tabular}} \\ 
+\bottomrule 
+\end{longtable}
+
+
+
+
+

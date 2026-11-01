@@ -1,0 +1,139 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2610.35598",
+  "created_at": "2026-10-27T05:34:39.672806+00:00",
+  "updated_at": "2026-10-27T05:41:28.925378+00:00",
+  "paper": {
+    "title": "Evolve on Graph: Self-Evolving Knowledge Graph Reasoning without Question Annotations",
+    "authors": [
+      "Zongyuan Sun",
+      "Shuai Zhao",
+      "Ke Shu",
+      "Ziyue Zhu",
+      "Shangyang Wu",
+      "Yuanlin Lin",
+      "Tao Wang",
+      "Shiyue Li",
+      "Yingjun Du",
+      "Anh Tuan Luu",
+      "Haoran Luo"
+    ],
+    "affiliations": [
+      "Beijing University of Posts and Telecommunications, Beijing, China University of Helsinki, Helsinki, Finland",
+      "University of Amsterdam, Amsterdam, Netherlands Nanyang Technological University, Singapore"
+    ],
+    "abstract": "Knowledge graphs (KGs) provide reliable external knowledge for multi-hop factual reasoning with large language models (LLMs), yet most KGs in real-world domains such as finance and industry lack question--answer (QA) annotations. Without such annotations, existing methods struggle to improve LLM graph reasoning: training-free agents cannot improve their exploration through interaction; reinforcement learning (RL) agents depend on QA data annotated by humans or synthesized by closed-source models; and training data is typically built offline, so its topology mix is fixed and cannot follow the agent's ability. We propose Evolve on Graph (EoG), a framework that lets an LLM self-evolve its graph reasoning without any QA annotations. Through Graph Self-Play, a single LLM alternates between a Proposer that poses questions and a Solver that answers them. To make questions verifiable, Symbolically Verifiable Topology Synthesis (SVTS) samples reasoning topologies on the KG and executes the corresponding first-order logic queries, yielding topology skeletons with correct and complete answer sets; guided by a skeleton, the Proposer explores the graph to pose a multi-hop question. To let task topologies follow the Solver, a Boundary-Aware Graph Curriculum rewards the Proposer by the Solver's score variance, keeping questions at the Solver's capability boundary so that complex topologies enter training as the Solver improves. On six benchmarks over Freebase, Wikidata, and an industrial KG, EoG consistently outperforms prompting-, retrieval-, and agent-based methods, showing that LLM graph reasoning can improve through self-play without QA annotations. Our code is available at https://github.com/Szy5/EoG. [FIGURE: figures/overview.pdf | fig:overview] Caption: With only a KG and no question annotations, EoG lets an LLM self-evolve by proposing questions verified on the graph and then learning to solve them.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "2610.35598",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": true,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-27",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2610.35598",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "bc7d1928e884218e429ed44dae3e1c5a7399065553d640d94eed7f7b85232dec",
+        "bytes": 4435
+      },
+      {
+        "path": "sections/0_abstract.tex",
+        "sha256": "ec85794c33012a71a485c3dea9b5d524113f63d3935355ad431871e0395ff23f",
+        "bytes": 2093
+      },
+      {
+        "path": "sections/1_introduction.tex",
+        "sha256": "1b7e506f933a9561a37e0666b52c043ea1e7289a1a159e4c856e3303e88bfb92",
+        "bytes": 5475
+      },
+      {
+        "path": "sections/4_related_work.tex",
+        "sha256": "dd60405a89dbc7c1585f60af56ad63a9a136ce56e594c40fc312cf0217a84418",
+        "bytes": 1842
+      },
+      {
+        "path": "tables/method_comparison.tex",
+        "sha256": "3e97637f536bd26a27c6887c670519d53ad748d5c4812314dc60ed560c701df7",
+        "bytes": 2822
+      },
+      {
+        "path": "sections/2_methods.tex",
+        "sha256": "9b7ce88c2743659c00fe733c0a577a83ef5051173cc8abcc47f0de1a4526bdec",
+        "bytes": 18177
+      },
+      {
+        "path": "tables/main_results.tex",
+        "sha256": "e101fff68a2927c31ad0720683456322b3db7322ae48807831c6b2efb2cbc7e4",
+        "bytes": 5545
+      },
+      {
+        "path": "sections/3_experiments.tex",
+        "sha256": "f20d279897a95554af69db1d4d0c5e14f477ac6989cfd657f9abd3436565f84e",
+        "bytes": 11742
+      },
+      {
+        "path": "sections/experiment_float_group.tex",
+        "sha256": "653501f7b36672b41489184952aac557e550bd60b6dd9e7360f8a8e260677e9b",
+        "bytes": 2432
+      },
+      {
+        "path": "tables/ablation_results.tex",
+        "sha256": "5967d3a1c170606d2eed292b756f9b02488191d25a76eaa83c3f491ef3362e3b",
+        "bytes": 1406
+      },
+      {
+        "path": "sections/5_conclusion.tex",
+        "sha256": "57bc9430eda0e2da0a45869e573a0d615bbcfd197f2073dccb4b3b64712ab7d2",
+        "bytes": 1025
+      },
+      {
+        "path": "sections/reference.tex",
+        "sha256": "26ef399e357ddc5d88dc782a0202b10013109a87f7e19809892cd07e0ad21542",
+        "bytes": 66
+      },
+      {
+        "path": "sections/appendix.tex",
+        "sha256": "c3d191ca2c78f563ba91295884563d3e33d32860f5be0976c6eba28ddb6ddf5d",
+        "bytes": 10585
+      },
+      {
+        "path": "sections/appendix_case_pair.tex",
+        "sha256": "c0e5644f57b9f56b6902cf9efddf80073a26a31d3c691187dbcfdf37216c0709",
+        "bytes": 7062
+      },
+      {
+        "path": "tables/query_patterns.tex",
+        "sha256": "ab992684301835f7bcfb4985fa407a6541d69edc77861f6a994a35521a8229aa",
+        "bytes": 1153
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 25,
+    "figures": 15,
+    "references": 71
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 7, column 1):\nunexpected Tok (line 7, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 7, column 1):\nunexpected Tok (line 7, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

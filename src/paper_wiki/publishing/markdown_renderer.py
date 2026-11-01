@@ -2,10 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from html import escape
+from pathlib import Path
+import re
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 import markdown
+
+from paper_wiki.publishing.math_render import formula_fallback_html, latex_to_inline_html, render_formula_png
 
 
 @dataclass(frozen=True)
@@ -68,12 +72,13 @@ def _inline_children(node: Tag) -> str:
     return "".join(_inline(child) for child in node.children)
 
 
-def _image(node: Tag) -> str:
-    src = _safe_image_src(str(node.get("src") or ""))
+def figure_block(src: str, alt: str = "", *, margin: str = "0") -> str:
+    """Framed image with a centred caption; ``margin`` is the CSS margin of the wrapper."""
+    src = _safe_image_src(src)
     # Relative local image paths intentionally have no URL scheme and are kept.
     if not src:
         return ""
-    alt = escape(str(node.get("alt") or ""))
+    alt = escape(alt)
     caption = (
         f'<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">'
         f'<span leaf="">— {alt}</span></p>'
@@ -81,22 +86,59 @@ def _image(node: Tag) -> str:
         else ""
     )
     return (
+        f'<section style="margin:{margin};">'
         '<section style="background:#FFF;border-radius:12px;padding:6px;border:1px solid #E5E7EB;'
         'box-shadow:0 4px 12px -2px rgba(0,0,0,0.08);margin:0 0 8px;">'
         '<section style="margin:0;border-radius:8px;overflow:hidden;">'
         f'<span leaf=""><img src="{src}" alt="{alt}" style="max-width:100%;height:auto;display:block;margin:0 auto;"></span>'
-        f'</section></section>{caption}'
+        f'</section></section>{caption}</section>'
+    )
+
+
+def _image(node: Tag) -> str:
+    return figure_block(str(node.get("src") or ""), str(node.get("alt") or ""))
+
+
+def _text_paragraph(content: str) -> str:
+    return (
+        '<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;">'
+        f'{content}</p>'
     )
 
 
 def _paragraph(node: Tag) -> str:
     images = node.find_all("img")
-    if images and not node.get_text(strip=True):
+    if not images:
+        return _text_paragraph(_inline_children(node))
+    if not node.get_text(strip=True):
         return "".join(_image(image) for image in images)
-    return (
-        '<p style="margin:0 0 16px;font-size:14px;line-height:1.9;text-align:justify;color:#374151;">'
-        f'{_inline_children(node)}</p>'
-    )
+    # An image followed by a "*图：…*" line on the next source line lands in the same <p>;
+    # split it so the image is rendered as a block instead of being dropped by _inline.
+    parts: list[str] = []
+    run: list[NavigableString | Tag] = []
+
+    def flush() -> None:
+        meaningful = [child for child in run if not (isinstance(child, NavigableString) and not child.strip())]
+        if meaningful:
+            if len(meaningful) == 1 and isinstance(meaningful[0], Tag) and meaningful[0].name == "em":
+                parts.append(
+                    '<p style="font-size:12px;color:#9CA3AF;text-align:center;margin:0 0 24px;">'
+                    f'{_inline_children(meaningful[0])}</p>'
+                )
+            else:
+                parts.append(_text_paragraph("".join(_inline(child) for child in run)))
+        run.clear()
+
+    for child in node.children:
+        if isinstance(child, Tag) and (child.name == "img" or child.find("img")):
+            flush()
+            parts.extend(_image(image) for image in ([child] if child.name == "img" else child.find_all("img")))
+        elif isinstance(child, Tag) and child.name == "br":
+            continue
+        else:
+            run.append(child)
+    flush()
+    return "".join(parts)
 
 
 def _code_block(node: Tag) -> str:
@@ -125,19 +167,52 @@ def _code_block(node: Tag) -> str:
     )
 
 
-def _list(node: Tag, ordered: bool) -> str:
+_LIST_STYLES = ("disc", "circle", "square")
+
+
+def _list(node: Tag, ordered: bool, depth: int = 0) -> str:
     items: list[str] = []
-    for index, item in enumerate(node.find_all("li", recursive=False), start=1):
-        marker = str(index) if ordered else "•"
+    for item in node.find_all("li", recursive=False):
+        text_parts: list[str] = []
+        nested: list[str] = []
+        for child in item.children:
+            if isinstance(child, Tag) and child.name in {"ul", "ol"}:
+                nested.append(_list(child, child.name == "ol", depth + 1))
+            elif isinstance(child, Tag) and child.name == "p":
+                text_parts.append(_inline_children(child))
+            elif isinstance(child, NavigableString) and not str(child).strip():
+                continue
+            else:
+                text_parts.append(_inline(child))
         items.append(
-            '<section style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">'
-            '<span style="display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;'
-            'background:#059669;color:#fff;font-size:11px;font-weight:700;border-radius:50%;margin-top:2px;">'
-            f'<span leaf="">{marker}</span></span>'
-            '<p style="font-size:14px;color:#374151;margin:0;line-height:1.9;flex:1;">'
-            f'{_inline_children(item)}</p></section>'
+            '<li style="margin:0 0 6px;font-size:14px;line-height:1.9;color:#374151;">'
+            f'<section style="text-align:justify;">{"".join(text_parts)}</section>{"".join(nested)}</li>'
         )
-    return f'<section style="margin-bottom:24px;">{"".join(items)}</section>'
+    tag = "ol" if ordered else "ul"
+    list_style = "decimal" if ordered else _LIST_STYLES[min(depth, len(_LIST_STYLES) - 1)]
+    margin = "4px 0 4px" if depth else "0 0 18px"
+    return (
+        f'<{tag} style="list-style-type:{list_style};padding-left:{"1.4em" if depth else "1.6em"};margin:{margin};color:#6B7280;">'
+        f'{"".join(items)}</{tag}>'
+    )
+
+
+_LIST_LINE_RE = re.compile(r"^( +)((?:[-*+]|\d+[.)])\s)", re.MULTILINE)
+
+
+def _normalize_list_indent(markdown_text: str) -> str:
+    """Python-Markdown nests lists only at 4-space steps; LLMs usually indent by 2."""
+    indents = {len(match.group(1)) for match in _LIST_LINE_RE.finditer(markdown_text)}
+    if not any(indent % 4 for indent in indents):
+        return markdown_text
+    return _LIST_LINE_RE.sub(lambda m: " " * (len(m.group(1)) * 2) + m.group(2), markdown_text)
+
+
+_HEADING_NUMBER_RE = re.compile(r"^\s*(?:第[一二三四五六七八九十\d]+[章节部分]|[（(]?\d{1,2}(?:\.\d+)*(?:[.)、．）]|\s)|[一二三四五六七八九十]+[、.．])\s*")
+
+
+def _heading_text(node: Tag) -> str:
+    return _HEADING_NUMBER_RE.sub("", node.get_text(strip=True)) or node.get_text(strip=True)
 
 
 def _table(node: Tag) -> str:
@@ -164,19 +239,15 @@ def _block(node: Tag, chapter_index: int) -> str:
         return ""
     if name == "h2":
         return (
-            '<section style="margin-top:48px;margin-bottom:24px;">'
-            '<section style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">'
-            '<section style="text-align:center;flex-shrink:0;">'
-            f'<p style="margin:0;font-size:28px;font-weight:900;color:#059669;line-height:1;"><span leaf="">{chapter_index:02d}</span></p>'
-            '<p style="margin:0;font-size:8px;font-weight:700;color:#D1D5DB;letter-spacing:2px;"><span leaf="">PART</span></p>'
-            '</section><span style="width:1px;height:36px;background:#E5E7EB;flex-shrink:0;"><span leaf=""><br></span></span>'
-            f'<p style="margin:0;font-size:17px;font-weight:900;color:#111827;"><span leaf="">{escape(node.get_text(strip=True))}</span></p>'
-            '</section></section>'
+            '<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;">'
+            f'<span style="font-size:22px;font-weight:900;color:#059669;line-height:1;"><span leaf="">{chapter_index:02d}</span></span>'
+            f'<span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;"><span leaf="">{escape(_heading_text(node))}</span></span>'
+            '</section>'
         )
     if name == "h3":
         return (
             '<p style="margin:28px 0 14px;font-size:16px;font-weight:800;color:#1C1917;line-height:1.5;'
-            f'border-left:4px solid #059669;padding-left:12px;"><span leaf="">{escape(node.get_text(strip=True))}</span></p>'
+            f'border-left:4px solid #059669;padding-left:12px;"><span leaf="">{escape(_heading_text(node))}</span></p>'
         )
     if name == "p":
         return _paragraph(node)
@@ -199,26 +270,89 @@ def _block(node: Tag, chapter_index: int) -> str:
     return ""
 
 
-def render_markdown_for_wechat(markdown_text: str, *, fallback_title: str = "微信公众号文章") -> RenderedMarkdown:
+_CODE_SEGMENT_RE = re.compile(r"(```[\s\S]*?```|`[^`\n]+`)")
+_DISPLAY_MATH_RE = re.compile(r"\$\$([\s\S]+?)\$\$")
+_INLINE_MATH_RE = re.compile(r"(?<![\\$])\$(?!\s)([^$\n]+?)(?<!\s)\$(?!\d)")
+_BLOCK_PLACEHOLDER_RE = re.compile(r'<p style="[^"]*"><span leaf="">PWMATHB(\d+)Z</span></p>')
+_INLINE_PLACEHOLDER_RE = re.compile(r"PWMATH([BI])(\d+)Z")
+
+
+def _extract_math(markdown_text: str) -> tuple[str, list[tuple[str, bool]]]:
+    """Replace $$..$$ / $..$ outside code with letter-only placeholders markdown leaves alone."""
+    formulas: list[tuple[str, bool]] = []
+
+    def display(match: re.Match[str]) -> str:
+        formulas.append((match.group(1).strip(), True))
+        return f"\n\nPWMATHB{len(formulas) - 1}Z\n\n"
+
+    def inline(match: re.Match[str]) -> str:
+        formulas.append((match.group(1).strip(), False))
+        return f"PWMATHI{len(formulas) - 1}Z"
+
+    pieces = _CODE_SEGMENT_RE.split(markdown_text)
+    for index in range(0, len(pieces), 2):
+        piece = _DISPLAY_MATH_RE.sub(display, pieces[index])
+        pieces[index] = _INLINE_MATH_RE.sub(inline, piece)
+    return "".join(pieces), formulas
+
+
+def _formula_html(expr: str, display: bool, asset_dir: Path | None) -> str:
+    if not display:
+        text_html = latex_to_inline_html(expr)
+        if text_html is not None:
+            return text_html
+    if asset_dir is not None:
+        try:
+            rendered = render_formula_png(expr, asset_dir / "formulas", display=display)
+        except Exception:  # mathtext raises a variety of parse errors
+            rendered = None
+        if rendered is not None:
+            src = escape(rendered.path.relative_to(asset_dir).as_posix(), quote=True)
+            alt = escape(expr, quote=True)
+            if display:
+                return (
+                    '<section style="margin:4px 0 20px;text-align:center;overflow-x:auto;">'
+                    f'<span leaf=""><img src="{src}" alt="{alt}" style="width:{rendered.width}px;'
+                    'max-width:100%;height:auto;display:inline-block;"></span></section>'
+                )
+            return (
+                f'<img src="{src}" alt="{alt}" style="display:inline-block;vertical-align:middle;'
+                f'height:{rendered.height}px;width:auto;margin:0 2px;">'
+            )
+    return formula_fallback_html(expr, display=display)
+
+
+def _restore_math(html: str, formulas: list[tuple[str, bool]], asset_dir: Path | None) -> str:
+    if not formulas:
+        return html
+    rendered = [_formula_html(expr, display, asset_dir) for expr, display in formulas]
+    html = _BLOCK_PLACEHOLDER_RE.sub(lambda m: rendered[int(m.group(1))], html)
+    # Remaining placeholders sit inside <span leaf="">text</span>; close the leaf around them.
+    html = _INLINE_PLACEHOLDER_RE.sub(lambda m: f'</span>{rendered[int(m.group(2))]}<span leaf="">', html)
+    return html.replace('<span leaf=""></span>', "")
+
+
+def render_markdown_for_wechat(
+    markdown_text: str,
+    *,
+    fallback_title: str = "微信公众号文章",
+    asset_dir: Path | None = None,
+    header_html: str = "",
+) -> RenderedMarkdown:
+    """Render Markdown into the 摸鱼绿 WeChat fragment.
+
+    ``asset_dir`` is the directory the HTML will live in; when given, formulas are
+    rendered to ``asset_dir/formulas/*.png`` and referenced relatively.
+    """
+    protected, formulas = _extract_math(_normalize_list_indent(markdown_text))
     source_html = markdown.markdown(
-        markdown_text,
+        protected,
         extensions=["fenced_code", "tables", "sane_lists"],
         output_format="html5",
     )
     soup = BeautifulSoup(source_html, "html.parser")
     first_h1 = soup.find("h1")
     title = first_h1.get_text(" ", strip=True) if first_h1 else fallback_title
-    headings = [heading.get_text(" ", strip=True) for heading in soup.find_all("h2")]
-
-    toc = ""
-    if len(headings) >= 2:
-        cards = "".join(
-            '<section style="flex:1;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;padding:10px;">'
-            f'<p style="font-size:10px;color:#059669;margin:0 0 4px;font-weight:700;"><span leaf="">PART {index:02d}</span></p>'
-            f'<p style="font-size:13px;color:#111827;margin:0;font-weight:700;"><span leaf="">{escape(heading)}</span></p></section>'
-            for index, heading in enumerate(headings[:3], start=1)
-        )
-        toc = f'<section style="display:flex;gap:8px;margin:0 20px 28px;">{cards}</section>'
 
     body: list[str] = []
     chapter_index = 0
@@ -229,24 +363,50 @@ def render_markdown_for_wechat(markdown_text: str, *, fallback_title: str = "微
             chapter_index += 1
         body.append(_block(child, chapter_index))
 
-    cover = (
-        '<section style="margin:0 0 28px;background:#fff;border:1.5px solid rgba(5,150,105,0.15);'
-        'border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.06);">'
-        '<section style="padding:28px;">'
-        '<p style="font-size:11px;font-weight:700;letter-spacing:3px;color:#059669;margin:0 0 20px;"><span leaf="">PAPER · WIKI</span></p>'
-        f'<p style="font-size:26px;font-weight:900;color:#111827;margin:0;line-height:1.25;"><span leaf="">{escape(title)}</span></p>'
-        '</section><section style="height:8px;background:linear-gradient(135deg,#059669,#10B981);"><span leaf=""><br></span></section></section>'
-    )
-    footer = (
-        '<section style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:16px;padding:26px 20px;'
-        'text-align:center;margin:32px 0 24px;">'
-        '<p style="font-size:13px;font-weight:700;color:#111827;margin:0 0 8px;line-height:1.7;">'
-        '<span leaf="">如果你觉得这篇文章有收获，欢迎点赞、在看、转发。</span></p>'
-        '<p style="font-size:10px;color:#9CA3AF;letter-spacing:1px;margin:0;"><span leaf="">THANKS FOR READING</span></p></section>'
-    )
+    content = _restore_math("".join(body), formulas, asset_dir)
+    title = _INLINE_PLACEHOLDER_RE.sub(lambda m: formulas[int(m.group(2))][0], title)
     html = (
         '<section style="max-width:677px;margin:0 auto;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'
         "'PingFang SC','Microsoft YaHei',sans-serif;color:#374151;line-height:1.75;letter-spacing:0.5px;overflow-x:hidden;\">"
-        f'{cover}{toc}<section style="padding:0 20px;">{"".join(body)}{footer}</section></section>'
+        f'{header_html}<section style="padding:0 20px;">{content}</section></section>'
     )
     return RenderedMarkdown(title=title[:64], html=html)
+
+
+def paper_info_card(
+    *,
+    title: str,
+    authors: list[str],
+    affiliations: list[str] | None = None,
+    venue: str = "",
+    year: int | None = None,
+    arxiv_id: str = "",
+) -> str:
+    """Source card shown above the article body: title, authors, affiliations, venue."""
+    author_text = ", ".join(authors[:12]) + (" 等" if len(authors) > 12 else "")
+    source = " | ".join(part for part in [venue, str(year) if year else "", f"arXiv:{arxiv_id}" if arxiv_id else ""] if part)
+
+    def label(text: str) -> str:
+        return (
+            '<p style="font-size:12px;color:#059669;font-weight:700;margin:0 0 2px;line-height:1.6;">'
+            f'<span leaf="">{text}</span></p>'
+        )
+
+    def value(text: str, *, strong: bool = False, last: bool = True) -> str:
+        style = "font-size:14px;font-weight:700;color:#111827;" if strong else "font-size:12px;color:#4B5563;"
+        margin = "0 0 10px" if last else "0 0 2px"
+        return f'<p style="{style}margin:{margin};line-height:1.7;"><span leaf="">{escape(text)}</span></p>'
+
+    rows = [label("标题"), value(title, strong=True)]
+    if author_text:
+        rows += [label("作者"), value(author_text)]
+    if affiliations:
+        shown = affiliations[:8]
+        rows.append(label("单位"))
+        rows += [value(f"{index}. {name}", last=index == len(shown)) for index, name in enumerate(shown, 1)]
+    if source:
+        rows += [label("来源"), value(source)]
+    return (
+        '<section style="margin:0 20px 28px;padding:16px 18px;background:#F0FDF4;border-radius:10px;'
+        f'border-left:4px solid #059669;">{"".join(rows)}</section>'
+    )

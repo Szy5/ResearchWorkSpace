@@ -91,7 +91,7 @@ class PriorWorksPatch(BaseModel):
 class IngestRequest(BaseModel):
     overwrite: bool = False
     only: list[str] | None = None
-    summary_prompt: str | None = "paper_summary_v3.py"
+    summary_prompt: str | None = "paper_summary_v5.py"
     prior_works_prompt: str | None = "prior_work_prompt.py"
     sci_pattern_prompt: str | None = "sci_pattern_classify_prompt.py"
 

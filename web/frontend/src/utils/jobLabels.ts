@@ -6,7 +6,9 @@ const TARGET_LABELS: Record<string, string> = {
   fetch_and_ingest: '拉取并生成',
   recommend_refresh: '刷新推荐',
   render_blog_html: '生成 HTML',
-  markdown_publish: '公众号上传'
+  markdown_publish: '公众号上传',
+  wechat_prepare: '公众号预览',
+  wechat_publish: '公众号发布'
 }
 
 export function jobTargetLabel(target: string): string {

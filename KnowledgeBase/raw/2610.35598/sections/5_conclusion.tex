@@ -1,0 +1,5 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We present EoG, in which a single LLM self-evolves its graph reasoning on a KG using only the KG itself, aimed at KGs that have no question--answer annotations and cannot be handed to closed-source models. Graph Self-Play lets one policy explore the graph as both the Proposer and the Solver, SVTS derives verifiable tasks with complete answer sets by executing logic queries on the KG, and the Boundary-Aware Graph Curriculum keeps the questions on the Solver's capability boundary as it shifts from simple to complex topologies. On six benchmarks over three KGs, EoG outperforms prompting-, agent-, and retrieval-based methods, and on schema unseen in the annotations it exceeds KG-R1$^\dagger$ trained on WebQSP or GrailQA. These results show that a KG can supply its own training tasks, answers, and curriculum, offering a direction for self-evolving graph reasoning on real-world KGs that lack annotations, requiring nothing beyond the query endpoint of each new target KG.
+

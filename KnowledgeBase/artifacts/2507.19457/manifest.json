@@ -1,0 +1,129 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2507.19457",
+  "created_at": "2026-10-31T06:50:50.816197+00:00",
+  "updated_at": "2026-10-31T06:50:50.816197+00:00",
+  "paper": {
+    "title": "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning",
+    "authors": [
+      "Lakshya A Agrawal",
+      "Shangyin Tan",
+      "Dilara Soylu",
+      "Noah Ziems",
+      "Rishi Khare",
+      "Krista Opsahl-Ong",
+      "Arnav Singhvi",
+      "Herumb Shandilya",
+      "Michael J Ryan",
+      "Meng Jiang",
+      "Christopher Potts",
+      "Koushik Sen",
+      "Alexandros G. Dimakis",
+      "Ion Stoica",
+      "Dan Klein",
+      "Matei Zaharia",
+      "Omar Khattab",
+      "UC Berkeley",
+      "Notre Dame"
+    ],
+    "affiliations": [],
+    "abstract": "Large language models (LLMs) are increasingly adapted to downstream tasks via reinforcement learning (RL) methods like Group Relative Policy Optimization (GRPO), which often require thousands of rollouts to learn new tasks. We argue that the interpretable nature of language often provides a much richer learning medium for LLMs, compared to policy gradients derived from sparse, scalar rewards. To test this, we introduce GEPA (Genetic-Pareto), a prompt optimizer that thoroughly incorporates natural language reflection to learn high-level rules from trial and error. Given any AI system containing one or more LLM prompts, GEPA samples trajectories (e.g., reasoning, tool calls, and tool outputs) and reflects on them in natural language to diagnose problems, propose and test prompt updates, and combine complementary lessons from the Pareto frontier of its own attempts. As a result of GEPA's design, it can often turn even just a few rollouts into a large quality gain. Across six tasks, GEPA outperforms GRPO by 6\\% on average and by up to 20\\%, while using up to 35x fewer rollouts. GEPA also outperforms the leading prompt optimizer, MIPROv2, by over 10\\% (e.g., +12\\% accuracy on AIME-2025), and demonstrates promising results as an inference-time search strategy for code optimization. We release our code at ~https://github.com/gepa-ai/gepa.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-31",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2507.19457",
+    "entry_file": "iclr2026_conference.tex",
+    "source_files": [
+      {
+        "path": "iclr2026_conference.tex",
+        "sha256": "99ac2c7bc23c34c75af8db8cbcb4365757043e1ff83a20fec35b878833e7bf4d",
+        "bytes": 185015
+      },
+      {
+        "path": "math_commands.tex",
+        "sha256": "90473c4d0542070db244cea73ef962d6cddc5b2a746757e6a40ddf5fdfb90ba9",
+        "bytes": 12284
+      },
+      {
+        "path": "prompt_example.tex",
+        "sha256": "cd262f2df89aae42f12640d3708783866959be7d57f13448385a077f35af78a0",
+        "bytes": 33513
+      },
+      {
+        "path": "preliminaries.tex",
+        "sha256": "986b7a14033cac4e6f6fbc73d16a3e0a3aa8a051b711e6b81abe73ac1f6e3b3a",
+        "bytes": 18889
+      },
+      {
+        "path": "gepa_description.tex",
+        "sha256": "038834beca2d4c7359deb15d7ca80c2686ff74a0ba2797483f6c00c2cbd6ce1f",
+        "bytes": 90031
+      },
+      {
+        "path": "gepa_main_algorithm.tex",
+        "sha256": "e79d010b978b8a0e34ed8c447b4948c479312393aec908221428e40bd7e866f0",
+        "bytes": 4297
+      },
+      {
+        "path": "assets/table_main_qwen.tex",
+        "sha256": "a169a4ae84b69dc5511bc56f00514fd1bdc9ba858e09b4716b64c8eb04d3d635",
+        "bytes": 20687
+      },
+      {
+        "path": "assets/table_main_gpt.tex",
+        "sha256": "abf4380d35480cc749fa49a29c320c083785f7940a44a2ce6f587da6c4d982d1",
+        "bytes": 4467
+      },
+      {
+        "path": "assets/table_ablation_one.tex",
+        "sha256": "0b71da68b5576bbff32c1315850cf34bd1abe1c799d4ecdf821fe98e1d508513",
+        "bytes": 3946
+      },
+      {
+        "path": "gepa_search_trees.tex",
+        "sha256": "ea559840eac0a9f1c7c937e7426b33535638ae06e0c1c965cb91f57a3729969e",
+        "bytes": 11876
+      },
+      {
+        "path": "iterative_prompt_refinement_example_pupa.tex",
+        "sha256": "b96d2294149fe20aca4b6e3df34bf36d99c116d51a4c24775d9072d5ead566e9",
+        "bytes": 20287
+      },
+      {
+        "path": "gepa_and_mipro_instructions.tex",
+        "sha256": "b25b16adbaf10d27c6a6e7ef0f8ab7af3cc1251cde85c8df3e52d28cc37af028",
+        "bytes": 244067
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 40,
+    "figures": 67,
+    "references": 95
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 136, column 1):\nunexpected Tok (line 136, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 136, column 1):\nunexpected Tok (line 136, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

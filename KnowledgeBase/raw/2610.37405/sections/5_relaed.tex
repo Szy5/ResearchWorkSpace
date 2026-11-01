@@ -1,0 +1,10 @@
+\section{Related Work}
+
+\paragraph{Knowledge graph augmented reasoning.}
+Unlike prompting strategies~\citep{CoT,Self-Consistency,ToT,GoT}, KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods~\citep{RoG,SubGraphRAG,GCR,GNN-RAG,G-Retrieval,PathMind} condition the LLM on triples, paths, or subgraphs retrieved in a single step. Agent-based methods~\citep{ToG,PoG,KG-R1,kg-agent} explore the KG iteratively: ToG and PoG prompt a frozen LLM, whereas recent work trains the agent with RL~\citep{KG-R1,Plan-Then-retrieve,KnowCoder-A1,KBQA-R1,KG-Reasoner,SoG-R1}. However, these agents use the KG only as a source of answers and can answer correctly without retrieving the supporting triples. In this work, we train agents to use it as a source of evidence.
+
+\paragraph{Synthetic data for KGQA.}
+Synthetic data frees KGQA from human annotation, since questions can be generated from the KG and verified by execution. It provides questions for agent training~\citep{GraphWalker} and for benchmarking and retriever training~\citep{KGQAGen,GTSQA}. However, these pipelines treat it as extra examples to train or evaluate on. In this work, we treat it as a source of supervision: every synthesized question carries the evidence that defines its reward.
+
+\paragraph{Rewards for KG agents.}
+RL lets a KG agent learn its retrieval policy from interaction with the KG. Most work trains from outcome rewards on the final answer with rule-based terms for valid interaction~\citep{KG-R1,Plan-Then-retrieve,KnowCoder-A1,KBQA-R1,KG-Reasoner,SoG-R1,Peak-Then-Collapse}. Because outcome rewards are sparse, later work adds dense process rewards, obtained from an LLM judge~\citep{KG-Hopper} or from gold paths and logical forms~\citep{EoG,RoE,GAPD}. However, both sources are costly: a judge must score every rollout, and gold references must be annotated or recovered for every question. In this work, the process reward comes from data synthesis: every synthesized question already carries its supporting triples, which provide a dense reward at no extra cost.

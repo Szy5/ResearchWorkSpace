@@ -1,0 +1,152 @@
+
+
+\begin{table*}[!t]
+\caption{Zero-shot cross-KG transferability of \framework{} (Hits@1, \%). Agents are trained on WebQSP or CWQ and evaluated on new benchmarks by \emph{swapping only} the KG-backend server (no policy retraining). \textbf{AVG} is averaged across QA samples. The maximum turn number is set to $H=5$.}
+\label{tab:generalization_kgqa}
+\vspace{-0.5em}
+\begin{center}
+\renewcommand{\arraystretch}{1.05}
+
+\small
+\resizebox{0.8\textwidth}{!}{%
+\begin{tabularx}{0.94\textwidth}{c@{\hspace{0.7em}}c@{\hspace{0.7em}}ccccc}%
+\toprule
+& & \multicolumn{2}{c}{Freebase-based} &  \multicolumn{2}{c}{Wikidata-based} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6}
+& \thead{\normalsize Methods$\downarrow$} &\dataset{SimpleQA} & \dataset{GrailQA} & \dataset{T-REx} & \dataset{QALD-10en} & \textbf{AVG}
+\\
+\midrule
+\multirow{8}{*}{\rotatebox{90}{Qwen 2.5-7B}}
+& {IO}
+& \res{10.30}{0.10} & \res{8.07}{0.06}
+& \res{22.79}{0.05} & \res{17.43}{0.01}
+& 18.84
+\\
+& {CoT}
+& \res{7.07}{0.06} & \res{7.73}{0.12}
+& \res{17.38}{0.04} & \res{21.05}{0.06}
+& 14.82
+\\
+& {SC}
+& \res{8.70}{0.20} & \res{8.60}{0.44}
+& \res{20.01}{0.12} & \res{20.32}{0.46}
+& 16.93
+\\
+\cmidrule(lr){2-7}
+& {RoG}
+& \res{12.97}{0.35} & \res{17.67}{0.15}
+& \res{22.37}{0.27} & \res{29.33}{0.46}
+& 20.76
+\\
+& {ToG}
+& \res{52.37}{0.80} & \res{54.73}{4.62}
+& \res{58.55}{1.11} & \res{50.95}{0.92}
+& 56.84
+\\
+& {PoG}
+& \res{66.38}{0.39} & \res{69.88}{0.84}
+& \res{75.69}{0.08} & \res{46.07}{0.25}
+& 72.28
+\\
+& {ReknoS}
+& \res{56.43}{1.22} & \res{69.58}{0.35}
+& \res{78.17}{0.03} & \res{37.94}{1.21}
+& 72.21
+\\
+\midrule
+\multirow{8}{*}{\rotatebox{90}{Qwen 2.5-72B}}
+& {IO}
+& \res{14.33}{0.15} & \res{11.63}{0.12}
+& \res{26.16}{0.02} & \res{17.45}{0.06}
+& 22.17
+\\
+& {CoT}
+& \res{11.07}{0.12} & \res{10.53}{0.06}
+& \res{24.48}{0.02} & \res{20.52}{0.17}
+& 20.57
+\\
+& {SC}
+& \res{11.60}{0.44} & \res{11.43}{0.25}
+& \res{26.01}{0.09} & \res{21.62}{0.60}
+& 21.86
+\\
+\cmidrule(lr){2-7}
+& {RoG}
+& \res{20.40}{0.26} & \res{22.63}{4.51}
+& \res{32.50}{0.09} & \res{44.94}{0.69}
+& 30.07
+\\
+& {ToG}
+& \res{57.83}{0.29} & \res{71.53}{0.76}
+& \res{67.93}{0.18} & \res{59.66}{0.46}
+& 66.67
+\\
+& {PoG}
+& \res{65.67}{0.42} & \res{75.30}{0.99}
+& \res{79.52}{0.08} & \res{48.18}{3.53}
+& 75.63
+\\
+& {ReknoS}
+& \res{68.40}{5.15} & \res{73.67}{0.60}
+& \res{77.11}{0.02} & \res{39.94}{0.30}
+& 73.77
+\\
+\midrule
+\multirow{8}{*}{\rotatebox{90}{Qwen 3-235B}}
+& {IO}
+& \res{11.37}{0.12} & \res{12.80}{0.10}
+& \res{34.61}{0.01} & \res{24.12}{0.17}
+& 27.99
+\\
+& {CoT}
+& \res{14.40}{0.36} & \res{14.60}{0.30}
+& \res{37.72}{0.18} & \res{28.43}{0.17}
+& 30.97
+\\
+& {SC}
+& \res{14.73}{0.42} & \res{15.73}{0.15}
+& \res{38.79}{0.27} & \res{29.53}{0.35}
+& 31.94
+\\
+\cmidrule(lr){2-7}
+& {RoG}
+& \res{18.93}{0.51} & \res{18.10}{0.20}
+& \res{37.31}{0.19} & \res{37.54}{1.20}
+& 32.19
+\\
+& {ToG}
+& \res{41.27}{3.61} & \res{53.20}{0.53}
+& \res{77.00}{0.10} & \res{57.76}{1.05}
+& 68.01
+\\
+& {PoG}
+& \res{67.90}{0.17} & \res{77.93}{0.45}
+& \res{78.75}{0.13} & \res{52.55}{1.04}
+& 75.97
+\\
+& {ReknoS}
+& \res{68.01}{3.37} & \res{75.67}{0.74}
+& \res{77.05}{0.03} & \res{39.44}{0.35}
+& 73.92
+\\
+\midrule
+\oursrow
+\footnotesize Qwen2.5
+& \textbf{\framework{} \scriptsize{(WebQSP trained)}}
+& \res{69.18}{0.10} & \res{68.55}{0.07}
+& \res{83.38}{0.08} & \res{41.96}{0.05}
+& 77.50
+\\
+\oursrow
+\scriptsize 3B
+& \textbf{\framework{} \scriptsize{(CWQ trained)}}
+& \res{57.31}{0.08} & \res{64.84}{0.04}
+& \res{80.10}{0.05} & \res{34.74}{0.12}
+& 72.82
+\\
+\bottomrule
+\end{tabularx}
+}
+\vspace{-2.5em}
+\end{center}
+\end{table*}

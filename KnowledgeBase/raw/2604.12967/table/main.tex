@@ -1,0 +1,68 @@
+\begin{table}[htbp]
+\centering
+\caption{\textbf{Main results.} The best and second-best performances are shown in bold and underline, respectively. $^{\dagger}$/$^{\star}$ denotes in-domain/out-of-domain datasets.}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lcccccccc}
+\toprule
+\multirow{2}{*}{\textbf{Methods}} & \multicolumn{3}{c}{\textbf{General QA}} & \multicolumn{4}{c}{\textbf{Multi-Hop QA}} & \multirow{2}{*}{\textbf{Avg.}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-8}
+ & \textbf{NQ}$^\dagger$ & \textbf{TriviaQA}$^*$ & \textbf{PopQA}$^*$ & \textbf{HotpotQA}$^\dagger$ & \textbf{2wiki}$^*$ & \textbf{Musique}$^*$ & \textbf{Bamboogle}$^*$ & \\
+\midrule
+\rowcolor{gray!10}
+\multicolumn{9}{c}{\textbf{\textit{Qwen2.5-7B-Instruct}}} \\
+\textbf{Model Inference} & & & & & & & & \\
+\hspace{1em}Direct Inference & 0.344 & 0.111 & 0.144 & 0.279 & 0.248 & 0.091 & 0.120 & 0.191 \\
+\hspace{1em}CoT & 0.430 & 0.139 & 0.203 & 0.325 & 0.318 & 0.128 & 0.384 & 0.275 \\
+\hspace{1em}IRCoT & 0.608 & 0.761 & 0.515 & 0.486 & 0.279 & 0.129 & 0.304 & 0.440 \\
+\hspace{1em}RAG & 0.645 & 0.805 & 0.535 & 0.501 & 0.331 & 0.135 & 0.304 & 0.465 \\
+\hspace{1em}Search-o1 & 0.654 & 0.588 & 0.462 & 0.486 & 0.481 & 0.197 & 0.536 & 0.486 \\
+\textbf{W. Gold Supervision} & & & & & & & & \\
+\hspace{1em}SFT & 0.366 & 0.587 & 0.220 & 0.312 & 0.267 & 0.087 & 0.224 & 0.295 \\
+\hspace{1em}Search-R1 (EM) & 0.693 & \underline{0.872} & 0.627 & \underline{0.587} & \textbf{0.617} & \textbf{0.244} & \underline{0.568} & \underline{0.601} \\
+\textbf{W.O. Gold Supervision} & & & & & & & & \\
+% \hspace{1em}Dr. Zero & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx \\
+\hspace{1em}TTRL & 0.695 & 0.500 & 0.593 & 0.500 & 0.455 & 0.173 & 0.540 & 0.544 \\
+\hspace{1em}CJ & \underline{0.704} & 0.865 & \underline{0.633} & 0.545 & 0.560 & 0.209 & 0.544 & 0.580 \\
+\hspace{1em}RLIF & 0.672 & 0.846 & 0.586 & 0.536 & 0.444 & 0.190 & 0.408 & 0.526 \\
+\hspace{1em}CCS & \textbf{0.712} & \textbf{0.880} & \textbf{0.639} & \textbf{0.598} & \underline{0.567} & \underline{0.239} & \textbf{0.608} & \textbf{0.606} \\
+\midrule
+\rowcolor{gray!10}
+\multicolumn{9}{c}{\textbf{\textit{Qwen3-4B-Instruct-2507}}} \\
+\textbf{Model Inference} & & & & & & & & \\
+\hspace{1em}Direct Inference & 0.349 & 0.091 & 0.119 & 0.260 & 0.253 & 0.101 & 0.256 & 0.204 \\
+\hspace{1em}CoT & 0.404 & 0.142 & 0.204 & 0.294 & 0.260 & 0.114 & 0.408 & 0.261 \\
+\hspace{1em}IRCoT & 0.613 & 0.770 & 0.525 & 0.457 & 0.203 & 0.131 & 0.264 & 0.423 \\
+\hspace{1em}RAG & 0.688 & 0.803 & 0.564 & 0.472 & 0.264 & 0.126 & 0.312 & 0.461 \\
+\hspace{1em}Search-o1 & 0.541 & 0.489 & 0.234 & 0.413 & 0.335 & 0.150 & 0.384 & 0.364 \\
+\textbf{W. Gold Supervision} & & & & & & & & \\
+\hspace{1em}SFT & 0.312 & 0.474 & 0.196 & 0.275 & 0.275 & 0.078 & 0.120 & 0.247 \\
+\hspace{1em}Search-R1 (EM) & \textbf{0.760} & \textbf{0.921} & 0.671 & \textbf{0.638} & \textbf{0.668} & \textbf{0.277} & \underline{0.608} & \textbf{0.649} \\
+\textbf{W.O. Gold Supervision} & & & & & & & & \\
+% \hspace{1em}Dr. Zero & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx \\
+\hspace{1em}TTRL & 0.740 & \underline{0.902} & 0.630 & 0.540 & 0.488 & 0.018 & 0.482 & 0.543 \\
+\hspace{1em}CJ & 0.709 & 0.893 & \underline{0.677} & 0.539 & 0.495 & 0.189 & 0.552 & 0.579 \\
+\hspace{1em}RLIF & 0.686 & 0.879 & 0.630 & 0.566 & 0.514 & 0.221 & 0.520 & 0.574 \\
+\hspace{1em}CCS & \underline{0.744} & \underline{0.902} & \textbf{0.683} & \underline{0.625} & \underline{0.606} & \underline{0.262} & \textbf{0.632} & \underline{0.636} \\
+\midrule
+\rowcolor{gray!10}
+\multicolumn{9}{c}{\textbf{\textit{Qwen3-32B}}} \\
+\textbf{Model Inference} & & & & & & & & \\
+\hspace{1em}Direct Inference & 0.485 & 0.308 & 0.277 & 0.368 & 0.340 & 0.144 & 0.224 & 0.307 \\
+\hspace{1em}CoT & 0.488 & 0.322 & 0.282 & 0.364 & 0.338 & 0.144 & 0.336 & 0.325 \\
+\hspace{1em}IRCoT & 0.522 & 0.697 & 0.443 & 0.411 & 0.223 & 0.113 & 0.312 & 0.389 \\
+\hspace{1em}RAG & 0.714 & 0.838 & 0.593 & 0.560 & 0.358 & 0.173 & 0.400 & 0.519 \\
+\hspace{1em}Search-o1 & 0.722 & 0.881 & 0.608 & 0.579 & 0.629 & 0.247 & 0.584 & 0.607 \\
+\textbf{W. Gold Supervision} & & & & & & & & \\
+\hspace{1em}SFT & 0.454 & 0.670 & 0.262 & 0.362 & 0.314 & 0.128 & 0.288 & 0.354 \\
+\hspace{1em}Search-R1 (EM) & 0.681 & 0.880 & 0.578 & 0.648 & \underline{0.736} & 0.278 & \textbf{0.742} & \underline{0.649} \\
+\textbf{W.O. Gold Supervision} & & & & & & & & \\
+% \hspace{1em}Dr. Zero & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx & 0.xxx \\
+\hspace{1em}TTRL & 0.640 & 0.870 & 0.616 & 0.523 & 0.653 & 0.238 & 0.540 & 0.583 \\
+\hspace{1em}CJ & \textbf{0.733} & 0.556 & \textbf{0.645} & \underline{0.665} & \textbf{0.739} & \textbf{0.301} & \underline{0.731} & 0.624 \\
+\hspace{1em}RLIF & 0.714 & \underline{0.887} & 0.601 & 0.568 & 0.552 & 0.221 & 0.528 & 0.582 \\
+\hspace{1em}CCS & \textbf{0.733} & \textbf{0.896} & \underline{0.624} & \textbf{0.666} & 0.718 & \underline{0.284} & 0.712 & \textbf{0.662} \\
+\bottomrule
+\end{tabular}
+}
+\label{tbl:main}
+\end{table}

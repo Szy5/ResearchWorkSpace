@@ -72,6 +72,7 @@ class PaperAssetsBuilder:
         cleaned = self.parser._strip_comments(merged)
         title = self.parser._extract_command(cleaned, "title") or slug
         authors = self.parser._extract_authors(cleaned)
+        affiliations = self.parser._extract_affiliations(cleaned)
         abstract = self.parser._extract_abstract(cleaned)
 
         sections = self._extract_sections(cleaned, abstract)
@@ -100,7 +101,7 @@ class PaperAssetsBuilder:
             slug=slug,
             created_at=now,
             updated_at=now,
-            paper=PaperAssetMeta(title=title, authors=authors, abstract=abstract),
+            paper=PaperAssetMeta(title=title, authors=authors, affiliations=affiliations, abstract=abstract),
             source=SourceProvenance(
                 raw_dir=str((self.settings.resolved_raw_dir() / slug).relative_to(self.settings.project_root))
                 if (self.settings.resolved_raw_dir() / slug).is_relative_to(self.settings.project_root)

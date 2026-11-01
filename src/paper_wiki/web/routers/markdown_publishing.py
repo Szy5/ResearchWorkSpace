@@ -7,6 +7,7 @@ from fastapi.responses import HTMLResponse
 
 from paper_wiki.core.config import Settings
 from paper_wiki.publishing.models import WeChatDraftOptions
+from paper_wiki.publishing.paper_wechat import PUBLISH_STEPS
 from paper_wiki.publishing.wechat_publisher import publish_artifact_html_to_wechat
 from paper_wiki.web.dependencies import get_job_manager, get_settings
 from paper_wiki.web.schemas.job import JobResponse
@@ -90,5 +91,5 @@ def publish_document(
         )
         return result.model_dump(mode="json")
 
-    job = job_manager.submit(slug=document_id, target="markdown_publish", task=task)
+    job = job_manager.submit(slug=document_id, target="markdown_publish", task=task, steps=PUBLISH_STEPS)
     return JobResponse.model_validate(job.model_dump())

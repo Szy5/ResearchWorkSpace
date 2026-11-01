@@ -294,27 +294,24 @@ loginctl enable-linger $USER
 
 **这一条本身需要 root**（要 `sudo` 或者请管理员在你的账号上开一次）。这是一次性的最小请求，跟要一个完整的 sudo 账号不是一回事，可以先试试请求这一条；实在申请不到，用下面的兜底方案。
 
-**兜底方式：自重启循环脚本 + cron 开机拉起**（完全不需要任何权限）：
+**兜底方式：`redeploy-web.sh` + cron 开机拉起**（完全不需要任何权限）：
 
 ```bash
 cd ~/paper-wiki
-conda activate paper-wiki
-export PAPER_WIKI_HOME=~/paper-wiki
-export PAPER_WIKI_BIN="$(command -v paper-wiki)"   # conda 环境下不是 .venv/bin/paper-wiki，脚本默认路径找不到，必须显式指定
-export PAPER_WIKI_PORT=8080
-nohup deploy/no-root/run-web.sh > /dev/null 2>&1 &
-disown
+./deploy/no-root/redeploy-web.sh
 ```
+
+脚本用 `setsid nohup` 后台启动，SSH 断开后服务继续运行；默认清除 `HTTP(S)_PROXY` / `ALL_PROXY` 再启动服务进程，部署好之后不依赖本机代理（安装依赖、构建前端阶段仍沿用当前 shell 的代理）。
 
 加一条 crontab，服务器重启后自动拉起：
 
 ```bash
 crontab -e
-# 加一行（路径都换成你的实际路径；cron 不会自动 source conda，PAPER_WIKI_BIN 必须写死绝对路径）：
-@reboot PAPER_WIKI_HOME=/home/youruser/paper-wiki PAPER_WIKI_BIN=/home/youruser/miniforge3/envs/paper-wiki/bin/paper-wiki /home/youruser/paper-wiki/deploy/no-root/run-web.sh >> /home/youruser/paper-wiki/cron.log 2>&1
+# 加一行（路径换成你的实际路径；cron 不会自动 source conda，PAPER_WIKI_BIN 必须写死绝对路径）：
+@reboot SKIP_FRONTEND=1 SKIP_INSTALL=1 PAPER_WIKI_BIN=/home/youruser/miniconda3/envs/paper-wiki/bin/paper-wiki /home/youruser/paper-wiki/deploy/no-root/redeploy-web.sh >> /home/youruser/paper-wiki/logs/cron.log 2>&1
 ```
 
-日志在 `$PAPER_WIKI_HOME/paper-wiki-web.log`（脚本里可以改）。停止服务用 `pkill -f run-web.sh` 先杀掉循环脚本本身，再 `pkill -f "paper-wiki web"` 杀当前的 uvicorn 进程，不然循环脚本会把它重新拉起来。
+日志在 `$PAPER_WIKI_HOME/logs/paper-wiki-web.log`（`PAPER_WIKI_LOG` 可改），每次部署时超过 50MB 会轮转为 `.1`。停止服务：`pkill -f "paper-wiki web"`。
 
 ### 3. 怎么访问
 
@@ -326,7 +323,7 @@ ssh -L 8080:127.0.0.1:8080 youruser@your-server
 
 本地浏览器打开 `http://127.0.0.1:8080` 即可。两个 unit/脚本模板默认都监听 `127.0.0.1:8080`，配这个方式刚好。
 
-**如果想不经过 SSH、直接用浏览器打开 `http://服务器IP:8080`**：把启动参数换成 `--host 0.0.0.0`（1024 以上端口不需要 root 就能监听在任意网卡）。但这台机器现有的防火墙是否放行这个端口不由你决定（改防火墙规则通常也要 root），连不通就只能找管理员开个口子，或者退回 SSH 转发方案。
+**如果想不经过 SSH、直接用浏览器打开 `http://服务器IP:8080`**：`redeploy-web.sh` 默认就监听 `0.0.0.0`（1024 以上端口不需要 root 就能监听在任意网卡），部署完成时会打印该地址。但这台机器现有的防火墙是否放行这个端口不由你决定（改防火墙规则通常也要 root），连不通就只能找管理员开个口子，或者退回 SSH 转发方案。
 
 **如果想要正经域名 + HTTPS**：纯无 root 环境做不到——标准的 `certbot --nginx` 需要写 `/etc`，监听 443 也需要 root。唯一体面的办法是请有权限的人帮你加**一条**反代规则，把域名转发到你这个用户进程监听的 `127.0.0.1:8080`，这是一次性的最小请求，不等于把服务器管理权交给你。
 
@@ -336,11 +333,15 @@ ssh -L 8080:127.0.0.1:8080 youruser@your-server
 
 ```bash
 systemctl --user restart paper-wiki-web
-# 或者兜底方案下，循环脚本会在进程退出 5 秒后自动拉起新版本，杀掉旧进程即可：
-pkill -f "paper-wiki web"
+# 或者兜底方案下：
+./deploy/no-root/redeploy-web.sh
 ```
 
-**一键重启（推荐）**：仓库提供了 `deploy/no-root/redeploy-web.sh`，会杀掉旧的 `paper-wiki web` / `run-web.sh`，重建前端，再以前台包形式在 `0.0.0.0:8080` 拉起，日志追加写入项目根目录的 `paper-wiki-web.log`：
+**一键重启（推荐）**：仓库提供了 `deploy/no-root/redeploy-web.sh`，会杀掉旧的 `paper-wiki web`，重装包、重建前端（这两步沿用当前 shell 的代理），再用 `setsid nohup` 在 `0.0.0.0:8080` 后台拉起服务，最后打印 `http://<本机IP>:8080`：
+
+- 服务进程会清除 `HTTP(S)_PROXY` / `ALL_PROXY` 等代理变量，部署完成后不依赖本机代理。若本机访问 arXiv / LLM API（如 `api.key77qiqi.com`）必须走代理，部署时设 `PAPER_WIKI_KEEP_PROXY=1`；也可在 `.env` 单独设 `LLM_HTTP_PROXY=...` 只给 LLM 走代理。
+- 日志追加写入 `logs/paper-wiki-web.log`，启动前超过 50MB（`PAPER_WIKI_LOG_MAX_MB`）会轮转为 `.1`；pid 写入 `logs/paper-wiki-web.pid`。`logs/` 已加入 `.gitignore`。
+- SSH 断开后服务继续运行。
 
 ```bash
 cd ~/projects/Paper-wiki   # 换成你的实际路径
@@ -350,5 +351,5 @@ cd ~/projects/Paper-wiki   # 换成你的实际路径
 SKIP_FRONTEND=1 SKIP_INSTALL=1 ./deploy/no-root/redeploy-web.sh
 
 # 查看日志
-tail -f paper-wiki-web.log
+tail -f logs/paper-wiki-web.log
 ```

@@ -1,0 +1,1547 @@
+{
+  "references": [
+    {
+      "key": "2wikimqa",
+      "title": "Constructing a multi-hop qa dataset for comprehensive evaluation of reasoning steps",
+      "authors": [
+        "Ho, Xanh",
+        "Nguyen, Anh-Khoa Duong",
+        "Sugawara, Saku",
+        "Aizawa, Akiko"
+      ],
+      "year": 2020,
+      "venue": "arXiv preprint arXiv:2011.01060",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{2wikimqa,\n  title={Constructing a multi-hop qa dataset for comprehensive evaluation of reasoning steps},\n  author={Ho, Xanh and Nguyen, Anh-Khoa Duong and Sugawara, Saku and Aizawa, Akiko},\n  journal={arXiv preprint arXiv:2011.01060},\n  year={2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "FlashRAG",
+      "title": "FlashRAG: A Modular Toolkit for Efficient Retrieval-Augmented Generation Research",
+      "authors": [
+        "Jiajie Jin",
+        "Yutao Zhu",
+        "Zhicheng Dou",
+        "Guanting Dong",
+        "Xinyu Yang",
+        "Chenghao Zhang",
+        "Tong Zhao",
+        "Zhao Yang",
+        "Ji - Rong Wen"
+      ],
+      "year": 2025,
+      "venue": "Companion Proceedings of the {ACM} on Web Conference 2025, {WWW} 2025, Sydney, NSW, Australia, 28 April 2025 - 2 May 2025",
+      "doi": "10.1145/3701716.3715313",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1145/3701716.3715313",
+      "raw_bibtex": "@inproceedings{FlashRAG,\n  author       = {Jiajie Jin and\n                  Yutao Zhu and\n                  Zhicheng Dou and\n                  Guanting Dong and\n                  Xinyu Yang and\n                  Chenghao Zhang and\n                  Tong Zhao and\n                  Zhao Yang and\n                  Ji{-}Rong Wen},\n  editor       = {Guodong Long and\n                  Michale Blumestein and\n                  Yi Chang and\n                  Liane Lewin{-}Eytan and\n                  Zi Helen Huang and\n                  Elad Yom{-}Tov},\n  title        = {FlashRAG: {A} Modular Toolkit for Efficient Retrieval-Augmented Generation\n                  Research},\n  booktitle    = {Companion Proceedings of the {ACM} on Web Conference 2025, {WWW} 2025,\n                  Sydney, NSW, Australia, 28 April 2025 - 2 May 2025},\n  pages        = {737--740},\n  publisher    = {{ACM}},\n  year         = {2025},\n  url          = {https://doi.org/10.1145/3701716.3715313},\n  doi          = {10.1145/3701716.3715313}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "ReSearch",
+      "title": "Learning to reason with search for llms via reinforcement learning",
+      "authors": [
+        "Chen, Mingyang",
+        "Sun, Linzhuang",
+        "Li, Tianpeng",
+        "Sun, Haoze",
+        "Zhou, Yijie",
+        "Zhu, Chenzheng",
+        "Wang, Haofen",
+        "Pan, Jeff Z",
+        "Zhang, Wen",
+        "Chen, Huajun",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2503.19470",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{ReSearch,\n  title={Learning to reason with search for llms via reinforcement learning},\n  author={Chen, Mingyang and Sun, Linzhuang and Li, Tianpeng and Sun, Haoze and Zhou, Yijie and Zhu, Chenzheng and Wang, Haofen and Pan, Jeff Z and Zhang, Wen and Chen, Huajun and others},\n  journal={arXiv preprint arXiv:2503.19470},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "Vaswani+2017",
+      "title": "Attention is All you Need",
+      "authors": [
+        "Vaswani, Ashish",
+        "Shazeer, Noam",
+        "Parmar, Niki",
+        "Uszkoreit, Jakob",
+        "Jones, Llion",
+        "Gomez, Aidan N",
+        "Kaiser, ukasz",
+        "Polosukhin, Illia"
+      ],
+      "year": 2017,
+      "venue": "Advances in Neural Information Processing Systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf",
+      "raw_bibtex": "@inproceedings{Vaswani+2017,\n author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, \\L ukasz and Polosukhin, Illia},\n booktitle = {Advances in Neural Information Processing Systems},\n pages = {},\n publisher = {Curran Associates, Inc.},\n title = {Attention is All you Need},\n url = {https://proceedings.neurips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf},\n volume = {30},\n year = {2017}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "axolotl",
+      "title": "Axolotl: Open Source LLM Post-Training",
+      "authors": [
+        "Axolotl maintainers",
+        "contributors"
+      ],
+      "year": 2023,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "https://github.com/axolotl-ai-cloud/axolotl",
+      "raw_bibtex": "@software{axolotl,\n  title = {Axolotl: Open Source LLM Post-Training},\n  author = {{Axolotl maintainers and contributors}},\n  url = {https://github.com/axolotl-ai-cloud/axolotl},\n  license = {Apache-2.0},\n  year = {2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "bamboogle",
+      "title": "Measuring and narrowing the compositionality gap in language models",
+      "authors": [
+        "Press, Ofir",
+        "Zhang, Muru",
+        "Min, Sewon",
+        "Schmidt, Ludwig",
+        "Smith, Noah A",
+        "Lewis, Mike"
+      ],
+      "year": 2023,
+      "venue": "Findings of the Association for Computational Linguistics: EMNLP 2023",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{bamboogle,\n  title={Measuring and narrowing the compositionality gap in language models},\n  author={Press, Ofir and Zhang, Muru and Min, Sewon and Schmidt, Ludwig and Smith, Noah A and Lewis, Mike},\n  booktitle={Findings of the Association for Computational Linguistics: EMNLP 2023},\n  pages={5687--5711},\n  year={2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "bert-base-NER",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "authors": [
+        "Jacob Devlin",
+        "Ming - Wei Chang",
+        "Kenton Lee",
+        "Kristina Toutanova"
+      ],
+      "year": 2018,
+      "venue": "CoRR",
+      "doi": "",
+      "arxiv_id": "1810.04805",
+      "url": "http://arxiv.org/abs/1810.04805",
+      "raw_bibtex": "@article{bert-base-NER,\n  author    = {Jacob Devlin and\n               Ming{-}Wei Chang and\n               Kenton Lee and\n               Kristina Toutanova},\n  title     = {{BERT:} Pre-training of Deep Bidirectional Transformers for Language\n               Understanding},\n  journal   = {CoRR},\n  volume    = {abs/1810.04805},\n  year      = {2018},\n  url       = {http://arxiv.org/abs/1810.04805},\n  archivePrefix = {arXiv},\n  eprint    = {1810.04805},\n  timestamp = {Tue, 30 Oct 2018 20:39:56 +0100},\n  biburl    = {https://dblp.org/rec/journals/corr/abs-1810-04805.bib},\n  bibsource = {dblp computer science bibliography, https://dblp.org}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-hyperparameters",
+          "text": "[]{#appendix:hyperparams label=\"appendix:hyperparams\"} We conduct experiments using three policy models: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B [yang2025qwen3]. We use Gemini 2.5 Flash [comanici2025gemini] as both the evaluator and reconstructor. We use Qwen3-Embedding-4B"
+        }
+      ]
+    },
+    {
+      "key": "borlund2003iir",
+      "title": "The IIR Evaluation Model: A Framework for Evaluation of Interactive Information Retrieval Systems",
+      "authors": [
+        "Borlund, Pia"
+      ],
+      "year": 2003,
+      "venue": "Information Research",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "http://informationr.net/ir/8-3/paper152.html",
+      "raw_bibtex": "@article{borlund2003iir,\n  author  = {Borlund, Pia},\n  title   = {The IIR Evaluation Model: A Framework for Evaluation of Interactive Information Retrieval Systems},\n  journal = {Information Research},\n  volume  = {8},\n  number  = {3},\n  year    = {2003},\n  note    = {Paper No. 152},\n  url     = {http://informationr.net/ir/8-3/paper152.html}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "brown2020language",
+      "title": "Language models are few-shot learners",
+      "authors": [
+        "Brown, Tom",
+        "Mann, Benjamin",
+        "Ryder, Nick",
+        "Subbiah, Melanie",
+        "Kaplan, Jared D",
+        "Dhariwal, Prafulla",
+        "Neelakantan, Arvind",
+        "Shyam, Pranav",
+        "Sastry, Girish",
+        "Askell, Amanda",
+        "others"
+      ],
+      "year": 2020,
+      "venue": "Advances in neural information processing systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{brown2020language,\n  title={Language models are few-shot learners},\n  author={Brown, Tom and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared D and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and others},\n  journal={Advances in neural information processing systems},\n  volume={33},\n  pages={1877--1901},\n  year={2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        }
+      ]
+    },
+    {
+      "key": "carterette2011system",
+      "title": "System effectiveness, user models, and user utility: a conceptual framework for investigation",
+      "authors": [
+        "Carterette, Ben"
+      ],
+      "year": 2011,
+      "venue": "Proceedings of the 34th international ACM SIGIR conference on Research and development in information retrieval",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{carterette2011system,\n  title={System effectiveness, user models, and user utility: a conceptual framework for investigation},\n  author={Carterette, Ben},\n  booktitle={Proceedings of the 34th international ACM SIGIR conference on Research and development in information retrieval},\n  pages={903--912},\n  year={2011}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "chung2024scaling",
+      "title": "Scaling instruction-finetuned language models",
+      "authors": [
+        "Chung, Hyung Won",
+        "Hou, Le",
+        "Longpre, Shayne",
+        "Zoph, Barret",
+        "Tay, Yi",
+        "Fedus, William",
+        "Li, Yunxuan",
+        "Wang, Xuezhi",
+        "Dehghani, Mostafa",
+        "Brahma, Siddhartha",
+        "others"
+      ],
+      "year": 2024,
+      "venue": "Journal of Machine Learning Research",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{chung2024scaling,\n  title={Scaling instruction-finetuned language models},\n  author={Chung, Hyung Won and Hou, Le and Longpre, Shayne and Zoph, Barret and Tay, Yi and Fedus, William and Li, Yunxuan and Wang, Xuezhi and Dehghani, Mostafa and Brahma, Siddhartha and others},\n  journal={Journal of Machine Learning Research},\n  volume={25},\n  number={70},\n  pages={1--53},\n  year={2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        }
+      ]
+    },
+    {
+      "key": "comanici2025gemini",
+      "title": "Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities",
+      "authors": [
+        "Comanici, Gheorghe",
+        "Bieber, Eric",
+        "Schaekermann, Mike",
+        "Pasupat, Ice",
+        "Sachdeva, Noveen",
+        "Dhillon, Inderjit",
+        "Blistein, Marcel",
+        "Ram, Ori",
+        "Zhang, Dan",
+        "Rosen, Evan",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2507.06261",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{comanici2025gemini,\n  title={Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities},\n  author={Comanici, Gheorghe and Bieber, Eric and Schaekermann, Mike and Pasupat, Ice and Sachdeva, Noveen and Dhillon, Inderjit and Blistein, Marcel and Ram, Ori and Zhang, Dan and Rosen, Evan and others},\n  journal={arXiv preprint arXiv:2507.06261},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        },
+        {
+          "section_id": "sec-open-ended-deep-research-task",
+          "text": "Beyond traditional closed-ended question answering tasks, as reported in [\\[sec:experiments\\]](#sec:experiments){reference-type=\"ref+Label\" reference=\"sec:experiments\"}, we further evaluate CCS on the open-ended Deep Research setting using the ResearchRubrics benchmark [researchrubrics]. This"
+        },
+        {
+          "section_id": "sec-hyperparameters",
+          "text": "[]{#appendix:hyperparams label=\"appendix:hyperparams\"} We conduct experiments using three policy models: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B [yang2025qwen3]. We use Gemini 2.5 Flash [comanici2025gemini] as both the evaluator and reconstructor. We use Qwen3-Embedding-4B"
+        }
+      ]
+    },
+    {
+      "key": "constitutional",
+      "title": "Constitutional ai: Harmlessness from ai feedback",
+      "authors": [
+        "Bai, Yuntao",
+        "Kadavath, Saurav",
+        "Kundu, Sandipan",
+        "Askell, Amanda",
+        "Kernion, Jackson",
+        "Jones, Andy",
+        "Chen, Anna",
+        "Goldie, Anna",
+        "Mirhoseini, Azalia",
+        "McKinnon, Cameron",
+        "others"
+      ],
+      "year": 2022,
+      "venue": "arXiv preprint arXiv:2212.08073",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{constitutional,\n  title={Constitutional ai: Harmlessness from ai feedback},\n  author={Bai, Yuntao and Kadavath, Saurav and Kundu, Sandipan and Askell, Amanda and Kernion, Jackson and Jones, Andy and Chen, Anna and Goldie, Anna and Mirhoseini, Azalia and McKinnon, Cameron and others},\n  journal={arXiv preprint arXiv:2212.08073},\n  year={2022}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "cot",
+      "title": "Chain-of-thought prompting elicits reasoning in large language models",
+      "authors": [
+        "Wei, Jason",
+        "Wang, Xuezhi",
+        "Schuurmans, Dale",
+        "Bosma, Maarten",
+        "Xia, Fei",
+        "Chi, Ed",
+        "Le, Quoc V",
+        "Zhou, Denny",
+        "others"
+      ],
+      "year": 2022,
+      "venue": "Advances in neural information processing systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{cot,\n  title={Chain-of-thought prompting elicits reasoning in large language models},\n  author={Wei, Jason and Wang, Xuezhi and Schuurmans, Dale and Bosma, Maarten and Xia, Fei and Chi, Ed and Le, Quoc V and Zhou, Denny and others},\n  journal={Advances in neural information processing systems},\n  volume={35},\n  pages={24824--24837},\n  year={2022}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        }
+      ]
+    },
+    {
+      "key": "cyclegan",
+      "title": "Unpaired image-to-image translation using cycle-consistent adversarial networks",
+      "authors": [
+        "Zhu, Jun-Yan",
+        "Park, Taesung",
+        "Isola, Phillip",
+        "Efros, Alexei A"
+      ],
+      "year": 2017,
+      "venue": "Proceedings of the IEEE international conference on computer vision",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{cyclegan,\n  title={Unpaired image-to-image translation using cycle-consistent adversarial networks},\n  author={Zhu, Jun-Yan and Park, Taesung and Isola, Phillip and Efros, Alexei A},\n  booktitle={Proceedings of the IEEE international conference on computer vision},\n  pages={2223--2232},\n  year={2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-cycle-consistency-as-information-conservation",
+          "text": "[]{#sec:cycle-consistency label=\"sec:cycle-consistency\"} Our approach is grounded in the principle of cycle-consistency, widely utilized in unsupervised machine translation [he2016dual, lample2017unsupervised, han2021unsupervised] and unpaired image-to-image translation [cyclegan,"
+        }
+      ]
+    },
+    {
+      "key": "deepresearch",
+      "title": "DeepResearch Bench: A Comprehensive Benchmark for Deep Research Agents",
+      "authors": [
+        "Mingxuan Du",
+        "Benfeng Xu",
+        "Chiwei Zhu",
+        "Xiaorui Wang",
+        "Zhendong Mao"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{deepresearch,\n  author    = {Mingxuan Du and Benfeng Xu and Chiwei Zhu and Xiaorui Wang and Zhendong Mao},\n  title     = {DeepResearch Bench: A Comprehensive Benchmark for Deep Research Agents},\n  journal   = {arXiv preprint},\n  year      = {2025},\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "deepresearcher",
+      "title": "Deepresearcher: Scaling deep research via reinforcement learning in real-world environments",
+      "authors": [
+        "Zheng, Yuxiang",
+        "Fu, Dayuan",
+        "Hu, Xiangkun",
+        "Cai, Xiaojie",
+        "Ye, Lyumanshan",
+        "Lu, Pengrui",
+        "Liu, Pengfei"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2504.03160",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{deepresearcher,\n  title={Deepresearcher: Scaling deep research via reinforcement learning in real-world environments},\n  author={Zheng, Yuxiang and Fu, Dayuan and Hu, Xiangkun and Cai, Xiaojie and Ye, Lyumanshan and Lu, Pengrui and Liu, Pengfei},\n  journal={arXiv preprint arXiv:2504.03160},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "drzero",
+      "title": "Dr. Zero: Self-Evolving Search Agents without Training Data",
+      "authors": [
+        "Yue, Zhenrui",
+        "Upasani, Kartikeya",
+        "Yang, Xianjun",
+        "Ge, Suyu",
+        "Nie, Shaoliang",
+        "Mao, Yuning",
+        "Liu, Zhe",
+        "Wang, Dong"
+      ],
+      "year": 2026,
+      "venue": "arXiv preprint arXiv:2601.07055",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{drzero,\n  title={Dr. Zero: Self-Evolving Search Agents without Training Data},\n  author={Yue, Zhenrui and Upasani, Kartikeya and Yang, Xianjun and Ge, Suyu and Nie, Shaoliang and Mao, Yuning and Liu, Zhe and Wang, Dong},\n  journal={arXiv preprint arXiv:2601.07055},\n  year={2026}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "e5",
+      "title": "Text embeddings by weakly-supervised contrastive pre-training",
+      "authors": [
+        "Wang, Liang",
+        "Yang, Nan",
+        "Huang, Xiaolong",
+        "Jiao, Binxing",
+        "Yang, Linjun",
+        "Jiang, Daxin",
+        "Majumder, Rangan",
+        "Wei, Furu"
+      ],
+      "year": 2022,
+      "venue": "arXiv preprint arXiv:2212.03533",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{e5,\n  title={Text embeddings by weakly-supervised contrastive pre-training},\n  author={Wang, Liang and Yang, Nan and Huang, Xiaolong and Jiao, Binxing and Yang, Linjun and Jiang, Daxin and Majumder, Rangan and Wei, Furu},\n  journal={arXiv preprint arXiv:2212.03533},\n  year={2022}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-setup",
+          "text": "Our experimental protocol is informed by the configuration used in Search-R1 [search-r1]. We utilize the same search engine interface for all methods employing tool use. For the RAG baseline, we employ E5 [e5] as the dense retriever, indexing a 2018 Wikipedia dump [wikidump] as the knowledge"
+        },
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "exploratory_search",
+      "title": "Exploratory search: from finding to understanding",
+      "authors": [
+        "Marchionini, Gary"
+      ],
+      "year": 2006,
+      "venue": "Commun. ACM",
+      "doi": "10.1145/1121949.1121979",
+      "arxiv_id": "",
+      "url": "https://doi.org/10.1145/1121949.1121979",
+      "raw_bibtex": "@article{exploratory_search,\nauthor = {Marchionini, Gary},\ntitle = {Exploratory search: from finding to understanding},\nyear = {2006},\nissue_date = {April 2006},\npublisher = {Association for Computing Machinery},\naddress = {New York, NY, USA},\nvolume = {49},\nnumber = {4},\nissn = {0001-0782},\nurl = {https://doi.org/10.1145/1121949.1121979},\ndoi = {10.1145/1121949.1121979},\nabstract = {Research tools critical for exploratory search success involve the creation of new interfaces that move the process beyond predictable fact retrieval.},\njournal = {Commun. ACM},\nmonth = apr,\npages = {41–46},\nnumpages = {6}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "geval",
+      "title": "G-eval: NLG evaluation using gpt-4 with better human alignment",
+      "authors": [
+        "Liu, Yang",
+        "Iter, Dan",
+        "Xu, Yichong",
+        "Wang, Shuohang",
+        "Xu, Ruochen",
+        "Zhu, Chenguang"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 2023 conference on empirical methods in natural language processing",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{geval,\n  title={G-eval: NLG evaluation using gpt-4 with better human alignment},\n  author={Liu, Yang and Iter, Dan and Xu, Yichong and Wang, Shuohang and Xu, Ruochen and Zhu, Chenguang},\n  booktitle={Proceedings of the 2023 conference on empirical methods in natural language processing},\n  pages={2511--2522},\n  year={2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        }
+      ]
+    },
+    {
+      "key": "grpo",
+      "title": "Deepseekmath: Pushing the limits of mathematical reasoning in open language models",
+      "authors": [
+        "Shao, Zhihong",
+        "Wang, Peiyi",
+        "Zhu, Qihao",
+        "Xu, Runxin",
+        "Song, Junxiao",
+        "Bi, Xiao",
+        "Zhang, Haowei",
+        "Zhang, Mingchuan",
+        "Li, YK",
+        "Wu, Yang",
+        "others"
+      ],
+      "year": 2024,
+      "venue": "arXiv preprint arXiv:2402.03300",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{grpo,\n  title={Deepseekmath: Pushing the limits of mathematical reasoning in open language models},\n  author={Shao, Zhihong and Wang, Peiyi and Zhu, Qihao and Xu, Runxin and Song, Junxiao and Bi, Xiao and Zhang, Haowei and Zhang, Mingchuan and Li, YK and Wu, Yang and others},\n  journal={arXiv preprint arXiv:2402.03300},\n  year={2024}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-optimization-via-group-relative-policy-optimization",
+          "text": "The objective in [\\[sec:problem_formulation\\]](#sec:problem_formulation){reference-type=\"ref+Label\" reference=\"sec:problem_formulation\"} frames search-agent training as maximizing the reconstructability of the original question from the bottlenecked trajectory. This naturally defines a"
+        }
+      ]
+    },
+    {
+      "key": "guu2020retrieval",
+      "title": "Retrieval augmented language model pre-training",
+      "authors": [
+        "Guu, Kelvin",
+        "Lee, Kenton",
+        "Tung, Zora",
+        "Pasupat, Panupong",
+        "Chang, Mingwei"
+      ],
+      "year": 2020,
+      "venue": "International conference on machine learning",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{guu2020retrieval,\n  title={Retrieval augmented language model pre-training},\n  author={Guu, Kelvin and Lee, Kenton and Tung, Zora and Pasupat, Panupong and Chang, Mingwei},\n  booktitle={International conference on machine learning},\n  pages={3929--3938},\n  year={2020},\n  organization={PMLR}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "han2021unsupervised",
+      "title": "Unsupervised neural machine translation with generative language models only",
+      "authors": [
+        "Han, Jesse Michael",
+        "Babuschkin, Igor",
+        "Edwards, Harrison",
+        "Neelakantan, Arvind",
+        "Xu, Tao",
+        "Polu, Stanislas",
+        "Ray, Alex",
+        "Shyam, Pranav",
+        "Ramesh, Aditya",
+        "Radford, Alec",
+        "others"
+      ],
+      "year": 2021,
+      "venue": "arXiv preprint arXiv:2110.05448",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{han2021unsupervised,\n  title={Unsupervised neural machine translation with generative language models only},\n  author={Han, Jesse Michael and Babuschkin, Igor and Edwards, Harrison and Neelakantan, Arvind and Xu, Tao and Polu, Stanislas and Ray, Alex and Shyam, Pranav and Ramesh, Aditya and Radford, Alec and others},\n  journal={arXiv preprint arXiv:2110.05448},\n  year={2021}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-cycle-consistency-as-information-conservation",
+          "text": "[]{#sec:cycle-consistency label=\"sec:cycle-consistency\"} Our approach is grounded in the principle of cycle-consistency, widely utilized in unsupervised machine translation [he2016dual, lample2017unsupervised, han2021unsupervised] and unpaired image-to-image translation [cyclegan,"
+        }
+      ]
+    },
+    {
+      "key": "he2016dual",
+      "title": "Dual learning for machine translation",
+      "authors": [
+        "He, Di",
+        "Xia, Yingce",
+        "Qin, Tao",
+        "Wang, Liwei",
+        "Yu, Nenghai",
+        "Liu, Tie-Yan",
+        "Ma, Wei-Ying"
+      ],
+      "year": 2016,
+      "venue": "Advances in neural information processing systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{he2016dual,\n  title={Dual learning for machine translation},\n  author={He, Di and Xia, Yingce and Qin, Tao and Wang, Liwei and Yu, Nenghai and Liu, Tie-Yan and Ma, Wei-Ying},\n  journal={Advances in neural information processing systems},\n  volume={29},\n  year={2016}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-cycle-consistency-as-information-conservation",
+          "text": "[]{#sec:cycle-consistency label=\"sec:cycle-consistency\"} Our approach is grounded in the principle of cycle-consistency, widely utilized in unsupervised machine translation [he2016dual, lample2017unsupervised, han2021unsupervised] and unpaired image-to-image translation [cyclegan,"
+        }
+      ]
+    },
+    {
+      "key": "hotpotqa",
+      "title": "HotpotQA: A dataset for diverse, explainable multi-hop question answering",
+      "authors": [
+        "Yang, Zhilin",
+        "Qi, Peng",
+        "Zhang, Saizheng",
+        "Bengio, Yoshua",
+        "Cohen, William",
+        "Salakhutdinov, Ruslan",
+        "Manning, Christopher D"
+      ],
+      "year": 2018,
+      "venue": "Proceedings of the 2018 conference on empirical methods in natural language processing",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{hotpotqa,\n  title={HotpotQA: A dataset for diverse, explainable multi-hop question answering},\n  author={Yang, Zhilin and Qi, Peng and Zhang, Saizheng and Bengio, Yoshua and Cohen, William and Salakhutdinov, Ruslan and Manning, Christopher D},\n  booktitle={Proceedings of the 2018 conference on empirical methods in natural language processing},\n  pages={2369--2380},\n  year={2018}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "huang2018multimodal",
+      "title": "Multimodal unsupervised image-to-image translation",
+      "authors": [
+        "Huang, Xun",
+        "Liu, Ming-Yu",
+        "Belongie, Serge",
+        "Kautz, Jan"
+      ],
+      "year": 2018,
+      "venue": "Proceedings of the European conference on computer vision (ECCV)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{huang2018multimodal,\n  title={Multimodal unsupervised image-to-image translation},\n  author={Huang, Xun and Liu, Ming-Yu and Belongie, Serge and Kautz, Jan},\n  booktitle={Proceedings of the European conference on computer vision (ECCV)},\n  pages={172--189},\n  year={2018}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-cycle-consistency-as-information-conservation",
+          "text": "[]{#sec:cycle-consistency label=\"sec:cycle-consistency\"} Our approach is grounded in the principle of cycle-consistency, widely utilized in unsupervised machine translation [he2016dual, lample2017unsupervised, han2021unsupervised] and unpaired image-to-image translation [cyclegan,"
+        }
+      ]
+    },
+    {
+      "key": "information_foraging",
+      "title": "Information Foraging",
+      "authors": [
+        "Pirolli, Peter",
+        "Card, Stuart"
+      ],
+      "year": 1999,
+      "venue": "Psychological Review",
+      "doi": "10.1037/0033-295X.106.4.643",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{information_foraging,\nauthor = {Pirolli, Peter and Card, Stuart},\nyear = {1999},\nmonth = {10},\npages = {643-675},\ntitle = {Information Foraging},\nvolume = {106},\njournal = {Psychological Review},\ndoi = {10.1037/0033-295X.106.4.643}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "ircot",
+      "title": "Interleaving retrieval with chain-of-thought reasoning for knowledge-intensive multi-step questions",
+      "authors": [
+        "Trivedi, Harsh",
+        "Balasubramanian, Niranjan",
+        "Khot, Tushar",
+        "Sabharwal, Ashish"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 61st annual meeting of the association for computational linguistics (volume 1: long papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{ircot,\n  title={Interleaving retrieval with chain-of-thought reasoning for knowledge-intensive multi-step questions},\n  author={Trivedi, Harsh and Balasubramanian, Niranjan and Khot, Tushar and Sabharwal, Ashish},\n  booktitle={Proceedings of the 61st annual meeting of the association for computational linguistics (volume 1: long papers)},\n  pages={10014--10037},\n  year={2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        },
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "karpukhin-etal-2020-dense",
+      "title": "Dense Passage Retrieval for Open-Domain Question Answering",
+      "authors": [
+        "Karpukhin, Vladimir",
+        "Oguz, Barlas",
+        "Min, Sewon",
+        "Lewis, Patrick",
+        "Wu, Ledell",
+        "Edunov, Sergey",
+        "Chen, Danqi",
+        "Yih, Wen-tau"
+      ],
+      "year": 2020,
+      "venue": "Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)",
+      "doi": "10.18653/v1/2020.emnlp-main.550",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/2020.emnlp-main.550/",
+      "raw_bibtex": "@inproceedings{karpukhin-etal-2020-dense,\n    title = \"Dense Passage Retrieval for Open-Domain Question Answering\",\n    author = \"Karpukhin, Vladimir  and\n      Oguz, Barlas  and\n      Min, Sewon  and\n      Lewis, Patrick  and\n      Wu, Ledell  and\n      Edunov, Sergey  and\n      Chen, Danqi  and\n      Yih, Wen-tau\",\n    editor = \"Webber, Bonnie  and\n      Cohn, Trevor  and\n      He, Yulan  and\n      Liu, Yang\",\n    booktitle = \"Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing (EMNLP)\",\n    month = nov,\n    year = \"2020\",\n    address = \"Online\",\n    publisher = \"Association for Computational Linguistics\",\n    url = \"https://aclanthology.org/2020.emnlp-main.550/\",\n    doi = \"10.18653/v1/2020.emnlp-main.550\",\n    pages = \"6769--6781\",\n    abstract = \"Open-domain question answering relies on efficient passage retrieval to select candidate contexts, where traditional sparse vector space models, such as TF-IDF or BM25, are the de facto method. In this work, we show that retrieval can be practically implemented using dense representations alone, where embeddings are learned from a small number of questions and passages by a simple dual-encoder framework. When evaluated on a wide range of open-domain QA datasets, our dense retriever outperforms a strong Lucene-BM25 system greatly by 9{\\%}-19{\\%} absolute in terms of top-20 passage retrieval accuracy, and helps our end-to-end QA system establish new state-of-the-art on multiple open-domain QA benchmarks.\"\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "kelly2009methods",
+      "title": "Methods for evaluating interactive information retrieval systems with users",
+      "authors": [
+        "Kelly, Diane"
+      ],
+      "year": 2009,
+      "venue": "Foundations and Trends{\\textregistered} in Information Retrieval",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{kelly2009methods,\n  title={Methods for evaluating interactive information retrieval systems with users},\n  author={Kelly, Diane},\n  journal={Foundations and Trends{\\textregistered} in Information Retrieval},\n  volume={3},\n  number={1--2},\n  pages={1--224},\n  year={2009},\n  publisher={Emerald Publishing Limited}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "kwiatkowski-etal-2019-natural",
+      "title": "Natural Questions: A Benchmark for Question Answering Research",
+      "authors": [
+        "Kwiatkowski, Tom",
+        "Palomaki, Jennimaria",
+        "Redfield, Olivia",
+        "Collins, Michael",
+        "Parikh, Ankur",
+        "Alberti, Chris",
+        "Epstein, Danielle",
+        "Polosukhin, Illia",
+        "Devlin, Jacob",
+        "Lee, Kenton",
+        "Toutanova, Kristina",
+        "Jones, Llion",
+        "Kelcey, Matthew",
+        "Chang, Ming-Wei",
+        "Dai, Andrew M.",
+        "Uszkoreit, Jakob",
+        "Le, Quoc",
+        "Petrov, Slav"
+      ],
+      "year": 2019,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "doi": "10.1162/tacl_a_00276",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/Q19-1026/",
+      "raw_bibtex": "@article{kwiatkowski-etal-2019-natural,\n    title = \"Natural Questions: A Benchmark for Question Answering Research\",\n    author = \"Kwiatkowski, Tom  and\n      Palomaki, Jennimaria  and\n      Redfield, Olivia  and\n      Collins, Michael  and\n      Parikh, Ankur  and\n      Alberti, Chris  and\n      Epstein, Danielle  and\n      Polosukhin, Illia  and\n      Devlin, Jacob  and\n      Lee, Kenton  and\n      Toutanova, Kristina  and\n      Jones, Llion  and\n      Kelcey, Matthew  and\n      Chang, Ming-Wei  and\n      Dai, Andrew M.  and\n      Uszkoreit, Jakob  and\n      Le, Quoc  and\n      Petrov, Slav\",\n    editor = \"Lee, Lillian  and\n      Johnson, Mark  and\n      Roark, Brian  and\n      Nenkova, Ani\",\n    journal = \"Transactions of the Association for Computational Linguistics\",\n    volume = \"7\",\n    year = \"2019\",\n    address = \"Cambridge, MA\",\n    publisher = \"MIT Press\",\n    url = \"https://aclanthology.org/Q19-1026/\",\n    doi = \"10.1162/tacl_a_00276\",\n    pages = \"452--466\",\n    abstract = \"We present the Natural Questions corpus, a question answering data set. Questions consist of real anonymized, aggregated queries issued to the Google search engine. An annotator is presented with a question along with a Wikipedia page from the top 5 search results, and annotates a long answer (typically a paragraph) and a short answer (one or more entities) if present on the page, or marks null if no long/short answer is present. The public release consists of 307,373 training examples with single annotations; 7,830 examples with 5-way annotations for development data; and a further 7,842 examples with 5-way annotated sequestered as test data. We present experiments validating quality of the data. We also describe analysis of 25-way annotations on 302 examples, giving insights into human variability on the annotation task. We introduce robust metrics for the purposes of evaluating question answering systems; demonstrate high human upper bounds on these metrics; and establish baseline results using competitive methods drawn from related literature.\"\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "lample2017unsupervised",
+      "title": "Unsupervised machine translation using monolingual corpora only",
+      "authors": [
+        "Lample, Guillaume",
+        "Conneau, Alexis",
+        "Denoyer, Ludovic",
+        "Ranzato, Marc'Aurelio"
+      ],
+      "year": 2017,
+      "venue": "arXiv preprint arXiv:1711.00043",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{lample2017unsupervised,\n  title={Unsupervised machine translation using monolingual corpora only},\n  author={Lample, Guillaume and Conneau, Alexis and Denoyer, Ludovic and Ranzato, Marc'Aurelio},\n  journal={arXiv preprint arXiv:1711.00043},\n  year={2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-cycle-consistency-as-information-conservation",
+          "text": "[]{#sec:cycle-consistency label=\"sec:cycle-consistency\"} Our approach is grounded in the principle of cycle-consistency, widely utilized in unsupervised machine translation [he2016dual, lample2017unsupervised, han2021unsupervised] and unpaired image-to-image translation [cyclegan,"
+        }
+      ]
+    },
+    {
+      "key": "lee-etal-2019-latent",
+      "title": "Latent Retrieval for Weakly Supervised Open Domain Question Answering",
+      "authors": [
+        "Lee, Kenton",
+        "Chang, Ming-Wei",
+        "Toutanova, Kristina"
+      ],
+      "year": 2019,
+      "venue": "Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics",
+      "doi": "10.18653/v1/P19-1612",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/P19-1612/",
+      "raw_bibtex": "@inproceedings{lee-etal-2019-latent,\n    title = \"Latent Retrieval for Weakly Supervised Open Domain Question Answering\",\n    author = \"Lee, Kenton  and\n      Chang, Ming-Wei  and\n      Toutanova, Kristina\",\n    editor = \"Korhonen, Anna  and\n      Traum, David  and\n      M{\\`a}rquez, Llu{\\'i}s\",\n    booktitle = \"Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics\",\n    month = jul,\n    year = \"2019\",\n    address = \"Florence, Italy\",\n    publisher = \"Association for Computational Linguistics\",\n    url = \"https://aclanthology.org/P19-1612/\",\n    doi = \"10.18653/v1/P19-1612\",\n    pages = \"6086--6096\",\n    abstract = \"Recent work on open domain question answering (QA) assumes strong supervision of the supporting evidence and/or assumes a blackbox information retrieval (IR) system to retrieve evidence candidates. We argue that both are suboptimal, since gold evidence is not always available, and QA is fundamentally different from IR. We show for the first time that it is possible to jointly learn the retriever and reader from question-answer string pairs and without any IR system. In this setting, evidence retrieval from all of Wikipedia is treated as a latent variable. Since this is impractical to learn from scratch, we pre-train the retriever with an Inverse Cloze Task. We evaluate on open versions of five QA datasets. On datasets where the questioner already knows the answer, a traditional IR system such as BM25 is sufficient. On datasets where a user is genuinely seeking an answer, we show that learned retrieval is crucial, outperforming BM25 by up to 19 points in exact match.\"\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "lee2019latent",
+      "title": "Latent retrieval for weakly supervised open domain question answering",
+      "authors": [
+        "Lee, Kenton",
+        "Chang, Ming-Wei",
+        "Toutanova, Kristina"
+      ],
+      "year": 2019,
+      "venue": "arXiv preprint arXiv:1906.00300",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{lee2019latent,\n  title={Latent retrieval for weakly supervised open domain question answering},\n  author={Lee, Kenton and Chang, Ming-Wei and Toutanova, Kristina},\n  journal={arXiv preprint arXiv:1906.00300},\n  year={2019}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "liu2017unsupervised",
+      "title": "Unsupervised image-to-image translation networks",
+      "authors": [
+        "Liu, Ming-Yu",
+        "Breuel, Thomas",
+        "Kautz, Jan"
+      ],
+      "year": 2017,
+      "venue": "Advances in neural information processing systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{liu2017unsupervised,\n  title={Unsupervised image-to-image translation networks},\n  author={Liu, Ming-Yu and Breuel, Thomas and Kautz, Jan},\n  journal={Advances in neural information processing systems},\n  volume={30},\n  year={2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-cycle-consistency-as-information-conservation",
+          "text": "[]{#sec:cycle-consistency label=\"sec:cycle-consistency\"} Our approach is grounded in the principle of cycle-consistency, widely utilized in unsupervised machine translation [he2016dual, lample2017unsupervised, han2021unsupervised] and unpaired image-to-image translation [cyclegan,"
+        }
+      ]
+    },
+    {
+      "key": "liu2020k",
+      "title": "K-bert: Enabling language representation with knowledge graph",
+      "authors": [
+        "Liu, Weijie",
+        "Zhou, Peng",
+        "Zhao, Zhe",
+        "Wang, Zhiruo",
+        "Ju, Qi",
+        "Deng, Haotang",
+        "Wang, Ping"
+      ],
+      "year": 2020,
+      "venue": "Proceedings of the AAAI conference on artificial intelligence",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{liu2020k,\n  title={K-bert: Enabling language representation with knowledge graph},\n  author={Liu, Weijie and Zhou, Peng and Zhao, Zhe and Wang, Zhiruo and Ju, Qi and Deng, Haotang and Wang, Ping},\n  booktitle={Proceedings of the AAAI conference on artificial intelligence},\n  volume={34},\n  number={03},\n  pages={2901--2908},\n  year={2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        }
+      ]
+    },
+    {
+      "key": "mdp",
+      "title": "Hierarchical solution of Markov decision processes using macro-actions",
+      "authors": [
+        "Hauskrecht, Milos",
+        "Meuleau, Nicolas",
+        "Kaelbling, Leslie Pack",
+        "Dean, Thomas L",
+        "Boutilier, Craig"
+      ],
+      "year": 2013,
+      "venue": "arXiv preprint arXiv:1301.7381",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{mdp,\n  title={Hierarchical solution of Markov decision processes using macro-actions},\n  author={Hauskrecht, Milos and Meuleau, Nicolas and Kaelbling, Leslie Pack and Dean, Thomas L and Boutilier, Craig},\n  journal={arXiv preprint arXiv:1301.7381},\n  year={2013}\n}",
+      "citation_contexts": []
+    },
+    {
+      "key": "musique",
+      "title": "MuSiQue: Multihop Questions via Single-hop Question Composition",
+      "authors": [
+        "Trivedi, Harsh",
+        "Balasubramanian, Niranjan",
+        "Khot, Tushar",
+        "Sabharwal, Ashish"
+      ],
+      "year": 2022,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{musique,\n  title={MuSiQue: Multihop Questions via Single-hop Question Composition},\n  author={Trivedi, Harsh and Balasubramanian, Niranjan and Khot, Tushar and Sabharwal, Ashish},\n  journal={Transactions of the Association for Computational Linguistics},\n  volume={10},\n  pages={539--554},\n  year={2022},\n  publisher={MIT Press One Broadway, 12th Floor, Cambridge, Massachusetts 02142, USA~…}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "nq",
+      "title": "Natural Questions: A Benchmark for Question Answering Research",
+      "authors": [
+        "Kwiatkowski, Tom",
+        "Palomaki, Jennimaria",
+        "Redfield, Olivia",
+        "Collins, Michael",
+        "Parikh, Ankur",
+        "Alberti, Chris",
+        "Epstein, Danielle",
+        "Polosukhin, Illia",
+        "Devlin, Jacob",
+        "Lee, Kenton",
+        "Toutanova, Kristina",
+        "Jones, Llion",
+        "Kelcey, Matthew",
+        "Chang, Ming-Wei",
+        "Dai, Andrew M.",
+        "Uszkoreit, Jakob",
+        "Le, Quoc",
+        "Petrov, Slav"
+      ],
+      "year": 2019,
+      "venue": "Transactions of the Association for Computational Linguistics",
+      "doi": "10.1162/tacl_a_00276",
+      "arxiv_id": "",
+      "url": "https://aclanthology.org/Q19-1026/",
+      "raw_bibtex": "@article{nq, \ntitle = \"Natural Questions: A Benchmark for Question Answering Research\", \nauthor = \"Kwiatkowski, Tom  and Palomaki, Jennimaria  and Redfield, Olivia  and Collins, Michael  and Parikh, Ankur  and Alberti, Chris  and Epstein, Danielle  and Polosukhin, Illia  and Devlin, Jacob  and Lee, Kenton  and Toutanova, Kristina  and Jones, Llion  and Kelcey, Matthew  and Chang, Ming-Wei  and Dai, Andrew M.  and Uszkoreit, Jakob  and Le, Quoc  and Petrov, Slav\", \neditor = \"Lee, Lillian  and Johnson, Mark  and Roark, Brian  and Nenkova, Ani\", \njournal = \"Transactions of the Association for Computational Linguistics\", \nvolume = \"7\", \nyear = \"2019\", \naddress = \"Cambridge, MA\", \npublisher = \"MIT Press\", \nurl = \"https://aclanthology.org/Q19-1026/\", \ndoi = \"10.1162/tacl_a_00276\", \npages = \"452--466\", \nabstract = \"We present the Natural Questions corpus, a question answering data set. Questions consist of real anonymized, aggregated queries issued to the Google search engine. An annotator is presented with a question along with a Wikipedia page from the top 5 search results, and annotates a long answer (typically a paragraph) and a short answer (one or more entities) if present on the page, or marks null if no long/short answer is present. The public release consists of 307,373 training examples with single annotations; 7,830 examples with 5-way annotations for development data; and a further 7,842 examples with 5-way annotated sequestered as test data. We present experiments validating quality of the data. We also describe analysis of 25-way annotations on 302 examples, giving insights into human variability on the annotation task. We introduce robust metrics for the purposes of evaluating question answering systems; demonstrate high human upper bounds on these metrics; and establish baseline results using competitive methods drawn from related literature.\" }",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "popqa",
+      "title": "When not to trust language models: Investigating effectiveness of parametric and non-parametric memories",
+      "authors": [
+        "Mallen, Alex",
+        "Asai, Akari",
+        "Zhong, Victor",
+        "Das, Rajarshi",
+        "Khashabi, Daniel",
+        "Hajishirzi, Hannaneh"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{popqa,\n  title={When not to trust language models: Investigating effectiveness of parametric and non-parametric memories},\n  author={Mallen, Alex and Asai, Akari and Zhong, Victor and Das, Rajarshi and Khashabi, Daniel and Hajishirzi, Hannaneh},\n  booktitle={Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},\n  pages={9802--9822},\n  year={2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "ppo",
+      "title": "Proximal policy optimization algorithms",
+      "authors": [
+        "Schulman, John",
+        "Wolski, Filip",
+        "Dhariwal, Prafulla",
+        "Radford, Alec",
+        "Klimov, Oleg"
+      ],
+      "year": 2017,
+      "venue": "arXiv preprint arXiv:1707.06347",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{ppo,\n  title={Proximal policy optimization algorithms},\n  author={Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},\n  journal={arXiv preprint arXiv:1707.06347},\n  year={2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "qwen3embedding",
+      "title": "Qwen3 Embedding: Advancing Text Embedding and Reranking Through Foundation Models",
+      "authors": [
+        "Zhang, Yanzhao",
+        "Li, Mingxin",
+        "Long, Dingkun",
+        "Zhang, Xin",
+        "Lin, Huan",
+        "Yang, Baosong",
+        "Xie, Pengjun",
+        "Yang, An",
+        "Liu, Dayiheng",
+        "Lin, Junyang",
+        "Huang, Fei",
+        "Zhou, Jingren"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2506.05176",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{qwen3embedding,\n  title={Qwen3 Embedding: Advancing Text Embedding and Reranking Through Foundation Models},\n  author={Zhang, Yanzhao and Li, Mingxin and Long, Dingkun and Zhang, Xin and Lin, Huan and Yang, Baosong and Xie, Pengjun and Yang, An and Liu, Dayiheng and Lin, Junyang and Huang, Fei and Zhou, Jingren},\n  journal={arXiv preprint arXiv:2506.05176},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-hyperparameters",
+          "text": "[]{#appendix:hyperparams label=\"appendix:hyperparams\"} We conduct experiments using three policy models: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B [yang2025qwen3]. We use Gemini 2.5 Flash [comanici2025gemini] as both the evaluator and reconstructor. We use Qwen3-Embedding-4B"
+        }
+      ]
+    },
+    {
+      "key": "r1-searcher",
+      "title": "R1-searcher: Incentivizing the search capability in llms via reinforcement learning",
+      "authors": [
+        "Song, Huatong",
+        "Jiang, Jinhao",
+        "Min, Yingqian",
+        "Chen, Jie",
+        "Chen, Zhipeng",
+        "Zhao, Wayne Xin",
+        "Fang, Lei",
+        "Wen, Ji-Rong"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2503.05592",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{r1-searcher,\n  title={R1-searcher: Incentivizing the search capability in llms via reinforcement learning},\n  author={Song, Huatong and Jiang, Jinhao and Min, Yingqian and Chen, Jie and Chen, Zhipeng and Zhao, Wayne Xin and Fang, Lei and Wen, Ji-Rong},\n  journal={arXiv preprint arXiv:2503.05592},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "rag",
+      "title": "Retrieval-augmented generation for knowledge-intensive nlp tasks",
+      "authors": [
+        "Lewis, Patrick",
+        "Perez, Ethan",
+        "Piktus, Aleksandra",
+        "Petroni, Fabio",
+        "Karpukhin, Vladimir",
+        "Goyal, Naman",
+        "K \\\"u ttler, Heinrich",
+        "Lewis, Mike",
+        "Yih, Wen-tau",
+        "Rockt \\\"a schel, Tim",
+        "others"
+      ],
+      "year": 2020,
+      "venue": "Advances in neural information processing systems",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{rag,\n  title={Retrieval-augmented generation for knowledge-intensive nlp tasks},\n  author={Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K{\\\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt{\\\"a}schel, Tim and others},\n  journal={Advances in neural information processing systems},\n  volume={33},\n  pages={9459--9474},\n  year={2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        }
+      ]
+    },
+    {
+      "key": "react",
+      "title": "React: Synergizing reasoning and acting in language models",
+      "authors": [
+        "Yao, Shunyu",
+        "Zhao, Jeffrey",
+        "Yu, Dian",
+        "Du, Nan",
+        "Shafran, Izhak",
+        "Narasimhan, Karthik R",
+        "Cao, Yuan"
+      ],
+      "year": 2022,
+      "venue": "The eleventh international conference on learning representations",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{react,\n  title={React: Synergizing reasoning and acting in language models},\n  author={Yao, Shunyu and Zhao, Jeffrey and Yu, Dian and Du, Nan and Shafran, Izhak and Narasimhan, Karthik R and Cao, Yuan},\n  booktitle={The eleventh international conference on learning representations},\n  year={2022}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        }
+      ]
+    },
+    {
+      "key": "researchrubrics",
+      "title": "Researchrubrics: A benchmark of prompts and rubrics for evaluating deep research agents",
+      "authors": [
+        "Sharma, Manasi",
+        "Zhang, Chen Bo Calvin",
+        "Bandi, Chaithanya",
+        "Wang, Clinton",
+        "Aich, Ankit",
+        "Nghiem, Huy",
+        "Rabbani, Tahseen",
+        "Htet, Ye",
+        "Jang, Brian",
+        "Basu, Sumana",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2511.07685",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{researchrubrics,\n  title={Researchrubrics: A benchmark of prompts and rubrics for evaluating deep research agents},\n  author={Sharma, Manasi and Zhang, Chen Bo Calvin and Bandi, Chaithanya and Wang, Clinton and Aich, Ankit and Nghiem, Huy and Rabbani, Tahseen and Htet, Ye and Jang, Brian and Basu, Sumana and others},\n  journal={arXiv preprint arXiv:2511.07685},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-qualitative-investigation",
+          "text": "Qualitative analysis in [\\[fig:qualitative_analysis\\]](#fig:qualitative_analysis){reference-type=\"ref+Label\" reference=\"fig:qualitative_analysis\"} further illustrates how CCS assigns rewards based on the quality of the search trajectory. In the *Information Void* case, the agent retrieves"
+        },
+        {
+          "section_id": "sec-open-ended-deep-research-task",
+          "text": "Beyond traditional closed-ended question answering tasks, as reported in [\\[sec:experiments\\]](#sec:experiments){reference-type=\"ref+Label\" reference=\"sec:experiments\"}, we further evaluate CCS on the open-ended Deep Research setting using the ResearchRubrics benchmark [researchrubrics]. This"
+        }
+      ]
+    },
+    {
+      "key": "rlif",
+      "title": "Learning to reason without external rewards",
+      "authors": [
+        "Zhao, Xuandong",
+        "Kang, Zhewei",
+        "Feng, Aosong",
+        "Levine, Sergey",
+        "Song, Dawn"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2505.19590",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{rlif,\n  title={Learning to reason without external rewards},\n  author={Zhao, Xuandong and Kang, Zhewei and Feng, Aosong and Levine, Sergey and Song, Dawn},\n  journal={arXiv preprint arXiv:2505.19590},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        },
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "search-o1",
+      "title": "Search-o1: Agentic search-enhanced large reasoning models",
+      "authors": [
+        "Li, Xiaoxi",
+        "Dong, Guanting",
+        "Jin, Jiajie",
+        "Zhang, Yuyao",
+        "Zhou, Yujia",
+        "Zhu, Yutao",
+        "Zhang, Peitian",
+        "Dou, Zhicheng"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2501.05366",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{search-o1,\n  title={Search-o1: Agentic search-enhanced large reasoning models},\n  author={Li, Xiaoxi and Dong, Guanting and Jin, Jiajie and Zhang, Yuyao and Zhou, Yujia and Zhu, Yutao and Zhang, Peitian and Dou, Zhicheng},\n  journal={arXiv preprint arXiv:2501.05366},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        }
+      ]
+    },
+    {
+      "key": "search-r1",
+      "title": "Search-r1: Training llms to reason and leverage search engines with reinforcement learning",
+      "authors": [
+        "Jin, Bowen",
+        "Zeng, Hansi",
+        "Yue, Zhenrui",
+        "Yoon, Jinsung",
+        "Arik, Sercan",
+        "Wang, Dong",
+        "Zamani, Hamed",
+        "Han, Jiawei"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2503.09516",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{search-r1,\n  title={Search-r1: Training llms to reason and leverage search engines with reinforcement learning},\n  author={Jin, Bowen and Zeng, Hansi and Yue, Zhenrui and Yoon, Jinsung and Arik, Sercan and Wang, Dong and Zamani, Hamed and Han, Jiawei},\n  journal={arXiv preprint arXiv:2503.09516},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        },
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-optimization-via-group-relative-policy-optimization",
+          "text": "The objective in [\\[sec:problem_formulation\\]](#sec:problem_formulation){reference-type=\"ref+Label\" reference=\"sec:problem_formulation\"} frames search-agent training as maximizing the reconstructability of the original question from the bottlenecked trajectory. This naturally defines a"
+        },
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        },
+        {
+          "section_id": "sec-setup",
+          "text": "Our experimental protocol is informed by the configuration used in Search-R1 [search-r1]. We utilize the same search engine interface for all methods employing tool use. For the RAG baseline, we employ E5 [e5] as the dense retriever, indexing a 2018 Wikipedia dump [wikidump] as the knowledge"
+        },
+        {
+          "section_id": "sec-hyperparameters",
+          "text": "[]{#appendix:hyperparams label=\"appendix:hyperparams\"} We conduct experiments using three policy models: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B [yang2025qwen3]. We use Gemini 2.5 Flash [comanici2025gemini] as both the evaluator and reconstructor. We use Qwen3-Embedding-4B"
+        }
+      ]
+    },
+    {
+      "key": "sun2019ernie",
+      "title": "Ernie: Enhanced representation through knowledge integration",
+      "authors": [
+        "Sun, Yu",
+        "Wang, Shuohuan",
+        "Li, Yukun",
+        "Feng, Shikun",
+        "Chen, Xuyi",
+        "Zhang, Han",
+        "Tian, Xin",
+        "Zhu, Danxiang",
+        "Tian, Hao",
+        "Wu, Hua"
+      ],
+      "year": 2019,
+      "venue": "arXiv preprint arXiv:1904.09223",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{sun2019ernie,\n  title={Ernie: Enhanced representation through knowledge integration},\n  author={Sun, Yu and Wang, Shuohuan and Li, Yukun and Feng, Shikun and Chen, Xuyi and Zhang, Han and Tian, Xin and Zhu, Danxiang and Tian, Hao and Wu, Hua},\n  journal={arXiv preprint arXiv:1904.09223},\n  year={2019}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        }
+      ]
+    },
+    {
+      "key": "triviaqa",
+      "title": "Triviaqa: A large scale distantly supervised challenge dataset for reading comprehension",
+      "authors": [
+        "Joshi, Mandar",
+        "Choi, Eunsol",
+        "Weld, Daniel S",
+        "Zettlemoyer, Luke"
+      ],
+      "year": 2017,
+      "venue": "arXiv preprint arXiv:1705.03551",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{triviaqa,\n  title={Triviaqa: A large scale distantly supervised challenge dataset for reading comprehension},\n  author={Joshi, Mandar and Choi, Eunsol and Weld, Daniel S and Zettlemoyer, Luke},\n  journal={arXiv preprint arXiv:1705.03551},\n  year={2017}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        }
+      ]
+    },
+    {
+      "key": "ttrl",
+      "title": "Ttrl: Test-time reinforcement learning",
+      "authors": [
+        "Zuo, Yuxin",
+        "Zhang, Kaiyan",
+        "Sheng, Li",
+        "Qu, Shang",
+        "Cui, Ganqu",
+        "Zhu, Xuekai",
+        "Li, Haozhan",
+        "Zhang, Yuchen",
+        "Long, Xinwei",
+        "Hua, Ermo",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2504.16084",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{ttrl,\n  title={Ttrl: Test-time reinforcement learning},\n  author={Zuo, Yuxin and Zhang, Kaiyan and Sheng, Li and Qu, Shang and Cui, Ganqu and Zhu, Xuekai and Li, Haozhan and Zhang, Yuchen and Long, Xinwei and Hua, Ermo and others},\n  journal={arXiv preprint arXiv:2504.16084},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-works",
+          "text": "#### From Multi-Step Retrieval to Interactive Search Agents Prior work in information retrieval has largely centered on single-shot retrieve-and-read pipelines [lee-etal-2019-latent, guu2020retrieval, karpukhin-etal-2020-dense]. This paradigm expanded with the emergence of LLM-based systems that"
+        },
+        {
+          "section_id": "sec-baselines",
+          "text": "We compare CCS against a diverse set of baselines spanning model inference-only methods, methods trained with gold supervision, and methods that do not rely on gold supervision. **Model Inference:** We include Direct inference, zero-shot Chain-of-Thought (CoT) [cot], Interleaved Retrieval CoT"
+        },
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "vllm",
+      "title": "Efficient Memory Management for Large Language Model Serving with PagedAttention",
+      "authors": [
+        "Woosuk Kwon",
+        "Zhuohan Li",
+        "Siyuan Zhuang",
+        "Ying Sheng",
+        "Lianmin Zheng",
+        "Cody Hao Yu",
+        "Joseph E. Gonzalez",
+        "Hao Zhang",
+        "Ion Stoica"
+      ],
+      "year": 2023,
+      "venue": "Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{vllm,\n  title={Efficient Memory Management for Large Language Model Serving with PagedAttention},\n  author={Woosuk Kwon and Zhuohan Li and Siyuan Zhuang and Ying Sheng and Lianmin Zheng and Cody Hao Yu and Joseph E. Gonzalez and Hao Zhang and Ion Stoica},\n  booktitle={Proceedings of the ACM SIGOPS 29th Symposium on Operating Systems Principles},\n  year={2023}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-hyperparameters",
+          "text": "[]{#appendix:hyperparams label=\"appendix:hyperparams\"} We conduct experiments using three policy models: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B [yang2025qwen3]. We use Gemini 2.5 Flash [comanici2025gemini] as both the evaluator and reconstructor. We use Qwen3-Embedding-4B"
+        }
+      ]
+    },
+    {
+      "key": "wikidump",
+      "title": "Dense Passage Retrieval for Open-Domain Question Answering.",
+      "authors": [
+        "Karpukhin, Vladimir",
+        "Oguz, Barlas",
+        "Min, Sewon",
+        "Lewis, Patrick SH",
+        "Wu, Ledell",
+        "Edunov, Sergey",
+        "Chen, Danqi",
+        "Yih, Wen-tau"
+      ],
+      "year": 2020,
+      "venue": "EMNLP (1)",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@inproceedings{wikidump,\n  title={Dense Passage Retrieval for Open-Domain Question Answering.},\n  author={Karpukhin, Vladimir and Oguz, Barlas and Min, Sewon and Lewis, Patrick SH and Wu, Ledell and Edunov, Sergey and Chen, Danqi and Yih, Wen-tau},\n  booktitle={EMNLP (1)},\n  pages={6769--6781},\n  year={2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-setup",
+          "text": "Our experimental protocol is informed by the configuration used in Search-R1 [search-r1]. We utilize the same search engine interface for all methods employing tool use. For the RAG baseline, we employ E5 [e5] as the dense retriever, indexing a 2018 Wikipedia dump [wikidump] as the knowledge"
+        },
+        {
+          "section_id": "sec-baselines-2",
+          "text": "#### RAG We use a standard retrieve-then-read RAG framework implemented with FlashRAG's SequentialPipeline [FlashRAG]. Relevant documents are retrieved from the Wikipedia DPR corpus [wikidump] using E5 [e5] embeddings, after which the model generates an answer conditioned on the retrieved"
+        }
+      ]
+    },
+    {
+      "key": "yamada2020luke",
+      "title": "LUKE: Deep contextualized entity representations with entity-aware self-attention",
+      "authors": [
+        "Yamada, Ikuya",
+        "Asai, Akari",
+        "Shindo, Hiroyuki",
+        "Takeda, Hideaki",
+        "Matsumoto, Yuji"
+      ],
+      "year": 2020,
+      "venue": "arXiv preprint arXiv:2010.01057",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{yamada2020luke,\n  title={LUKE: Deep contextualized entity representations with entity-aware self-attention},\n  author={Yamada, Ikuya and Asai, Akari and Shindo, Hiroyuki and Takeda, Hideaki and Matsumoto, Yuji},\n  journal={arXiv preprint arXiv:2010.01057},\n  year={2020}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "Recent advances in Large Language Models (LLMs) [brown2020language, chung2024scaling] have led to the emergence of search agents [search-o1, search-r1, r1-searcher, deepresearcher, ReSearch] that navigate complex information environments through iterative planning and tool use [react]. Unlike"
+        }
+      ]
+    },
+    {
+      "key": "yang2025qwen3",
+      "title": "Qwen3 technical report",
+      "authors": [
+        "Yang, An",
+        "Li, Anfeng",
+        "Yang, Baosong",
+        "Zhang, Beichen",
+        "Hui, Binyuan",
+        "Zheng, Bo",
+        "Yu, Bowen",
+        "Gao, Chang",
+        "Huang, Chengen",
+        "Lv, Chenxu",
+        "others"
+      ],
+      "year": 2025,
+      "venue": "arXiv preprint arXiv:2505.09388",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "@article{yang2025qwen3,\n  title={Qwen3 technical report},\n  author={Yang, An and Li, Anfeng and Yang, Baosong and Zhang, Beichen and Hui, Binyuan and Zheng, Bo and Yu, Bowen and Gao, Chang and Huang, Chengen and Lv, Chenxu and others},\n  journal={arXiv preprint arXiv:2505.09388},\n  year={2025}\n}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-datasets-and-models",
+          "text": "To ensure a comprehensive assessment, we categorize the evaluation benchmarks into two groups based on search complexity, following @search-r1. For multi-hop reasoning, which necessitates iterative information retrieval and synthesis, we employ HotpotQA [hotpotqa], 2WikiMQA [2wikimqa], MuSiQue"
+        },
+        {
+          "section_id": "sec-hyperparameters",
+          "text": "[]{#appendix:hyperparams label=\"appendix:hyperparams\"} We conduct experiments using three policy models: Qwen2.5-7B-Instruct, Qwen3-4B-Instruct-2507, and Qwen3-32B [yang2025qwen3]. We use Gemini 2.5 Flash [comanici2025gemini] as both the evaluator and reconstructor. We use Qwen3-Embedding-4B"
+        }
+      ]
+    }
+  ]
+}

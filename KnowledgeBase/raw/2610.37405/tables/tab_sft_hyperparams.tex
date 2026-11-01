@@ -1,0 +1,24 @@
+\begin{table}[t]
+\centering
+\small
+
+\resizebox{\columnwidth}{!}{         
+\begin{tabular}{lc}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Fine-tuning method       & LoRA \\
+LoRA rank / alpha / dropout & 16 / 32 / 0.05 \\
+Max sequence length      & 3,000 \\
+Training epochs          & 3 \\
+Per-device batch size    & 16 \\
+Gradient accumulation steps & 8  \\
+Learning rate            & $5\times10^{-5}$ \\
+LR scheduler             & Cosine, warmup ratio 0.1 \\
+Weight decay             & 0.01 \\
+Gradient clipping        & 1.0 \\
+\bottomrule
+\end{tabular}}
+\caption{\textbf{Hyperparameters of supervised fine-tuning.}}
+\label{tab:sft_hyperparams}
+\end{table}

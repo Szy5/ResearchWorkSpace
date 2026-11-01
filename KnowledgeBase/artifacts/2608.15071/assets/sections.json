@@ -1,0 +1,639 @@
+{
+  "sections": [
+    {
+      "id": "sec-abstract",
+      "type": "abstract",
+      "title": "Abstract",
+      "level": 0,
+      "order": 0,
+      "parent_id": "",
+      "source": null,
+      "text": "Learning from experience is critical for developing capable, self-improving large language model (LLM) agents. Existing methods typically extract knowledge from accumulated trajectories via reflection, memory, rules, or skills. However, agents in realistic environments continuously encounter novel tasks, often offering only a one-shot opportunity to improve. These executions yield rich but highly noisy contexts, entangling broadly useful lessons with task-specific artifacts. Critically, prior works rarely validate their effectiveness on complex real-world tasks or isolate the underlying drivers of improvement. To address these gaps, we formulate online harness learning, where a frozen agent improves by continually updating a structured harness across sequential tasks. This formulation enables a systematic study of key self-improvement factors through our proposed Evo-Harness. At its core, context-to-harness skill compilation distills noisy, single-shot executions into reusable skill harnesses for cross-domain and topic-level adaptation. To demonstrate the efficacy of one-shot skill compilation, we evaluate across five realistic benchmarks (TerminalBench2, SWE-bench, CL-Bench, -bench, WebArena-Infinity). Our extensive analysis demonstrates the effectiveness of and provides a principled understanding of how LLM agents can effectively learn on the fly. Our code is available at https://github.com/A-EVO-Lab/a-evolve/tree/release/evo-harnessLink.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-introduction",
+      "type": "section",
+      "title": "Introduction",
+      "level": 1,
+      "order": 1,
+      "parent_id": "",
+      "source": null,
+      "text": "Large language model (LLM) agents [achiam2023gpt, team2023gemini, liu2024deepseek] have shown strong performance in complex task-solving settings, such as web interaction [zhou2024webarena], software engineering [jimenez2024swebench], tool use [qin2024toolllm], and long-horizon reasoning [erdogan2025plan, sun2025scaling]. These settings require agents to plan, act, interpret observations, handle feedback, and recover from errors. However, when an agent fails on a task, the failure often remains an isolated event rather than a source of future improvement. Without converting failed executions into reusable lessons, agents continue to make similar mistakes in later tasks.\n\n![Comparison of experience reuse (retrieving past cases) and harness skill evolution (compiling experiences into reusable guidance).](figures/teaser.jpg)\n\n*Figure: Comparison of experience reuse (retrieving past cases) and harness skill evolution (compiling experiences into reusable guidance).*\n\n![Illustration of the problem setting. (a) Prior methods collect executions and mine reusable patterns offline. (b) In practical online streams, agents encounter tasks sequentially, yielding rich but one-shot execution experiences. (c) compiles these online experiences into evolving skill harnesses for future reuse.](figures/setting.jpg)\n\n*Figure: Illustration of the problem setting. (a) Prior methods collect executions and mine reusable patterns offline. (b) In practical online streams, agents encounter tasks sequentially, yielding rich but one-shot execution experiences. (c) compiles these online experiences into evolving skill harnesses for future reuse.*\n\nMany experience-based methods [shinn2023reflexion, zhao2024expel] address this issue by learning from accumulated trajectories offline [lee2026meta, ni2026trace2skill], utilizing media such as reflection [shinn2023reflexion, qiu2026autorefine], memory [zhong2024memorybank, chhikara2025mem0, xu2025mem], and skills [zhang2026memskill, xia2026skillrl, jiang2026xskill, yang2026autoskill]. However, in realistic settings, agents continuously encounter novel tasks and contexts, and each completed execution typically offers only a one-shot opportunity to improve future behavior. Furthermore, real executions produce rich but highly noisy contexts, entangling useful lessons with task-specific details, partial failures, and incidental tool traces.\n\nCritically, prior methods often fail to rigorously validate their effectiveness under these realistic constraints, nor do they systematically isolate the underlying drivers of agent improvement. To navigate such a one-shot, complex learning environment, relying on the simple retrieval of past experiences falls short. Instead, agents need to actively compile raw execution contexts into reusable skill guidance for novel tasks, as contrasted in Figure fig:teaser.\n\nBuilding on this view, we formulate *online harness learning*, where a frozen agent improves by incrementally updating a structured, external harness across sequential tasks. To cope with the continuous influx of novel tasks, this harness acts as a self-evolving learning medium that progressively distills executions into actionable guidance for the future. An overview of this practical setting, compared to standard offline learning, is illustrated in Figure fig:setting.\n\nTo operationalize this formulation and enable a systematic study of continuous self-improvement, we introduce *Evo-Harness*. We instantiate the harness within this framework using skills. Skills act as a natural medium for realistic task executions because they can integrate diverse learning signals, such as failures, feedback, constraints, and operational procedures, into structured knowledge that shapes future planning and recovery. At the core of *Evo-Harness* is *context-to-harness skill compilation*, which converts individual execution contexts into reusable skill harness updates. Specifically, our compilation process uses a *solver* to reflect on contexts and propose candidate skills, and an *evolver* to update the existing harness. *General* skills capture transferable cross-task patterns, while *topic* skills capture localized operational knowledge. This dual design preserves critical learning signals while filtering out trajectory-level noise.\n\nWe evaluate Evo-Harness across five realistic benchmarks (TerminalBench2, SWE-bench, CL-Bench, $\\tau$-bench, and WebArena-Infinity) under a sequential continuous learning setup. Beyond demonstrating performance gains, our primary focus is systematically investigating the core drivers of self-improvement. By analyzing how evolver designs, feedback types, and transfer settings dictate performance, our study treats the skill harness as an interpretable object for understanding how frozen LLM agents learn on the fly.\n\nOur contributions are summarized as follows:\n\n- **Online harness learning.** We formulate a setting where frozen agents improve over sequential task streams by incrementally updating a reusable external harness instead of model parameters.\n\n- **Context-to-harness skill compilation.** We introduce a mechanism that compiles single-shot execution contexts into actionable general and topic-level skill updates.\n\n- **Systematic analysis of harness evolution.** We isolate how evolver designs, feedback types, and transfer settings impact continuous self-improvement. Evaluated across five complex benchmarks, consistently outperforms existing experience-based methods.",
+      "labels": [
+        "fig:setting",
+        "fig:teaser"
+      ],
+      "citations": [
+        "achiam2023gpt",
+        "chhikara2025mem0",
+        "erdogan2025plan",
+        "jiang2026xskill",
+        "jimenez2024swebench",
+        "lee2026meta",
+        "liu2024deepseek",
+        "ni2026trace2skill",
+        "qin2024toolllm",
+        "qiu2026autorefine",
+        "shinn2023reflexion",
+        "sun2025scaling",
+        "team2023gemini",
+        "xia2026skillrl",
+        "xu2025mem",
+        "yang2026autoskill",
+        "zhang2026memskill",
+        "zhao2024expel",
+        "zhong2024memorybank",
+        "zhou2024webarena"
+      ],
+      "figure_ids": [
+        "fig-setting",
+        "fig-teaser"
+      ]
+    },
+    {
+      "id": "sec-related-work",
+      "type": "section",
+      "title": "Related Work",
+      "level": 1,
+      "order": 2,
+      "parent_id": "",
+      "source": null,
+      "text": "[]{#sec:related label=\"sec:related\"} In this section, we review existing works on self-evolving LLM agents and external memory or skill harnesses for agent experience.\n\n#### Evolving and self-improving LLM agents.\n\nA growing line of work explores how LLM agents self-improve through interaction and feedback. Beyond local reflection methods that iteratively revise outputs based on scalar or verbal feedback [shinn2023reflexion, madaan2023self], experience-based approaches attempt to extract reusable knowledge offline. For instance, some works mine accumulated trajectory pools to synthesize natural language insights [zhao2024expel], interaction rules [chen2024automanual], or transferable directories [ni2026trace2skill]. Similarly, a parallel track focuses on passively evolving higher-level agent artifacts, such as prompts [suzgun2025dynamic, lou2026autoharness], reasoning banks [ouyang2025reasoningbank], or memory structures [agrawal2025gepa, lee2026meta, zhang2025agentic, wei2025evo, lin2026position]. To provide more operational guidance, recent methods have shifted toward skill-centered evolution. This includes building executable code skills [wang2023voyager], optimizing skill libraries via policy learning [xia2026skillrl, zhang2026memskill, ouyang2026skillos], or curating skill knowledge bases and representations [yang2026autoskill, qiu2026autorefine, jiang2026xskill, wang2026skillx]. While closely related, these existing frameworks largely treat learned artifacts as passive repositories for free-form retrieval. Critically, prior methods often fail to rigorously validate their effectiveness under realistic online constraints, nor do they systematically isolate the underlying drivers of agent improvement. Our work addresses this gap by compiling single-shot experiences into an active skill harness, providing a structural scaffold to systematically investigate how LLM agents learn on the fly.\n\n#### Memory and skill harnesses for agent experience.\n\nMemory provides a fundamental external medium for preserving agent experience. Existing memory systems maintain long-term observation histories [zhong2024memorybank, yu2025memagent], organize memories through adaptive structures [xu2025mem], and explore methods for updating and retrieving evidence across modalities [huang2026rethinking, bei2026mem, liu2026omnimem]. However, these approaches largely treat memory as a passive information store. Skills differ fundamentally because they encode operational knowledge. They shift from merely recording what happened to specifying exactly how an agent should act through manuals [chen2024automanual], verify operations via organized directories [ni2026trace2skill], or recover from failures using skill repositories [ouyang2026skillos, wang2026skillx, zhang2026mmskills]. This procedural view elevates skills into an active harness. Rather than merely supplying historical context, a harness acts as an external scaffold that structurally shapes future planning, taking forms such as pattern repositories [ning2026code, qiu2026autorefine], reasoning banks [ouyang2025reasoningbank], and dynamic guidance files [suzgun2025dynamic, lee2026meta, liu2026adaptive, lin2026harness]. Building on this distinction, our work conceptualizes the skill harness not merely as a performance-enhancing artifact, but as an interpretable medium to systematically study continuous online adaptation. To navigate the high noise of real-world executions, compiles single-shot reflections into a structured harness of general and topic skills. While this separation efficiently filters out task-specific artifacts, its primary purpose in our work is to provide a transparent scaffold. This explicitly allows us to systematically isolate and evaluate the core drivers, such as evolver designs and feedback types, that dictate how frozen LLM agents self-improve on the fly.\n\n# : Context-to-Harness Skill Compilation {#sec:method}\n\nWe present , a framework for online harness learning. The goal is to convert one-shot execution contexts into a reusable harness that guides future task solving. Unlike experience retrieval, which recalls past cases, compiles noisy execution signals into structured guidance that can shape later planning, acting, verification, and recovery.\n\nFigure fig:main gives an overview. maintains a current harness that guides the solver before execution, shaping how it plans, acts, verifies, and recovers. After each task batch, execution contexts are reflected into candidate memories and compiled back into the harness as cross-task patterns and task-type procedures, allowing the updated harness to guide later executions. ![Overview of . The solver uses the current harness to solve a task batch or stream. Each execution produces a context, including input, action trajectory, outcome, and feedback. Execution reflection converts these contexts into candidate memories. The evolver compares the candidate memories with the current harness and updates the harness with cross-task patterns and task-type procedures for later batches.](figures/main.jpg)\n\n*Figure: Overview of . The solver uses the current harness to solve a task batch or stream. Each execution produces a context, including input, action trajectory, outcome, and feedback. Execution reflection converts these contexts into candidate memories. The evolver compares the candidate memories with the current harness and updates the harness with cross-task patterns and task-type procedures for later batches.*",
+      "labels": [
+        "fig:main",
+        "sec:method",
+        "sec:related"
+      ],
+      "citations": [
+        "agrawal2025gepa",
+        "bei2026mem",
+        "chen2024automanual",
+        "huang2026rethinking",
+        "jiang2026xskill",
+        "lee2026meta",
+        "lin2026harness",
+        "lin2026position",
+        "liu2026adaptive",
+        "liu2026omnimem",
+        "lou2026autoharness",
+        "madaan2023self",
+        "ni2026trace2skill",
+        "ning2026code",
+        "ouyang2025reasoningbank",
+        "ouyang2026skillos",
+        "qiu2026autorefine",
+        "shinn2023reflexion",
+        "suzgun2025dynamic",
+        "wang2023voyager",
+        "wang2026skillx",
+        "wei2025evo",
+        "xia2026skillrl",
+        "xu2025mem",
+        "yang2026autoskill",
+        "yu2025memagent",
+        "zhang2025agentic",
+        "zhang2026memskill",
+        "zhang2026mmskills",
+        "zhao2024expel",
+        "zhong2024memorybank"
+      ],
+      "figure_ids": [
+        "fig-main"
+      ]
+    },
+    {
+      "id": "sec-online-harness-learning-setup",
+      "type": "subsection",
+      "title": "Online Harness Learning Setup",
+      "level": 2,
+      "order": 3,
+      "parent_id": "sec-related-work",
+      "source": null,
+      "text": "Let $\\{B_1,\\ldots,B_K\\}$ denote a stream of task batches, where $B_i=\\{x_{i,1},\\ldots,x_{i,m_i}\\}$. Before batch $B_i$, the agent has a current harness $\\mathcal{H}_i$, a structured set of reusable guidance entries:\n\n$$\n\\mathcal{H}_i = \\{h_i^1,\\ldots,h_i^{n_i}\\}.\n$$\n\nThe harness is external to the frozen solver and serves as a control scaffold for later executions. Unlike raw trajectory storage, it maintains compact guidance distilled from prior executions and affects future behavior through selection and injection into the solver context.\n\nFor each task $x_{i,j}$, the agent selects a compact set of harness entries:\n\n$$\n\\mathcal{S}_{i,j}\n =\n \\mathrm{Select}(x_{i,j}, \\mathcal{H}_i; b),\n \\qquad\n |\\mathcal{S}_{i,j}| \\leq b,\n$$\n\nwhere $b$ is the injection budget. The selected guidance is injected into the task:\n\n$$\n\\tilde{x}_{i,j}\n =\n \\mathrm{Inject}(x_{i,j}, \\mathcal{S}_{i,j}).\n$$\n\nA frozen solver $\\mathcal{A}$ executes the task:\n\n$$\n(\\tau_{i,j}, y_{i,j}, f_{i,j})\n =\n \\mathcal{A}(\\tilde{x}_{i,j}),\n$$\n\nwhere $\\tau_{i,j}$ is the action trajectory, $y_{i,j}$ is the outcome, and $f_{i,j}$ is available feedback, such as verifier results, unit-test outputs, tool diagnostics, or judge feedback. The execution context is:\n\n$$\nc_{i,j}\n =\n (x_{i,j}, \\tau_{i,j}, y_{i,j}, f_{i,j}).\n$$\n\nOnline harness learning updates $\\mathcal{H}_i$ into $\\mathcal{H}_{i+1}$ from these execution contexts, while keeping the solver parameters fixed.",
+      "labels": [
+        "sec:method-setup"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-context-to-harness-compilation",
+      "type": "subsection",
+      "title": "Context-to-Harness Compilation",
+      "level": 2,
+      "order": 4,
+      "parent_id": "sec-related-work",
+      "source": null,
+      "text": "uses two complementary stages: *execution reflection* and *harness evolution*. Reflection extracts learning signals from each execution. Evolution integrates those signals into the harness.\n\n#### Execution reflection.\n\nFor each completed execution context $c_{i,j}$, the solver produces a candidate memory only when the execution fails or receives negative feedback:\n\n$$\nr_{i,j}\n =\n \\mathrm{Reflect}(c_{i,j}).\n$$\n\nEach candidate memory is represented as:\n\n$$\nr\n =\n (\\mathrm{lesson}, \\mathrm{trigger}, \\mathrm{evidence}, \\mathrm{scope\\_hint}).\n$$\n\nReflection uses the full task-side context available immediately after execution, including the instruction, trajectory, observations, tool outputs, outcome, and feedback. We focus reflection on failures because they expose the solver's current boundary: incorrect assumptions, missing constraints, ineffective tool use, weak verification, and failed recovery. This makes the resulting candidate memories more targeted for harness improvement, while avoiding unnecessary updates from successful executions that may contain task-specific details. The reflection stage does not compare against the current harness, so its output is not a final harness update, but a failure-grounded candidate signal extracted from the completed execution.\n\n#### Harness evolution.\n\nAfter batch $B_i$, the candidate memories form:\n\n$$\n\\mathcal{R}_i\n =\n \\{r_{i,j}\\}_{j=1}^{m_i}.\n$$\n\nThe evolver receives the candidate memories and the current harness:\n\n$$\n\\mathcal{O}_i\n =\n \\mathrm{Evolver}(\\mathcal{H}_i, \\mathcal{R}_i),\n$$\n\nwhere $\\mathcal{O}_i$ is a set of harness edits. Conceptually, the evolver applies:\n\n$$\no\n =\n \\pi_{\\mathrm{evolve}}(r, \\mathcal{H}_i, \\mathcal{R}_i),\n$$\n\nwhere $o \\in \\{\\textsc{Add}, \\textsc{Merge}, \\textsc{Revise}, \\textsc{Skip}\\}$. The evolver filters noisy or redundant memories, merges compatible signals, revises existing guidance, and promotes reusable lessons when appropriate. The updated harness is:\n\n$$\n\\mathcal{H}_{i+1}\n =\n \\mathrm{ApplyEdits}(\\mathcal{H}_i, \\mathcal{O}_i).\n$$\n\nThis makes the harness more than a memory store: candidate memories are not appended directly, but compiled into guidance that can affect future behavior.",
+      "labels": [
+        "sec:method-compilation"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-harness-levels",
+      "type": "subsection",
+      "title": "Harness Levels",
+      "level": 2,
+      "order": 5,
+      "parent_id": "sec-related-work",
+      "source": null,
+      "text": "The evolved harness contains two levels of reusable guidance. *Cross-task patterns* are compiled by comparing memories across tasks and identifying shared operational structure. *Task-type procedures* preserve more localized guidance for recurring task formats, interfaces, or domains. These levels are not predefined labels for individual executions. They emerge from how the evolver filters, compares, and integrates candidate memories into the harness.",
+      "labels": [
+        "sec:method-skill-levels"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-algorithm-and-modularity",
+      "type": "subsection",
+      "title": "Algorithm and Modularity",
+      "level": 2,
+      "order": 6,
+      "parent_id": "sec-related-work",
+      "source": null,
+      "text": "Algorithm alg:context-to-harness summarizes . We use batch-level updates so the evolver can both compile localized task-type procedures and compare memories across tasks to extract cross-task patterns. The same formulation reduces to task-type updating when $|B_i|=1$.\n\n**Algorithm: : Context-to-Harness Skill Compilation**\n\n```latex\n[t]\n\\caption{\\algname{}: Context-to-Harness Skill Compilation}\n\\label{alg:context-to-harness}\n\\begin{algorithmic}[1]\n\\small\n\\STATE \\textbf{Input:} task batches $\\{B_1,\\ldots,B_K\\}$, frozen solver $\\mathcal{A}$, initial harness $\\mathcal{H}_1$\n\\FOR{$i=1,\\ldots,K$}\n \\STATE $\\mathcal{R}_i \\gets \\emptyset$\n \\FOR{each task $x_{i,j}\\in B_i$}\n \\STATE $\\mathcal{S}_{i,j}\\gets \\mathrm{Select}(x_{i,j},\\mathcal{H}_i;b)$\n \\STATE $\\tilde{x}_{i,j}\\gets \\mathrm{Inject}(x_{i,j},\\mathcal{S}_{i,j})$\n \\STATE $(\\tau_{i,j},y_{i,j},f_{i,j})\\gets \\mathcal{A}(\\tilde{x}_{i,j})$\n \\STATE $c_{i,j}\\gets (x_{i,j},\\tau_{i,j},y_{i,j},f_{i,j})$\n \\STATE $r_{i,j}\\gets \\mathrm{Reflect}(c_{i,j})$\n \\STATE $\\mathcal{R}_i\\gets \\mathcal{R}_i\\cup\\{r_{i,j}\\}$\n \\ENDFOR\n \\STATE $\\mathcal{O}_i^{\\mathrm{type}}\\gets \\mathrm{CompileTaskType}(\\mathcal{H}_i,\\mathcal{R}_i)$\n \\STATE $\\mathcal{O}_i^{\\mathrm{cross}}\\gets \\mathrm{CompileCrossTask}(\\mathcal{H}_i,\\mathcal{R}_i)$\n \\STATE $\\mathcal{O}_i\\gets \\mathcal{O}_i^{\\mathrm{type}}\\cup \\mathcal{O}_i^{\\mathrm{cross}}$\n \\STATE $\\mathcal{H}_{i+1}\\gets \\mathrm{ApplyEdits}(\\mathcal{H}_i,\\mathcal{O}_i)$\n\\ENDFOR\n\\STATE \\textbf{Output:} evolved harness $\\mathcal{H}_{K+1}$ and task results\n\\end{algorithmic}\n```\n\nHere, $\\mathrm{CompileTaskType}$ preserves localized procedures, while $\\mathrm{CompileCrossTask}$ extracts shared patterns across executions. The modular design is intentional: by decoupling the solver, evolver, feedback source, and initial harness state, provides a controlled framework for systematically studying what drives online harness improvement.",
+      "labels": [
+        "alg:context-to-harness",
+        "sec:method-algorithm"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experiments",
+      "type": "section",
+      "title": "Experiments",
+      "level": 1,
+      "order": 7,
+      "parent_id": "",
+      "source": null,
+      "text": "[]{#sec:exp label=\"sec:exp\"} []{#sec:experiments label=\"sec:experiments\"}\n\nWe conduct experiments to evaluate and to understand when online harness evolution improves LLM agents:\n\n- **RQ1: Overall effectiveness.** Does improve frozen agents across diverse benchmarks, and which task categories benefit most?\n\n- **RQ2: Harness content and components.** What types of guidance are produced by the evolved harness, and how do different harness components contribute?\n\n- **RQ3: Online updating and transfer.** How do evolved harnesses behave under train-split transfer, online updating, and solver-evolver pairing?\n\n- **RQ4: Feedback grounding.** How does the source and granularity of feedback affect harness evolution?",
+      "labels": [
+        "sec:exp",
+        "sec:experiments"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-setup",
+      "type": "subsection",
+      "title": "Setup",
+      "level": 2,
+      "order": 8,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "We evaluate on five benchmarks spanning diverse agent capabilities: WebArena-Infinity [zhou2026wainf] for web navigation, TerminalBench2 [merrill2026terminalbenchbenchmarkingagentshard] for command-line tasks, SWE-bench Lite [jimenez2024swebench] for software engineering, CL-Bench [dou2026cl] for adaptive reasoning, and TAU-Bench [yao2024tau] for tool-use tasks. We use Claude Opus 4.6 [claude_opus_46] as the default solver and evolver, and additionally evaluate with Claude Opus 4.7 [claude_opus_47], Claude Opus 4.5 [claude_opus_45], Kimi-K2.5 [team2026kimi], and GPT-OSS [agarwal2025gpt] when studying model ablations. We report success rates in percent, where higher is better. Further benchmark and implementation details are provided in Appendix app:benchmarks and app:details.\n\nWe compare with representative experience-, memory-, and skill-based adaptation methods under the same task split and evaluation protocol. AWM [wang2024agent] reuses agent working memory, Dynamic Cheatsheet [suzgun2025dynamic] maintains an adaptive external cheatsheet, Evo-Memory [wei2025evo] evolves reusable memories from executions, ACE [zhang2025agentic] optimizes agent context, and XSkill [jiang2026xskill] separates experience and skills for continual reuse. DC-Cu and DC-RS are two Dynamic Cheatsheet variants.\n\n![Distribution of evolved skill patterns across benchmarks. The learned skills exhibit benchmark-specific characteristics, ranging from workflow and tool-use procedures to verification, domain reasoning, and output-constraint handling.](figures/skill-taxonomy.png)\n\n*Figure: Distribution of evolved skill patterns across benchmarks. The learned skills exhibit benchmark-specific characteristics, ranging from workflow and tool-use procedures to verification, domain reasoning, and output-constraint handling.*\n\n**Table: Main results using Claude Opus 4.6 as the solver. Scores denote success rates (\\%), and higher values indicate better performance. achieves the best results across all five benchmarks.**\n\n```latex\n\\begin{table*}[t]\n\\caption{\nMain results using Claude Opus 4.6 as the solver. Scores denote success rates (\\%), and higher values indicate better performance. \\algname{} achieves the best results across all five benchmarks.\n}\n\\centering\n\\label{tab:main}\n\\small\n\\begin{tabular}{lccccc}\n\\toprule\n\\textbf{Method} & \\textbf{CL-Bench} & \\textbf{TerminalBench-2} & \\textbf{SWE-bench Lite} & \\textbf{$\\tau$-bench} & \\textbf{WebArena-Infinity} \\\\\n\\midrule\nNo Evolve & 29.54 & 62.92 & 63.67 & 72.73 & 72.50 \\\\\n\\midrule\nAWM & 28.91 & 62.92 & 62.67 & 70.91 & 70.00 \\\\\nDC-Cu & 29.23 & 60.67 & 63.00 & 72.12 & 71.25 \\\\\nDC-RS & 29.07 & 61.80 & 61.67 & 70.91 & 70.00 \\\\\nEvo-Memory & 29.38 & 64.04 & 64.00 & 72.12 & 72.50 \\\\\nACE & 29.70 & 61.80 & 63.67 & 72.73 & 71.25 \\\\\nXSkill & 31.44 & 66.29 & 64.67 & 73.94 & 73.75 \\\\\n\\midrule\n\\algname{} & \\textbf{34.02} & \\textbf{73.03} & \\textbf{67.00} & \\textbf{76.97} & \\textbf{76.25} \\\\\n\\bottomrule\n\\end{tabular}\n\\label{tab:main-opus46}\n\\end{table*}\n```",
+      "labels": [
+        "fig:skill-taxonomy",
+        "sec:exp-setup",
+        "tab:main",
+        "tab:main-opus46"
+      ],
+      "citations": [
+        "agarwal2025gpt",
+        "claude_opus_45",
+        "claude_opus_46",
+        "claude_opus_47",
+        "dou2026cl",
+        "jiang2026xskill",
+        "jimenez2024swebench",
+        "merrill2026terminalbenchbenchmarkingagentshard",
+        "suzgun2025dynamic",
+        "team2026kimi",
+        "wang2024agent",
+        "wei2025evo",
+        "yao2024tau",
+        "zhang2025agentic",
+        "zhou2026wainf"
+      ],
+      "figure_ids": [
+        "fig-skill-taxonomy"
+      ]
+    },
+    {
+      "id": "sec-overall-effectiveness-rq1",
+      "type": "subsection",
+      "title": "Overall Effectiveness (RQ1)",
+      "level": 2,
+      "order": 9,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "Table tab:main reports the main results with Claude Opus 4.6 as the solver. **improves over both No-Evolve and prior experience-based baselines across all five benchmarks.** The gains are especially large on TerminalBench-2, where agents need to inspect files, execute commands, interpret errors, and recover from failed operations. This suggests that harness evolution is particularly useful when tasks expose reusable procedural structure.\n\nCompared with the strongest baseline, XSkill, still improves on every benchmark. **External experience reuse is not automatically beneficial.** Several baselines underperform No-Evolve on some benchmarks, suggesting that retrieved or evolved guidance can be noisy, overly specific, or mismatched to the solver. This supports our motivation for studying not only whether self-evolution helps, but also what factors make online harness updates effective.",
+      "labels": [
+        "sec:exp-main"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-category-and-model-generality-rq1",
+      "type": "subsection",
+      "title": "Category and Model Generality (RQ1)",
+      "level": 2,
+      "order": 10,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "Table tab:clbench-category provides a representative category-level view on CL-Bench across five solver models. Since CL-Bench covers diverse reasoning and execution categories, it allows us to examine where harness evolution is most effective and how the effect varies across solver capabilities. **improves the overall score for every solver model, with larger gains on stronger Claude models than on open-weight alternatives.** Opus 4.7, Opus 4.6, and Opus 4.5 obtain gains of $+3.7$, $+4.5$, and $+3.8$, respectively, while Kimi-K2.5 and GPT-OSS improve by $+1.1$ and $+0.8$. This suggests that stronger solvers may be better able to interpret, follow, and benefit from evolved harness guidance.\n\nAcross categories, the most consistent improvements appear on Procedural Task Execution (PTE), where every model improves and Opus 4.6 and Opus 4.5 each gain $+9.8$ points. **Harness evolution is most reliable when tasks expose reusable operational structure.** In contrast, Empirical Discovery & Simulation (EDS) shows less stable gains, with drops for Opus 4.6 and GPT-OSS. This suggests that more exploratory tasks may be more sensitive to overly specific guidance.\n\n**Table: CL-Bench category results across different models: pass rate (\\%) across five models. Bold = best per category-model pair. shows absolute improvement of over the No-Evolve baseline. DKR = Domain Knowledge Reasoning, EDS = Empirical Discovery \\& Simulation, PTE = Procedural Task Execution, RSA = Rule System Application.**\n\n```latex\n\\begin{table*}[t]\n\\centering\n\\caption{CL-Bench category results across different models: pass rate (\\%) across five models. \\textbf{Bold} = best per category-model pair. $\\Delta$ shows absolute improvement of \\algname{} over the No-Evolve baseline. DKR = Domain Knowledge Reasoning, EDS = Empirical Discovery \\& Simulation, PTE = Procedural Task Execution, RSA = Rule System Application.}\n\\label{tab:clbench-category}\n\\vspace{3pt}\n\\small\n\\setlength{\\tabcolsep}{4pt}\n\\begin{tabular}{ll|cc|cc|cc|cc|cc}\n\\toprule\n& & \\multicolumn{2}{c|}{\\textbf{DKR}} & \\multicolumn{2}{c|}{\\textbf{EDS}} & \\multicolumn{2}{c|}{\\textbf{PTE}} & \\multicolumn{2}{c|}{\\textbf{RSA}} & \\multicolumn{2}{c}{\\textbf{All}} \\\\\n\\textbf{Model} & \\textbf{Method} & Rate & $\\Delta$ & Rate & $\\Delta$ & Rate & $\\Delta$ & Rate & $\\Delta$ & Rate & $\\Delta$ \\\\\n\\midrule\n\\multirow{2}{*}{Opus 4.7}\n& No-Evolve & 32.4 & --- & \\textbf{19.1} & --- & 35.5 & --- & 29.0 & --- & 30.8 & --- \\\\\n& \\algname{} & \\textbf{34.1} & \\gain{1.7} & 19.6 & \\gain{0.5} & \\textbf{42.7} & \\gain{7.2} & \\textbf{32.7} & \\gain{3.7} & \\textbf{34.5} & \\gain{3.7} \\\\\n\\midrule\n\\multirow{2}{*}{Opus 4.6}\n& No-Evolve & 31.4 & --- & \\textbf{20.6} & --- & 34.0 & --- & 26.9 & --- & 29.5 & --- \\\\\n& \\algname{} & \\textbf{35.6} & \\gain{4.2} & 18.1 & \\loss{-2.5} & \\textbf{43.8} & \\gain{9.8} & \\textbf{30.4} & \\gain{3.5} & \\textbf{34.0} & \\gain{4.5} \\\\\n\\midrule\n\\multirow{2}{*}{Opus 4.5}\n& No-Evolve & 31.4 & --- & 18.1 & --- & 27.8 & --- & 25.3 & --- & 27.3 & --- \\\\\n& \\algname{} & \\textbf{32.6} & \\gain{1.2} & \\textbf{19.1} & \\gain{1.0} & \\textbf{37.6} & \\gain{9.8} & \\textbf{28.3} & \\gain{3.0} & \\textbf{31.1} & \\gain{3.8} \\\\\n\\midrule\n\\multirow{2}{*}{Kimi-K2.5}\n& No-Evolve & 25.6 & --- & 12.1 & --- & 25.1 & --- & \\textbf{21.6} & --- & 22.9 & --- \\\\\n& \\algname{} & \\textbf{25.9} & \\gain{0.3} & \\textbf{13.1} & \\gain{1.0} & \\textbf{29.3} & \\gain{4.2} & 20.8 & \\loss{-0.7} & \\textbf{23.9} & \\gain{1.1} \\\\\n\\midrule\n\\multirow{2}{*}{GPT-OSS}\n& No-Evolve & 17.6 & --- & \\textbf{11.6} & --- & 17.6 & --- & 16.4 & --- & 16.6 & --- \\\\\n& \\algname{} & \\textbf{17.9} & \\gain{0.3} & 10.6 & \\loss{-1.0} & \\textbf{18.5} & \\gain{0.8} & \\textbf{18.6} & \\gain{2.1} & \\textbf{17.5} & \\gain{0.8} \\\\\n\\bottomrule\n\\end{tabular}\n\\vspace{-5pt}\n\\end{table*}\n```\n\n**Table: Ablation study on CL-Bench and SWE-bench Lite using Claude Opus 4.6 as the solver. Scores denote pass rates (\\%).**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\caption{Ablation study on CL-Bench and SWE-bench Lite using Claude Opus 4.6 as the solver. Scores denote pass rates (\\%).}\n\\label{tab:ablation-cl-swe}\n\\vspace{3pt}\n\\small\n\\begin{tabular}{lcc}\n\\toprule\n\\textbf{Method} & \\textbf{CL-Bench} & \\textbf{SWE-bench Lite} \\\\\n\\midrule\nNo Evolve & 29.54 & 63.67 \\\\ \\midrule\nNo Propose & 33.28 & 65.33 \\\\\nGeneral Only & 30.28 & 66.67 \\\\\nTopic Only & 33.70 & 64.33 \\\\\n\\midrule\n\\algname{} & \\textbf{34.02} & \\textbf{67.00} \\\\\n\\bottomrule\n\\end{tabular}\n\\vspace{-5pt}\n\\end{table}\n```",
+      "labels": [
+        "sec:exp-category-model",
+        "tab:ablation-cl-swe",
+        "tab:clbench-category"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-harness-content-and-components-rq2",
+      "type": "subsection",
+      "title": "Harness Content and Components (RQ2)",
+      "level": 2,
+      "order": 11,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "Figure fig:skill-taxonomy analyzes the content of the evolved harness across benchmarks. **The evolved harness reflects benchmark-specific operational demands rather than accumulating generic guidance.** WebArena-Infinity mainly yields workflow and procedure skills, TerminalBench-2 emphasizes verification and recovery, $\\tau$-bench mixes tool/API operation with domain reasoning, and CL-Bench produces a broader distribution including domain reasoning and output-constraint handling. These patterns suggest that context-to-harness compilation adapts the harness to each environment's operational structure and failure modes.\n\nTable tab:ablation-cl-swe studies which parts of the harness update process contribute to performance. We focus this and the following diagnostic analyses mainly on CL-Bench and SWE-bench Lite because they stress different forms of harness guidance: CL-Bench contains heterogeneous adaptive reasoning tasks where localized task-type guidance can matter, while SWE-bench Lite emphasizes repository-level debugging and verification procedures where broader reusable guidance is expected to help. [No Propose]{.smallcaps} removes solver-side proposal of candidate memories, [General Only]{.smallcaps} keeps only cross-task guidance, and [Topic Only]{.smallcaps} keeps only localized task-type guidance.\n\n**Both broad cross-task guidance and localized task-type guidance are useful, but their importance depends on the task setting.** The full setting performs best on both benchmarks. On CL-Bench, Topic Only reaches $33.70$, close to the full result of $34.02$, while General Only drops to $30.28$, suggesting that localized task-type guidance is more useful for its heterogeneous reasoning tasks. On SWE-bench Lite, General Only reaches $66.67$, close to the full result of $67.00$, while Topic Only reaches $64.33$, indicating that broad debugging, verification, and repository-inspection procedures matter more. No Propose improves over No Evolve but remains below the full method, suggesting that proposal and harness-level compilation are complementary.\n\n![SWE-bench Lite success rates under different evolution settings. No-Evolve uses no harness updates; Train-Split Transfer evaluates skills evolved by Claude Sonnet on the training split; and Online-Updated updates skills during the task stream.](figures/swe-evolution-setting.png)\n\n*Figure: SWE-bench Lite success rates under different evolution settings. No-Evolve uses no harness updates; Train-Split Transfer evaluates skills evolved by Claude Sonnet on the training split; and Online-Updated updates skills during the task stream.*",
+      "labels": [
+        "fig:swe-evolution-setting",
+        "sec:exp-harness-analysis"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-swe-evolution-setting"
+      ]
+    },
+    {
+      "id": "sec-transfer-and-adaptability-rq3",
+      "type": "subsection",
+      "title": "Transfer and Adaptability (RQ3)",
+      "level": 2,
+      "order": 12,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "Figure fig:swe-evolution-setting compares three skill-update settings. [No-Evolve]{.smallcaps} uses no harness update. [Train-Split Transfer]{.smallcaps} uses skills evolved by Claude Sonnet 4.5 on the training split and evaluates them with an Opus 4.7 solver on the test split. [Online-Updated]{.smallcaps} updates the harness directly with the same models during the test task stream. **Skills learned on a training split can transfer across both tasks and models, while online updating performs best.** No-Evolve reaches $68.8$, Train-Split Transfer reaches $73.4$, and Online-Updated reaches $75.0$. The gain from Train-Split Transfer shows that skills evolved by a smaller or different model can still provide useful guidance for a stronger solver on unseen tasks. Online-Updated further improves over Train-Split Transfer by $+1.6$ points, suggesting that in-situ harness updates better adapt to the local distribution and failure modes of the test stream.\n\nFigure fig:swe-curator-solver examines how solver-evolver pairing affects harness evolution. We compare two solver settings: an Opus 4.7 solver and a Sonnet 4.5 solver. In each setting, [Same]{.smallcaps} uses the same model as both solver and evolver, while [Cross]{.smallcaps} uses the other model as the evolver. Specifically, for the Opus solver, [Same]{.smallcaps} uses Opus to evolve the harness and [Cross]{.smallcaps} uses Sonnet to evolve the harness; for the Sonnet solver, [Same]{.smallcaps} uses Sonnet as the evolver and [Cross]{.smallcaps} uses Opus as the evolver. **Using the same model for solving and evolution is not always optimal; cross-model evolution can help, but only when the solver is capable of using the evolved guidance.** For the Opus solver, Cross reaches $76.0$, slightly higher than Same at $75.3$ and clearly above No-Evolve at $70.7$. This suggests that a different evolver can produce guidance that is still useful, or even more useful, when the downstream solver has sufficient capability to interpret and apply it. For the Sonnet solver, however, Same and Cross reach $55.3$ and $55.7$, both below No-Evolve at $58.0$. Thus, Sonnet-evolved skills can help Opus, but do not necessarily help Sonnet itself. This contrast suggests that harness transfer depends not only on the skill artifact but also on the base solver's capability: if the solver cannot reliably follow, contextualize, or adapt the guidance, evolution may fail to improve performance.",
+      "labels": [
+        "sec:exp-transfer"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-feedback-grounding-rq4",
+      "type": "subsection",
+      "title": "Feedback Grounding (RQ4)",
+      "level": 2,
+      "order": 13,
+      "parent_id": "sec-experiments",
+      "source": null,
+      "text": "![Opus 4.7 Solver](figures/swe-curator-opus.png)\n\n![Opus 4.7 Solver](figures/swe-curator-opus-2.png)\n\n*Figure: Opus 4.7 Solver*\n\nTable tab:feedback-level-ablation evaluates how feedback signals affect harness evolution on CL-Bench and SWE-bench Lite. We compare three feedback settings. [Self-Generated]{.smallcaps} asks the LLM itself to judge whether the execution succeeded and what should be learned. [Minimal]{.smallcaps} provides only the environment-level success or failure signal, such as whether a command, verifier, or test passed. [Standard]{.smallcaps} provides grounded diagnostic feedback, including failure messages, error traces, verifier outputs, or test failures when available.\n\n**Grounded feedback is important for reliable harness evolution.** Self-Generated feedback underperforms No-Evolve on both benchmarks, decreasing CL-Bench from $29.54$ to $27.96$ and SWE-bench Lite from $63.67$ to $61.67$. This suggests that LLM-generated self-judgment can introduce misleading updates when it is not grounded in external execution evidence. In contrast, Minimal and Standard feedback both use environment-provided signals and are more reliable overall.\n\n**Standard feedback is generally preferable, but the useful granularity of feedback depends on the benchmark.** On CL-Bench, Standard feedback performs best, reaching $34.02$, while Minimal feedback reaches only $29.86$. This suggests that richer diagnostics are useful for adaptive reasoning tasks, where understanding the reason for failure can help compile better harness guidance. On SWE-bench Lite, however, Minimal feedback reaches $67.33$, slightly above Standard feedback at $67.00$. One possible explanation is that detailed error messages can sometimes make the evolved harness overly tied to task-specific failures, while sparse pass/fail signals encourage more generalizable guidance.\n\n**Table: Impact of feedback level on CL-Bench and SWE-bench Lite using Claude Opus 4.6 as the solver. Scores denote pass rates (\\%).**\n\n```latex\n\\begin{table}[t]\n\\centering\n\\caption{Impact of feedback level on CL-Bench and SWE-bench Lite using Claude Opus 4.6 as the solver. Scores denote pass rates (\\%).}\n\\label{tab:feedback-level-ablation}\n\\vspace{3pt}\n\\small\n\\begin{tabular}{lcc}\n\\toprule\n\\textbf{Feedback Level} & \\textbf{CL-Bench} & \\textbf{SWE-bench Lite} \\\\\n\\midrule\nNo Evolve & 29.54 & 63.67 \\\\\nSelf-Generated & 27.96 & 61.67 \\\\\nMinimal & 29.86 & \\textbf{67.33} \\\\\nStandard & \\textbf{34.02} & 67.00 \\\\\n\\bottomrule\n\\end{tabular}\n\\vspace{-5pt}\n\\end{table}\n```",
+      "labels": [
+        "fig:swe-curator-opus",
+        "fig:swe-curator-solver",
+        "fig:swe-curator-sonnet",
+        "sec:exp-feedback",
+        "tab:feedback-level-ablation"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-swe-curator-opus",
+        "fig-swe-curator-opus-2"
+      ]
+    },
+    {
+      "id": "sec-conclusion",
+      "type": "section",
+      "title": "Conclusion",
+      "level": 1,
+      "order": 14,
+      "parent_id": "",
+      "source": null,
+      "text": "We formulated *online harness learning* as a setting for studying how frozen LLM agents can improve from sequential, one-shot executions. Through , we instantiated this setting with context-to-harness skill compilation, which turns noisy execution contexts into a reusable external harness for future task solving. Beyond proposing a pipeline, our goal is to use the harness as an analytical lens for understanding online self-improvement. This perspective moves self-evolving agent research beyond aggregate success rates toward a more principled study of how agents produce, organize, transfer, and apply reusable experience in realistic task streams.",
+      "labels": [
+        "sec:con"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-limitations",
+      "type": "section",
+      "title": "Limitations",
+      "level": 1,
+      "order": 15,
+      "parent_id": "",
+      "source": null,
+      "text": "Our study focuses on single-agent LLM systems in text-based, tool-use, web, command-line, and software-engineering environments. We do not evaluate embodied agents or multi-agent systems, where the harness may involve additional forms of interaction, coordination, and environmental feedback. We also instantiate the harness with natural-language guidance; other harness formats, such as executable code skills or structured programs, are not covered in this study.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-appendix",
+      "type": "section",
+      "title": "Appendix",
+      "level": 1,
+      "order": 16,
+      "parent_id": "",
+      "source": null,
+      "text": "",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-benchmark-details",
+      "type": "section",
+      "title": "Benchmark Details",
+      "level": 1,
+      "order": 17,
+      "parent_id": "",
+      "source": null,
+      "text": "Table tab:bench-stats summarizes the benchmark settings. We use the same online protocol across benchmarks: tasks are processed as a stream, the solver uses the current harness, and the evolver updates the harness after observing task outcomes.\n\n**Table: Benchmark statistics and evaluation signals.**\n\n```latex\n\\begin{table}[h]\n\\centering\n\\caption{Benchmark statistics and evaluation signals.}\n\\label{tab:bench-stats}\n\\small\n\\setlength{\\tabcolsep}{3pt}\n\\scalebox{0.78}{\n\\begin{tabular}{lrll}\n\\toprule\n\\textbf{Benchmark} & \\textbf{\\#Tasks} & \\textbf{Domain} & \\textbf{Evaluation signal} \\\\\n\\midrule\nWebArena Inf. & 80 & Web navigation & State verifier \\\\\nTerminal-Bench & 89 & CLI / scripting & Docker verifier \\\\\nSWE-bench Lite & 300 & Software eng. & Unit tests \\\\\nCL-Bench & 1899 & Adaptive reasoning & Rubric judge \\\\\nTAU-Bench & 165 & Tool use & State verifier \\\\\n\\bottomrule\n\\end{tabular}}\n\\end{table}\n```\n\n#### WebArena Infinity.\n\nWe use 80 hard tasks from the email-centered \"superhuman-general\" setting and related web applications. Tasks require stateful browser interaction, such as creating labels, changing settings, using email filters, or coordinating calendar/email information. A programmatic verifier checks the final application state. This benchmark is useful for studying whether skills capture UI procedures.\n\n#### Terminal-Bench v2.\n\nWe evaluate 89 tasks across software engineering, data processing, scientific computing, security, system administration, and related command-line domains. The solver works in an isolated shell environment and submits final artifacts or answers inside a task-specific Docker image. Final success is determined by the benchmark's executable verifier, typically a hidden or mounted test script run inside the container.\n\n#### SWE-bench Lite.\n\nWe use 300 real GitHub issues from 12 Python repositories. The solver edits code and the final patch is evaluated by repository tests.\n\n#### CL-Bench.\n\nCL-Bench contains 1899 adaptive reasoning tasks across Domain Knowledge Reasoning, Empirical Discovery & Simulation, Procedural Task Execution, and Rule System Application. Each task is graded with rubric criteria.\n\n#### TAU-Bench.\n\nTAU-Bench contains 165 customer-service tool-use tasks across airline and retail domains. Evaluation checks the final database state.",
+      "labels": [
+        "app:benchmarks",
+        "tab:bench-stats"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-harness-artifacts-examples",
+      "type": "section",
+      "title": "Harness Artifacts Examples",
+      "level": 1,
+      "order": 18,
+      "parent_id": "",
+      "source": null,
+      "text": "This section shows representative learned artifacts without enumerating the learned inventory. For task-level comparison, we align the same task identifiers between the no-evolve and evolved runs. We only call a case a direct improvement when the baseline run fails and the evolved run succeeds. This is not a single-skill causal ablation: several skills may be injected together, and some benchmarks do not record injected skills in every result file. The examples therefore use a structured failure/success format: task, verifier signal, trajectory summary, learned skill content, and a short takeaway.\n\n**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[evoCase, colback=blue!2, colframe=blue!45,\ntitle={WebArena: verified setting}]\n\\small\n\\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]\n\\item \\textbf{Task:} \\texttt{task\\_h10}; create ``Legal'' and disable\n``Support Ticket''.\n\\item \\textbf{Baseline:} verifier found ``Support Ticket'' still enabled,\ndespite the trajectory claiming both subgoals were complete.\n\\item \\textbf{Evolved:} verifier passed; the trajectory returned to the Auto\nLabels list and checked the existing label state.\n\\item \\textbf{Learned skill:} toggle an existing auto label off; do not delete\nit; verify creation and disabling independently.\n\\end{itemize}\n\\tcblower\n\\textbf{Core point.} The harness learned a concrete UI distinction:\ncreate-new-label and disable-existing-label are separate operations.\n\\end{tcolorbox}\n```\n\n**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[evoCase, colback=blue!2, colframe=blue!45,\ntitle={WebArena: grounded recipients}]\n\\small\n\\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]\n\\item \\textbf{Task:} \\texttt{task\\_h65}; reply to Kevin Zhao with CTO and VP\nEngineering on CC.\n\\item \\textbf{Baseline:} sent to plausible names but wrong domains\n(\\texttt{acme.com} instead of \\texttt{acmecorp.com}).\n\\item \\textbf{Evolved:} verifier passed with the required role-derived\nrecipients in CC.\n\\item \\textbf{Learned skill:} prefer authoritative role sources and preserve\nexact email addresses across apps.\n\\end{itemize}\n\\tcblower\n\\textbf{Core point.} The harness learned identity grounding, not merely email\ncomposition.\n\\end{tcolorbox}\n```\n\n**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[evoCase, colback=orange!2, colframe=orange!45,\ntitle={Terminal-Bench: executable recovery}]\n\\small\n\\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]\n\\item \\textbf{Task:} \\texttt{adaptive-rejection-sampler}; pass the Docker\nverifier for an R sampler.\n\\item \\textbf{Baseline:} formal tests failed after repeated reruns of the same\nR test command.\n\\item \\textbf{Evolved:} passed after diagnosing timeout, missing dependency,\nformal-test, and sorted-vector failures.\n\\item \\textbf{Learned skill:} after repeated similar failures, stop, shrink the\ncase, build a minimal reproducer, then add complexity back.\n\\end{itemize}\n\\tcblower\n\\textbf{Core point.} The harness learned a recovery policy for executable\nfeedback loops.\n\\end{tcolorbox}\n```\n\n**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[evoCase, colback=green!2, colframe=green!45,\ntitle={SWE-bench: test-grounded repair}]\n\\small\n\\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]\n\\item \\textbf{Task:} \\texttt{django\\_\\_django-11133}; fix Django response\nhandling without regressing existing behavior.\n\\item \\textbf{Baseline:} timed out after source search and failed test attempts.\n\\item \\textbf{Evolved:} passed \\texttt{FAIL\\_TO\\_PASS: 1/1} and\n\\texttt{PASS\\_TO\\_PASS: 64/64}.\n\\item \\textbf{Learned skill:} read complete failing-test assertions, match\nexact expected behavior, then run targeted tests before submission.\n\\end{itemize}\n\\tcblower\n\\textbf{Core point.} The harness learned to anchor patches in executable test\nexpectations.\n\\end{tcolorbox}\n```\n\n**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[evoCase, colback=purple!2, colframe=purple!45,\ntitle={TAU-Bench: complete tool execution}]\n\\small\n\\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]\n\\item \\textbf{Task:} \\texttt{retail\\_task\\_5}; exchange multiple items from one\norder.\n\\item \\textbf{Baseline:} database verifier failed, consistent with partial or\nwrong-tool execution.\n\\item \\textbf{Evolved:} verifier passed after retrieving the order and applying\nall requested item changes.\n\\item \\textbf{Learned skill:} enumerate every requested operation, choose the\ntool by order status, and verify the response covers the full list.\n\\end{itemize}\n\\tcblower\n\\textbf{Core point.} The harness learned complete tool-call execution.\n\\end{tcolorbox}\n```",
+      "labels": [
+        "app:examples"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-which-tasks-are-easier-to-improve",
+      "type": "section",
+      "title": "Which Tasks Are Easier to Improve?",
+      "level": 1,
+      "order": 19,
+      "parent_id": "",
+      "source": null,
+      "text": "The most informative pattern is not the total number of fail-to-pass cases, but the kind of task that turns around after harness evolution. Table tab:improvement-hotspots groups matched fail-to-pass cases by their observable failure mode and gives representative task identifiers from the runs in `outputs`.\n\n**Table: Improvement hotspots from matched baseline-fail/evolved-pass cases.**\n\n```latex\n\\begin{table*}[t]\n\\centering\n\\caption{Improvement hotspots from matched baseline-fail/evolved-pass cases.}\n\\label{tab:improvement-hotspots}\n\\small\n\\setlength{\\tabcolsep}{3.5pt}\n\\begin{tabular}{p{2.0cm}p{3.2cm}p{4.3cm}p{4.0cm}}\n\\toprule\n\\textbf{Benchmark} & \\textbf{Easier-to-improve tasks} &\n\\textbf{Representative cases} & \\textbf{Why skills help} \\\\\n\\midrule\nWebArena &\nStateful UI tasks with exact recipients, labels, settings, and mail state. &\n\\texttt{h10}: disable an existing auto label;\n\\texttt{h65}: preserve corporate email domains;\n\\texttt{h73}: archive all qualifying read-important emails. &\nThe verifier checks final app state, so procedural memory about where to click\nmust be coupled with exact state confirmation. \\\\\n\\midrule\nTerminal-Bench &\nTasks with executable feedback loops and recoverable failures. &\n\\texttt{adaptive-rejection-sampler}, \\texttt{dna-insert},\n\\texttt{build-pmars}, \\texttt{regex-chess}. &\nThe solver can observe Docker-test failures; process skills help it pivot,\nreduce scope, and verify artifacts before submission. \\\\\n\\midrule\nSWE-bench Lite &\nMature repositories with stable conventions, especially Django and Sympy. &\n\\texttt{django\\_\\_django-11133}, \\texttt{django\\_\\_django-17087},\n\\texttt{sympy\\_\\_sympy-19254}. &\nThe issue often hides exact expectations in tests or framework internals; topic\nskills preserve these conventions across later tasks. \\\\\n\\midrule\nTAU-Bench &\nRetail exchanges/returns and airline reservation edits with multiple\nconstraints. &\n\\texttt{retail\\_task\\_5}, \\texttt{retail\\_task\\_91},\n\\texttt{airline\\_task\\_13}. &\nThe state verifier rewards complete tool-call execution. Skills prevent\npartial updates, wrong mutation tools, and guessed item or flight identifiers. \\\\\n\\midrule\nCL-Bench &\nRule-application, procedural, and domain-knowledge contexts with local rubrics.\n&\nContext categories with many turnarounds include Rule System Application,\nProcedural Task Execution, and Domain Knowledge Reasoning. &\nContext skills behave like small local manuals: exact extraction rules, role\nboundaries, output schemas, and calculation conventions. \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table*}\n```",
+      "labels": [
+        "app:improvement-hotspots",
+        "tab:improvement-hotspots"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-what-the-harness-actually-learns",
+      "type": "section",
+      "title": "What the Harness Actually Learns",
+      "level": 1,
+      "order": 20,
+      "parent_id": "",
+      "source": null,
+      "text": "Figure fig:learned-skill-excerpts shows real skill excerpts selected with matched fail-to-pass support. The evidence line reports the relevant turnaround family in the runs, while the rule line gives the core learned behavior.\n\n*Figure: Representative learned harness excerpts across benchmarks. Each card pairs a recurring fail-to-pass pattern with the corresponding evolved guidance. Percentages summarize matched baseline-fail/evolved-pass cases and contextualize the examples rather than establish single-skill causality.*",
+      "labels": [
+        "app:learned-skills",
+        "fig:learned-skill-excerpts"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-prompt-templates",
+      "type": "section",
+      "title": "Prompt Templates",
+      "level": 1,
+      "order": 21,
+      "parent_id": "",
+      "source": null,
+      "text": "The prompts follow the same context-to-harness compilation logic across experiments: the solver reflects on an execution context to propose candidate lessons, and the evolver curates these candidates against the existing harness. Below, we provide representative prompt templates that capture this common proposal-and-curation process.",
+      "labels": [
+        "app:prompts"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-solver-side-proposal-prompt",
+      "type": "subsection",
+      "title": "Solver-Side Proposal Prompt",
+      "level": 2,
+      "order": 22,
+      "parent_id": "sec-prompt-templates",
+      "source": null,
+      "text": "**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[breakable, colback=gray!5, colframe=gray!50, fontupper=\\small,\ntitle={\\small Proposal prompt, compressed}]\n\\textbf{Inputs:} evaluation result, verifier details or rubric feedback,\ntrajectory signals, compressed trajectory, and related existing skills.\\\\[2pt]\n\\textbf{Analyze the execution.}\nFor each distinct issue, identify what went wrong and the concrete missing\naction, command, tool call, navigation step, or domain rule.\\\\[2pt]\n\\textbf{Propose a reusable skill.}\nChoose a broad topic, decide \\texttt{NEW}, \\texttt{ENHANCE}, or \\texttt{NONE},\nwrite a trigger-style description, and provide short bullet-point content with\ntechniques and gotchas.\\\\[2pt]\n\\textbf{Filter aggressively.}\nSkip generic advice, basic tool usage, exact task replay, and skills that would\nnot help unseen tasks.\n\\end{tcolorbox}\n```",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-evolver-side-curator-prompt",
+      "type": "subsection",
+      "title": "Evolver-Side Curator Prompt",
+      "level": 2,
+      "order": 23,
+      "parent_id": "sec-prompt-templates",
+      "source": null,
+      "text": "**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[breakable, colback=gray!5, colframe=gray!50, fontupper=\\small,\ntitle={\\small Curator prompt, compressed}]\n\\textbf{Inputs:} topic, current skill library, budget, and proposals from the\nlatest batch.\\\\[2pt]\nFor each proposal, choose \\texttt{ACCEPT}, \\texttt{MERGE}, or \\texttt{SKIP}.\nPrefer merging over duplication, respect the budget, require a clear trigger\ndescription, keep content short and actionable, and apply a generalizability\ntest such as usefulness for multiple unseen tasks.\n\\end{tcolorbox}\n```",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-general-skill-curator",
+      "type": "subsection",
+      "title": "General Skill Curator",
+      "level": 2,
+      "order": 24,
+      "parent_id": "sec-prompt-templates",
+      "source": null,
+      "text": "**LaTeX block: tcolorbox**\n\n```latex\n\\begin{tcolorbox}[breakable, colback=gray!5, colframe=gray!50, fontupper=\\small,\ntitle={\\small General skill curator, compressed}]\nAnalyze repeated patterns across tasks rather than within a single topic.\nCreate or update a general skill only when a pattern appears across multiple\ncontexts. General skills must avoid context-specific references and encode\nprocedures that can guide planning, verification, recovery, or tool use across\ntasks.\n\\end{tcolorbox}\n```",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experimental-details",
+      "type": "section",
+      "title": "Experimental Details",
+      "level": 1,
+      "order": 25,
+      "parent_id": "",
+      "source": null,
+      "text": "[]{#app:details label=\"app:details\"} All experiments use the same open-source pipeline with benchmark-specific adapters. WebArena uses browser workers with persistent application state. Terminal-Bench uses task-specific Docker images and executable verifiers. SWE-bench uses isolated repository environments and unit-test evaluation. TAU-Bench uses the official tool-use environment and verifier. CL-Bench uses a rubric-based judge pipeline.\n\nThe harness is stored as Markdown skill files with lightweight YAML metadata, making the learned artifact inspectable and easy to transfer across runs. Each entry contains a trigger describing when it should be retrieved, a short actionable rule or procedure, optional evidence linking it to prior executions, and a scope indicating whether it is intended as cross-task guidance or task-type guidance. For harness selection, we use Claude Sonnet 4.5 across all experiments to retrieve relevant skills from the current harness before task execution.\n\nUnless otherwise specified, we use a batch size of 16. We set the maximum number of general skills and the maximum number of skills under each task-type topic to 5. This budget encourages the evolver to merge overlapping guidance and avoid accumulating overly detailed or task-specific records.",
+      "labels": [
+        "app:details"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-potential-risks",
+      "type": "section",
+      "title": "Potential Risks",
+      "level": 1,
+      "order": 26,
+      "parent_id": "",
+      "source": null,
+      "text": "evolves skill libraries that are injected into agent prompts as procedural guidance. The learned skills are designed to capture task-solving patterns such as navigation flows, tool-use procedures, verification steps, and recovery strategies. In our experiments, all benchmarks are run in sandboxed environments with no access to real user data, external accounts, or production systems. Therefore, the evaluated setting poses minimal practical risk beyond standard benchmark execution.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-use-or-create-scientific-artifacts",
+      "type": "section",
+      "title": "Use Or Create Scientific Artifacts",
+      "level": 1,
+      "order": 27,
+      "parent_id": "",
+      "source": null,
+      "text": "Our work uses five established public benchmarks: WebArena-Infinity, TerminalBench2, SWE-bench Lite, CL-Bench, and TAU-Bench. We do not modify the benchmarks themselves. We use foundation models (Claude and other models) via their standard AWS Bedrock APIs. We will release the pipeline code and all evolved skill libraries upon publication.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-cite-creators-of-artifacts",
+      "type": "subsection",
+      "title": "Cite Creators Of Artifacts",
+      "level": 2,
+      "order": 28,
+      "parent_id": "sec-use-or-create-scientific-artifacts",
+      "source": null,
+      "text": "All benchmarks and models are properly cited in the main text.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-discuss-the-license-for-artifacts",
+      "type": "subsection",
+      "title": "Discuss The License For Artifacts",
+      "level": 2,
+      "order": 29,
+      "parent_id": "sec-use-or-create-scientific-artifacts",
+      "source": null,
+      "text": "All benchmark resources used in this work are publicly available under their respective research or open-source licenses. In particular, WebArena Infinity and TAU-Bench are released under MIT licenses, WebArena is released under Apache-2.0, and CL-Bench is released under a custom evaluation-only license. Our pipeline code will be released under the MIT License.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-artifact-use-consistent-with-intended-use",
+      "type": "subsection",
+      "title": "Artifact Use Consistent With Intended Use",
+      "level": 2,
+      "order": 30,
+      "parent_id": "sec-use-or-create-scientific-artifacts",
+      "source": null,
+      "text": "All benchmarks are used for their intended purpose of evaluating agent capabilities. The foundation models are used via their standard APIs in accordance with their terms of service.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-data-contains-personally-identifying-info-or-offensive-content",
+      "type": "subsection",
+      "title": "Data Contains Personally Identifying Info Or Offensive Content",
+      "level": 2,
+      "order": 31,
+      "parent_id": "sec-use-or-create-scientific-artifacts",
+      "source": null,
+      "text": "The benchmarks use synthetic or sanitized scenarios. SWE-bench uses public GitHub issues. To our knowledge, none contain personally identifying information or offensive content.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-computational-experiments",
+      "type": "section",
+      "title": "Computational Experiments",
+      "level": 1,
+      "order": 32,
+      "parent_id": "",
+      "source": null,
+      "text": "",
+      "labels": [
+        "sec:app-compute"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-compute-budget",
+      "type": "subsection",
+      "title": "Compute Budget",
+      "level": 2,
+      "order": 33,
+      "parent_id": "sec-computational-experiments",
+      "source": null,
+      "text": "The full experimental suite is computationally expensive because it covers multiple benchmarks, solver models, evolution settings, and ablation configurations. Across all main experiments and diagnostic runs, the total API cost was on the order of $\\$100{K}$. For a single benchmark configuration, we typically run 16 parallel workers. Depending on benchmark complexity, task timeout, and environment overhead, one full run takes approximately 2--8 hours of wall-clock time. Web and tool-use benchmarks are usually faster, while software-engineering and command-line tasks tend to take longer because they require repository setup, Docker execution, test running, or verifier calls.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-experimental-setup-and-hyper-params",
+      "type": "subsection",
+      "title": "Experimental Setup And Hyper-params",
+      "level": 2,
+      "order": 34,
+      "parent_id": "sec-computational-experiments",
+      "source": null,
+      "text": "Key hyperparameters are described in Appendix app:details. We use fixed random seeds (42) for task shuffling to ensure reproducibility.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-descriptive-statistics",
+      "type": "subsection",
+      "title": "Descriptive Statistics",
+      "level": 2,
+      "order": 35,
+      "parent_id": "sec-computational-experiments",
+      "source": null,
+      "text": "We report pass rate (%) as the primary metric across all benchmarks. For statistical reliability, we report results over the full task set for each benchmark rather than subsampling. The performance is averaged over three runs.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-parameters-for-packages",
+      "type": "subsection",
+      "title": "Parameters For Packages",
+      "level": 2,
+      "order": 36,
+      "parent_id": "sec-computational-experiments",
+      "source": null,
+      "text": "The project primarily used AWS Bedrock API for foundation model inference, together with standard AWS infrastructure services such as EC2, S3, EBS/FSx, CloudWatch, IAM, and VPC. The software environment used Python 3.10+, boto3 1.34+, botocore 1.34+, PyTorch 2.0+, CUDA 12.0+, Docker, and Ubuntu 24.04.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-ai-assistants-in-research-or-writing",
+      "type": "section",
+      "title": "AI Assistants In Research Or Writing",
+      "level": 1,
+      "order": 37,
+      "parent_id": "",
+      "source": null,
+      "text": "This paper studies LLMs as the research object and uses frozen LLM backbones for experimental inference. These models are not used to create new benchmark labels or to fabricate experimental results. Reported numerical results come from the experimental code and are checked by the authors.\n\nAI assistant tools were used for polishing manuscript. They were not used to decide scientific claims, select reported results, or replace author verification.\n\n{document}",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    }
+  ]
+}

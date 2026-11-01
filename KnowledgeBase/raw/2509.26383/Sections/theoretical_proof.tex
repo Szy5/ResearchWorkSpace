@@ -1,0 +1,59 @@
+\section{Completeness and Transferability of the KG-Server}
+\label{appendix:theoretical_proof}
+\label{app:kg-r1-proofs}
+
+Here, we discuss the completeness and transferability of $\mathcal{U}_{ret}$ in our KG retrieval server.
+
+\paragraph{Preliminaries.}
+Let \(G=\{(e,r,e')\mid e,e'\!\in\!\mathcal{E},\,r\!\in\!\mathcal{R}\}\) be a directed KG.
+Define the \textsc{KG-R1} action set
+\[
+\ActSet = 
+\left\{
+\begin{aligned}
+&\gettailrelations,\ \getheadrelations,\\
+&\gettailentities,\ \getheadentities
+\end{aligned}
+\right\}
+\]
+
+with the following semantics for any \((e,r,e')\in G\):
+\begin{align*}
+\gettailrelations(e)
+&:= \{\, r \in \mathcal{R} \mid \exists e'\in\mathcal{E}:\ (e,r,e')\in G \,\},\\[2pt]
+\getheadrelations(e')
+&:= \{\, r \in \mathcal{R} \mid \exists e\in\mathcal{E}:\ (e,r,e')\in G \,\},\\[2pt]
+\gettailentities(e,r)
+&:= \{\, e' \in \mathcal{E} \mid (e,r,e')\in G \,\},\\[2pt]
+\getheadentities(r,e')
+&:= \{\, e \in \mathcal{E} \mid (e,r,e')\in G \,\}.
+\end{align*}
+A \emph{relation path} is \(z=(r_1,\ldots,r_\ell)\), and a \emph{reasoning path} (instantiation) is
+\[
+Z:\ e_0 \xrightarrow{r_1} e_1 \xrightarrow{r_2} \cdots \xrightarrow{r_\ell} e_\ell,
+\quad (e_{i-1},r_i,e_i)\in G.
+\]
+
+
+
+
+\completeness*
+
+
+\noindent \emph{Proof.}
+Starting with \(\ell=1\), if \((e_0,r_1,e_1)\in G\) then \(e_1\in\gettailentities(e_0,r_1)\).
+For the inductive step, assume the claim holds for length \(\ell-1\).
+By the induction hypothesis, we reach \(e_{\ell-1}\); applying \(\gettailentities(e_{\ell-1},r_\ell)\) then returns a set containing \(e_\ell\).
+
+\vspace{1.0\baselineskip} 
+
+
+
+
+
+
+
+\paragraph{Schema-Free Transferability.}
+The retrieval action interface $\ActSet$ is defined purely in terms of set operations over triples $(e,r,e')$, independent of any schema, ontology, or datatype constraints. As a result, the same action interface can be applied to different knowledge graphs without modification. This allows a learned policy to be executed on a new KG by simply replacing the backend graph.
+
+However, this property guarantees only that the policy remains well-defined under KG replacement. The effectiveness of transfer depends on the similarity between the training and target KGs and is evaluated empirically in Section~\ref{sec:exp2}.

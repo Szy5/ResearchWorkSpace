@@ -47,17 +47,70 @@ class LLMClient(ABC):
         fence = re.search(r"```(?:json)?\s*(.*?)```", cleaned, flags=re.DOTALL | re.IGNORECASE)
         if fence:
             cleaned = fence.group(1).strip()
-        try:
-            return json.loads(cleaned)
-        except json.JSONDecodeError:
-            start_candidates = [idx for idx in [cleaned.find("{"), cleaned.find("[")] if idx >= 0]
-            if not start_candidates:
-                raise
+        candidates = [cleaned]
+        start_candidates = [idx for idx in [cleaned.find("{"), cleaned.find("[")] if idx >= 0]
+        if start_candidates:
             start = min(start_candidates)
             end = max(cleaned.rfind("}"), cleaned.rfind("]"))
-            if end <= start:
-                raise
-            return json.loads(cleaned[start : end + 1])
+            if end > start:
+                candidates.append(cleaned[start : end + 1])
+
+        last_error: Exception | None = None
+        for candidate in candidates:
+            for payload in (candidate, repair_llm_json(candidate)):
+                try:
+                    return json.loads(payload)
+                except json.JSONDecodeError as exc:
+                    last_error = exc
+        assert last_error is not None
+        raise last_error
+
+
+def repair_llm_json(text: str) -> str:
+    """Best-effort repair for common LLM JSON mistakes.
+
+    Gemini often inserts raw English double quotes inside Chinese string values
+    (e.g. ``"借鉴了 "CycleGAN" 的思想"``), which breaks ``json.loads``.
+    Also normalizes curly quotes and strips trailing commas.
+    """
+    text = (
+        text.replace("\u201c", '"')
+        .replace("\u201d", '"')
+        .replace("\u2018", "'")
+        .replace("\u2019", "'")
+    )
+    text = re.sub(r",\s*([}\]])", r"\1", text)
+    out: list[str] = []
+    in_string = False
+    index = 0
+    length = len(text)
+    while index < length:
+        char = text[index]
+        if not in_string:
+            out.append(char)
+            if char == '"':
+                in_string = True
+            index += 1
+            continue
+        if char == "\\" and index + 1 < length:
+            out.append(char)
+            out.append(text[index + 1])
+            index += 2
+            continue
+        if char == '"':
+            look = index + 1
+            while look < length and text[look] in " \t\r\n":
+                look += 1
+            if look >= length or text[look] in ",:}]":
+                out.append(char)
+                in_string = False
+            else:
+                out.append('\\"')
+            index += 1
+            continue
+        out.append(char)
+        index += 1
+    return "".join(out)
 
 
 class OpenAIClient(LLMClient):
@@ -68,20 +121,37 @@ class OpenAIClient(LLMClient):
         if not self.settings.api_key:
             logger.error("缺少 API_KEY/OPENAI_API_KEY，无法构造 LLM 客户端")
             raise ValueError("Missing API_KEY/OPENAI_API_KEY in environment")
+        # Connect timeout stays short so a missing proxy fails in seconds, not ~6 minutes
+        # (OpenAI SDK default max_retries=2 × 120s read ≈ "Request timed out." after ~6m).
+        timeout = httpx.Timeout(
+            connect=self.settings.llm_connect_timeout_seconds,
+            read=self.settings.request_timeout_seconds,
+            write=self.settings.request_timeout_seconds,
+            pool=self.settings.llm_connect_timeout_seconds,
+        )
+        http_client_kwargs: dict = {"timeout": timeout}
+        if self.settings.llm_http_proxy:
+            http_client_kwargs["proxy"] = self.settings.llm_http_proxy
+            http_client_kwargs["trust_env"] = False
+            proxy_mode = self.settings.llm_http_proxy
+        else:
+            # Honor process HTTP(S)_PROXY when PAPER_WIKI_KEEP_PROXY=1 (needed for
+            # api.key77qiqi.com / similar hosts that are unreachable without proxy).
+            http_client_kwargs["trust_env"] = True
+            proxy_mode = "trust_env"
         kwargs = {
             "api_key": self.settings.api_key,
-            "http_client": httpx.Client(
-                timeout=self.settings.request_timeout_seconds,
-                trust_env=False,
-            ),
+            "http_client": httpx.Client(**http_client_kwargs),
+            "max_retries": 1,
         }
         if self.settings.base_url:
             kwargs["base_url"] = self.settings.base_url
         self.client = OpenAI(**kwargs)
         logger.debug(
-            "OpenAI-compatible 客户端初始化完成：provider=%s, model=%s, proxy=disabled",
+            "OpenAI-compatible 客户端初始化完成：provider=%s, model=%s, proxy=%s",
             self.settings.llm_provider,
             self.settings.model_name,
+            proxy_mode,
         )
 
     def complete(self, system: str, user: str) -> str:

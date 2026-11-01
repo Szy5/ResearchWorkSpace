@@ -16,7 +16,7 @@
 | Layer 1 | 已实现 | `assets/` 包、`PaperAssetsBuilder`、`AssetsReader`、`PaperAssetsBundle` canonical input、最小 assets contract、`paper-wiki assets <slug...>`、`IngestPipeline` 先构建/复用 assets 再按独立 step 生成 `summary.md`、`prior_works.json`、`sci_pattern.json`，并在 summary 新生成后追加 JSON 语义产物派生的范式/前作综合补充；`SummaryGenerator`、`PriorWorksGenerator`、`PatternGenerator`、Pydantic 校验、prompt 切换、单篇/多篇 `paper-wiki ingest`、`--only` 单语义产物重跑、raw 扫描式 `paper-wiki ingest-all`，并将主论文元信息和 review 状态统一保存在 `manifest.json` 的 `paper` 字段 | 正式 review 命令 |
 | 发现层 | 已实现 | `discovery/` 包、`paper-wiki search`、`paper-wiki fetch`、`paper-wiki recommend run`、arXiv export API 检索、按 arXiv ID 下载源码/PDF 到 `raw/{slug}/`、RSS 优先且 export API submittedDate fallback 的每日候选池（`normalize_arxiv_id` 已剥离 RSS `oai:arXiv.org:` 前缀）、Zotero 语料、sentence-transformers 重排序、`.recommendations/{date}.json` / `latest.json` 快照、Web 接入（`/api/recommendations/*`、`/api/search`、`/api/papers/fetch`） | 多源检索、本地 reviewed 论文语料源 |
 | Layer 2 | 部分实现 | `graph/` 包、reviewed artifacts 读取、Paper 节点与 typed prior-work 关系建模、`graph_state/` 快照、`graph_updates.jsonl` 事件日志、`paper-wiki graph plan/apply`、Neo4j 幂等入库；详见 [Neo4j 科学发现图谱需求与技术方案](./Neo4j%20科学发现图谱需求与技术方案.md) | `wiki/` 包、全局目录、概念页、日志、更多图谱查询 |
-| 发布扩展 | 已实现 | `publishing/` 包、`paper-wiki publish wechat`、artifact HTML 定位、图片上传替换、草稿创建；确定性 Markdown→摸鱼绿公众号 HTML 渲染器，输出保存在 `artifacts/.publishing/` 并通过 Web 预览/后台发布 | 自动群发、多平台发布、发布统计 |
+| 发布扩展 | 已实现 | `publishing/` 包、`paper-wiki publish wechat`、artifact HTML 定位、图片上传替换、草稿创建；确定性 Markdown→摸鱼绿公众号 HTML 渲染器，输出保存在 `artifacts/.publishing/` 并通过 Web 预览/后台发布；精读笔记一键发布（LLM 标题摘要、封面、公式图片，产物在 `artifacts/{slug}/wechat/`）与任务步骤可视化 | 自动群发、多平台发布、发布统计 |
 | Web 原型 | 已实现 | FastAPI + React 工作站；推荐/检索、论文审查、Paper 管理（筛选/批量审查）、Markdown 公众号发布；`JobManager` 使用线程池并将任务落盘到 `artifacts/.jobs/`，`GET /api/jobs` 支持恢复与历史查询，前端批量暂存写入 localStorage | 图谱管理、论文删除/回收站、失败任务一键重试、鉴权、可跨进程恢复执行的队列 |
 | Layer 3 | 未实现 | 无 | `retrieval/` 包、向量库、GraphRAG、FastAPI API |
 | 测试 | 部分实现 | parser、assets builder、models、mock LLM pipeline、CLI 多 slug ingest/assets、raw 待处理发现、discovery 单元/集成测试（含 RSS `oai:` id 归一化回归测试）、Web discovery 路由单元测试、graph planner 增量事件、微信公众号发布 mock 测试；当前 `pytest` 66 passed | graph/retrieval/api/e2e 测试、真实微信 API smoke test |
@@ -155,6 +155,11 @@ paper_wiki/                         # 主 Python 包
 │   ├── html_processor.py            # HTML 基础校验、本地图片发现与 src 替换
 │   ├── models.py                    # WeChatDraftOptions、WeChatDraftResult 等模型
 │   ├── wechat_client.py             # 微信 token、图片上传、草稿创建 API client
+│   ├── paper_wechat.py              # summary.md → 公众号发布包（标题/摘要/封面/图片/公式）准备与发布
+│   ├── math_render.py               # LaTeX → 内联 HTML 或 matplotlib mathtext PNG
+│   ├── wechat_limits.py             # 公众号编辑器字数规则（标题 32 / 摘要 120 / 作者 8）
+│   ├── cover_generator.py           # 1800×766 封面：标题 + 方法框架图，中英混排字体回退
+│   ├── markdown_renderer.py         # Markdown → 摸鱼绿公众号 HTML（公式占位替换为图片/内联 HTML）
 │   └── wechat_publisher.py          # 读取 HTML -> 上传图片 -> 创建草稿的编排入口
 │
 ├── discovery/                       # 发现层（已实现）
@@ -213,7 +218,10 @@ tests/
 prompts/                            # Prompt 模板（与代码解耦）
 ├── paper_summary.py
 ├── paper_summary_v2.py
-├── paper_summary_v3.py              # 当前默认 summary prompt
+├── paper_summary_v3.py
+├── paper_summary_v4.py
+├── paper_summary_v5.py              # 当前默认 summary prompt（5 分钟粗读；无公式、配图优先；中文图注/表题）
+├── wechat_headline_v1.py            # 公众号标题/摘要生成 prompt
 ├── prior_work_prompt.py
 ├── sci_pattern_classify_prompt.py
 └── pattern_taxonomy.json
@@ -532,6 +540,8 @@ class PaperAssetsBundle(BaseModel):
 
 `llm_context()` 可以保留现有按核心章节组装 prompt 的策略，但它属于 assets bundle 的读取视图，不应再通过 `ParsedPaper.raw_text` 传递。
 
+**summary 专用上下文（2026-10-24）**：`llm_context()` 每类章节只取第一个匹配的一级章节文本，不含子章节，也不含配图信息。`SummaryGenerator` 现在改用 `ingestion/generators/summary_context.py: build_summary_context(bundle, max_chars)`：按 `order` 遍历 sections，取结论之前的全部一级章节及其子章节（结论后只保留 Limitations / Broader Impact，遇到 Appendix/References 标题即停止）；把 ```latex 中的 `tabular` 压缩为 `[TABLE] 原表标题` + 逐行标注格式（`方法名: 多级表头=值; …`，跨整行的分组行变为 `【分组】`，展开 `\multicolumn`，保留 `\textbf` 为 `**x**`），避免小模型把交错列（如 F1/EM）读错；正文中原图的图片行与英文图注行替换为同位置的 `[FIGURE: assets/figures/…]` 标记；末尾追加正文配图清单（`path | 所在章节 | 原图注`）。生成后 `SummaryGenerator` 还会做确定性后处理：表格前补空行、把"我们"统一改为"作者"、把图片后的 `*图：…*` 行并入 alt 并按出现顺序编号为 `图 1、图 2…`。若正文配图少于 5 张（且论文正文有更多可用图），会额外调用一次 `complete_json`，只让模型从未使用的正文图中挑图并给出放置小节与中文图注（`_FigurePlacements`），再由代码确定性地插入到该小节末尾；path 不在候选列表或小节标题不存在的结果直接丢弃，失败时保留原文。`SummaryGenerator` 未指定 prompt 时的兜底默认值为 `DEFAULT_SUMMARY_PROMPT = paper_summary_v5.py`，因此 CLI、Web ingest 与 discovery「抓取并入库」三个入口都使用 v5。预算为 `Settings.summary_max_context_chars`（`SUMMARY_MAX_CONTEXT_CHARS`，默认 60000），超出时按章节权重（实验 1.3、方法等 1.0、引言 0.8、结论/局限 0.7、相关工作/背景 0.5）二分求统一缩放系数逐节裁剪，每节至少保留 600 字符，表格段落不参与裁剪。prior works / pattern 生成器仍使用 `llm_context(max_parse_chars)`。
+
 ### 5.2 `ingestion/latex_parser.py`
 
 **职责**：将 `raw/{slug}/` 目录下的 LaTeX 文件预处理为适合 LLM 消费的纯文本。
@@ -780,7 +790,10 @@ sequenceDiagram
 - `web/services/job_manager.py` 仍用进程内线程池执行同步生成任务，但每次状态变化会原子写入 `artifacts/.jobs/{job_id}.json`。`GET /api/jobs` 支持按 `slug`、`target`、`status` 查询，供管理页展示历史和页面恢复轮询。
 - 页面切换或浏览器刷新不会取消 worker。批量候选、状态和 job 映射保存在 `localStorage`；推荐刷新从任务列表找回。服务进程退出后不恢复执行，启动时把遗留 `pending/running` 标记为失败并保留原因。
 - `POST /api/papers/batch-review` 同时设置 `meta_reviewed` 与 `prior_works_reviewed`；管理页以表格方式提供关键词、reviewed、primary pattern 过滤、多选和批量审查。删除、图谱纠错和失败任务重试仍未实现。
-- `/api/publishing/markdown/*` 把 UTF-8 Markdown、可选正文图片/封面保存到 `artifacts/.publishing/{document_id}/`。`publishing/markdown_renderer.py` 确定性输出摸鱼绿主题正文片段，只使用内联样式和 `span leaf`，不包含脚本、外链 CSS 或文档外壳；草稿发布复用现有图片替换和 WeChat client，并作为后台 job 执行。未提供封面或 `thumb_media_id` 时，`publishing/cover_generator.py` 按标题生成纯色 JPEG 封面并上传。
+- `/api/publishing/markdown/*` 把 UTF-8 Markdown、可选正文图片/封面保存到 `artifacts/.publishing/{document_id}/`。`publishing/markdown_renderer.py` 确定性输出摸鱼绿主题正文片段，只使用内联样式和 `span leaf`，不包含脚本、外链 CSS 或文档外壳；草稿发布复用现有图片替换和 WeChat client，并作为后台 job 执行。未提供封面或 `thumb_media_id` 时，`publishing/cover_generator.py` 按标题生成 JPEG 封面并上传。
+- **精读笔记一键发布（2026-10，排版策略 2026-10-31 更新）**：`web/routers/wechat.py` 提供 `GET /api/publishing/wechat/config`、`GET|PATCH /api/papers/{slug}/wechat`、`POST /api/papers/{slug}/wechat/prepare`（body 可带 `title/digest/author/regenerate_headline/publish`，`publish=true` 即一键发布）、`POST /api/papers/{slug}/wechat/publish`、`POST|DELETE /api/papers/{slug}/wechat/cover`、`GET /api/papers/{slug}/wechat/preview`。核心逻辑在 `publishing/paper_wechat.py`：读取 `summary.md`（剥离尾部语义附录后的正文只用于生成标题/摘要）→ 用 `prompts/wechat_headline_v1.py` 调用 LLM 生成标题/摘要，失败回退 → **正文不再 LLM 改写**，对全文做 `strip_formulas` 后作为底稿（v5 summary 本身已是约 5 分钟、无公式的粗读博客）→ 图片复制到 `wechat/images/` 并转 JPG（PDF 取首页、长边 ≤1280、<950KB），优先把 framework/overview/pipeline/model/框架/概览/流程/架构 类图作为封面与开头方法图；方法图经 `lead_figure_caption` 取图注后，与标题/作者/单位/来源信息块一并前置写入 `wechat/article.md`（方法章节原图保留）→ 调用 `publishing/cursor_render.render_markdown_html`（Cursor 无头 `agent -p --force --trust`，prompt `blog_html_render_v1.py`，默认主题「摸鱼绿」，走 gzh-design skill）生成 `wechat/article.html`，产物校验 `validate_wechat_html` → 生成封面 → 写 `package.json`。发布时复用 `wechat_publisher` 上传封面、正文图片并创建草稿。`markdown_renderer` 仍保留给「上传 Markdown」发布页使用。`PriorWorksGenerator.ensure_chinese_narrative` 与 `WECHAT_PROXY` 行为不变。
+- **作者与单位（2026-10）**：`LaTeXParser._extract_authors` 改为读取所有 `\author` 块（含 authblk 多处 `\author[..]{}`、`\icmlauthor`），在有独立单位命令时把 `\author` 内所有行视为作者，否则每个 `\And` 分组取到第一条单位行之前的所有行；新增 `_extract_affiliations`，只保留匹配机构关键词的行。`PaperAssetMeta` 新增 `affiliations: list[str]`（默认空，旧 manifest 兼容），`paper-wiki assets` 写入该字段。
+- **任务步骤（2026-10）**：`core/progress.py` 用 ContextVar 提供 `plan/step/detail/skip`，业务代码在 job 线程外调用是 no-op。`JobManager.submit(..., steps=[StepSpec])` 预登记步骤，`_JobProgressSink` 更新 `JobRecord.steps`（`pending|running|succeeded|failed|skipped`、`external`、`detail`、起止时间）；ingest 不改管线代码，而由 `progress_messages.step_for_log` 把日志行映射到 fetch/assets/summary/prior_works/sci_pattern 步骤。前端 `components/JobSteps.tsx` 渲染步骤条与计时，`external` 非空且运行中时显示"正在请求 LLM / 微信 API"。微信错误码在 `publishing/exceptions.py` 中附中文提示。
 - 今日推荐卡片使用固定两列布局：文本占剩余宽度，缩略图始终位于整个卡片的右侧。
 
 ---

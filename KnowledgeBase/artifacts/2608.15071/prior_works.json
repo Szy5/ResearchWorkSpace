@@ -1,0 +1,61 @@
+{
+  "prior_works": [
+    {
+      "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+      "authors": "Noah Shinn et al.",
+      "year": 2023,
+      "arxiv_id": "2303.11366",
+      "role": "Gap Identification",
+      "relationship_sentence": "\"Reflexion\" 把失败轨迹转成语言化反思并回灌到后续尝试，但只在单任务内迭代修正，未将一次执行编译为跨任务的结构化 harness；Evo-Harness 正是针对这一单任务反思的局限，把反思升级为在线可复用的 general/topic skill 更新。"
+    },
+    {
+      "title": "ExpeL: LLM Agents Are Experiential Learners",
+      "authors": "Andrew Zhao et al.",
+      "year": 2024,
+      "arxiv_id": "2308.10144",
+      "role": "Baseline",
+      "relationship_sentence": "\"ExpeL\" 从大量累积轨迹中离线抽取自然语言 insight 与规则，依赖可反复采样的轨迹池；Evo-Harness 直接针对其离线、多轨迹假设，改为在任务流中从单次执行在线编译 skill harness。"
+    },
+    {
+      "title": "AutoManual: Constructing Instruction Manuals by LLM Agents via Interactive Environmental Learning",
+      "authors": "Minghao Chen et al.",
+      "year": 2024,
+      "arxiv_id": "2405.16247",
+      "role": "Inspiration",
+      "relationship_sentence": "\"AutoManual\" 让 agent 通过交互自动构建 instruction manual，把环境经验固化为可执行规则；Evo-Harness 借鉴其“经验到可执行指导”的思路，但把 manual 扩展为由 solver 提议、evolver 维护的 general/topic skill harness。"
+    },
+    {
+      "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+      "authors": "Guanzhi Wang et al.",
+      "year": 2023,
+      "arxiv_id": "2305.16291",
+      "role": "Inspiration",
+      "relationship_sentence": "\"Voyager\" 用可执行代码技能库支撑终身学习，证明外部技能组件能被复用并迁移到后续任务；Evo-Harness 继承其技能作为外部学习媒介的思想，但将技能库重构为可在线演化的结构化 harness，而非仅检索代码片段。"
+    },
+    {
+      "title": "ReasoningBank: Scaling Agent Self-Evolving with Reasoning Memory",
+      "authors": "Siru Ouyang, Jun Yan, I-Hung Hsu, Yanfei Chen, Ke Jiang, Zifeng Wang, Rujun Han, Long T. Le, Samira Daruki, Xiangru Tang, Vishy Tirumalashetty, George Lee, Mahsan Rofouei, Hangfei Lin, Jiawei Han, Chen-Yu Lee, Tomas Pfister",
+      "year": 2025,
+      "arxiv_id": "2509.25140",
+      "role": "Related Problem",
+      "relationship_sentence": "\"ReasoningBank\" 将推理策略沉淀为可检索的经验库以支持 self-evolving agent；Evo-Harness 与其同样重视结构化经验库，但进一步用 evolver 对候选反思与现有 harness 做比较合并，并区分 general/topic 技能。"
+    },
+    {
+      "title": "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning",
+      "authors": "Lakshya A. Agrawal et al.",
+      "year": 2025,
+      "arxiv_id": "2507.19457",
+      "role": "Inspiration",
+      "relationship_sentence": "\"GEPA\" 通过自然语言反思驱动 prompt 的演化，展示了不更新模型参数也能以 reflective evolution 改进 agent；Evo-Harness 将其反思式演化思想迁移到 skill harness 的 evolver 设计，用反馈驱动 harness 更新。"
+    },
+    {
+      "title": "MemoryBank: Enhancing Large Language Models with Long-Term Memory",
+      "authors": "Wanjun Zhong et al.",
+      "year": 2024,
+      "arxiv_id": "2305.10250",
+      "role": "Gap Identification",
+      "relationship_sentence": "\"MemoryBank\" 维护长期记忆并按需检索历史以增强 agent，但记忆仍是被动信息仓库；Evo-Harness 明确区分 memory 与 skill，将经验编译为主动塑造规划、验证与恢复的 harness。"
+    }
+  ],
+  "synthesis_narrative": "\"Reflexion\" 把失败轨迹转成语言化反思并回灌到后续尝试，\"ExpeL\" 则从大量累积轨迹中离线抽取自然语言 insight 与规则，二者共同确立了“经验可转化为指导”的范式，但都依赖单任务迭代或多轨迹池。\"AutoManual\" 进一步让 agent 在交互中自动构建 instruction manual，把环境经验固化为可执行规则；\"Voyager\" 用可执行代码技能库支撑终身学习，证明外部技能组件能被复用并迁移。\"ReasoningBank\" 将推理策略沉淀为可检索的经验库，\"MemoryBank\" 维护长期记忆并按需检索历史，它们展示了结构化外部存储的价值，却仍把经验当作被动仓库。\"GEPA\" 用自然语言反思驱动 prompt 演化，说明不更新参数也能通过 reflective evolution 改进 agent，这为 harness 的 evolver 提供了直接启发。这些工作合起来留下一个明显缺口：经验提取要么离线、要么单任务、要么停留在被动检索，缺少在真实任务流中把一次执行在线编译为主动结构化指导的机制。Evo-Harness 因而将反思、规则、技能库与演化式更新综合为 context-to-harness skill compilation，用 solver 提议候选技能、evolver 维护 general/topic skill harness，从而在 one-shot 在线场景中把噪声执行上下文转化为可复用、可解释的外部学习支架。"
+}

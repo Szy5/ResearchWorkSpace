@@ -1,0 +1,211 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2509.26383",
+  "created_at": "2026-10-31T06:55:59.730954+00:00",
+  "updated_at": "2026-10-31T06:55:59.730954+00:00",
+  "paper": {
+    "title": "Efficient and Transferable Agentic Knowledge Graph RAG via Reinforcement Learning",
+    "authors": [
+      "Junhong Lin",
+      "Shicheng Liu",
+      "Jinyeop Song",
+      "Song Wang",
+      "Julian Shun",
+      "Yada Zhu"
+    ],
+    "affiliations": [
+      "University of Virginia",
+      "IBM Research"
+    ],
+    "abstract": "Knowledge-graph retrieval-augmented generation (KG-RAG) couples large language models (LLMs) with structured, verifiable knowledge graphs (KGs) to reduce hallucination and provide reasoning traces. However, current KG-RAG systems often rely on fixed pipelines of multiple LLM modules (e.g., planning, reasoning, and responding), which inflate inference costs and tie performance to specific graph schemas. To address this, we introduce , an agentic framework that optimizes KG-RAG through reinforcement learning (RL). Unlike modular workflows, uses a single agent that interacts with KGs as its environment, learning to retrieve information at each step and incorporating it into its reasoning and generation in a unified process. Across Knowledge-Graph Question Answering (KGQA) benchmarks, demonstrates both efficiency and transferability---using Qwen 2.5-3B, improves answer accuracy with fewer generation tokens than prior multi-module workflow methods that use much larger foundation or fine-tuned models. Furthermore, exhibits strong plug-and-play capability: after training, maintaining accuracy on unseen KGs without retraining. These properties make a promising KG-RAG framework for real-world deployment. Our code is publicly available at https://github.com/junhongmit/KG-R1 ~github.com/junhongmit/KG-R1/.",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-31",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2509.26383",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "d7194ffc5293430aa07385545ac995b7ae795cdfbc1b4fc6315ee01f69c1e835",
+        "bytes": 4646
+      },
+      {
+        "path": "math_commands.tex",
+        "sha256": "1597a55933b23a7154ae0d62db45d6da0571ac3a6ef8240151eff5fe3bbabf3b",
+        "bytes": 10697
+      },
+      {
+        "path": "_tcolorbox_style.tex",
+        "sha256": "8457bb7465f0209037d497bf3aa189c190876c829e7aa3b1f125f68626c7e563",
+        "bytes": 1262
+      },
+      {
+        "path": "_colortable_style.tex",
+        "sha256": "f96b92fbd64777953ed935ee3dd3529acd6aed23ea3bfc26b485c68dff37d85e",
+        "bytes": 1001
+      },
+      {
+        "path": "_maths.tex",
+        "sha256": "577c9c2567bc533348f103aa44be96072ccbe381c42ce40042718f38dad2b10e",
+        "bytes": 492
+      },
+      {
+        "path": "_misc.tex",
+        "sha256": "56b4bf4310cae12afc654acb3c8e35d7e5a4b9ef9f83e6ff029454d403fb0797",
+        "bytes": 64
+      },
+      {
+        "path": "Sections/1_introduction.tex",
+        "sha256": "d3e34c20d6a1713aa31694ac1257f3d4ffbc64cefc51873159ebad2b5dded954",
+        "bytes": 6443
+      },
+      {
+        "path": "Sections/2_related_works.tex",
+        "sha256": "40974a8a9211d9965bc34daed8983b522258cb5de35e56d9c492ef893d1d334e",
+        "bytes": 1829
+      },
+      {
+        "path": "Sections/4_methods.tex",
+        "sha256": "63724ff9eecee16c41e0b31c2568c860ebcf9f175c11f577f85ffb58d985f4d8",
+        "bytes": 14192
+      },
+      {
+        "path": "Sections/prompts_boxes/instruction_prompt2.tex",
+        "sha256": "3908a8ec7680b4a76e40cd3e74612e6ee752b4f594e5afdfd45b8041c3b6266c",
+        "bytes": 907
+      },
+      {
+        "path": "Sections/5_experiment.tex",
+        "sha256": "517707463474e1050d955ea66c0067c5eaf40dce99e6c969663c6f0b2b822f7d",
+        "bytes": 13014
+      },
+      {
+        "path": "Sections/table/performance_efficiency_table.tex",
+        "sha256": "b8781a1ebe0cb7a872838b56e6e047b4cbcd089013abb80634bea7ceeeb9510f",
+        "bytes": 4978
+      },
+      {
+        "path": "Sections/table/generalization_table.tex",
+        "sha256": "57a761bf55a58a06566c09fdde9821ce6e2b199de793f1fe3428eb835b3a0553",
+        "bytes": 3519
+      },
+      {
+        "path": "Sections/table/ablation_studies_table.tex",
+        "sha256": "e7821c11e7d728e8f82883a5e8b7fa3846e568abdd8a58f0741e3c8fa7b0c9d1",
+        "bytes": 1799
+      },
+      {
+        "path": "Sections/6_conclusion.tex",
+        "sha256": "d54e3d0e541c7e27d664f16cff7bdaf05f8955b8cfc78d604484007e3555c8a6",
+        "bytes": 515
+      },
+      {
+        "path": "Sections/appendix.tex",
+        "sha256": "812e4ca102db13ba54a8c5370a907869939eaa00f4598557ff73cafe1ccfdca3",
+        "bytes": 17146
+      },
+      {
+        "path": "Sections/theoretical_proof.tex",
+        "sha256": "676c8dd9e672e6a8ff96d2675e37e10001b18d4b512e90d91dd4c2ff428ac2ed",
+        "bytes": 2251
+      },
+      {
+        "path": "Sections/Table_datasets.tex",
+        "sha256": "c7f28676568dc45af1bf32e0c36867404aee22e4abe6a30c3cf5fe2c5c8a3ef9",
+        "bytes": 2553
+      },
+      {
+        "path": "Sections/prompts_boxes/io_prompt.tex",
+        "sha256": "4ba75b8e473fc500fcf73068b72450df152a0ce33dde8687e12025488457cd61",
+        "bytes": 447
+      },
+      {
+        "path": "Sections/prompts_boxes/cot_prompt.tex",
+        "sha256": "ca3bb430e4abbc5261551509f8117b509acb552f452f68ac2165f9245736eb28",
+        "bytes": 665
+      },
+      {
+        "path": "Sections/prompts_boxes/llmasjudge_prompt.tex",
+        "sha256": "d9d7ea8039c915237966447dad143f57b5dc33f24db8b7d76801fd49b80219ba",
+        "bytes": 862
+      },
+      {
+        "path": "Sections/a_algorithm.tex",
+        "sha256": "59585cc878a79755af56003ae0e651108dfdec556aa8b5c98f5c296c57549fd3",
+        "bytes": 1996
+      },
+      {
+        "path": "Sections/prompts_boxes/server_instruction_prompt.tex",
+        "sha256": "9cb8bfdb6f77f26574c9ecec31ae22647302cab4afb3e8d674c342b45a87555e",
+        "bytes": 783
+      },
+      {
+        "path": "Sections/table/reward_weights.tex",
+        "sha256": "adc547c9a951ad1379ab8b744524bd1f7d73aea4db7cbea7d2d47d3ec6118b1a",
+        "bytes": 1181
+      },
+      {
+        "path": "Sections/RL_appendix.tex",
+        "sha256": "67e1458087ee0bc3d98b4dc567278f319b02d6a0efe40670831d1f45de891555",
+        "bytes": 2350
+      },
+      {
+        "path": "Sections/prompts_boxes/kg_server_errors.tex",
+        "sha256": "71cffe61b9e99e9bde4e5d67d1d41d1c0afbe53ef4fd6b645b35fa922c9ca695",
+        "bytes": 1657
+      },
+      {
+        "path": "Sections/prompts_boxes/hiearchical.tex",
+        "sha256": "f835a822614a13d057864c21a2c1633776cd1e3540dcbb3626987361110c3196",
+        "bytes": 1614
+      },
+      {
+        "path": "Sections/table/PPO_response_example.tex",
+        "sha256": "e456a318521b8f4ca0655042c8380a9b5fb98130d37187fdf88066d2fdce8311",
+        "bytes": 1799
+      },
+      {
+        "path": "Sections/prompts.tex",
+        "sha256": "ff71f49025fbde680d2e662d9b707a92165d4fd3f49043db1a7c6f1c60ce3bde",
+        "bytes": 18048
+      },
+      {
+        "path": "checklist.tex",
+        "sha256": "052779838f56b01b41cb090ca791fd6525a319bc90e19cda0e759d268e6a36d2",
+        "bytes": 25400
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 30,
+    "figures": 7,
+    "references": 419
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 35, column 67):\nunexpected #1\n\\newcolumntype{L}[1]{>{\\raggedright\\arraybackslash\\footnotesize}p{#1}}\n                                                                  ^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 228, column 1):\nunexpected Tok (line 228, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 35, column 67):\nunexpected #1\n\\newcolumntype{L}[1]{>{\\raggedright\\arraybackslash\\footnotesize}p{#1}}\n                                                                  ^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 228, column 1):\nunexpected Tok (line 228, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

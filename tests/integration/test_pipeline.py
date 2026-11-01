@@ -30,7 +30,7 @@ class FakeLLM(LLMClient):
                   "relationship_sentence": "It defines the graph QA setup extended by the current work."
                 }
               ],
-              "synthesis_narrative": "Graph QA Foundations established the evaluation setup and path reasoning framing. The current work builds from that framing by adding staged trajectory synthesis."
+              "synthesis_narrative": "Graph QA Foundations 奠定了评测设置与路径推理的问题形式，当前工作在此基础上加入了分阶段轨迹合成。"
             }
             """
         if '"classifications"' in user:
@@ -80,7 +80,7 @@ def test_pipeline_writes_layer1_artifacts(tmp_path: Path) -> None:
     assert "置信度" not in summary_text
     assert "The paper centers on synthetic trajectories" in summary_text
     assert "## 先前工作分析" in summary_text
-    assert "Graph QA Foundations established" in summary_text
+    assert "奠定了评测设置与路径推理的问题形式" in summary_text
     assert '"reviewed": false' in result.manifest_path.read_text(encoding="utf-8")
     assert '"prior_works": [' in result.prior_works_path.read_text(encoding="utf-8")
     assert '"primary_pattern": "P05"' in result.sci_pattern_path.read_text(encoding="utf-8")
@@ -155,4 +155,4 @@ def test_pipeline_enriches_summary_from_existing_semantic_artifacts(tmp_path: Pa
     assert "## 科学发现范式" in summary_text
     assert "P05 Data & Evaluation Engineering" in summary_text
     assert "## 先前工作分析" in summary_text
-    assert "Graph QA Foundations established" in summary_text
+    assert "奠定了评测设置与路径推理的问题形式" in summary_text

@@ -1,0 +1,45 @@
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{2.4pt}
+    \renewcommand{\arraystretch}{1.05}
+
+    \begin{tabularx}{\columnwidth}{@{}l*{6}{>{\centering\arraybackslash}X}@{}}
+    \toprule
+    \multirow{2}{*}{\textbf{Variant}}
+    & \multicolumn{2}{c}{\textbf{WebQSP}}
+    & \multicolumn{2}{c}{\textbf{CWQ}}
+    & \multicolumn{2}{c}{\textbf{GrailQA}}
+    \\
+    \cmidrule(lr){2-3}
+    \cmidrule(lr){4-5}
+    \cmidrule(lr){6-7}
+    & \textbf{Hit@1} & \textbf{F1}
+    & \textbf{Hit@1} & \textbf{F1}
+    & \textbf{Hit@1} & \textbf{F1}
+    \\
+    \midrule
+    \rowcolor{agentbg}
+    ReAct (untrained)
+    & 34.82 & 28.42 & 16.06 & 13.45 & 49.19 & 50.07 \\
+    \midrule
+    \rowcolor{ablrole}
+    w/o Solver update
+    & 53.74 & 47.08 & 46.39 & 42.15 & 58.50 & 55.69 \\
+    \rowcolor{ablrole}
+    w/o Proposer update
+    & 63.14 & 56.91 & 36.22 & 35.83 & 55.67 & 55.18 \\
+    \rowcolor{ablquery}
+    w/o query exec. (Random Walk)
+    & 64.87 & 57.67 & 35.93 & 35.64 & 60.12 & 60.41 \\
+    \rowcolor{ablreward}
+    Adversarial reward
+    & 69.51 & 60.40 & 42.59 & 41.85 & 63.26 & 61.01 \\
+    \rowcolor{ablreward}
+    Triangular reward
+    & \best{71.12} & \best{63.73} & 46.47 & 44.03 & 63.46 & 62.10 \\
+    \midrule
+    \rowcolor{lightblue}
+    \textbf{EoG (full, Gaussian reward)}
+    & 70.13 & 62.10 & \best{50.58} & \best{49.27} & \best{65.38} & \best{63.01} \\
+    \bottomrule
+    \end{tabularx}

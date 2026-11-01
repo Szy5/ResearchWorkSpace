@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\small
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Stage} & \textbf{Input} & \textbf{Retained} & \textbf{Rejected} & \textbf{Teacher calls} \\
+\midrule
+Seed-question generation        & 20,000 & 14,400 & 28.0\% & 20,000 \\
+Backward expansion              & 14,400 & 8,784  & 39.0\% & 86,400 \\
+Complex-question composition    & 8,784  & 6,588  & 25.0\% & 8,784 \\
+\midrule
+\textbf{End-to-end}             & 20,000 & 6,588  & 67.1\% & 115,184 \\
+\bottomrule
+\end{tabular}}
+\caption{\textbf{Synthesis cost and retention.}}
+\label{tab:synth_cost}
+\end{table}

@@ -1,0 +1,147 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2604.12967",
+  "created_at": "2026-11-01T03:00:16.827756+00:00",
+  "updated_at": "2026-11-01T03:00:16.827756+00:00",
+  "paper": {
+    "title": "Cycle-Consistent Search: Question Reconstructability as a Proxy Reward for Search Agent Training",
+    "authors": [
+      "Sohyun An",
+      "Shuibenyang Yuan",
+      "Hayeon Lee",
+      "Cho-Jui Hsieh",
+      "Alexander Min"
+    ],
+    "affiliations": [
+      "Meta Superintelligence Labs"
+    ],
+    "abstract": "",
+    "year": null,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": false,
+    "prior_works_reviewed": false,
+    "added_date": "2026-11-01",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2604.12967",
+    "entry_file": "paper.tex",
+    "source_files": [
+      {
+        "path": "paper.tex",
+        "sha256": "057bf58e733b35f3c5042595de2e0f44775f5e3b9690473bfa26fff4f7b37cc7",
+        "bytes": 2295
+      },
+      {
+        "path": "text/0_abstract.tex",
+        "sha256": "b6717efd587992937cd7001a758e910e30f9c6de75a3d9d94e34d170f047a61a",
+        "bytes": 1745
+      },
+      {
+        "path": "text/1_introduction.tex",
+        "sha256": "179364e078d6c9355b476ba10a7bfe5cfecafb58896582623bd1e9e2e475e7e2",
+        "bytes": 4793
+      },
+      {
+        "path": "fig/ccs_ex.tex",
+        "sha256": "0b667818439611a12b0a6eada31854f9386d6c043cf5ae27ad3ac9351c3b13c8",
+        "bytes": 559
+      },
+      {
+        "path": "text/2_related_work.tex",
+        "sha256": "e0b967a4d2176a2633bf42dbc0cabf29f31b8d558f45684ef77db77664171e7b",
+        "bytes": 4582
+      },
+      {
+        "path": "text/4_method_v2.tex",
+        "sha256": "dfee95c6c0138143ec9cc4aeb5eceb7eb11a98eab74657a9f883c5187c0c745d",
+        "bytes": 10577
+      },
+      {
+        "path": "fig/ccs_main.tex",
+        "sha256": "9a3adf3b6205c5c318f2ecb8cc5344b42123815bb0b187a0a2f3edd4efe692c1",
+        "bytes": 788
+      },
+      {
+        "path": "text/5_experiments.tex",
+        "sha256": "e03f3d6f81b6ddfd229f1c067c523b3798f2e55e066aa0ded651bcdce8371b3d",
+        "bytes": 4455
+      },
+      {
+        "path": "table/main.tex",
+        "sha256": "111c2d38cedc3dd4eb93644a9717c0c130ce16e86ef108389290f2c6c029bad4",
+        "bytes": 5009
+      },
+      {
+        "path": "text/6_analysis.tex",
+        "sha256": "159060db0cd35ede0ef51587840821ba015b5fab4a99993c19722ea119e7f673",
+        "bytes": 4233
+      },
+      {
+        "path": "table/ablation.tex",
+        "sha256": "7076580fddf45bf59b78a89573a6b346ed70365e0f2e0406bfd616a453924800",
+        "bytes": 1221
+      },
+      {
+        "path": "fig/qualitative_analysis.tex",
+        "sha256": "83d344f407fa912d35090b172a2dfd5725668e4d86ab1029a6f707f7c2a20f72",
+        "bytes": 692
+      },
+      {
+        "path": "fig/researchrubrics.tex",
+        "sha256": "d6a4b793e0118410a50fb987b1f8d814426fd9a3852dcc29551859805a205c65",
+        "bytes": 504
+      },
+      {
+        "path": "text/7_conclusion.tex",
+        "sha256": "80f68006892adbf91d72a538772c37447037d051424c1a78608ade9bdb2a8340",
+        "bytes": 781
+      },
+      {
+        "path": "text/appendix.tex",
+        "sha256": "1954c2cb6258e42a0114019a6654d02da5f81848e12cde51023ef9bd2ddc369a",
+        "bytes": 18778
+      },
+      {
+        "path": "fig/rl_train_reward.tex",
+        "sha256": "96e4cedb4e5c7e32f89cc13d33ab1b2dbb3745dacae3855476968def28636798",
+        "bytes": 3771
+      },
+      {
+        "path": "fig/rl_avg_num_search.tex",
+        "sha256": "22db48fbe0c94a60bc933db90001f67e51598546f4bd93cba85066ad04833237",
+        "bytes": 569
+      },
+      {
+        "path": "fig/ttrl_train_reward.tex",
+        "sha256": "3918137a095c28687bacf50050556e5706eb700e54ec950735eaf4a278a9da15",
+        "bytes": 186
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 25,
+    "figures": 20,
+    "references": 57
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 8, column 1):\nunexpected Tok (line 8, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 8, column 1):\nunexpected Tok (line 8, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

@@ -1,0 +1,1174 @@
+{
+  "references": [
+    {
+      "key": "CoT",
+      "title": "Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia, Ed~H. Chi, Quoc~V. Le, and Denny Zhou. 2022. http://papers.nips.cc/paper\\ files/paper/2022/hash/9d560",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, Ichter, Xia, Chi, Le, and Zhou}]{CoT}\nJason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Brian Ichter, Fei Xia, Ed~H. Chi, Quoc~V. Le, and Denny Zhou. 2022.\n\\newblock \\href {http://papers.nips.cc/paper\\_files/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html} {Chain-of-thought prompting elicits reasoning in large language models}.\n\\newblock In \\emph{Advances in Neural Information Processing Systems 35: Annual Conference on Neural Information Processing Systems 2022, NeurIPS 2022, New Orleans, LA, USA, November 28 - December 9, 2022}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "EoG",
+      "title": "Shiqi Yan, Yubo Chen, Ruiqi Zhou, Zhengxi Yao, Shuai Chen, Tianyi Zhang, Shijie Zhang, Wei~Qiang Zhang, Yongfeng Huang, Haixin Duan, and Yunqi Zhang. 2026. https://proceedings.iclr",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Yan et~al.(2026)Yan, Chen, Zhou, Yao, Chen, Zhang, Zhang, Zhang, Huang, Duan, and Zhang}]{EoG}\nShiqi Yan, Yubo Chen, Ruiqi Zhou, Zhengxi Yao, Shuai Chen, Tianyi Zhang, Shijie Zhang, Wei~Qiang Zhang, Yongfeng Huang, Haixin Duan, and Yunqi Zhang. 2026.\n\\newblock \\href {https://proceedings.iclr.cc/paper\\_files/paper/2026/hash/5d2e24df9cfaad3189833b819c40b392-Abstract-Conference.html} {Explore-on-graph: Incentivizing autonomous exploration of large language models on knowledge graphs with path-refined reward modeling}.\n\\newblock In \\emph{The Fourteenth International Conference on Learning Representations, {ICLR} 2026, Rio de Janeiro, Brazil, April 23-27, 2026}. proceedings.iclr.cc.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-gold-supporting-triples",
+          "text": "[]{#app:gold_supporting_triples label=\"app:gold_supporting_triples\"} The gold supporting triples used for evaluation are distinct from those produced by synthesis, which serve only as ECPR supervision during training. GTSQA provides gold answer subgraphs natively. For WikiWebQuestions, which has no"
+        }
+      ]
+    },
+    {
+      "key": "G-Retrieval",
+      "title": "Xiaoxin He, Yijun Tian, Yifei Sun, Nitesh~V. Chawla, Thomas Laurent, Yann LeCun, Xavier Bresson, and Bryan Hooi. 2024. http://papers.nips.cc/paper\\ files/paper/2024/hash/efaf1c9726",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{He et~al.(2024)He, Tian, Sun, Chawla, Laurent, LeCun, Bresson, and Hooi}]{G-Retrieval}\nXiaoxin He, Yijun Tian, Yifei Sun, Nitesh~V. Chawla, Thomas Laurent, Yann LeCun, Xavier Bresson, and Bryan Hooi. 2024.\n\\newblock \\href {http://papers.nips.cc/paper\\_files/paper/2024/hash/efaf1c9726648c8ba363a5c927440529-Abstract-Conference.html} {G-retriever: Retrieval-augmented generation for textual graph understanding and question answering}.\n\\newblock In \\emph{Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "GAPD",
+      "title": "Xin Sun, Jianan Xie, Zhongqi Chen, Qiang Liu, Shu Wu, Bowen Song, Weiqiang Wang, Zilei Wang, and Liang Wang. 2026 b . https://doi.org/10.48550/ARXIV.2605.29584 GAPD: gold-action po",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sun et~al.(2026{\\natexlab{b}})Sun, Xie, Chen, Liu, Wu, Song, Wang, Wang, and Wang}]{GAPD}\nXin Sun, Jianan Xie, Zhongqi Chen, Qiang Liu, Shu Wu, Bowen Song, Weiqiang Wang, Zilei Wang, and Liang Wang. 2026{\\natexlab{b}}.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2605.29584} {{GAPD:} gold-action policy distillation for agentic reinforcement learning in knowledge base question answering}.\n\\newblock \\emph{CoRR}, abs/2605.29584.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "GCR",
+      "title": "Linhao Luo, Zicheng Zhao, Gholamreza Haffari, Yuan - Fang Li, Chen Gong, and Shirui Pan. 2025. https://proceedings.mlr.press/v267/luo25t.html Graph-constrained reasoning: Faithful ",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Luo et~al.(2025)Luo, Zhao, Haffari, Li, Gong, and Pan}]{GCR}\nLinhao Luo, Zicheng Zhao, Gholamreza Haffari, Yuan{-}Fang Li, Chen Gong, and Shirui Pan. 2025.\n\\newblock \\href {https://proceedings.mlr.press/v267/luo25t.html} {Graph-constrained reasoning: Faithful reasoning on knowledge graphs with large language models}.\n\\newblock In \\emph{Forty-second International Conference on Machine Learning, {ICML} 2025, Vancouver, BC, Canada, July 13-19, 2025}, volume 267 of \\emph{Proceedings of Machine Learning Research}. {PMLR} / OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "GLM",
+      "title": "GLM. 2025. https://doi.org/10.48550/ARXIV.2508.06471 GLM-4.5: agentic, reasoning, and coding (ARC) foundation models . CoRR, abs/2508.06471.",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{GLM(2025)}]{GLM}\nGLM. 2025.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2508.06471} {{GLM-4.5:} agentic, reasoning, and coding {(ARC)} foundation models}.\n\\newblock \\emph{CoRR}, abs/2508.06471.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "GNN-RAG",
+      "title": "Costas Mavromatis and George Karypis. 2025. https://doi.org/10.18653/V1/2025.FINDINGS-ACL.856 GNN-RAG: graph neural retrieval for efficient large language model reasoning on knowle",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Mavromatis and Karypis(2025)}]{GNN-RAG}\nCostas Mavromatis and George Karypis. 2025.\n\\newblock \\href {https://doi.org/10.18653/V1/2025.FINDINGS-ACL.856} {{GNN-RAG:} graph neural retrieval for efficient large language model reasoning on knowledge graphs}.\n\\newblock In \\emph{Findings of the Association for Computational Linguistics, {ACL} 2025, Vienna, Austria, July 27 - August 1, 2025}, volume {ACL} 2025 of \\emph{Findings of {ACL}}, pages 16682--16699. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "GRPO",
+      "title": "Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, Y.~K. Li, Y.~Wu, and Daya Guo. 2024. https://doi.org/10.48550/ARXIV.2402.03300 Deepseekmath: Pushing ",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Shao et~al.(2024)Shao, Wang, Zhu, Xu, Song, Zhang, Li, Wu, and Guo}]{GRPO}\nZhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Mingchuan Zhang, Y.~K. Li, Y.~Wu, and Daya Guo. 2024.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2402.03300} {Deepseekmath: Pushing the limits of mathematical reasoning in open language models}.\n\\newblock \\emph{CoRR}, abs/2402.03300.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-evidence-coverage-process-reward",
+          "text": "To train the agent to retrieve this evidence, we propose a training scheme with outcome and step-validity rewards, the evidence-coverage process reward, and turn-level policy optimization. #### Outcome and step-validity rewards. We define the outcome reward of a trajectory as $$ \\label{eq:rout}"
+        }
+      ]
+    },
+    {
+      "key": "GTSQA",
+      "title": "Alberto Cattaneo, Carlo Luschi, and Daniel Justus. 2026. https://openreview.net/forum?id=n0Nh5SeR3i Ground-truth subgraphs for better training and evaluation of knowledge graph aug",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Cattaneo et~al.(2026)Cattaneo, Luschi, and Justus}]{GTSQA}\nAlberto Cattaneo, Carlo Luschi, and Daniel Justus. 2026.\n\\newblock \\href {https://openreview.net/forum?id=n0Nh5SeR3i} {Ground-truth subgraphs for better training and evaluation of knowledge graph augmented llms}.\n\\newblock \\emph{Trans. Mach. Learn. Res.}, 2026.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-benchmark-datasets",
+          "text": "[]{#app:datasets label=\"app:datasets\"} []{#app:datasets_detail label=\"app:datasets_detail\"} The benchmarks used for FoG evaluation cover two knowledge graphs, with data sourced as follows: **WikiWebQuestions:** Ported from WebQuestions and re-annotated with SPARQL queries over Wikidata"
+        }
+      ]
+    },
+    {
+      "key": "GoT",
+      "title": "Bowen Jin, Chulin Xie, Jiawei Zhang, Kashob~Kumar Roy, Yu~Zhang, Zheng Li, Ruirui Li, Xianfeng Tang, Suhang Wang, Yu~Meng, and Jiawei Han. 2024. https://doi.org/10.18653/V1/2024.FI",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Jin et~al.(2024)Jin, Xie, Zhang, Roy, Zhang, Li, Li, Tang, Wang, Meng, and Han}]{GoT}\nBowen Jin, Chulin Xie, Jiawei Zhang, Kashob~Kumar Roy, Yu~Zhang, Zheng Li, Ruirui Li, Xianfeng Tang, Suhang Wang, Yu~Meng, and Jiawei Han. 2024.\n\\newblock \\href {https://doi.org/10.18653/V1/2024.FINDINGS-ACL.11} {Graph chain-of-thought: Augmenting large language models by reasoning on graphs}.\n\\newblock In \\emph{Findings of the Association for Computational Linguistics, {ACL} 2024, Bangkok, Thailand and virtual meeting, August 11-16, 2024}, volume {ACL} 2024 of \\emph{Findings of {ACL}}, pages 163--184. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "GrailQA++",
+      "title": "Ritam Dutt, Sopan Khosla, Vinayshekhar~Bannihatti Kumar, and Rashmi Gangadharaiah. 2023. https://doi.org/10.18653/V1/2023.IJCNLP-MAIN.58 Grailqa++: A challenging zero-shot benchmar",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Dutt et~al.(2023)Dutt, Khosla, Kumar, and Gangadharaiah}]{GrailQA++}\nRitam Dutt, Sopan Khosla, Vinayshekhar~Bannihatti Kumar, and Rashmi Gangadharaiah. 2023.\n\\newblock \\href {https://doi.org/10.18653/V1/2023.IJCNLP-MAIN.58} {Grailqa++: {A} challenging zero-shot benchmark for knowledge base question answering}.\n\\newblock In \\emph{Proceedings of the 13th International Joint Conference on Natural Language Processing and the 3rd Conference of the Asia-Pacific Chapter of the Association for Computational Linguistics, {IJCNLP} 2023 -Volume 1: Long Papers, Nusa Dua, Bali, November 1 - 4, 2023}, pages 897--909. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-evidence-grounded-synthesis",
+          "text": "To obtain complex questions that carry their supporting evidence, we propose evidence-grounded synthesis that includes seed question construction, backward expansion, and quality control. All roles use the teacher Kimi-K2 [kimi]. #### Seed question construction. We sample a size-bounded subgraph"
+        }
+      ]
+    },
+    {
+      "key": "GraphWalker",
+      "title": "Shuwen Xu, Yao Xu, Jiaxiang Liu, Chenhao Yuan, Wenshuo Peng, Jun Zhao, and Kang Liu. 2026. https://doi.org/10.48550/ARXIV.2603.28533 Graphwalker: Agentic knowledge graph question a",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Xu et~al.(2026)Xu, Xu, Liu, Yuan, Peng, Zhao, and Liu}]{GraphWalker}\nShuwen Xu, Yao Xu, Jiaxiang Liu, Chenhao Yuan, Wenshuo Peng, Jun Zhao, and Kang Liu. 2026.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2603.28533} {Graphwalker: Agentic knowledge graph question answering via synthetic trajectory curriculum}.\n\\newblock \\emph{CoRR}, abs/2603.28533.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "KBQA-R1",
+      "title": "Xin Sun, Zhongqi Chen, Xing Zheng, Qiang Liu, Shu Wu, Bowen Song, Zilei Wang, Weiqiang Wang, and Liang Wang. 2025. https://doi.org/10.48550/ARXIV.2512.10999 KBQA-R1: reinforcing la",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sun et~al.(2025)Sun, Chen, Zheng, Liu, Wu, Song, Wang, Wang, and Wang}]{KBQA-R1}\nXin Sun, Zhongqi Chen, Xing Zheng, Qiang Liu, Shu Wu, Bowen Song, Zilei Wang, Weiqiang Wang, and Liang Wang. 2025.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2512.10999} {{KBQA-R1:} reinforcing large language models for knowledge base question answering}.\n\\newblock \\emph{CoRR}, abs/2512.10999.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-evidence-coverage-process-reward",
+          "text": "To train the agent to retrieve this evidence, we propose a training scheme with outcome and step-validity rewards, the evidence-coverage process reward, and turn-level policy optimization. #### Outcome and step-validity rewards. We define the outcome reward of a trajectory as $$ \\label{eq:rout}"
+        }
+      ]
+    },
+    {
+      "key": "KG-Hopper",
+      "title": "Shuai Wang and Yinan Yu. 2026 a . https://doi.org/10.48550/ARXIV.2603.21440 Kg-hopper: Empowering compact open llms with knowledge graph reasoning via reinforcement learning . CoRR",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Wang and Yu(2026{\\natexlab{a}})}]{KG-Hopper}\nShuai Wang and Yinan Yu. 2026{\\natexlab{a}}.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2603.21440} {Kg-hopper: Empowering compact open llms with knowledge graph reasoning via reinforcement learning}.\n\\newblock \\emph{CoRR}, abs/2603.21440.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-ablation-study-rq2",
+          "text": "[]{#sec:rq2 label=\"sec:rq2\"} ![Effect of model scale. F1 and Hit@1 of backbones of different sizes after SFT on the same data.](figures/model-scale.jpg) ![Effect of model scale. F1 and Hit@1 of backbones of different sizes after SFT on the same data.](figures/model-scale-2.jpg) ![Effect of model"
+        }
+      ]
+    },
+    {
+      "key": "KG-R1",
+      "title": "Junhong Lin, Shicheng Liu, Jinyeop Song, Song Wang, Julian Shun, and Yada Zhu. 2025. Efficient and transferable agentic knowledge graph rag via reinforcement learning. arXiv prepri",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Lin et~al.(2025)Lin, Liu, Song, Wang, Shun, and Zhu}]{KG-R1}\nJunhong Lin, Shicheng Liu, Jinyeop Song, Song Wang, Julian Shun, and Yada Zhu. 2025.\n\\newblock Efficient and transferable agentic knowledge graph rag via reinforcement learning.\n\\newblock \\emph{arXiv preprint arXiv:2509.26383}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-evidence-coverage-process-reward",
+          "text": "To train the agent to retrieve this evidence, we propose a training scheme with outcome and step-validity rewards, the evidence-coverage process reward, and turn-level policy optimization. #### Outcome and step-validity rewards. We define the outcome reward of a trajectory as $$ \\label{eq:rout}"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-analysis-of-ecpr-rq5",
+          "text": "**Table: Credit-assignment strategies for ECPR on GTSQA. Dup.\\ rate is the fraction of KG queries that re-retrieve an already retrieved gold triple.** ```latex \\begin{table}[t] \\centering \\small \\begin{tabular}{lccc} \\toprule \\textbf{Credit assignment} & \\textbf{Hit@1} & \\textbf{Cov} &"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "KG-Reasoner",
+      "title": "Shuai Wang and Yinan Yu. 2026 b . https://doi.org/10.48550/ARXIV.2604.12487 Kg-reasoner: A reinforced model for end-to-end multi-hop knowledge graph reasoning . CoRR, abs/2604.1248",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Wang and Yu(2026{\\natexlab{b}})}]{KG-Reasoner}\nShuai Wang and Yinan Yu. 2026{\\natexlab{b}}.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2604.12487} {Kg-reasoner: {A} reinforced model for end-to-end multi-hop knowledge graph reasoning}.\n\\newblock \\emph{CoRR}, abs/2604.12487.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "KGQAGen",
+      "title": "Liangliang Zhang, Zhuorui Jiang, Hongliang Chi, Haoyang Chen, Mohammed Elkoumy, Fali Wang, Qiong Wu, Zhengyi Zhou, Shirui Pan, Suhang Wang, and Yao Ma. 2025. http://papers.nips.cc/",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Zhang et~al.(2025)Zhang, Jiang, Chi, Chen, Elkoumy, Wang, Wu, Zhou, Pan, Wang, and Ma}]{KGQAGen}\nLiangliang Zhang, Zhuorui Jiang, Hongliang Chi, Haoyang Chen, Mohammed Elkoumy, Fali Wang, Qiong Wu, Zhengyi Zhou, Shirui Pan, Suhang Wang, and Yao Ma. 2025.\n\\newblock \\href {http://papers.nips.cc/paper\\_files/paper/2025/hash/61a57ab030670598c4200b31100d254c-Abstract-Datasets\\_and\\_Benchmarks\\_Track.html} {Diagnosing and addressing pitfalls in {KG-RAG} datasets: Toward more reliable benchmarking}.\n\\newblock In \\emph{Advances in Neural Information Processing Systems 38: Annual Conference on Neural Information Processing Systems 2025, NeurIPS 2025, San Diego, CA, USA, December 2-7, 2025 / Mexico City, Mexico, November 30 - December 5, 2025}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "KnowCoder-A1",
+      "title": "Zhuo Chen, Fei Wang, Zixuan Li, Zhao Zhang, Weiwei Ding, Chuanguang Yang, YongJun Xu, Xiaolong Jin, and Jiafeng Guo. 2025. https://doi.org/10.48550/ARXIV.2510.25101 Knowcoder-a1: I",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Chen et~al.(2025)Chen, Wang, Li, Zhang, Ding, Yang, Xu, Jin, and Guo}]{KnowCoder-A1}\nZhuo Chen, Fei Wang, Zixuan Li, Zhao Zhang, Weiwei Ding, Chuanguang Yang, YongJun Xu, Xiaolong Jin, and Jiafeng Guo. 2025.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2510.25101} {Knowcoder-a1: Incentivizing agentic reasoning capability with outcome supervision for {KBQA}}.\n\\newblock \\emph{CoRR}, abs/2510.25101.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-evidence-coverage-process-reward",
+          "text": "To train the agent to retrieve this evidence, we propose a training scheme with outcome and step-validity rewards, the evidence-coverage process reward, and turn-level policy optimization. #### Outcome and step-validity rewards. We define the outcome reward of a trajectory as $$ \\label{eq:rout}"
+        },
+        {
+          "section_id": "sec-limitations",
+          "text": "#### KG completeness and freshness. FoG uses Wikidata triples as verifiable references for evidence-covered supervision, but real-world knowledge graphs may be incomplete, outdated, or noisy. When the required evidence is absent or incorrect in the graph, the agent may still fail despite following"
+        }
+      ]
+    },
+    {
+      "key": "PathMind",
+      "title": "Yu~Liu, Xixun Lin, Yanmin Shang, Yangxi Li, Shi Wang, and Yanan Cao. 2026. https://doi.org/10.1609/AAAI.V40I18.38565 Pathmind: A retrieve-prioritize-reason framework for knowledge ",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Liu et~al.(2026)Liu, Lin, Shang, Li, Wang, and Cao}]{PathMind}\nYu~Liu, Xixun Lin, Yanmin Shang, Yangxi Li, Shi Wang, and Yanan Cao. 2026.\n\\newblock \\href {https://doi.org/10.1609/AAAI.V40I18.38565} {Pathmind: {A} retrieve-prioritize-reason framework for knowledge graph reasoning with large language models}.\n\\newblock In \\emph{Fortieth {AAAI} Conference on Artificial Intelligence, Thirty-Eighth Conference on Innovative Applications of Artificial Intelligence, Sixteenth Symposium on Educational Advances in Artificial Intelligence, {AAAI} 2026, Singapore, January 20-27, 2026}, pages 15386--15393. {AAAI} Press.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "Peak-Then-Collapse",
+      "title": "Tianda Sun and Dimitar Kazakov. 2026. https://doi.org/10.48550/ARXIV.2605.26037 Peak-then-collapse and the four interface channels of knowledge-graph tool use . CoRR, abs/2605.2603",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sun and Kazakov(2026)}]{Peak-Then-Collapse}\nTianda Sun and Dimitar Kazakov. 2026.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2605.26037} {Peak-then-collapse and the four interface channels of knowledge-graph tool use}.\n\\newblock \\emph{CoRR}, abs/2605.26037.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "Plan-Then-retrieve",
+      "title": "Yanlin Song, Ben Liu, V \\' ctor Guti \\' e rrez - Basulto, Zhiwei Hu, Qianqian Xie, Min Peng, Sophia Ananiadou, and Jeff~Z. Pan. 2026. https://doi.org/10.1145/3774904.3792191 Plan t",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Song et~al.(2026)Song, Liu, Guti{\\'{e}}rrez{-}Basulto, Hu, Xie, Peng, Ananiadou, and Pan}]{Plan-Then-retrieve}\nYanlin Song, Ben Liu, V{\\'{\\i}}ctor Guti{\\'{e}}rrez{-}Basulto, Zhiwei Hu, Qianqian Xie, Min Peng, Sophia Ananiadou, and Jeff~Z. Pan. 2026.\n\\newblock \\href {https://doi.org/10.1145/3774904.3792191} {Plan then retrieve: Reinforcement learning-guided complex reasoning over knowledge graphs}.\n\\newblock In \\emph{Proceedings of the {ACM} Web Conference 2026, {WWW} 2026, Dubai, United Arab Emirates, originally scheduled for April 13-17, 2026, rescheduled for June 29 - July 3, 2026}, pages 3666--3676. {ACM}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-evidence-coverage-process-reward",
+          "text": "To train the agent to retrieve this evidence, we propose a training scheme with outcome and step-validity rewards, the evidence-coverage process reward, and turn-level policy optimization. #### Outcome and step-validity rewards. We define the outcome reward of a trajectory as $$ \\label{eq:rout}"
+        }
+      ]
+    },
+    {
+      "key": "PoG",
+      "title": "Liyi Chen, Panrong Tong, Zhongming Jin, Ying Sun, Jieping Ye, and Hui Xiong. 2024. http://papers.nips.cc/paper\\ files/paper/2024/hash/4254e856d01a5e7b7ea050477c3ef9b9-Abstract-Conf",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Chen et~al.(2024)Chen, Tong, Jin, Sun, Ye, and Xiong}]{PoG}\nLiyi Chen, Panrong Tong, Zhongming Jin, Ying Sun, Jieping Ye, and Hui Xiong. 2024.\n\\newblock \\href {http://papers.nips.cc/paper\\_files/paper/2024/hash/4254e856d01a5e7b7ea050477c3ef9b9-Abstract-Conference.html} {Plan-on-graph: Self-correcting adaptive planning of large language model on knowledge graphs}.\n\\newblock In \\emph{Advances in Neural Information Processing Systems 37: Annual Conference on Neural Information Processing Systems 2024, NeurIPS 2024, Vancouver, BC, Canada, December 10 - 15, 2024}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "RoE",
+      "title": "Haoyu Han, Kai Guo, Harry Shomer, Yu~Wang, Yucheng Chu, Hang Li, Li~Ma, and Jiliang Tang. 2026. https://doi.org/10.1145/3774904.3792684 Reasoning by exploration: A unified approach",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Han et~al.(2026)Han, Guo, Shomer, Wang, Chu, Li, Ma, and Tang}]{RoE}\nHaoyu Han, Kai Guo, Harry Shomer, Yu~Wang, Yucheng Chu, Hang Li, Li~Ma, and Jiliang Tang. 2026.\n\\newblock \\href {https://doi.org/10.1145/3774904.3792684} {Reasoning by exploration: {A} unified approach to retrieval and generation over graphs}.\n\\newblock In \\emph{Proceedings of the {ACM} Web Conference 2026, {WWW} 2026, Dubai, United Arab Emirates, originally scheduled for April 13-17, 2026, rescheduled for June 29 - July 3, 2026}, pages 2408--2418. {ACM}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "RoG",
+      "title": "Linhao Luo, Yuan - Fang Li, Gholamreza Haffari, and Shirui Pan. 2024. https://openreview.net/forum?id=ZGNWW7xZ6Q Reasoning on graphs: Faithful and interpretable large language mode",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Luo et~al.(2024)Luo, Li, Haffari, and Pan}]{RoG}\nLinhao Luo, Yuan{-}Fang Li, Gholamreza Haffari, and Shirui Pan. 2024.\n\\newblock \\href {https://openreview.net/forum?id=ZGNWW7xZ6Q} {Reasoning on graphs: Faithful and interpretable large language model reasoning}.\n\\newblock In \\emph{The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024}. OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-analysis-of-ecpr-rq5",
+          "text": "**Table: Credit-assignment strategies for ECPR on GTSQA. Dup.\\ rate is the fraction of KG queries that re-retrieve an already retrieved gold triple.** ```latex \\begin{table}[t] \\centering \\small \\begin{tabular}{lccc} \\toprule \\textbf{Credit assignment} & \\textbf{Hit@1} & \\textbf{Cov} &"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "Self-Consistency",
+      "title": "Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc~V. Le, Ed~H. Chi, Sharan Narang, Aakanksha Chowdhery, and Denny Zhou. 2023. https://openreview.net/forum?id=1PL1NIMMrw Self-consistenc",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Wang et~al.(2023)Wang, Wei, Schuurmans, Le, Chi, Narang, Chowdhery, and Zhou}]{Self-Consistency}\nXuezhi Wang, Jason Wei, Dale Schuurmans, Quoc~V. Le, Ed~H. Chi, Sharan Narang, Aakanksha Chowdhery, and Denny Zhou. 2023.\n\\newblock \\href {https://openreview.net/forum?id=1PL1NIMMrw} {Self-consistency improves chain of thought reasoning in language models}.\n\\newblock In \\emph{The Eleventh International Conference on Learning Representations, {ICLR} 2023, Kigali, Rwanda, May 1-5, 2023}. OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "SoG-R1",
+      "title": "Jia~Ao Sun, Hao Yu, Fengran Mo, Zhan Su, Yuchen Hui, Bang Liu, and Jian - Yun Nie. 2026 a . https://doi.org/10.48550/ARXIV.2607.18481 Search-on-graph-r1: Training large language mo",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sun et~al.(2026{\\natexlab{a}})Sun, Yu, Mo, Su, Hui, Liu, and Nie}]{SoG-R1}\nJia~Ao Sun, Hao Yu, Fengran Mo, Zhan Su, Yuchen Hui, Bang Liu, and Jian{-}Yun Nie. 2026{\\natexlab{a}}.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2607.18481} {Search-on-graph-r1: Training large language models to search knowledge graphs with reinforcement learning}.\n\\newblock \\emph{CoRR}, abs/2607.18481.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-limitations",
+          "text": "#### KG completeness and freshness. FoG uses Wikidata triples as verifiable references for evidence-covered supervision, but real-world knowledge graphs may be incomplete, outdated, or noisy. When the required evidence is absent or incorrect in the graph, the agent may still fail despite following"
+        }
+      ]
+    },
+    {
+      "key": "SubGraphRAG",
+      "title": "Mufei Li, Siqi Miao, and Pan Li. 2025. https://openreview.net/forum?id=JvkuZZ04O7 Simple is effective: The roles of graphs and large language models in knowledge-graph-based retrie",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Li et~al.(2025)Li, Miao, and Li}]{SubGraphRAG}\nMufei Li, Siqi Miao, and Pan Li. 2025.\n\\newblock \\href {https://openreview.net/forum?id=JvkuZZ04O7} {Simple is effective: The roles of graphs and large language models in knowledge-graph-based retrieval-augmented generation}.\n\\newblock In \\emph{The Thirteenth International Conference on Learning Representations, {ICLR} 2025, Singapore, April 24-28, 2025}. OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "ToG",
+      "title": "Jiashuo Sun, Chengjin Xu, Lumingyuan Tang, Saizhuo Wang, Chen Lin, Yeyun Gong, Lionel~M. Ni, Heung - Yeung Shum, and Jian Guo. 2024. https://openreview.net/forum?id=nnVO1PvbTv Thin",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sun et~al.(2024)Sun, Xu, Tang, Wang, Lin, Gong, Ni, Shum, and Guo}]{ToG}\nJiashuo Sun, Chengjin Xu, Lumingyuan Tang, Saizhuo Wang, Chen Lin, Yeyun Gong, Lionel~M. Ni, Heung{-}Yeung Shum, and Jian Guo. 2024.\n\\newblock \\href {https://openreview.net/forum?id=nnVO1PvbTv} {Think-on-graph: Deep and responsible reasoning of large language model on knowledge graph}.\n\\newblock In \\emph{The Twelfth International Conference on Learning Representations, {ICLR} 2024, Vienna, Austria, May 7-11, 2024}. OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-analysis-of-ecpr-rq5",
+          "text": "**Table: Credit-assignment strategies for ECPR on GTSQA. Dup.\\ rate is the fraction of KG queries that re-retrieve an already retrieved gold triple.** ```latex \\begin{table}[t] \\centering \\small \\begin{tabular}{lccc} \\toprule \\textbf{Credit assignment} & \\textbf{Hit@1} & \\textbf{Cov} &"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "ToT",
+      "title": "Shunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Tom Griffiths, Yuan Cao, and Karthik Narasimhan. 2023 a . http://papers.nips.cc/paper\\ files/paper/2023/hash/271db9922b8d1f4dd7aae",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Yao et~al.(2023{\\natexlab{a}})Yao, Yu, Zhao, Shafran, Griffiths, Cao, and Narasimhan}]{ToT}\nShunyu Yao, Dian Yu, Jeffrey Zhao, Izhak Shafran, Tom Griffiths, Yuan Cao, and Karthik Narasimhan. 2023{\\natexlab{a}}.\n\\newblock \\href {http://papers.nips.cc/paper\\_files/paper/2023/hash/271db9922b8d1f4dd7aaef84ed5ac703-Abstract-Conference.html} {Tree of thoughts: Deliberate problem solving with large language models}.\n\\newblock In \\emph{Advances in Neural Information Processing Systems 36: Annual Conference on Neural Information Processing Systems 2023, NeurIPS 2023, New Orleans, LA, USA, December 10 - 16, 2023}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "agrawal2024mindful",
+      "title": "Garima Agrawal, Tharindu Kumarage, Zeyad Alghamdi, and Huan Liu. 2024. https://doi.org/10.1109/FLLM63129.2024.10852457 Mindful-rag: A study of points of failure in retrieval augmen",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Agrawal et~al.(2024)Agrawal, Kumarage, Alghamdi, and Liu}]{agrawal2024mindful}\nGarima Agrawal, Tharindu Kumarage, Zeyad Alghamdi, and Huan Liu. 2024.\n\\newblock \\href {https://doi.org/10.1109/FLLM63129.2024.10852457} {Mindful-rag: {A} study of points of failure in retrieval augmented generation}.\n\\newblock In \\emph{2nd International Conference on Foundation and Large Language Models, {FLLM} 2024, Dubai, United Arab Emirates, November 26-29, 2024}, pages 607--611. {IEEE}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "cabello2024meg",
+      "title": "Laura Cabello, Carmen Martin - Turrero, Uchenna Akujuobi, Anders S gaard, and Carlos Bobed. 2024. https://doi.org/10.48550/ARXIV.2411.03883 MEG: medical knowledge-augmented large l",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Cabello et~al.(2024)Cabello, Martin{-}Turrero, Akujuobi, S{\\o}gaard, and Bobed}]{cabello2024meg}\nLaura Cabello, Carmen Martin{-}Turrero, Uchenna Akujuobi, Anders S{\\o}gaard, and Carlos Bobed. 2024.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2411.03883} {{MEG:} medical knowledge-augmented large language models for question answering}.\n\\newblock \\emph{CoRR}, abs/2411.03883.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "cwq",
+      "title": "Alon Talmor and Jonathan Berant. 2018. https://doi.org/10.18653/V1/N18-1059 The web as a knowledge-base for answering complex questions . In Proceedings of the 2018 Conference of t",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Talmor and Berant(2018)}]{cwq}\nAlon Talmor and Jonathan Berant. 2018.\n\\newblock \\href {https://doi.org/10.18653/V1/N18-1059} {The web as a knowledge-base for answering complex questions}.\n\\newblock In \\emph{Proceedings of the 2018 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, {NAACL-HLT} 2018, New Orleans, Louisiana, USA, June 1-6, 2018, Volume 1 (Long Papers)}, pages 641--651. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "deepseekv3",
+      "title": "DeepSeek - AI. 2024. https://doi.org/10.48550/ARXIV.2412.19437 Deepseek-v3 technical report . CoRR, abs/2412.19437.",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{DeepSeek{-}AI(2024)}]{deepseekv3}\nDeepSeek{-}AI. 2024.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2412.19437} {Deepseek-v3 technical report}.\n\\newblock \\emph{CoRR}, abs/2412.19437.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "gpt-4",
+      "title": "OpenAI. 2023. https://doi.org/10.48550/ARXIV.2303.08774 GPT-4 technical report . CoRR, abs/2303.08774.",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{OpenAI(2023)}]{gpt-4}\nOpenAI. 2023.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2303.08774} {{GPT-4} technical report}.\n\\newblock \\emph{CoRR}, abs/2303.08774.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "grailqa",
+      "title": "Yu~Gu, Sue Kase, Michelle Vanni, Brian Sadler, Percy Liang, Xifeng Yan, and Yu~Su. 2021. Beyond iid: three levels of generalization for question answering on knowledge bases. In Pr",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Gu et~al.(2021)Gu, Kase, Vanni, Sadler, Liang, Yan, and Su}]{grailqa}\nYu~Gu, Sue Kase, Michelle Vanni, Brian Sadler, Percy Liang, Xifeng Yan, and Yu~Su. 2021.\n\\newblock Beyond iid: three levels of generalization for question answering on knowledge bases.\n\\newblock In \\emph{Proceedings of the web conference 2021}, pages 3477--3488.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "hallucination_1",
+      "title": "Lei Huang, Weijiang Yu, Weitao Ma, Weihong Zhong, Zhangyin Feng, Haotian Wang, Qianglong Chen, Weihua Peng, Xiaocheng Feng, Bing Qin, and Ting Liu. 2025. https://doi.org/10.1145/37",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Huang et~al.(2025)Huang, Yu, Ma, Zhong, Feng, Wang, Chen, Peng, Feng, Qin, and Liu}]{hallucination_1}\nLei Huang, Weijiang Yu, Weitao Ma, Weihong Zhong, Zhangyin Feng, Haotian Wang, Qianglong Chen, Weihua Peng, Xiaocheng Feng, Bing Qin, and Ting Liu. 2025.\n\\newblock \\href {https://doi.org/10.1145/3703155} {A survey on hallucination in large language models: Principles, taxonomy, challenges, and open questions}.\n\\newblock \\emph{{ACM} Trans. Inf. Syst.}, 43(2):42:1--42:55.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "hallucination_2",
+      "title": "Aisha Alansari and Hamzah Luqman. 2026. https://doi.org/10.1016/J.COSREV.2026.100970 Large language models hallucination: A comprehensive survey . Comput. Sci. Rev., 61:100970.",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Alansari and Luqman(2026)}]{hallucination_2}\nAisha Alansari and Hamzah Luqman. 2026.\n\\newblock \\href {https://doi.org/10.1016/J.COSREV.2026.100970} {Large language models hallucination: {A} comprehensive survey}.\n\\newblock \\emph{Comput. Sci. Rev.}, 61:100970.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "hu2024large",
+      "title": "Peng Hu, Changjiang Gao, Ruiqi Gao, Jiajun Chen, and Shujian Huang. 2024. https://doi.org/10.18653/V1/2024.FINDINGS-EMNLP.178 Large language models are limited in out-of-context kn",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Hu et~al.(2024)Hu, Gao, Gao, Chen, and Huang}]{hu2024large}\nPeng Hu, Changjiang Gao, Ruiqi Gao, Jiajun Chen, and Shujian Huang. 2024.\n\\newblock \\href {https://doi.org/10.18653/V1/2024.FINDINGS-EMNLP.178} {Large language models are limited in out-of-context knowledge reasoning}.\n\\newblock In \\emph{Findings of the Association for Computational Linguistics: {EMNLP} 2024, Miami, Florida, USA, November 12-16, 2024}, volume {EMNLP} 2024 of \\emph{Findings of {ACL}}, pages 3144--3155. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "jullien2025knowledge",
+      "title": "Ma \\\" e l Jullien, Marco Valentino, and Andr \\' e Freitas. 2025. https://doi.org/10.48550/ARXIV.2508.10777 The knowledge-reasoning dissociation: Fundamental limitations of llms in ",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Jullien et~al.(2025)Jullien, Valentino, and Freitas}]{jullien2025knowledge}\nMa{\\\"{e}}l Jullien, Marco Valentino, and Andr{\\'{e}} Freitas. 2025.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2508.10777} {The knowledge-reasoning dissociation: Fundamental limitations of llms in clinical natural language inference}.\n\\newblock \\emph{CoRR}, abs/2508.10777.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "kg-agent",
+      "title": "Jinhao Jiang, Kun Zhou, Xin Zhao, Yang Song, Chen Zhu, Hengshu Zhu, and Ji - Rong Wen. 2025. https://doi.org/10.18653/V1/2025.ACL-LONG.468 Kg-agent: An efficient autonomous agent f",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Jiang et~al.(2025)Jiang, Zhou, Zhao, Song, Zhu, Zhu, and Wen}]{kg-agent}\nJinhao Jiang, Kun Zhou, Xin Zhao, Yang Song, Chen Zhu, Hengshu Zhu, and Ji{-}Rong Wen. 2025.\n\\newblock \\href {https://doi.org/10.18653/V1/2025.ACL-LONG.468} {Kg-agent: An efficient autonomous agent framework for complex reasoning over knowledge graph}.\n\\newblock In \\emph{Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), {ACL} 2025, Vienna, Austria, July 27 - August 1, 2025}, pages 9505--9523. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-related-work",
+          "text": "#### Knowledge graph augmented reasoning. Unlike prompting strategies [CoT, Self-Consistency, ToT, GoT], KG-augmented methods ground reasoning in verifiable triples and follow two paradigms. Retrieval-based methods [RoG, SubGraphRAG, GCR, GNN-RAG, G-Retrieval, PathMind] condition the LLM on"
+        }
+      ]
+    },
+    {
+      "key": "kimi",
+      "title": "Kimi Team. 2025 a . https://doi.org/10.48550/ARXIV.2507.20534 Kimi K2: open agentic intelligence . CoRR, abs/2507.20534.",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Team(2025{\\natexlab{a}})}]{kimi}\nKimi Team. 2025{\\natexlab{a}}.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2507.20534} {Kimi {K2:} open agentic intelligence}.\n\\newblock \\emph{CoRR}, abs/2507.20534.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-evidence-grounded-synthesis",
+          "text": "To obtain complex questions that carry their supporting evidence, we propose evidence-grounded synthesis that includes seed question construction, backward expansion, and quality control. All roles use the teacher Kimi-K2 [kimi]. #### Seed question construction. We sample a size-bounded subgraph"
+        },
+        {
+          "section_id": "sec-synthesis-cost-and-retention",
+          "text": "**Table: Synthesis cost and retention.** ```latex \\begin{table}[t] \\centering \\small \\resizebox{\\columnwidth}{!}{ \\begin{tabular}{lrrrr} \\toprule \\textbf{Stage} & \\textbf{Input} & \\textbf{Retained} & \\textbf{Rejected} & \\textbf{Teacher calls} \\\\ \\midrule Seed-question generation & 20,000 & 14,400 &"
+        },
+        {
+          "section_id": "sec-hyperparameter-settings",
+          "text": "[]{#app:training label=\"app:training\"} **Supervised Fine-Tuning.** []{#app:sft label=\"app:sft\"} For SFT, we adopt LLaMA-Factory [zheng2024llamafactory] and apply LoRA to all linear layers. The training trajectories are distilled from the same teacher model used in synthesis, Kimi-K2 [kimi], with"
+        }
+      ]
+    },
+    {
+      "key": "llama",
+      "title": "Hugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie - Anne Lachaux, Timoth \\' e e Lacroix, Baptiste Rozi \\` e re, Naman Goyal, Eric Hambro, Faisal Azhar, Aur \\' e",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Touvron et~al.(2023)Touvron, Lavril, Izacard, Martinet, Lachaux, Lacroix, Rozi{\\`{e}}re, Goyal, Hambro, Azhar, Rodriguez, Joulin, Grave, and Lample}]{llama}\nHugo Touvron, Thibaut Lavril, Gautier Izacard, Xavier Martinet, Marie{-}Anne Lachaux, Timoth{\\'{e}}e Lacroix, Baptiste Rozi{\\`{e}}re, Naman Goyal, Eric Hambro, Faisal Azhar, Aur{\\'{e}}lien Rodriguez, Armand Joulin, Edouard Grave, and Guillaume Lample. 2023.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2302.13971} {Llama: Open and efficient foundation language models}.\n\\newblock \\emph{CoRR}, abs/2302.13971.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "mirzadeh2025gsm",
+      "title": "Iman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, and Mehrdad Farajtabar. 2025. https://openreview.net/forum?id=AjXkRZIvjB Gsm-symbolic: Understanding the",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Mirzadeh et~al.(2025)Mirzadeh, Alizadeh, Shahrokhi, Tuzel, Bengio, and Farajtabar}]{mirzadeh2025gsm}\nIman Mirzadeh, Keivan Alizadeh, Hooman Shahrokhi, Oncel Tuzel, Samy Bengio, and Mehrdad Farajtabar. 2025.\n\\newblock \\href {https://openreview.net/forum?id=AjXkRZIvjB} {Gsm-symbolic: Understanding the limitations of mathematical reasoning in large language models}.\n\\newblock In \\emph{The Thirteenth International Conference on Learning Representations, {ICLR} 2025, Singapore, April 24-28, 2025}. OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "nguyen2024direct",
+      "title": "Thi Nguyen, Linhao Luo, Fatemeh Shiri, Dinh Phung, Yuan - Fang Li, Thuy - Trang Vu, and Gholamreza Haffari. 2024. https://doi.org/10.18653/V1/2024.FINDINGS-ACL.168 Direct evaluatio",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Nguyen et~al.(2024)Nguyen, Luo, Shiri, Phung, Li, Vu, and Haffari}]{nguyen2024direct}\nThi Nguyen, Linhao Luo, Fatemeh Shiri, Dinh Phung, Yuan{-}Fang Li, Thuy{-}Trang Vu, and Gholamreza Haffari. 2024.\n\\newblock \\href {https://doi.org/10.18653/V1/2024.FINDINGS-ACL.168} {Direct evaluation of chain-of-thought in multi-hop reasoning with knowledge graphs}.\n\\newblock In \\emph{Findings of the Association for Computational Linguistics, {ACL} 2024, Bangkok, Thailand and virtual meeting, August 11-16, 2024}, volume {ACL} 2024 of \\emph{Findings of {ACL}}, pages 2862--2883. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "petroni2021kilt",
+      "title": "Fabio Petroni, Aleksandra Piktus, Angela Fan, Patrick Lewis, Majid Yazdani, Nicola~De Cao, James Thorne, Yacine Jernite, Vladimir Karpukhin, Jean Maillard, Vassilis Plachouras, Tim",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Petroni et~al.(2021)Petroni, Piktus, Fan, Lewis, Yazdani, Cao, Thorne, Jernite, Karpukhin, Maillard, Plachouras, Rockt{\\\"{a}}schel, and Riedel}]{petroni2021kilt}\nFabio Petroni, Aleksandra Piktus, Angela Fan, Patrick Lewis, Majid Yazdani, Nicola~De Cao, James Thorne, Yacine Jernite, Vladimir Karpukhin, Jean Maillard, Vassilis Plachouras, Tim Rockt{\\\"{a}}schel, and Sebastian Riedel. 2021.\n\\newblock \\href {https://doi.org/10.18653/V1/2021.NAACL-MAIN.200} {{KILT:} a benchmark for knowledge intensive language tasks}.\n\\newblock In \\emph{Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, {NAACL-HLT} 2021, Online, June 6-11, 2021}, pages 2523--2544. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "qald10en",
+      "title": "Ricardo Usbeck, Xi~Yan, Aleksandr Perevalov, Longquan Jiang, Julius Schulz, Angelie Kraft, Cedric M \\\" o ller, Junbo Huang, Jan Reineke, Axel - Cyrille~Ngonga Ngomo, Muhammad Salee",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Usbeck et~al.(2024)Usbeck, Yan, Perevalov, Jiang, Schulz, Kraft, M{\\\"{o}}ller, Huang, Reineke, Ngomo, Saleem, and Both}]{qald10en}\nRicardo Usbeck, Xi~Yan, Aleksandr Perevalov, Longquan Jiang, Julius Schulz, Angelie Kraft, Cedric M{\\\"{o}}ller, Junbo Huang, Jan Reineke, Axel{-}Cyrille~Ngonga Ngomo, Muhammad Saleem, and Andreas Both. 2024.\n\\newblock \\href {https://doi.org/10.3233/SW-233471} {{QALD-10} - the 10th challenge on question answering over linked data: Shifting from dbpedia to wikidata as a {KG} for {KGQA}}.\n\\newblock \\emph{Semantic Web}, 15(6):2193--2207.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-benchmark-datasets",
+          "text": "[]{#app:datasets label=\"app:datasets\"} []{#app:datasets_detail label=\"app:datasets_detail\"} The benchmarks used for FoG evaluation cover two knowledge graphs, with data sourced as follows: **WikiWebQuestions:** Ported from WebQuestions and re-annotated with SPARQL queries over Wikidata"
+        }
+      ]
+    },
+    {
+      "key": "qwen",
+      "title": "Qwen Team. 2025 b . https://doi.org/10.48550/ARXIV.2505.09388 Qwen3 technical report . CoRR, abs/2505.09388.",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Team(2025{\\natexlab{b}})}]{qwen}\nQwen Team. 2025{\\natexlab{b}}.\n\\newblock \\href {https://doi.org/10.48550/ARXIV.2505.09388} {Qwen3 technical report}.\n\\newblock \\emph{CoRR}, abs/2505.09388.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-experiments",
+          "text": "This section presents the experimental setup, main results, and analysis. We answer the following research questions (RQs): **RQ1:** Does FoG outperform other methods in answer accuracy? **RQ2:** Does each component of FoG work? **RQ3:** Does evidence-grounded synthesis provide valid evidence and"
+        },
+        {
+          "section_id": "sec-baseline-details",
+          "text": "[]{#app:baselines label=\"app:baselines\"} We compare FoG against nine representative baselines that cover the LLM reasoning, retrieval-based, and agent-based paradigms: **IO Prompt** [gpt-4, qwen, deepseekv3] is a KG-free baseline where the LLM directly answers the question from its parametric"
+        }
+      ]
+    },
+    {
+      "key": "react",
+      "title": "Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik~R. Narasimhan, and Yuan Cao. 2023 b . https://openreview.net/forum?id=WE\\ vluYUL-X React: Synergizing reasoning an",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Yao et~al.(2023{\\natexlab{b}})Yao, Zhao, Yu, Du, Shafran, Narasimhan, and Cao}]{react}\nShunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik~R. Narasimhan, and Yuan Cao. 2023{\\natexlab{b}}.\n\\newblock \\href {https://openreview.net/forum?id=WE\\_vluYUL-X} {React: Synergizing reasoning and acting in language models}.\n\\newblock In \\emph{The Eleventh International Conference on Learning Representations, {ICLR} 2023, Kigali, Rwanda, May 1-5, 2023}. OpenReview.net.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-evidence-grounded-synthesis",
+          "text": "To obtain complex questions that carry their supporting evidence, we propose evidence-grounded synthesis that includes seed question construction, backward expansion, and quality control. All roles use the teacher Kimi-K2 [kimi]. #### Seed question construction. We sample a size-bounded subgraph"
+        }
+      ]
+    },
+    {
+      "key": "roadmap",
+      "title": "Shirui Pan, Linhao Luo, Yufei Wang, Chen Chen, Jiapu Wang, and Xindong Wu. 2024. https://doi.org/10.1109/TKDE.2024.3352100 Unifying large language models and knowledge graphs: A ro",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Pan et~al.(2024)Pan, Luo, Wang, Chen, Wang, and Wu}]{roadmap}\nShirui Pan, Linhao Luo, Yufei Wang, Chen Chen, Jiapu Wang, and Xindong Wu. 2024.\n\\newblock \\href {https://doi.org/10.1109/TKDE.2024.3352100} {Unifying large language models and knowledge graphs: {A} roadmap}.\n\\newblock \\emph{{IEEE} Trans. Knowl. Data Eng.}, 36(7):3580--3599.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "sheng2025hybridflow",
+      "title": "Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru~Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu. 2025. https://doi.org/10.1145/3689031.3696075 Hybridflow: A flexi",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sheng et~al.(2025)Sheng, Zhang, Ye, Wu, Zhang, Zhang, Peng, Lin, and Wu}]{sheng2025hybridflow}\nGuangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru~Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu. 2025.\n\\newblock \\href {https://doi.org/10.1145/3689031.3696075} {Hybridflow: {A} flexible and efficient {RLHF} framework}.\n\\newblock In \\emph{Proceedings of the Twentieth European Conference on Computer Systems, EuroSys 2025, Rotterdam, The Netherlands, 30 March 2025 - 3 April 2025}, pages 1279--1297. {ACM}.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-hyperparameter-settings",
+          "text": "[]{#app:training label=\"app:training\"} **Supervised Fine-Tuning.** []{#app:sft label=\"app:sft\"} For SFT, we adopt LLaMA-Factory [zheng2024llamafactory] and apply LoRA to all linear layers. The training trajectories are distilled from the same teacher model used in synthesis, Kimi-K2 [kimi], with"
+        }
+      ]
+    },
+    {
+      "key": "sui2025fidelis",
+      "title": "Yuan Sui, Yufei He, Nian Liu, Xiaoxin He, Kun Wang, and Bryan Hooi. 2025. https://doi.org/10.18653/V1/2025.FINDINGS-ACL.436 Fidelis: Faithful reasoning in large language models for",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Sui et~al.(2025)Sui, He, Liu, He, Wang, and Hooi}]{sui2025fidelis}\nYuan Sui, Yufei He, Nian Liu, Xiaoxin He, Kun Wang, and Bryan Hooi. 2025.\n\\newblock \\href {https://doi.org/10.18653/V1/2025.FINDINGS-ACL.436} {Fidelis: Faithful reasoning in large language models for knowledge graph question answering}.\n\\newblock In \\emph{Findings of the Association for Computational Linguistics, {ACL} 2025, Vienna, Austria, July 27 - August 1, 2025}, volume {ACL} 2025 of \\emph{Findings of {ACL}}, pages 8315--8330. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        }
+      ]
+    },
+    {
+      "key": "webqsp",
+      "title": "Wen - tau Yih, Matthew Richardson, Christopher Meek, Ming - Wei Chang, and Jina Suh. 2016. https://doi.org/10.18653/V1/P16-2033 The value of semantic parse labeling for knowledge b",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Yih et~al.(2016)Yih, Richardson, Meek, Chang, and Suh}]{webqsp}\nWen{-}tau Yih, Matthew Richardson, Christopher Meek, Ming{-}Wei Chang, and Jina Suh. 2016.\n\\newblock \\href {https://doi.org/10.18653/V1/P16-2033} {The value of semantic parse labeling for knowledge base question answering}.\n\\newblock In \\emph{Proceedings of the 54th Annual Meeting of the Association for Computational Linguistics, {ACL} 2016, August 7-12, 2016, Berlin, Germany, Volume 2: Short Papers}. The Association for Computer Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-introduction",
+          "text": "![Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas FoG embeds supporting triples at synthesis and rewards their retrieval during RL training.](figures/intro.jpg) *Figure: Motivation of FoG. Answer-only training yields correct but unsupported answers, whereas"
+        },
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-benchmark-datasets",
+          "text": "[]{#app:datasets label=\"app:datasets\"} []{#app:datasets_detail label=\"app:datasets_detail\"} The benchmarks used for FoG evaluation cover two knowledge graphs, with data sourced as follows: **WikiWebQuestions:** Ported from WebQuestions and re-annotated with SPARQL queries over Wikidata"
+        }
+      ]
+    },
+    {
+      "key": "wikiwebQuestions",
+      "title": "Silei Xu, Shicheng Liu, Theo Culhane, Elizaveta Pertseva, Meng - Hsi Wu, Sina~J. Semnani, and Monica~S. Lam. 2023. https://doi.org/10.18653/V1/2023.EMNLP-MAIN.353 Fine-tuned llms k",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Xu et~al.(2023)Xu, Liu, Culhane, Pertseva, Wu, Semnani, and Lam}]{wikiwebQuestions}\nSilei Xu, Shicheng Liu, Theo Culhane, Elizaveta Pertseva, Meng{-}Hsi Wu, Sina~J. Semnani, and Monica~S. Lam. 2023.\n\\newblock \\href {https://doi.org/10.18653/V1/2023.EMNLP-MAIN.353} {Fine-tuned llms know more, hallucinate less with few-shot sequence-to-sequence semantic parsing over wikidata}.\n\\newblock In \\emph{Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing, {EMNLP} 2023, Singapore, December 6-10, 2023}, pages 5778--5791. Association for Computational Linguistics.",
+      "citation_contexts": [
+        {
+          "section_id": "sec-experimental-setup",
+          "text": "#### Datasets. We evaluate on three Wikidata-based KGQA benchmarks, WikiWebQuestions [wikiwebQuestions], QALD10-en [qald10en], and GTSQA [GTSQA], and use WebQSP [webqsp] over Freebase for cross-KG transfer. The synthetic questions do not overlap with the test sets (Appendices app:leakage and"
+        },
+        {
+          "section_id": "sec-benchmark-datasets",
+          "text": "[]{#app:datasets label=\"app:datasets\"} []{#app:datasets_detail label=\"app:datasets_detail\"} The benchmarks used for FoG evaluation cover two knowledge graphs, with data sourced as follows: **WikiWebQuestions:** Ported from WebQuestions and re-annotated with SPARQL queries over Wikidata"
+        }
+      ]
+    },
+    {
+      "key": "zheng2024llamafactory",
+      "title": "Yaowei Zheng, Richong Zhang, Junhao Zhang, Yanhan Ye, and Zheyan Luo. 2024. https://doi.org/10.18653/V1/2024.ACL-DEMOS.38 Llamafactory: Unified efficient fine-tuning of 100+ langua",
+      "authors": [],
+      "year": null,
+      "venue": "",
+      "doi": "",
+      "arxiv_id": "",
+      "url": "",
+      "raw_bibtex": "\\bibitem[{Zheng et~al.(2024)Zheng, Zhang, Zhang, Ye, and Luo}]{zheng2024llamafactory}\nYaowei Zheng, Richong Zhang, Junhao Zhang, Yanhan Ye, and Zheyan Luo. 2024.\n\\newblock \\href {https://doi.org/10.18653/V1/2024.ACL-DEMOS.38} {Llamafactory: Unified efficient fine-tuning of 100+ language models}.\n\\newblock In \\emph{Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 3: System Demonstrations), {ACL} 2024, Bangkok, Thailand, August 11-16, 2024}, pages 400--410. Association for Computational Linguistics.\n\n\\end{thebibliography}",
+      "citation_contexts": [
+        {
+          "section_id": "sec-hyperparameter-settings",
+          "text": "[]{#app:training label=\"app:training\"} **Supervised Fine-Tuning.** []{#app:sft label=\"app:sft\"} For SFT, we adopt LLaMA-Factory [zheng2024llamafactory] and apply LoRA to all linear layers. The training trajectories are distilled from the same teacher model used in synthesis, Kimi-K2 [kimi], with"
+        }
+      ]
+    }
+  ]
+}

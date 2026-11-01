@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from paper_wiki.core import progress
 from paper_wiki.core.config import Settings
+from paper_wiki.publishing.wechat_limits import DIGEST_LIMIT, fit_wechat_length
 from paper_wiki.publishing.artifact_html import resolve_artifact_html
 from paper_wiki.publishing.cover_generator import default_wechat_title, generate_wechat_cover
 from paper_wiki.publishing.exceptions import HTMLValidationError, WeChatConfigError
@@ -100,17 +102,20 @@ def publish_artifact_html_to_wechat(
         settings.wechat_appid,
         settings.wechat_secret,
         timeout=settings.wechat_request_timeout_seconds,
+        proxy=settings.wechat_proxy,
     )
 
-    if not thumb_media_id:
-        assert cover_path is not None
-        thumb_media_id = wechat_client.upload_permanent_image(cover_path)
+    with progress.step("upload_cover", "上传封面", external="微信 API"):
+        if not thumb_media_id:
+            assert cover_path is not None
+            thumb_media_id = wechat_client.upload_permanent_image(cover_path)
 
-    processed = replace_local_images(
-        artifact.content,
-        html_file=artifact.html_path,
-        upload_image=wechat_client.upload_article_image,
-    )
+    with progress.step("upload_images", "上传正文图片", external="微信 API"):
+        processed = replace_local_images(
+            artifact.content,
+            html_file=artifact.html_path,
+            upload_image=wechat_client.upload_article_image,
+        )
     if not processed.content.strip():
         raise HTMLValidationError("processed HTML content is empty")
 
@@ -119,13 +124,14 @@ def publish_artifact_html_to_wechat(
         rendered_html_path = _write_rendered_html(artifact.artifact_dir, artifact.html_path, processed.content)
 
     author = options.author if options.author is not None else settings.wechat_author
-    payload = wechat_client.create_draft(
-        title=title,
-        content=processed.content,
-        thumb_media_id=thumb_media_id,
-        author=author,
-        digest=options.digest,
-    )
+    with progress.step("create_draft", "创建草稿", external="微信 API"):
+        payload = wechat_client.create_draft(
+            title=title,
+            content=processed.content,
+            thumb_media_id=thumb_media_id,
+            author=author,
+            digest=fit_wechat_length(options.digest, DIGEST_LIMIT) if options.digest else None,
+        )
 
     return WeChatDraftResult(
         slug=options.slug,

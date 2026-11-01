@@ -1,0 +1,16 @@
+\begin{tcolorbox}[colback=white, colframe=black, title=Prompt template for LLM-as-Judge, boxrule=0.5pt, left=2mm, right=2mm, top=0mm, bottom=0.5mm]
+\footnotesize
+\label{tab:llm_as_judge_prompt}
+You are an evaluator performing semantic entity matching. Your task is to decide, for each gold entity (in order), whether the model's prediction refers to the same real-world entity with the same level of specificity. 
+
+Respond \emph{only} with a binary vector in the format:
+\[
+[0, 1, 0, 1]
+\]
+Rules: \\
+- Exact matches or equivalent references → output 1 (e.g., "Apple Inc." = "Apple"). \\
+- Too general or not specific enough when specificity is required → output 0 (e.g., "Islam" vs ["Shia Islam", "Sunni Islam"]). \\[0.25em]
+Gold entities: [\texttt{gold entity list}] \\
+Predicted entities: [\texttt{predicted entity list}] \\
+Your Response:
+\end{tcolorbox}

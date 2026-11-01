@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Group Relative Policy Optimization",
+      "authors": "Zhang et al.",
+      "year": 2023,
+      "arxiv_id": "grpo_paper",
+      "role": "Baseline",
+      "relationship_sentence": "GEPA directly compares its performance against Group Relative Policy Optimization (GRPO), demonstrating significant improvements in sample efficiency and effectiveness."
+    },
+    {
+      "title": "MIPROv2: A State-of-the-Art Prompt Optimizer",
+      "authors": "Khare et al.",
+      "year": 2023,
+      "arxiv_id": "miprov2",
+      "role": "Baseline",
+      "relationship_sentence": "GEPA outperforms MIPROv2, the leading prompt optimizer, by incorporating reflective updates and Pareto-based selection strategies."
+    },
+    {
+      "title": "EvoPrompt: Evolving Prompt Populations",
+      "authors": "Guo et al.",
+      "year": 2024,
+      "arxiv_id": "guo2024connecting",
+      "role": "Inspiration",
+      "relationship_sentence": "EvoPrompt's use of evolutionary algorithms to optimize prompts inspired GEPA's approach of using natural language reflection and evolutionary strategies for prompt optimization."
+    },
+    {
+      "title": "Chain-of-Thought Prompting Elicits Reasoning",
+      "authors": "Wei et al.",
+      "year": 2023,
+      "arxiv_id": "",
+      "role": "Gap Identification",
+      "relationship_sentence": "The limitations of existing prompting techniques, such as those highlighted in chain-of-thought prompting, motivated GEPA's development of a more efficient reflective prompt evolution method."
+    },
+    {
+      "title": "Learning in the Language Space: In-Context Bandit Methods",
+      "authors": "Monea et al.",
+      "year": 2025,
+      "arxiv_id": "monea2025llmsincontextbanditreinforcement",
+      "role": "Foundation",
+      "relationship_sentence": "This work laid the groundwork for GEPA's approach by emphasizing the potential of learning directly in the language space, which GEPA builds upon through reflective learning."
+    },
+    {
+      "title": "Dynamic Cheatsheet for Test-Time Strategy Synthesis",
+      "authors": "Suzgun et al.",
+      "year": 2025,
+      "arxiv_id": "suzgun2025dynamiccheatsheettesttimelearning",
+      "role": "Related Problem",
+      "relationship_sentence": "The strategies for test-time learning in this paper provided insights that influenced GEPA's design for optimizing prompts in real-time scenarios."
+    }
+  ],
+  "synthesis_narrative": "GEPA 的发展受到若干关键先前工作的显著影响，这些工作致力于大语言模型（LLMs）的提示优化。\"Group Relative Policy Optimization\" 的基础性工作由 Zhang et al. 提出，为 GEPA 展示其更优的样本效率与有效性提供了基线。此外，作为领先的提示优化器，MIPROv2 被直接与 GEPA 进行比较，凸显了后者通过反思式更新和基于 Pareto 的选择策略所取得的进展。Guo et al. 的 \"EvoPrompt\" 所带来的启发展示了进化算法在提示优化中的潜力，而 GEPA 通过整合自然语言反思采纳了这一思路。进一步地，Wei et al. 所指出的 chain-of-thought prompting 的局限性揭示了若干空白，而 GEPA 通过其创新的反思式提示演化方法对这些空白加以应对。Monea et al. 关于语言空间中的学习的工作提供了理论基础，GEPA 在此基础上进一步构建；而 Suzgun et al. 关于测试时策略合成的洞见则为 GEPA 的实时优化能力提供了启示。总体而言，这些先前工作为 GEPA 照亮了道路，使其成为 LLMs 提示优化领域中一种自然的发展。"
+}

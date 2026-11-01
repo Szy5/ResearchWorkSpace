@@ -21,11 +21,16 @@ class WeChatClient:
         *,
         timeout: float = 30.0,
         session: requests.Session | None = None,
+        proxy: str | None = None,
     ) -> None:
         self.appid = appid
         self.secret = secret
         self.timeout = timeout
         self.session = session or requests.Session()
+        if proxy:
+            # A fixed-egress proxy keeps the IP whitelisted in the WeChat console stable.
+            self.session.trust_env = False
+            self.session.proxies.update({"http": proxy, "https": proxy})
         self._access_token: str | None = None
 
     def get_access_token(self) -> str:

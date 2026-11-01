@@ -1,0 +1,432 @@
+{
+  "sections": [
+    {
+      "id": "sec-abstract",
+      "type": "abstract",
+      "title": "Abstract",
+      "level": 0,
+      "order": 0,
+      "parent_id": "",
+      "source": null,
+      "text": "Optimizing embedding systems for production recommendation pipelines demands systematic exploration that consumes disproportionate engineering effort at scale. We apply Andrej Karpathy's AutoResearch paradigm~[karpathy2026autoresearch]---a large language model that iteratively edits a training script and retains modifications that improve a held-out scalar metric---to automate this exploration. We report on twelve weeks of running this paradigm at production scale, where iterations consume hours of multi-GPU compute, evaluation involves competing criteria, and campaigns span weeks across many training jobs. Across two independently developed representation-learning systems for a book recommendation pipeline, we ran 220+ experiments and observed five recurring failure modes absent from the original setting: infrastructure fragility, agent memory decay, search-direction stagnation, iteration-cost asymmetry, and metric fixation. We contribute a three-principle scaffolding design---prevent, persist, redirect---that maps each failure mode to a structural remedy and whose instantiation scales with iteration cost. The framework produced a 1.82 Recall@6 lift and a 2.1 coherence lift over hand-tuned baselines, and the agent autonomously designed a text-only fallback that expanded catalog coverage by 5.8 . The two systems span nearly three orders of magnitude in per-iteration cost yet exhibit the same failure modes, suggesting these are structural properties of production-scale autonomous research rather than artifacts of either application.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-introduction",
+      "type": "section",
+      "title": "Introduction",
+      "level": 1,
+      "order": 1,
+      "parent_id": "",
+      "source": null,
+      "text": "Andrej Karpathy's AutoResearch [karpathy2026autoresearch]---a 630-line Python script---introduced an elegant paradigm for autonomous machine learning research: a large language model iteratively modifies a training script, runs the experiment, and keeps or discards based on a held-out scalar metric. Unlike AutoML approaches [akiba2019optuna] that pick from a predefined search space, AutoResearch proposes and modifies arbitrary code: architecture, optimizer, loss function, training tricks. Applied to single-GPU, five-minute language-modeling experiments, it demonstrated that code-level iterative search can discover meaningful improvements without human intervention.\n\nThe paradigm has obvious appeal for production ML, where exploration budgets are large but engineering attention is scarce [sculley2015debt]. Yet production ML differs from the original setting along three axes that strain the paradigm's assumptions. First, production scale often results in iterations consuming hours of multi-GPU compute rather than minutes, raising the cost of any failure by three orders of magnitude. Second, evaluation involves complex, competing criteria rather than a single scalar, so \"keep if metric improved\" is no longer sufficiently defined. Third, campaigns span weeks across many training jobs, exceeding any single context window. Whether AutoResearch survives these conditions has, to our knowledge, not been reported.\n\nThis paper reports on twelve weeks of running AutoResearch at production compute scale within Amazon's book recommendation pipeline. We deployed the paradigm in two independent systems with very different cost regimes. **System A** learns 128-dimensional purchase optimized retrieval embeddings for 98% of the active catalog on multiple GPU instances (consuming 9--19 hour iterations); the agent rewrites the entire training script per iteration. **System B** learns hierarchical Semantic IDs for books via Residual Quantization (RQ-VAE) [zeghidour2021soundstream, vandenoord2017vqvae] used for generative retrieval [rajput2024genret] and taxonomy on a single GPU (6--52 minute iterations); the agent edits hyperparameters and model architecture rather than the full script. The systems span nearly three orders of magnitude in per-iteration cost and were developed independently by different workstreams, which makes their shared findings more compelling. Both systems produced significant improvements over hand-tuned baselines: 1.82$\\times$ Recall@6 lift on System A, and 2.1$\\times$ lift on the custom evaluation metric used for System B. In terms of performance, there was a 5.8$\\times$ catalog-coverage scale-up on System A, designed and implemented by the agent itself with no human direction.\n\n**Related work.** Several recent systems explore autonomous experimentation and iterative LLM-driven code search. The AI Scientist [lu2024aiscientist] targets full-paper authorship via batch-style hypothesis generation and writeup, working at a coarser granularity than AutoResearch. ScientistOne [meng2026scientistone] extends this line toward end-to-end autonomous research with verifiable evidence chains, but is evaluated on benchmark research tasks where iteration is cheap and the output is a paper rather than a production system. MLAgentBench [huang2024mlagentbench] evaluates language agents on standardized small-scale ML tasks, focusing on benchmarking rather than deployment. Self-Refine [madaan2023selfrefine] and Reflexion [shinn2023reflexion] formalize self-correction loops where an LLM critiques and revises its own output, but operate within a single context window. LLMs as Optimizers [yang2024optimizers] and EvoPrompting [chen2023evoprompting] treat the LLM as a black-box optimizer over prompts or architectures. FunSearch [romeraparedes2024funsearch] couples a language model with an evolutionary loop for mathematical discovery. AIDE [jiang2025aide] frames ML engineering as tree-search over code and achieves strong benchmark performance; SWE-agent [yang2024sweagent] builds specialized agent-computer interfaces for repository-level code tasks. Both report on structured benchmark settings rather than production deployment. Multi-agent coordination frameworks such as ReAct [yao2023react] and AutoGen [wu2023autogen] address agent communication and tool use. MemGPT [packer2023memgpt] addresses context-length limits via hierarchical memory management. None of these systems reports what happens when iteration cost is high, evaluation is multi-criteria, and a campaign exceeds a single context. Our work occupies that gap.\n\n**Contributions.** This paper makes three contributions: (1) **a taxonomy of five failure modes of AutoResearch** that emerge at production scale---infrastructure fragility, agent memory decay, search-direction stagnation, iteration-cost asymmetry, and metric fixation---each with an identified root cause, with the first four independently observed across two systems of very different cost profiles and the fifth problematic only to multi-criteria evaluation; (2) **a three-principle scaffolding design** --- prevent (pre-execution semantic gate), persist (durable cross-job memory)*,* redirect (stagnation-triggered strategic reframing) --- that maps each failure mode to a structural remedy, instantiated as a three-agent extension of AutoResearch and validated against a 1.82× Recall@6 lift and a 2.1× coherence lift across the two systems; and (3) a cost-dependence principle: **the weight placed on each scaffolding principle should scale with iteration cost** - pre-execution gates justify their overhead only when iterations are expensive; post-execution revert suffices when they are cheap. This principle, observed empirically across two systems differing from each other by nearly three orders of magnitude in cost, offers a concrete design parameter for teams deploying autonomous research agents beyond the settings studied here. We note that the individual mechanisms we employ---persistent memory, critique loops, pre-execution gating---are deliberately standard; the contribution is not a new algorithm but a failure taxonomy grounded in production deployment and a cost-dependence principle governing when each mechanism earns its overhead.",
+      "labels": [],
+      "citations": [
+        "akiba2019optuna",
+        "chen2023evoprompting",
+        "huang2024mlagentbench",
+        "jiang2025aide",
+        "karpathy2026autoresearch",
+        "lu2024aiscientist",
+        "madaan2023selfrefine",
+        "meng2026scientistone",
+        "packer2023memgpt",
+        "rajput2024genret",
+        "romeraparedes2024funsearch",
+        "sculley2015debt",
+        "shinn2023reflexion",
+        "vandenoord2017vqvae",
+        "wu2023autogen",
+        "yang2024optimizers",
+        "yang2024sweagent",
+        "yao2023react",
+        "zeghidour2021soundstream"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-production-setting",
+      "type": "section",
+      "title": "Production Setting",
+      "level": 1,
+      "order": 2,
+      "parent_id": "",
+      "source": null,
+      "text": "Both systems share the standard AutoResearch components [karpathy2026autoresearch]: 1) an orchestrator, a research program (`program.md`) carrying instructions and accumulated findings; 2) an agent sandbox containing the training script (`train.py`), an immutable evaluator that the agent observes but cannot modify; and 3) a research log of all iterations. They differ in adaptation, scale, and cost regime (Table tab:comparison). We introduce the two systems in the following paragraphs.",
+      "labels": [],
+      "citations": [
+        "karpathy2026autoresearch"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-system-a-embedding-generation",
+      "type": "subsection",
+      "title": "System A: Embedding Generation",
+      "level": 2,
+      "order": 3,
+      "parent_id": "sec-production-setting",
+      "source": null,
+      "text": "System A generates retrieval embeddings for 98% of the active catalog, translating to tens of millions of books. For the purpose of this study, we use **Recall@6** as the objective metric: for each held-out book a customer purchased, the six nearest neighbors in embedding space are retrieved via a FAISS [johnson2019faiss] IVF+Flat index, and Recall@6 measures how often these similarity-based recommendations include the customer's actual next purchase. Top 6 is a representative approximation of visible items in the recommender's interface. The input data comprises a co-purchase behavioral graph suitable for Node2Vec-style [grover2016node2vec] training and pre-computed text embeddings from a sentence transformer [reimers2019sbert]. The hand-tuned baseline against which the agent is compared is the product of four engineer-weeks of manual work: a Node2Vec implementation on the co-purchase graph, distributed training on GPUs, and iteration over loss functions and negative sampling, reaching 3.79% Recall@6.",
+      "labels": [],
+      "citations": [
+        "grover2016node2vec",
+        "johnson2019faiss",
+        "reimers2019sbert"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-system-b-configuration-level-semantic-id-assignment",
+      "type": "subsection",
+      "title": "System B: Configuration-Level Semantic ID Assignment",
+      "level": 2,
+      "order": 4,
+      "parent_id": "sec-production-setting",
+      "source": null,
+      "text": "System B learns hierarchical Semantic IDs [rajput2024genret] for over 50% of browsed books (in the order of millions) via RQ-VAE [vandenoord2017vqvae, zeghidour2021soundstream], which encodes each book's continuous embedding into a sequence of discrete codes, each level quantizing the residual left by the previous one. Books that agree on their first code fall in the same coarse cluster; agreeing on the first two codes places them in a finer sub-cluster, and so on---each additional code is a deeper level of a browse-path-like hierarchy. Our primary metric, **weighted coherence**, measures how similar books within a cluster are. Writing $L1$, $L2$, $L3$ for the mean cosine similarity between book embeddings within clusters at the first three levels, weighted coherence is $0.5 \\times L1 + 0.3 \\times L2 + 0.2 \\times L3$. The weights reflect customer-flow dominance: top-level prefix matches are the most frequent shared-prefix event across the catalog and most directly capture browsable cluster structure, so $L1$ carries half the weight, while $L3$ contributes the smallest share because deeper levels fragment quickly with cohort size. The weights are fixed across all System B runs and were not tuned to any individual configuration.\n\nWe also use secondary metrics approximating genre purity and cluster usability (median size, singleton rate, collision rate, etc.). The agent operates at the configuration and architecture level---proposing changes to hyperparameters and encoder architecture but not rewriting the training script. The hand-tuned baseline is a manually configured RQ-VAE trained on behavioral embeddings with hand-tuned codebook size, learning rate, and commitment weight (2--3 days of prototyping), reaching weighted coherence of 0.348---already well above the random-assignment baseline weighted coherence of 0.26.",
+      "labels": [],
+      "citations": [
+        "rajput2024genret",
+        "vandenoord2017vqvae",
+        "zeghidour2021soundstream"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-cost-profile-and-campaign-scale",
+      "type": "subsection",
+      "title": "Cost Profile and Campaign Scale",
+      "level": 2,
+      "order": 5,
+      "parent_id": "sec-production-setting",
+      "source": null,
+      "text": "The combined campaign spans twelve weeks and 220+ experiments. System A ran 60+ iterations across 6 runs; System B ran 150+ iterations across 15 runs. A single System A iteration costs roughly 760$\\times$ a System B iteration (combining instance hourly price, GPU count, and wall-clock duration); the two thus differ in per-iteration cost by nearly three orders of magnitude, making them an unusually informative pair for studying cost-dependent design choices.\n\n**Table: System comparison. The two systems span nearly three orders of magnitude in per-iteration cost ( 760 ).**\n\n```latex\n\\begin{table}[tbp]\n\\caption{System comparison. The two systems span nearly three orders of magnitude in per-iteration cost ($\\sim$760$\\times$).}\n \\label{tab:comparison}\n \\centering\n \\resizebox{\\columnwidth}{!}{\n \\begin{tabular}{lll}\n \\toprule\n Dimension & System A & System B \\\\\n \\midrule\n Search level & Code-level (\\texttt{train.py}) & Config + arch.\\ \\\\\n Iteration wall-clock & 9--19 hours & 6--52 min, 1 GPU \\\\\n Cost per iteration & $\\sim$760$\\times$ System B & baseline \\\\\n \\# iterations & 60+ across 6 runs & 150+ across 15 runs \\\\\n Metric & Single scalar (R@6) & Multi-criteria \\\\\n Steering & Criticizer (automated) & \\texttt{program.md} (human) \\\\\n Agents & 3 (Researcher, Fixer, Critic) & 1 (Researcher) \\\\\n \\bottomrule\n \\end{tabular}}\n\\end{table}\n```",
+      "labels": [
+        "tab:comparison"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-failure-modes-at-production-scale",
+      "type": "section",
+      "title": "Failure Modes at Production Scale",
+      "level": 1,
+      "order": 6,
+      "parent_id": "",
+      "source": null,
+      "text": "We organize the failure modes by their root cause, distinguishing modes that follow from *cost* (A, D) from those that follow from *long horizons* (B, C) and those that follow from *evaluation design* (E). The first four modes were observed independently in both systems despite their different cost profiles; metric fixation (mode 5) requires multi-criteria evaluation and is therefore specific to System B, whose primary metric competes with secondary usability criteria (System A optimizes a single scalar and cannot exhibit it).",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-infrastructure-fragility",
+      "type": "subsection",
+      "title": "Infrastructure Fragility",
+      "level": 2,
+      "order": 7,
+      "parent_id": "sec-failure-modes-at-production-scale",
+      "source": null,
+      "text": "Iterations may fail from environmental reasons---evaluation timeouts, out-of-memory (OOM) crashes, GPU distribution bugs, malformed inter-agent messages---consuming budget without producing a usable signal. In System A, a GraphSAGE model exceeded the memory of multiple GPUs, and---before the Code Fixer was introduced---a multi-GPU wrapper bug ran 70M text encodings on 1 of the GPUs for over 10 hours. This class of fault is exactly what later motivated the pre-execution Code Fixer; once deployed, it caught recurrences of the same DDP misconfiguration before they reached hardware (Section IV-B). In System B, 11 of 30 iterations in a single run failed because the evaluator could not process a 10$\\times$ batch size of semantic IDs within its 600-second timeout; eleven consecutive iterations were wasted before a human intervened. Coordination fragility is invisible in single-agent settings: it emerges only when multiple agents communicate through structured protocols and either end can silently corrupt the other's input. *Root cause:* the agent has no model of infrastructure constraints, and agent-to-agent channels can degrade without either end recognizing the breakdown.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-agent-memory-decay",
+      "type": "subsection",
+      "title": "Agent Memory Decay",
+      "level": 2,
+      "order": 8,
+      "parent_id": "sec-failure-modes-at-production-scale",
+      "source": null,
+      "text": "The agent re-tests configurations that have already failed, sometimes repeatedly, rationalizing each re-test as \"this time the context is different.\" In System B, training for 100 epochs was tested and failed (due to overfitting) at least six times across multiple runs, despite `program.md` explicitly stating \"100 epochs causes overfitting---do not re-test.\" System A showed the same pattern at code level: in one run the Researcher re-introduced the same prohibited file-system operation six times across four iterations before any training completed, and across the campaign roughly five iterations were lost re-exploring configurations already recorded as failures. *Root cause:* a limited context window prevents holding full history; no persistent memory of negative results across runs; and the agent's tendency to rationalize, consistent with broader observations of LLM confabulation [ji2023hallucination]; external memory mechanisms such as MemGPT [packer2023memgpt] reduce but do not eliminate this pattern.",
+      "labels": [],
+      "citations": [
+        "ji2023hallucination",
+        "packer2023memgpt"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-search-direction-stagnation",
+      "type": "subsection",
+      "title": "Search-Direction Stagnation",
+      "level": 2,
+      "order": 9,
+      "parent_id": "sec-failure-modes-at-production-scale",
+      "source": null,
+      "text": "The agent reaches a local optimum and continues making marginal tweaks producing changes within noise, without recognizing the search direction is exhausted. In System A, without external redirection, the Researcher would have continued fusing pre-compressed 128d features indefinitely. In System B, one run spent five consecutive iterations attempting to improve a previous architecture, all within $\\pm$0.008 weighted coherence. Another tested commitment weight at four values producing results within 0.01 of each other. *Root cause:* the agent lacks a meta-level view of whether the current search direction has diminishing returns.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-iteration-cost-asymmetry",
+      "type": "subsection",
+      "title": "Iteration-Cost Asymmetry",
+      "level": 2,
+      "order": 10,
+      "parent_id": "sec-failure-modes-at-production-scale",
+      "source": null,
+      "text": "The agent selects experiments without weighing expected information gain against compute cost, treating a 15-hour multi-GPU run as no more consequential than a 30-minute ablation. This is distinct from infrastructure fragility: fragility describes *why* iterations fail; cost asymmetry describes *how* the agent decides what to run in the first place. In System A, the agent proposed a GraphSAGE variant requiring significantly more GPU memory than the baseline without flagging the compute overhead---the expected gain did not justify the marginal cost, but the agent had no mechanism to recognize this. In System B, a behavior-based auxiliary loss was explored across 10 consecutive iterations with negligible genre purity improvement before the run was terminated; each iteration was cheap, but the accumulated cost of an unproductive search direction was not. A separate failure---catastrophic codebook collapse dropping weighted coherence from 0.562 to 0.503 from a single parameter change---illustrates a related asymmetry: the agent assigned equal prior probability to high-consequence and low-consequence changes, with no mechanism to hedge against irreversible moves. Root cause: the agent has no model of information gain relative to compute expenditure, and no prior over the consequence severity of proposed changes.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-metric-fixation",
+      "type": "subsection",
+      "title": "Metric Fixation",
+      "level": 2,
+      "order": 11,
+      "parent_id": "sec-failure-modes-at-production-scale",
+      "source": null,
+      "text": "The agent optimizes the given metric faithfully but never questions whether it is the right metric, whether targets are feasible, whether the tradeoffs to meet the metric are reasonable, or whether the evaluation design has flaws. In System B, the agent discovered that maximizing codebook size trivially improves weighted coherence by creating more fine-grained clusters, but the resulting hierarchy was unusable---deep levels collapsed into singletons. We had to introduce a guardrail constraining `n_levels` and add a tertiary cluster-usability metric to prevent the agent from gaming coherence at the expense of a meaningful hierarchy. More strikingly, even with these additions, the three usability criteria (weighted coherence, genre purity, and median cluster size) were never simultaneously met in any of 15 runs across 150+ iterations, indicating that the tradeoff was structural rather than a tuning problem. While System A did not observe metric fixation as a failure due to it having a single optimization target, production systems will often require more complex, multi-objective targets. *Root cause:* the agent treats the metric as ground truth, not as a design choice.\n\n**Table: Failure-mode incidence across 220+ iterations. The four cost- and horizon-driven modes appear in both systems; metric fixation requires multi-criteria evaluation and is specific to System~B. Cells report the natural unit per mode (campaign-wide rate, incident count, or worst-run rate where noted); severity differs with iteration cost.**\n\n```latex\n\\begin{table}[tbp]\n\\caption{Failure-mode incidence across 220+ iterations. The four cost- and horizon-driven modes appear in both systems; metric fixation requires multi-criteria evaluation and is specific to System~B. Cells report the natural unit per mode (campaign-wide rate, incident count, or worst-run rate where noted); severity differs with iteration cost.}\n \\label{tab:failure-frequency}\n \\centering\n \\begin{tabular}{lll}\n \\toprule\n Failure mode & System A (60+ iter) & System B (150+ iter) \\\\\n \\midrule\n Infra.\\ fragility & 18\\% iter & 37\\% (worst run) \\\\\n Memory decay & ${\\sim}$5 inc.\\ & ${\\geq}6$ inc.\\ \\\\\n Stagnation & 5+ iter & 5+ iter \\\\\n Cost asymmetry & Cost wasted per crash & 10 iter wasted \\\\\n Metric fixation & N/A & 0/15 runs met \\\\\n \\bottomrule\n \\end{tabular}\n\\end{table}\n```\n\nThe five modes share a common origin: small-scale experiments have cheap iterations, simple metrics, short sessions that fit in context, and negligible failure costs. At production scale these assumptions break, and the failure modes emerge. Table tab:failure-frequency aggregates incidence.",
+      "labels": [
+        "tab:failure-frequency"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-framework-design",
+      "type": "section",
+      "title": "Framework Design",
+      "level": 1,
+      "order": 12,
+      "parent_id": "",
+      "source": null,
+      "text": "We organize our scaffolding around three principles: *prevent* (stop failures before compute waste), *redirect* (steer the agent when it stagnates), and *persist* (maintain knowledge across iterations and runs). Each principle addresses a specific subset of the failure modes from Section III: prevention targets infrastructure fragility and iteration-cost asymmetry; redirection targets search-direction stagnation; persistence targets memory decay. Metric fixation is only partially mitigated, as we discuss at the end of this section. Table tab:scaffolding summarizes how each principle is instantiated in the two systems. The principles are not specific to this application: any long-horizon agent loop with asymmetric failure costs, context resets between sessions, and a search space with local optima faces the same structural pressures. The weight placed on each principle should vary with iteration cost---a parameter we return to in Section VI.\n\n**Table: The three scaffolding principles and their cost-appropriate instantiation in each system. The same principles apply across both systems; implementation differs with iteration cost.**\n\n```latex\n\\begin{table}[t]\n\\caption{The three scaffolding principles and their cost-appropriate\n instantiation in each system. The same principles apply across both\n systems; implementation differs with iteration cost.}\n \\label{tab:scaffolding}\n \\centering\n \\resizebox{\\columnwidth}{!}{\n \\begin{tabular}{lll}\n \\toprule\n Principle & System A (high cost) & System B (low cost) \\\\\n \\midrule\n Prevent & Code Fixer agent (pre-execution) & Automatic revert (post-execution) \\\\\n Redirect & Criticizer agent (automated) & Human cross-run pivot \\\\\n Persist & S3 cross-job storage & Human-maintained \\texttt{program.md} \\\\\n \\bottomrule\n \\end{tabular}}\n\\end{table}\n```\n\nThe implementation differs with iteration cost---pre-execution gates justify their overhead only when a failed iteration wastes hours of compute; post-execution revert suffices when iterations are cheap enough to treat as disposable hypotheses.",
+      "labels": [
+        "tab:scaffolding"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-architecture",
+      "type": "subsection",
+      "title": "Architecture",
+      "level": 2,
+      "order": 13,
+      "parent_id": "sec-framework-design",
+      "source": null,
+      "text": "System A extends AutoResearch with three agents: a **Researcher** (`claude-sonnet-4-6`), and a **Criticizer** and **Code Fixer** (`claude-opus-4-6`). The model split is intentional: Sonnet for the high-volume code-generation path; Opus for the lower-frequency, higher-leverage roles where a wrong call wastes hours of multi-GPU compute. Context management uses a sliding window with the most recent iteration summaries included verbatim and the current best `train.py` always available in full. Figure fig:system-a-arch shows the control flow; Algorithm alg:loop states it explicitly.\n\n![System~A three-agent architecture. The Researcher (Sonnet) produces a complete training script per iteration. The Code Fixer (Opus) rewrites the script pre-execution to repair latent infrastructure faults. The Criticizer (Opus) fires only on stagnation and emits a single strategic directive. The evaluator and program.md are immutable to the agents.](figures/system-a-arch.jpg)\n\n*Figure: System~A three-agent architecture. The Researcher (Sonnet) produces a complete training script per iteration. The Code Fixer (Opus) rewrites the script pre-execution to repair latent infrastructure faults. The Criticizer (Opus) fires only on stagnation and emits a single strategic directive. The evaluator and program.md are immutable to the agents.*\n\n**Algorithm: Three-agent AutoResearch loop (System~A)**\n\n```latex\n[tbp]\n\\caption{Three-agent AutoResearch loop (System~A)}\n\\label{alg:loop}\n\\begin{algorithmic}[1]\n\\State Initialize \\textit{best\\_score}, $\\textit{program} \\gets$ Karpathy's \\texttt{program.md}\n\\State $\\textit{directive} \\gets \\varnothing$\n\\For{$i = 1, 2, \\ldots$}\n \\State $\\textit{code} \\gets$ \\textsc{Researcher}(\\textit{program}, \\textit{history}, \\textit{directive})\n \\State $\\textit{code} \\gets$ \\textsc{CodeFixer}(\\textit{code}) \\Comment{pre-execution rewrite}\n \\State $\\textit{score} \\gets$ \\textsc{Evaluator}(\\textsc{Train}(\\textit{code}))\n \\If{$\\textit{score} > \\textit{best\\_score} \\cdot (1 + \\tau_{\\text{keep}})$}\n \\State $\\textit{best} \\gets \\textit{code}$; $\\textit{best\\_score} \\gets \\textit{score}$;\n \\State $\\textit{directive} \\gets \\varnothing$\n \\EndIf\n \\If{stagnant: $\\Delta_{\\text{rel}}(\\textit{best\\_score})_{[i-5, i]} < \\tau_{\\text{stag}}$}\n \\State $\\textit{directive} \\gets$ \\textsc{Criticizer}(\\textit{history})\n \\EndIf\n \\State $\\textit{program} \\gets$ \\textsc{Update}(\\textit{program}, \\textit{score}, \\textit{summary})\n\\EndFor\n\\end{algorithmic}\n```\n\nThe **Researcher** receives a structured prompt containing the task specification, current best code, past iteration summaries, and optionally a strategic directive from the Criticizer. It produces a complete, self-contained training script with full freedom in architecture, loss function, and optimization strategy.",
+      "labels": [
+        "alg:loop",
+        "fig:system-a-arch"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-system-a-arch"
+      ]
+    },
+    {
+      "id": "sec-prevention-code-fixer",
+      "type": "subsection",
+      "title": "Prevention: Code Fixer",
+      "level": 2,
+      "order": 14,
+      "parent_id": "sec-framework-design",
+      "source": null,
+      "text": "The Code Fixer reviews each Researcher-produced script before execution, catching semantic bugs that syntactic validation cannot detect: GPU underutilization, distributed-training misconfigurations, unnecessary recomputation, and memory leaks. Critically, the Code Fixer *rewrites* the proposed code in a single pass rather than describing bugs in natural language for a separate authoring step. The single-pass design was a response to an earlier two-step Reviewer-based architecture that we abandoned: across one campaign, the Reviewer returned malformed JSON on 14 consecutive calls, and the Researcher re-introduced the same prohibited file-system operation six times across four iterations before any training completed. The Code Fixer eliminates this two-step authoring loop. In its first deployment, it corrected 14 latent bugs in a single pass (Table tab:fixer-bugs); no subsequent iteration has been lost to the agent-coordination layer.\n\n**Table: Bugs caught by the Code Fixer in its first deployment (single pass over the Researcher's proposed train.py). The DDP wrapper bug alone would have wasted 10+ hours running an 8-GPU job on a single device.**\n\n```latex\n\\begin{table}[tbp]\n\\caption{Bugs caught by the Code Fixer in its first deployment (single pass over the Researcher's proposed \\texttt{train.py}). The DDP wrapper bug alone would have wasted 10+ hours running an 8-GPU job on a single device.}\n \\label{tab:fixer-bugs}\n \\centering\n \\begin{tabular}{lc}\n \\toprule\n Bug category & Count \\\\\n \\midrule\n DDP / multi-GPU misconfiguration & 3 \\\\\n GPU memory mismanagement (OOM precursors) & 4 \\\\\n Unnecessary recomputation / no-op layers & 3 \\\\\n Distributed dataloader / sampler bugs & 2 \\\\\n Eval-loop / metric-aggregation errors & 2 \\\\\n \\midrule\n Total & 14 \\\\\n \\bottomrule\n \\end{tabular}\n\\end{table}\n```\n\n![System~A cumulative best Recall@6 across 12 weeks. Background shading distinguishes three regimes: manual engineering, configuration-level AutoResearch, and code-level AutoResearch with the three-agent framework. The Criticizer's ``input representation problem'' directive precedes the largest improvement attributable to a single directive (+50\\,bps). The peak (6.90\\%, iter-12) is a 1.82 lift over the hand-tuned baseline.](figures/system-a-progression.jpg)\n\n*Figure: System~A cumulative best Recall@6 across 12 weeks. Background shading distinguishes three regimes: manual engineering, configuration-level AutoResearch, and code-level AutoResearch with the three-agent framework. The Criticizer's ``input representation problem'' directive precedes the largest improvement attributable to a single directive (+50\\,bps). The peak (6.90\\%, iter-12) is a 1.82 lift over the hand-tuned baseline.*",
+      "labels": [
+        "fig:system-a-progression",
+        "tab:fixer-bugs"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-system-a-progression"
+      ]
+    },
+    {
+      "id": "sec-redirection-criticizer",
+      "type": "subsection",
+      "title": "Redirection: Criticizer",
+      "level": 2,
+      "order": 15,
+      "parent_id": "sec-framework-design",
+      "source": null,
+      "text": "The Criticizer monitors for stagnation and emits strategic directives. It fires only when the best Recall@6 has not improved by more than a relative threshold over a window of recent iterations, so most iterations proceed without intervention; when it does fire, it produces a 2--5 sentence directive whose role is to suggest a different region of the design space rather than a specific code change. The Researcher consumes the directive on the next iteration and translates it into code. The directive is cleared on the next Keep, so the Criticizer never accumulates an authoritative voice across the campaign---it acts only as a stagnation breaker. The relative-gain threshold (8%) and window size (5 iterations) were chosen empirically: 3 iterations was too frequent (firing on noise); 8 iterations was too late (compute already wasted).\n\nThe most consequential directive of the System A campaign came after five iterations of diminishing returns fusing pre-compressed features:\n\n> > > [\\[Criticizer, Run 6, after iteration 4\\]]{style=\"color: black!75\"}\\ > The gap is not a modeling problem---it is an input representation problem. Build explicit co-purchase neighborhood representations.\n\nThe Researcher then built multi-hop neighborhood profiles, driving the trajectory from 5.48% to 5.98% Recall@6 in three iterations---the largest improvement we attribute to a single Criticizer directive. Subsequent AutoResearch iterations built on this multi-hop foundation, reaching 6.90% at iter-12 (Figure fig:system-a-progression). **Human `program.md` updates** (System B) play the analogous role between runs: a human-driven Phase 3$\\to$4 pivot redirected exploration from content-only embeddings toward behavioral+content embeddings, ultimately producing System B's best result (WC = 0.735). The pattern is consistent across both systems: the agent optimizes effectively within a paradigm, but paradigm shifts require external redirection---automated for cheap-to-emit directives, human for cross-run programs.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-persistence-cross-job-memory",
+      "type": "subsection",
+      "title": "Persistence: Cross-Job Memory",
+      "level": 2,
+      "order": 16,
+      "parent_id": "sec-framework-design",
+      "source": null,
+      "text": "We extend Karpathy's `program.md` mechanism in two directions. First, we move it to durable cross-job storage so each new training job inherits the accumulated discoveries of all previous jobs (System A: 6 runs spanning ${\\sim}$10 weeks). Second, in System B the human researcher (rather than the agent) maintains the program file between runs, encoding constraints, revert thresholds, and known findings the agent should not re-discover. The program's effectiveness is partial: the agent re-tested 100-epoch training at least six times across multiple runs despite the program explicitly prohibiting it. The mechanism reduces the frequency of memory decay but does not eliminate it.\n\nSystem B also adds **automatic revert**, which triggered on 4 of 21 iterations in one run when the agent explored configurations that caused OOM failures. The revert is cheap to use because System B's iterations cost on the order of dollars; the same approach is impractical for System A where a single iteration costs hundreds.\n\n![System~B weighted-coherence progression across four phases (15 runs, 150+ iterations). Architectural decisions discovered in early runs lock in for all subsequent runs; the human-driven Phase~3 4 pivot from content-only to behavioral+content embeddings produced the campaign best (WC=0.735).](figures/system-b-progression.jpg)\n\n*Figure: System~B weighted-coherence progression across four phases (15 runs, 150+ iterations). Architectural decisions discovered in early runs lock in for all subsequent runs; the human-driven Phase~3 4 pivot from content-only to behavioral+content embeddings produced the campaign best (WC=0.735).*",
+      "labels": [
+        "fig:system-b-progression"
+      ],
+      "citations": [],
+      "figure_ids": [
+        "fig-system-b-progression"
+      ]
+    },
+    {
+      "id": "sec-metric-fixation-partial-mitigation",
+      "type": "subsection",
+      "title": "Metric Fixation: Partial Mitigation",
+      "level": 2,
+      "order": 17,
+      "parent_id": "sec-framework-design",
+      "source": null,
+      "text": "Three practices reduced the severity of metric fixation but did not solve it. **Multi-metric reporting** expanding beyond the primary metric allowed the agent to observe and incorporate secondary signals, although a single optimization target remained; **usability context** in `program.md` provided explanations of why each metric mattered downstream; and **human QA between runs** diagnosed metric fixation early on and mitigated with competing criteria. These helped the human researcher minimize metric-gaming, but the fundamental problem remained that the agent itself never *questioned* the metric. While this is by design (the agent can only modify training parameters, not the evaluation criteria), it makes it impossible for the system to run completely hands-free. Whether this is solvable within current LLM capabilities is, in our view, an open problem (Section VI).",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-results",
+      "type": "section",
+      "title": "Results",
+      "level": 1,
+      "order": 18,
+      "parent_id": "",
+      "source": null,
+      "text": "",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-system-a-recall-6-trajectory",
+      "type": "subsection",
+      "title": "System~A: Recall@6 Trajectory",
+      "level": 2,
+      "order": 19,
+      "parent_id": "sec-results",
+      "source": null,
+      "text": "The hand-tuned baseline was the product of four engineer-weeks of manual work. **Configuration-level AutoResearch**---the same paradigm but with the agent restricted to hyperparameter and architecture edits---plateaued around baseline, unable to surpass the manually tuned result. **Code-level AutoResearch with the full three-agent framework** reached a **1.82$\\times$** relative lift over the hand-tuned baseline (3.79%) and **2.45$\\times$** over the deployed retrieval baseline (2.82%) on its peak evaluation date ($\\pm$ 0.28 pp across 11 evaluation dates; the peak is ${\\sim}$2.6$\\sigma$ above the across-date mean), an iter-12 result obtained over six AutoResearch runs spanning ${\\sim}$10 weeks, within the broader twelve-week campaign that also includes the manual-engineering phase shown in Figure fig:system-a-progression. Even the across-date mean preserves a 1.63$\\times$ lift over the hand-tuned baseline.\n\nThe agent's progressive discoveries included cross-attention, sentence-transformer fine-tuning, hard-negative contrastive learning [chen2020simclr, robinson2021hardneg, vandenoord2018cpc], a temperature curriculum, multi-hop neighborhood profiles, and a dual mean+top-K aggregation that drove the iter-12 lift. The agent additionally produced a 5.8$\\times$ catalog-coverage scale-up via an autonomously designed text-only fallback, which we describe separately in Section V-B. Total compute: 60+ iterations. We report this as an offline study; an online pilot of the embeddings is underway (Section VI).\n\n**Component contribution.** A fully randomized A/B over the multi-week campaign was not feasible; the natural campaign transitions in Table tab:ablation serve as the ablation. Three lines of evidence support a causal rather than coincidental reading. First, the Code Fixer's contribution is independently documented: on its first deployment it corrected 14 latent bugs in a single pass (Table tab:fixer-bugs), including a DDP wrapper that would have run an 8-GPU job on a single device for 10+ hours---a concrete, iteration-level effect separable from any trend in the metric trajectory. Second, the Criticizer's largest impact is sequentially documented: the \"input representation problem\" directive (Run 6, iteration 4) precedes the largest improvement attributable to a single directive (+50 bps over the next three iterations) with no intervening architectural change; the improvement is a spike, not a drift. Third, the Researcher-only configurations bracket the hand-tuned baseline but cannot escape it: configuration-level AutoResearch plateaued just below baseline (3.73%, 0.98$\\times$), and even single-agent code-level AutoResearch---which first cleared the baseline---stalled at 4.17% (1.10$\\times$) regardless of iteration count. The ceiling was broken only as each additional agent was introduced (Reviewer/Fixer to 1.45$\\times$, Criticizer to 1.82$\\times$), establishing that the gain came from the specific agents rather than accumulated iterations alone.\n\n**Table: Effect of each agent on System~A. Lift is measured against the 3.79\\% hand-tuned baseline. Rows correspond to natural campaign transitions.**\n\n```latex\n\\begin{table}[t]\n\\caption{Effect of each agent on System~A. Lift is measured against the 3.79\\% hand-tuned baseline. Rows correspond to natural campaign transitions.}\n \\label{tab:ablation}\n \\centering\n \\small\n \\begin{tabular}{lcc}\n \\toprule\n Configuration & Best R@6 & Lift \\\\\n \\midrule\n Hand-tuned baseline (no agents) & 3.79\\% & 1.00$\\times$ \\\\\n Researcher only (config-level AR) & 3.73\\% & 0.98$\\times$ \\\\\n Researcher only (code-level AR) & 4.17\\% & 1.10$\\times$ \\\\\n Researcher + Code Fixer (no Critic) & 5.48\\%$^{*}$ & 1.45$\\times$ \\\\\n Researcher + Fixer + Criticizer (full) & \\textbf{6.90\\%} & \\textbf{1.82$\\times$} \\\\\n \\bottomrule\n \\end{tabular}\n \\\\[2pt]\n {\\footnotesize $^{*}$Stagnation point after which the Criticizer fired. Pre-Critic best.}\n\\end{table}\n```",
+      "labels": [
+        "tab:ablation"
+      ],
+      "citations": [
+        "chen2020simclr",
+        "robinson2021hardneg",
+        "vandenoord2018cpc"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-system-a-autonomous-coverage-scale-up",
+      "type": "subsection",
+      "title": "System~A: Autonomous Coverage Scale-Up",
+      "level": 2,
+      "order": 20,
+      "parent_id": "sec-results",
+      "source": null,
+      "text": "The trajectory in Figure fig:system-a-progression reports Recall@6 on the held-out evaluation set, but it understates a second result: midway through the campaign, the agent independently identified and solved a catalog-coverage gap that the hand-tuned baseline had left open. The behavioral co-purchase graph covers only ${\\sim}$17% of items---only the items with at least one observed co-purchase edge---leaving ${\\sim}$83% of items in the broader catalog without any embedding. The hand-tuned baseline simply omitted these items from the FAISS index, capping retrieval at ${\\sim}$17%.\n\nIn an iteration whose primary objective was an unrelated loss-function experiment, the Researcher noticed the coverage gap and proposed a text-only fallback: items absent from the behavioral graph would receive an embedding inferred from their text features alone, projected into the same 128d space as the behavioral embeddings via a small MLP trained jointly with the main model. The Code Fixer's pre-execution review caught one DDP wrapper bug in the fallback path; the iteration ran successfully and the next FAISS index covered all items. Coverage thus expanded by **5.8$\\times$** in a single iteration, without any human direction. No human had specified the gap as a target; no `program.md` entry mentioned coverage.\n\nThis is the cleanest example in our data of AutoResearch operating beyond hyperparameter search. Several practitioner implications follow. First, scope expansion is qualitatively different from metric optimization: the agent did not improve Recall@6 (it adjusted; coverage and recall trade against each other), but it removed a structural limitation of the system. Second, autonomous scope expansion is only useful when the agent has access to the metadata that exposes the gap---in our case, the coverage signal was available because the program included data-pipeline statistics. Without that signal, the agent would have continued optimizing on the ${\\sim}$17% subset indefinitely. Third, the Code Fixer is essential here: the fallback path introduced a non-trivial DDP wrapper change, the kind of latent infrastructure fault that would otherwise have wasted the iteration entirely.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-system-b-phased-progression",
+      "type": "subsection",
+      "title": "System~B: Phased Progression",
+      "level": 2,
+      "order": 21,
+      "parent_id": "sec-results",
+      "source": null,
+      "text": "System B exhibits the same redirection pattern as System A, but with the human---not an automated Criticizer---issuing the cross-run pivot.\n\n**Table: System~B phased progression across 15 runs (150+ iterations). Phase transitions are human-driven program.md updates; gains within each phase are agent-driven.**\n\n```latex\n\\begin{table}[t]\n\\caption{System~B phased progression across 15 runs (150+ iterations).\n Phase transitions are human-driven \\texttt{program.md} updates; gains\n within each phase are agent-driven.}\n \\label{tab:sysb-phases}\n \\centering\n \\begin{tabular}{llcc}\n \\toprule\n Phase & Trigger / Focus & Best WC & Lift \\\\\n \\midrule\n Baseline & Hand-tuned (2--3 days) & 0.348 & 1.00$\\times$ \\\\\n Phase 1 & Agent: architecture discovery & 0.691 & 1.98$\\times$ \\\\\n Phase 2 & Human: scale to 10M + genre purity & 0.692 & 1.99$\\times$ \\\\\n Phase 3 & Human: content-only embedding pivot & 0.633 & 1.82$\\times$ \\\\\n Phase 4 & Human: behavioral+content pivot & 0.735 & 2.11$\\times$ \\\\\n \\bottomrule\n \\end{tabular}\n\\end{table}\n```\n\nTable tab:sysb-phases and Figure fig:system-b-progression show the per-phase progression. The agent drove the largest single gain autonomously (Phase 1: 0.348 $\\to$ 0.691), discovering key architectural decisions---bottleneck encoder, deeper encoder, batch-size and codebook scaling---that locked in for all subsequent phases. Phase 3 regressed (0.692 $\\to$ 0.633), reflecting two compounding factors: content-only embeddings had reached a representational ceiling, and the genre purity constraint introduced in Phase 2 prevented the agent from recovering weighted coherence through codebook scaling alone---the same metric-gaming path that had been explicitly guardrailed. This regression established that neither embedding type nor metric weighting could resolve the coherence--purity tradeoff, freeing the human researcher to pivot toward behavioral signal integration in Phase 4, producing the campaign best (WC $=$ 0.735). The pattern mirrors System A: the agent optimizes effectively within a paradigm; paradigm shifts require external redirection---automated in System A, human-driven in System B.\n\nEqually valuable was what the agent *ruled out*. The three usability criteria (coherence, genre purity, median cluster size) were never simultaneously met in 150+ iterations, indicating that the coherence-density tradeoff is structural, not a tuning problem. This finding freed the human researcher to design a deterministic post-processing solution outside the model. Across 150+ iterations, ${\\sim}$65% were productive; the remainder was waste from infrastructure failures, re-tests, and marginal tweaks. Due to iterative cost running low for System B, this was not a major concern.",
+      "labels": [
+        "tab:sysb-phases"
+      ],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-cross-system-findings",
+      "type": "subsection",
+      "title": "Cross-System Findings",
+      "level": 2,
+      "order": 22,
+      "parent_id": "sec-results",
+      "source": null,
+      "text": "The two systems differ in per-iteration cost by nearly three orders of magnitude, yet exhibit the same failure modes---all four cost- and horizon-driven modes appear in both, and metric fixation appears wherever evaluation is multi-criteria (System B). This is the strongest evidence in our data that the failure taxonomy is structural rather than artifactual. The systems also share a common breakthrough pattern: the agent reaches a local optimum by incremental search, then external redirection (automated in System A, human in System B) reframes the problem and unlocks the next regime.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-validation-protocol",
+      "type": "subsection",
+      "title": "Validation Protocol",
+      "level": 2,
+      "order": 23,
+      "parent_id": "sec-results",
+      "source": null,
+      "text": "We took three precautions to confirm the reported gains are real rather than artifacts. First, **robustness across evaluation dates.** A single lucky evaluation date could flatter the result, so we re-evaluated System A's iter-12 model on 11 distinct customer-purchase dates; the gain held throughout (peak 6.90%, mean 6.18% $\\pm$ 0.28 pp, with the peak ${\\sim}$2.6$\\sigma$ above the across-date mean). Second, **an immutable evaluator.** In both systems the agent can read the evaluator's output but cannot change its code, so it cannot inflate its own score by gaming the metric. Third, **full-scale re-testing** (System B). To rule out that the gains were an artifact of cheap, small-scale exploration, each architectural decision found in early runs (bottleneck encoder, deeper encoder, batch-size and codebook scaling) was re-tested at the larger Phase 2 data scale before being locked in for later phases.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-discussion",
+      "type": "section",
+      "title": "Discussion",
+      "level": 1,
+      "order": 24,
+      "parent_id": "",
+      "source": null,
+      "text": "**Where AutoResearch delivers value.** Despite the failure modes, AutoResearch delivered concrete value: *throughput* (150+ experiments in three weeks for System B; autonomous overnight runs for System A); *systematic coverage* that proved the coherence-density tradeoff was fundamental rather than a tuning problem; *correct abandonment* of dead ends; *transfer of findings* across runs; and *autonomous problem-solving* (System A's 5.8$\\times$ coverage scale-up; Section V-B). We estimate AutoResearch saved approximately 8 engineer-weeks across both systems. This estimate sums the engineer-equivalent of wasted System A iterations (18% of 60+ at 9--19 hours each), memory-decay re-tests across both systems, and the manual exploration cost that 220+ agent-driven experiments would have demanded at standard ML research rates.\n\n**Iteration cost as a design parameter.** The two systems differ in per-iteration cost by orders of magnitude, and the scaffolding that made AutoResearch viable differed accordingly. The high-cost system benefits from a pre-execution Code Fixer that catches multi-hour bugs before resource allocation. The low-cost system relies on post-execution automatic revert that lets the agent attempt cheap hypotheses freely and rolls back on regression. This is a two-data-point empirical observation rather than a proven design principle, but we offer it as a parameter to consider when extending AutoResearch to other production deployments: *when iterations are expensive, prevent; when iterations are cheap, react*.\n\n**The human role at production scale.** Human involvement shifts from running experiments to designing evaluations, writing research programs, and making strategic pivots---higher-leverage decisions while the agent handles systematic execution. More fundamentally, AutoResearch frees the human to **move upstream**: while the agent optimizes model parameters, the human focuses on whether the input data is right, whether the evaluation captures what matters, and whether the solution should be inside the model at all. System B exemplifies this: the agent's 150+ iterations established the coherence--genre-purity tradeoff was structural, freeing the human to design a post-processing solution the agent could never have reached.\n\n**Practitioner takeaways.** For teams considering AutoResearch deployment, we offer five concrete recommendations distilled from the campaign:\n\n1. Identify the smallest self-contained experimental loop (hypothesis $\\to$ run $\\to$ evaluation) that still produces meaningful signal. AutoResearch amplifies whatever loop it is given; over-broad loops waste budget, over-narrow loops cannot reach interesting improvements.\n\n2. For iterations with non-negligible cost, add a pre-execution semantic gate (Code Fixer). The amortized savings of catching one DDP wrapper bug pay for the gate.\n\n3. Persist findings to durable cross-job storage from day one. `program.md` is not just a Karpathy artifact---it is the only mechanism that survives context-window resets.\n\n4. Add a stagnation-only redirection signal. A Criticizer that fires every iteration produces noise; one that fires only on plateau produces paradigm shifts.\n\n5. Proactively treat metric fixation as an unsolved problem. Design multi-metric reporting, encode usability context in the program, and budget human QA between runs. Do not expect the agent to question the metric.\n\n**Limitations.** Three limitations bound the scope of our conclusions. First, the component ablation for System A is observational: the campaign transitions in Table tab:ablation are natural rather than controlled, and we cannot fully rule out that accumulated iterations---rather than specific agent interventions---contributed to the trajectory. While we address this through sequential and artifact-level evidence (Section V-A), a controlled replication on a different system would strengthen the causal claim even further. Second, both systems operate within a single domain (book recommendation) at a single organization; whether the five failure modes and the cost-dependence principle generalize to other domains remains to be established. We discuss how the three principles map to other agentic domains under *Beyond AutoResearch* below, but empirical validation outside recommendation is future work. Third, the evaluation metrics (Recall@6, weighted coherence) are offline proxies that were chosen for the evaluation of these specific systems; neither has been validated against actual customer outcomes in this study, and the gap between offline improvement and production impact is a known risk in recommendation systems. Both metrics were chosen for their established correlation with the online metrics used in this pipeline, and online evaluation through the production A/B testing framework is the standard deployment path in our setting: online pilots of the System A embeddings and the System B Semantic IDs are underway, and validating the offline-to-online translation is the immediate next step for this work.\n\n**Open problems.** Four problems remain open and motivate future work: *cost-aware iteration planning*---the agent currently weighs no information-gain-vs-compute tradeoff; *parallel exploration* across iterations to hedge multi-hour bets; *cross-system agent communication* (System A's embeddings feed System B's input, but the agents are disconnected); and *metric self-evaluation*, the most fundamental open problem---teaching agents to question whether the metric is right requires a form of meta-reasoning that current LLMs do not reliably perform.\n\n**Beyond AutoResearch.** The three principles described here---prevent, persist, and redirect---are not specific to ML research automation. They address structural properties that arise in any long-horizon autonomous agent loop: actions with asymmetric failure cost (motivating a pre-execution gate), context resets between sessions (motivating durable external memory), and search spaces with local optima (motivating stagnation-triggered reframing). The same triad applies to agentic software engineering, where a pre-execution semantic gate catches destructive migrations before CI/CD commits them, a cross-session memory preserves architectural decisions across coding sessions, and a stagnation signal redirects an agent cycling on a failing test rather than reconsidering the root cause. It applies equally to automated scientific experimentation, where preventing a failed wet-lab run is orders of magnitude more valuable than reverting it, accumulated findings must survive personnel turnover, and null-result patterns need to trigger hypothesis-level pivots rather than parameter-level adjustments. The cost-dependence insight transfers directly: the weight placed on each principle should scale with the irreversibility of actions, the length of sessions, and the dimensionality of the search space---not applied uniformly across all deployments.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-conclusion",
+      "type": "section",
+      "title": "Conclusion",
+      "level": 1,
+      "order": 25,
+      "parent_id": "",
+      "source": null,
+      "text": "The most important lesson from twelve weeks of production-scale AutoResearch is about the agent's boundaries. Both systems exhibit the same collaboration pattern: the agent exhaustively maps within-model limits, and the human designs around them. In System A, the Criticizer's directive---*\"build explicit neighborhood representations\"*---drove the largest improvement we attribute to a single directive, a paradigm shift the Researcher could not reach through incremental code search. In System B, 150+ iterations established that the coherence--genre-purity tradeoff was structural, freeing the human to design a deterministic post-processing solution the agent could never have proposed. The three-agent framework---pre-execution prevention, cross-job persistence, and stagnation-triggered redirection---is what makes this collaboration pattern viable at production scale, where the cost of an unguarded iteration is measured in hours and hundreds of dollars. AutoResearch does not replace the researcher. It replaces the researcher's weekends---and frees them to work on the problems that matter most.",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-reproducibility",
+      "type": "section",
+      "title": "Reproducibility",
+      "level": 1,
+      "order": 26,
+      "parent_id": "",
+      "source": null,
+      "text": "The orchestrator design (Researcher / Code Fixer / Criticizer agents, stagnation thresholds, sliding-window context management) and the evaluator protocol are described in Section IV and Section V. Hyperparameter values for the Researcher, Code Fixer, and Criticizer (relative-gain threshold 8%, stagnation window 5 iterations, model assignments `claude-sonnet-4-6` for the Researcher and `claude-opus-4-6` for the Code Fixer and Criticizer) are stated in the body. The training data---co-purchase behavioral graphs and customer purchase logs---is proprietary and cannot be released; we describe the schema (anonymized customer--item interactions, text features from a pretrained sentence transformer [reimers2019sbert]) and the evaluation protocol (FAISS [johnson2019faiss] IVF+Flat top-6 retrieval against held-out next-purchase) in sufficient detail that the framework can be replicated on other behavioral datasets. The complete reproducibility checklist required by the ICDM Applied Track is submitted alongside this manuscript.",
+      "labels": [],
+      "citations": [
+        "johnson2019faiss",
+        "reimers2019sbert"
+      ],
+      "figure_ids": []
+    },
+    {
+      "id": "sec-acknowledgment",
+      "type": "section",
+      "title": "Acknowledgment",
+      "level": 1,
+      "order": 27,
+      "parent_id": "",
+      "source": null,
+      "text": "*AI-Generated Content Disclosure (IEEE Policy).* The work reported in this paper concerns large language models acting as autonomous research agents; LLMs are therefore the *subject* of the paper. The agents described here---Researcher, Code Fixer, and Criticizer---are powered by Anthropic's Claude (`claude-sonnet-4-6` for the Researcher; `claude-opus-4-6` for the Code Fixer and Criticizer) accessed through Amazon Bedrock. The agents autonomously generated, modified, and executed training-script code across 220+ experiments; this is the contribution being studied and is described in the body of the paper (Sections II--V). Separately, in preparing this manuscript the authors used a large language model (Anthropic Claude) for editorial assistance: tightening prose, organizing structure, and identifying inconsistencies between sections. All technical content, factual claims, experimental results, and arguments are the authors' own and were verified against source experimental records. No LLM was used to generate or analyze experimental data, write the orchestrator code described in this paper, or produce results reported herein.\n\n{IEEEtran} {AutoResearch_at_Production_Scale_ICDM2026_CR}\n\n{document}",
+      "labels": [],
+      "citations": [],
+      "figure_ids": []
+    }
+  ]
+}

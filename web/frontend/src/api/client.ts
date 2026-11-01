@@ -54,6 +54,16 @@ export type PriorWorksPayload = {
   synthesis_narrative: string
 }
 
+export type JobStep = {
+  key: string
+  label: string
+  status: 'pending' | 'running' | 'succeeded' | 'failed' | 'skipped'
+  external: string | null
+  detail: string | null
+  started_at: string | null
+  finished_at: string | null
+}
+
 export type JobResponse = {
   job_id: string
   slug: string
@@ -65,6 +75,32 @@ export type JobResponse = {
   error: string | null
   result: Record<string, unknown> | null
   progress: string | null
+  steps?: JobStep[]
+}
+
+export type WeChatPackage = {
+  slug: string
+  title: string
+  digest: string
+  author: string | null
+  source_title: string
+  cover_source: 'generated' | 'uploaded'
+  cover_figure: string | null
+  image_count: number
+  formula_count: number
+  warnings: string[]
+  prepared_at: string
+  published_at: string | null
+  draft_media_id: string | null
+  stale: boolean
+}
+
+export type WeChatConfig = {
+  configured: boolean
+  default_author: string
+  title_limit: number
+  digest_limit: number
+  author_limit: number
 }
 
 export type SearchCandidate = {
@@ -302,6 +338,44 @@ export function publishMarkdownDocument(
     method: 'POST',
     body: payload
   })
+}
+
+export function getWeChatConfig() {
+  return request<WeChatConfig>('/api/publishing/wechat/config')
+}
+
+export function getWeChatPackage(slug: string) {
+  return request<WeChatPackage | null>(`/api/papers/${encodeURIComponent(slug)}/wechat`)
+}
+
+export function prepareWeChatPackage(
+  slug: string,
+  payload: { title?: string; digest?: string; author?: string; regenerate_headline?: boolean; publish?: boolean }
+) {
+  return request<JobResponse>(`/api/papers/${encodeURIComponent(slug)}/wechat/prepare`, { method: 'POST', body: payload })
+}
+
+export function publishWeChatPackage(slug: string) {
+  return request<JobResponse>(`/api/papers/${encodeURIComponent(slug)}/wechat/publish`, { method: 'POST', body: {} })
+}
+
+export function updateWeChatPackage(slug: string, payload: { title?: string; digest?: string; author?: string }) {
+  return request<WeChatPackage>(`/api/papers/${encodeURIComponent(slug)}/wechat`, { method: 'PATCH', body: payload })
+}
+
+export async function uploadWeChatCover(slug: string, file: File) {
+  const form = new FormData()
+  form.append('file', file)
+  const response = await fetch(`/api/papers/${encodeURIComponent(slug)}/wechat/cover`, { method: 'POST', body: form })
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({ detail: response.statusText }))
+    throw new Error(payload.detail ?? response.statusText)
+  }
+  return response.json() as Promise<WeChatPackage>
+}
+
+export function resetWeChatCover(slug: string) {
+  return request<WeChatPackage>(`/api/papers/${encodeURIComponent(slug)}/wechat/cover`, { method: 'DELETE' })
 }
 
 /** Poll a job until it reaches a terminal state, calling onUpdate on every tick. */

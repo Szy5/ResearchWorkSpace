@@ -1,0 +1,27 @@
+\begin{table}[t]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.1}
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{l|cc|cc|cc}
+    \toprule
+    \multirow{2}{*}{Data Source}
+    & \multicolumn{2}{c|}{WikiWebQuestions}
+    & \multicolumn{2}{c|}{QALD10-en}
+    & \multicolumn{2}{c}{GTSQA} \\
+    \cmidrule(l){2-7}
+   & F1 & Hit@1 & F1 & Hit@1 & F1 & Hit@1 \\
+    \midrule
+    Train-Only
+    & 53.58 & 64.51 & 36.94 & 37.86 & 41.33 & 41.52 \\
+    Synth-Only
+    & 57.84 & 68.17 & 39.52 & 40.36 & 43.21 & 44.58 \\
+    \rowcolor{lightblue}
+    \textbf{Mixed}
+    & \best{59.95} & \best{70.10} & \best{41.38} & \best{42.31} & \best{44.73} & \best{46.19} \\
+    \bottomrule
+\end{tabular}}
+\caption{\textbf{Impact of synthetic training data.}}
+\label{tab:rq3_synth_data}
+\end{table}

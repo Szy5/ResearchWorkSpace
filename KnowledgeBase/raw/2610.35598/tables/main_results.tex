@@ -1,0 +1,83 @@
+\begin{table*}[t!]
+    \caption{\textbf{Main results on five public KGQA benchmarks} (Hit@1 and F1, \%; IndustryCarBench in Figure~\ref{fig:carbench}). Full-supervised methods are for reference, with icons marking training sets; bold marks the best annotation-free result; ``--'' means not evaluated.}
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.05}
+
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{ll*{12}{c}}
+        \toprule
+        \multirow{2}{*}{\textbf{Method}} & \multirow{2}{*}{\textbf{LLM}}
+        & \multicolumn{2}{c}{\textbf{WebQSP}~\icW}
+        & \multicolumn{2}{c}{\textbf{CWQ}~\icC}
+        & \multicolumn{2}{c}{\textbf{GrailQA}~\icG}
+        & \multicolumn{2}{c}{\textbf{GTSQA}~\icT}
+        & \multicolumn{2}{c}{\textbf{WikiWebQuestions}}
+        & \multicolumn{2}{c}{\textbf{Avg.}} \\
+        \cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8} \cmidrule(lr){9-10} \cmidrule(lr){11-12} \cmidrule(lr){13-14}
+        & & \textbf{Hit@1} & \textbf{F1} & \textbf{Hit@1} & \textbf{F1} & \textbf{Hit@1} & \textbf{F1}
+        & \textbf{Hit@1} & \textbf{F1} & \textbf{Hit@1} & \textbf{F1} & \textbf{Hit@1} & \textbf{F1} \\
+        \midrule
+        \rowcolor{gray!15}
+        \multicolumn{14}{c}{\textit{Full-Supervised Methods}} \\
+        \midrule
+        \rowcolor{rlbg}
+        KG-R1$^\dagger$~\icW & Qwen-2.5-7B & 78.42 & 69.02 & 50.92 & 46.88 & 61.64 & 59.29 & -- & -- & -- & -- & 63.66 & 58.40 \\
+        \rowcolor{rlbg}
+        KG-R1$^\dagger$~\icC & Qwen-2.5-7B & 80.71 & 68.57 & 58.03 & 53.93 & 67.81 & 65.52 & -- & -- & -- & -- & 68.85 & 62.67 \\
+        \rowcolor{rlbg}
+        KG-R1$^\dagger$~\icG & Qwen-2.5-7B & 71.06 & 61.64 & 46.02 & 42.43 & 69.13 & 64.88 & -- & -- & -- & -- & 62.07 & 56.32 \\
+        \rowcolor{rlbg}
+        KG-R1$^\dagger$~\icT & Qwen-2.5-7B & -- & -- & -- & -- & -- & -- & 48.03 & 49.23 & 75.39 & 66.28 & 61.71 & 57.76 \\
+        \midrule
+        \rowcolor{gray!15}
+        \multicolumn{14}{c}{\textit{Annotation-Free Methods}} \\
+        \midrule
+        \rowcolor{promptbg}
+        & Qwen-2.5-3B & 32.21 & 20.60 & 12.42 & 13.72 & 11.00 & 8.70 & 7.83 & 7.45 & 37.43 & 23.00 & 20.18 & 14.69 \\
+        \rowcolor{promptbg}
+        & Qwen-2.5-7B & 38.50 & 24.20 & 24.61 & 20.25 & 11.70 & 8.96 & 10.11 & 9.16 & 45.87 & 28.45 & 26.16 & 18.20 \\
+        \rowcolor{promptbg} \multirow{-3}{*}{IO} & LLaMA-3.1-8B & 48.14 & 31.79 & 29.85 & 24.30 & 16.30 & 11.13 & 12.95 & 11.56 & 51.99 & 34.09 & 31.85 & 22.57 \\
+        \midrule
+        \rowcolor{promptbg}
+        & Qwen-2.5-3B & 34.96 & 22.20 & 17.76 & 15.00 & 11.00 & 8.70 & 5.73 & 4.92 & 39.83 & 23.41 & 21.86 & 14.85 \\
+        \rowcolor{promptbg}
+        & Qwen-2.5-7B & 40.94 & 26.98 & 28.38 & 23.70 & 15.40 & 12.25 & 10.23 & 9.15 & 47.30 & 30.27 & 28.45 & 20.47 \\
+        \rowcolor{promptbg} \multirow{-3}{*}{CoT~\citep{CoT}} & LLaMA-3.1-8B & 43.99 & 30.01 & 23.93 & 20.18 & 15.20 & 11.16 & 9.06 & 8.27 & 51.86 & 33.87 & 28.81 & 20.70 \\
+        \midrule
+        \rowcolor{promptbg}
+        & Qwen-2.5-3B & 50.64 & 23.50 & 29.31 & 14.99 & 22.10 & 9.81 & 13.13 & 6.40 & 40.50 & 25.47 & 31.14 & 16.03 \\
+        \rowcolor{promptbg}
+        & Qwen-2.5-7B & 50.58 & 27.94 & 38.97 & 26.08 & 23.00 & 12.67 & 17.76 & 9.90 & 60.46 & 31.19 & 38.15 & 21.56 \\
+        \rowcolor{promptbg} \multirow{-3}{*}{SC~\citep{Self-Consistency}} & LLaMA-3.1-8B & 61.81 & 33.77 & 43.39 & 25.78 & 28.00 & 13.80 & 20.84 & 11.85 & 66.71 & 35.70 & 44.15 & 24.18 \\
+        \midrule
+        \rowcolor{agentbg}
+        & Qwen-2.5-3B & 22.63 & 18.25 & 12.06 & 10.63 & 21.26 & 18.61 & 15.47 & 14.72 & 36.46 & 29.56 & 21.58 & 18.35 \\
+        \rowcolor{agentbg}
+        & Qwen-2.5-7B & 34.82 & 28.42 & 16.06 & 13.45 & 49.19 & 50.07 & 29.41 & 26.52 & 49.14 & 39.63 & 35.72 & 31.62 \\
+        \rowcolor{agentbg} \multirow{-3}{*}{ReAct~\citep{React}} & LLaMA-3.1-8B & 48.42 & 40.53 & 17.73 & 15.00 & 27.33 & 28.21 & 18.87 & 17.99 & 33.83 & 28.73 & 29.24 & 26.09 \\
+        \midrule
+        \rowcolor{agentbg}
+        ToG~\citep{ToG} & Qwen-2.5-7B & 55.22 & 43.25 & 36.90 & 35.70 & 62.95 & 56.07 & 38.04 & 34.21 & 64.52 & 49.07 & 51.53 & 43.66 \\
+        \rowcolor{agentbg}
+        PoG~\citep{PoG} & Qwen-2.5-7B & 49.23 & 36.83 & 32.82 & 28.57 & 57.39 & 50.79 & 35.02 & 32.40 & 53.26 & 40.14 & 45.54 & 37.75 \\
+        \rowcolor{agentbg}
+        CoR~\citep{CoR} & Qwen-2.5-7B & 63.27 & 57.62 & 23.23 & 21.32 & 58.70 & 54.01 & 26.63 & 24.48 & 66.39 & 54.00 & 47.64 & 42.29 \\
+        \rowcolor{retrbg}
+        Text-Based Retrieval & Qwen-2.5-7B & 59.86 & 42.78 & 31.61 & 28.78 & 53.64 & 46.60 & 37.73 & 36.44 & 67.22 & 50.00 & 50.01 & 40.92 \\
+        \rowcolor{retrbg}
+        Graph Reranker & Qwen-2.5-7B & 68.27 & 48.89 & 37.69 & 33.28 & 56.28 & 48.99 & 37.85 & 36.65 & 70.37 & 53.48 & 54.09 & 44.26 \\
+        \midrule
+        \rowcolor{lightblue}
+        & Qwen-2.5-3B & 63.57 & 55.22 & 38.14 & 36.84 & 56.17 & 55.05 & 30.95 & 28.76 & 41.26 & 34.30 & 46.02 & 42.03 \\
+        \rowcolor{lightblue} \multirow{-2}{*}{EoG (Qwen-2.5)} & Qwen-2.5-7B & 70.13 & \best{62.10} & \best{50.58} & \best{49.27} & \best{65.38} & \best{63.01} & \best{48.39} & \best{46.36} & \best{73.28} & 60.82 & \best{61.55} & \best{56.31} \\
+        \midrule
+        \rowcolor{lightblue}
+        EoG (LLaMA-3.1) & LLaMA-3.1-8B & \best{71.82} & 61.51 & 50.36 & 48.25 & 63.87 & 62.59 & 36.37 & 34.67 & 70.53 & \best{62.55} & 58.59 & 53.91 \\
+        \bottomrule
+    \end{tabular}
+    }
+    \label{tab:main_result}
+    \vspace{-2mm}
+\end{table*}

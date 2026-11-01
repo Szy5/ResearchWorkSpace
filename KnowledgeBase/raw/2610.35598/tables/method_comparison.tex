@@ -1,0 +1,42 @@
+\begin{table*}[t]
+    \caption{\textbf{Comparison with representative methods.} Training-free methods keep $\theta_0$, RL agents learn from fixed tasks written by humans or closed-source models, and EoG learns from KG-verified tasks that adapt to the Solver.}
+    \centering
+    \small
+    \setlength{\tabcolsep}{5pt}
+    \renewcommand{\arraystretch}{1.0}
+    \begin{tabular}{@{}lp{0.29\textwidth}p{0.30\textwidth}p{0.20\textwidth}@{}}
+    \toprule
+    \textbf{Method} & \textbf{Exploration} (\S\ref{sec:selfplay}) & \textbf{Training Tasks and Answers} (\S\ref{sec:svts}) & \textbf{Task Difficulty} (\S\ref{sec:frontier}) \\
+    \midrule
+    \rowcolor{agentbg}
+    & $a_t\sim\pi_{\theta_0}(\cdot\mid s_t)$ & $\theta=\theta_0$ & \\
+    \rowcolor{agentbg}
+    \multirow{-2}{*}{ReAct~\citep{React}} & Frozen LLM calls the graph tools. & No training. & \multirow{-2}{*}{No training tasks.} \\
+    \rowcolor{agentbg}
+    & $\mathcal{B}_{t+1}=\mathrm{top}\text{-}k\;\pi_{\theta_0}(\cdot\mid q,\mathcal{B}_t)$ & $\theta=\theta_0$ & \\
+    \rowcolor{agentbg}
+    \multirow{-2}{*}{ToG / PoG~\citep{ToG,PoG}} & Prompted beam search or sub-goal planning. & No training. & \multirow{-2}{*}{No training tasks.} \\
+    \midrule
+    \rowcolor{retrbg}
+    & $o=\mathrm{top}\text{-}k\;s\bigl(q,\mathcal{T}_L(\mathcal{E}_Q)\bigr)$ & $\theta=\theta_0$ & \\
+    \rowcolor{retrbg}
+    \multirow{-2}{*}{Graph Reranker} & Reranks triples near the anchors once. & No training. & \multirow{-2}{*}{No training tasks.} \\
+    \midrule
+    \rowcolor{rlbg}
+    & $a_t\sim\pi_\theta(\cdot\mid s_t)$ & $(q,\mathcal{A})\sim\mathcal{D}_{\mathrm{human}}$ & $d\sim\mathcal{D}$, fixed \\
+    \rowcolor{rlbg}
+    \multirow{-2}{*}{KG-R1~\citep{KG-R1}} & Multi-turn exploration trained with RL. & Human-annotated QA on one KG. & Given before training. \\
+    \rowcolor{rlbg}
+    & $\pi_\theta\leftarrow\mathrm{SFT}(\tau_{\mathrm{teacher}})\rightarrow\mathrm{RL}$ & $(q,\mathcal{A})\sim\mathcal{D}_{\mathrm{teacher}}\cup\mathcal{D}_{\mathrm{CWQ}}$ & $d\sim\mathcal{D}$, fixed \\
+    \rowcolor{rlbg}
+    \multirow{-2}{*}{GraphWalker~\citep{GraphWalker}} & Imitates closed-source trajectories, then RL. & Closed-source walk questions plus CWQ. & Synthesized offline. \\
+    \midrule
+    \rowcolor{lightblue}
+    & $\pi_\theta^{\mathrm{P}},\ \pi_\theta^{\mathrm{S}}$ with shared $\theta$ & $q\sim\pi_\theta^{\mathrm{P}}(\cdot\mid G_Q,\mathcal{E}_Q,\mathcal{G}),\ \mathcal{A}_Q=\llbracket\phi\rrbracket_{\mathcal{G}}$ & $R_{\mathrm{P}}\bigl(\sigma^{2}_{\theta_t}(q)\bigr)$, Gaussian \\
+    \rowcolor{lightblue}
+    \multirow{-2}{*}{\textbf{EoG (Ours)}} & Both roles explore the KG and learn. & No annotation; answers executed on the KG. & Peaks at the Solver's boundary. \\
+    \bottomrule
+    \end{tabular}
+    \label{tab:comparison}
+    \vspace{-2mm}
+\end{table*}

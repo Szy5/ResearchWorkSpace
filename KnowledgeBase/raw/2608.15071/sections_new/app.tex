@@ -1,0 +1,367 @@
+\section*{Appendix}
+
+\tcbset{
+  evoCase/.style={
+    enhanced,
+    breakable,
+    arc=1mm,
+    boxrule=0.45pt,
+    left=4pt,
+    right=4pt,
+    top=4pt,
+    bottom=4pt,
+    fonttitle=\bfseries\small,
+    coltitle=black
+  },
+  skillCard/.style={
+    enhanced,
+    arc=1mm,
+    boxrule=0.35pt,
+    left=4pt,
+    right=4pt,
+    top=3pt,
+    bottom=3pt,
+    fonttitle=\bfseries\footnotesize,
+    coltitle=black
+  }
+}
+
+\section{Benchmark Details}\label{app:benchmarks}
+
+Table~\ref{tab:bench-stats} summarizes the benchmark settings. We use the same
+online protocol across benchmarks: tasks are processed as a stream, the solver
+uses the current harness, and the evolver updates the harness after observing
+task outcomes.
+
+\begin{table}[h]
+\centering
+\caption{Benchmark statistics and evaluation signals.}
+\label{tab:bench-stats}
+\small
+\setlength{\tabcolsep}{3pt}
+\scalebox{0.78}{
+\begin{tabular}{lrll}
+\toprule
+\textbf{Benchmark} & \textbf{\#Tasks} & \textbf{Domain} & \textbf{Evaluation signal} \\
+\midrule
+WebArena Inf. & 80 & Web navigation & State verifier \\
+Terminal-Bench & 89 & CLI / scripting & Docker verifier \\
+SWE-bench Lite & 300 & Software eng. & Unit tests \\
+CL-Bench & 1899 & Adaptive reasoning & Rubric judge \\
+TAU-Bench & 165 & Tool use & State verifier \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{WebArena Infinity.}
+We use 80 hard tasks from the email-centered ``superhuman-general'' setting and
+related web applications. Tasks require stateful browser interaction, such as
+creating labels, changing settings, using email filters, or coordinating
+calendar/email information. A programmatic verifier checks the final application
+state. This benchmark is useful for studying whether skills capture UI
+procedures.
+
+\paragraph{Terminal-Bench v2.}
+We evaluate 89 tasks across software engineering, data processing, scientific
+computing, security, system administration, and related command-line domains.
+The solver works in an isolated shell environment and submits final artifacts or
+answers inside a task-specific Docker image. Final success is determined by the
+benchmark's executable verifier, typically a hidden or mounted test script run
+inside the container. 
+
+\paragraph{SWE-bench Lite.}
+We use 300 real GitHub issues from 12 Python repositories. The solver edits code
+and the final patch is evaluated by repository tests.
+
+\paragraph{CL-Bench.}
+CL-Bench contains 1899 adaptive reasoning tasks across Domain Knowledge
+Reasoning, Empirical Discovery \& Simulation, Procedural Task Execution, and
+Rule System Application. Each task is graded with rubric criteria.
+
+\paragraph{TAU-Bench.}
+TAU-Bench contains 165 customer-service tool-use tasks across airline and
+retail domains. Evaluation checks the final database state.
+
+\section{Harness Artifacts Examples}\label{app:examples}
+
+This section shows representative learned artifacts without enumerating the
+learned inventory. For task-level comparison, we align the same task identifiers
+between the no-evolve and evolved runs. We only call a case a direct improvement
+when the baseline run fails and the evolved run succeeds. This is not a
+single-skill causal ablation: several skills may be injected together, and some
+benchmarks do not record injected skills in every result file. The examples
+therefore use a structured failure/success format: task, verifier signal,
+trajectory summary, learned skill content, and a short takeaway. 
+
+\begin{tcolorbox}[evoCase, colback=blue!2, colframe=blue!45,
+title={WebArena: verified setting}]
+\small
+\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]
+\item \textbf{Task:} \texttt{task\_h10}; create ``Legal'' and disable
+``Support Ticket''.
+\item \textbf{Baseline:} verifier found ``Support Ticket'' still enabled,
+despite the trajectory claiming both subgoals were complete.
+\item \textbf{Evolved:} verifier passed; the trajectory returned to the Auto
+Labels list and checked the existing label state.
+\item \textbf{Learned skill:} toggle an existing auto label off; do not delete
+it; verify creation and disabling independently.
+\end{itemize}
+\tcblower
+\textbf{Core point.} The harness learned a concrete UI distinction:
+create-new-label and disable-existing-label are separate operations.
+\end{tcolorbox}
+
+\begin{tcolorbox}[evoCase, colback=blue!2, colframe=blue!45,
+title={WebArena: grounded recipients}]
+\small
+\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]
+\item \textbf{Task:} \texttt{task\_h65}; reply to Kevin Zhao with CTO and VP
+Engineering on CC.
+\item \textbf{Baseline:} sent to plausible names but wrong domains
+(\texttt{acme.com} instead of \texttt{acmecorp.com}).
+\item \textbf{Evolved:} verifier passed with the required role-derived
+recipients in CC.
+\item \textbf{Learned skill:} prefer authoritative role sources and preserve
+exact email addresses across apps.
+\end{itemize}
+\tcblower
+\textbf{Core point.} The harness learned identity grounding, not merely email
+composition.
+\end{tcolorbox}
+
+\begin{tcolorbox}[evoCase, colback=orange!2, colframe=orange!45,
+title={Terminal-Bench: executable recovery}]
+\small
+\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]
+\item \textbf{Task:} \texttt{adaptive-rejection-sampler}; pass the Docker
+verifier for an R sampler.
+\item \textbf{Baseline:} formal tests failed after repeated reruns of the same
+R test command.
+\item \textbf{Evolved:} passed after diagnosing timeout, missing dependency,
+formal-test, and sorted-vector failures.
+\item \textbf{Learned skill:} after repeated similar failures, stop, shrink the
+case, build a minimal reproducer, then add complexity back.
+\end{itemize}
+\tcblower
+\textbf{Core point.} The harness learned a recovery policy for executable
+feedback loops.
+\end{tcolorbox}
+
+\begin{tcolorbox}[evoCase, colback=green!2, colframe=green!45,
+title={SWE-bench: test-grounded repair}]
+\small
+\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]
+\item \textbf{Task:} \texttt{django\_\_django-11133}; fix Django response
+handling without regressing existing behavior.
+\item \textbf{Baseline:} timed out after source search and failed test attempts.
+\item \textbf{Evolved:} passed \texttt{FAIL\_TO\_PASS: 1/1} and
+\texttt{PASS\_TO\_PASS: 64/64}.
+\item \textbf{Learned skill:} read complete failing-test assertions, match
+exact expected behavior, then run targeted tests before submission.
+\end{itemize}
+\tcblower
+\textbf{Core point.} The harness learned to anchor patches in executable test
+expectations.
+\end{tcolorbox}
+
+\begin{tcolorbox}[evoCase, colback=purple!2, colframe=purple!45,
+title={TAU-Bench: complete tool execution}]
+\small
+\begin{itemize}[leftmargin=1.1em, itemsep=1pt, topsep=1pt]
+\item \textbf{Task:} \texttt{retail\_task\_5}; exchange multiple items from one
+order.
+\item \textbf{Baseline:} database verifier failed, consistent with partial or
+wrong-tool execution.
+\item \textbf{Evolved:} verifier passed after retrieving the order and applying
+all requested item changes.
+\item \textbf{Learned skill:} enumerate every requested operation, choose the
+tool by order status, and verify the response covers the full list.
+\end{itemize}
+\tcblower
+\textbf{Core point.} The harness learned complete tool-call execution.
+\end{tcolorbox}
+
+\section{Which Tasks Are Easier to Improve?}\label{app:improvement-hotspots}
+
+The most informative pattern is not the total number of fail-to-pass cases, but
+the kind of task that turns around after harness evolution.
+Table~\ref{tab:improvement-hotspots} groups matched fail-to-pass cases by their
+observable failure mode and gives representative task identifiers from the
+runs in \texttt{outputs}.
+
+\begin{table*}[t]
+\centering
+\caption{Improvement hotspots from matched baseline-fail/evolved-pass cases.}
+\label{tab:improvement-hotspots}
+\small
+\setlength{\tabcolsep}{3.5pt}
+\begin{tabular}{p{2.0cm}p{3.2cm}p{4.3cm}p{4.0cm}}
+\toprule
+\textbf{Benchmark} & \textbf{Easier-to-improve tasks} &
+\textbf{Representative cases} & \textbf{Why skills help} \\
+\midrule
+WebArena &
+Stateful UI tasks with exact recipients, labels, settings, and mail state. &
+\texttt{h10}: disable an existing auto label;
+\texttt{h65}: preserve corporate email domains;
+\texttt{h73}: archive all qualifying read-important emails. &
+The verifier checks final app state, so procedural memory about where to click
+must be coupled with exact state confirmation. \\
+\midrule
+Terminal-Bench &
+Tasks with executable feedback loops and recoverable failures. &
+\texttt{adaptive-rejection-sampler}, \texttt{dna-insert},
+\texttt{build-pmars}, \texttt{regex-chess}. &
+The solver can observe Docker-test failures; process skills help it pivot,
+reduce scope, and verify artifacts before submission. \\
+\midrule
+SWE-bench Lite &
+Mature repositories with stable conventions, especially Django and Sympy. &
+\texttt{django\_\_django-11133}, \texttt{django\_\_django-17087},
+\texttt{sympy\_\_sympy-19254}. &
+The issue often hides exact expectations in tests or framework internals; topic
+skills preserve these conventions across later tasks. \\
+\midrule
+TAU-Bench &
+Retail exchanges/returns and airline reservation edits with multiple
+constraints. &
+\texttt{retail\_task\_5}, \texttt{retail\_task\_91},
+\texttt{airline\_task\_13}. &
+The state verifier rewards complete tool-call execution. Skills prevent
+partial updates, wrong mutation tools, and guessed item or flight identifiers. \\
+\midrule
+CL-Bench &
+Rule-application, procedural, and domain-knowledge contexts with local rubrics.
+&
+Context categories with many turnarounds include Rule System Application,
+Procedural Task Execution, and Domain Knowledge Reasoning. &
+Context skills behave like small local manuals: exact extraction rules, role
+boundaries, output schemas, and calculation conventions. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\section{What the Harness Actually Learns}\label{app:learned-skills}
+
+Figure~\ref{fig:learned-skill-excerpts} shows real skill excerpts selected with
+matched fail-to-pass support. The evidence line reports the relevant turnaround
+family in the runs, while the rule line gives the core learned behavior.
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[skillCard, colback=blue!2, colframe=blue!45,
+title={WebArena: UI-state verification}]
+\small
+\textbf{Support.} Settings-state tasks account for 24\% of WebArena fail-to-pass cases; related UI skills appear in 72\% of improved runs.\\
+\textbf{Guidance.} Treat creation and disabling as separate operations; after editing an auto label, return to the settings list and verify its final state.
+\end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[skillCard, colback=blue!2, colframe=blue!45,
+title={WebArena: grounded identity use}]
+\small
+\textbf{Support.} Identity-grounding failures account for 32\% of WebArena fail-to-pass cases.\\
+\textbf{Guidance.} Use authoritative sources for role contacts and preserve exact email addresses; do not infer or normalize domains.
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{4pt}
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[skillCard, colback=orange!2, colframe=orange!45,
+title={Terminal-Bench: executable recovery}]
+\small
+\textbf{Support.} Executable-feedback and recovery patterns account for 100\% of Terminal-Bench fail-to-pass cases.\\
+\textbf{Guidance.} Stop rerunning the same command, isolate a minimal failing case, fix the core issue, and then rebuild toward the full solution.
+\end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[skillCard, colback=green!2, colframe=green!45,
+title={SWE-bench: test-grounded repair}]
+\small
+\textbf{Support.} Django and Sympy account for 66.7\% of SWE-bench fail-to-pass cases.\\
+\textbf{Guidance.} Read the full failing-test assertions before editing; match exact expected strings, error identifiers, and output structures.
+\end{tcolorbox}
+\end{minipage}
+
+\vspace{4pt}
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[skillCard, colback=purple!2, colframe=purple!45,
+title={TAU-Bench: complete tool execution}]
+\small
+\textbf{Support.} Retail workflows account for 85.2\% of TAU-Bench fail-to-pass cases; this guidance appears in 100\% of improved runs.\\
+\textbf{Guidance.} Enumerate every requested operation, choose tools according to the current state, and verify that the response covers the full request.
+\end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[skillCard, colback=gray!5, colframe=gray!45,
+title={CL-Bench: constrained extraction}]
+\small
+\textbf{Support.} Rule, procedural, and domain-knowledge contexts dominate CL-Bench fail-to-pass cases.\\
+\textbf{Guidance.} For extraction tasks, return the requested source text verbatim and match only the exact term or field specified by the prompt.
+\end{tcolorbox}
+\end{minipage}
+
+\caption{
+Representative learned harness excerpts across benchmarks. Each card pairs a recurring fail-to-pass pattern with the corresponding evolved guidance. Percentages summarize matched baseline-fail/evolved-pass cases and contextualize the examples rather than establish single-skill causality.
+}
+\label{fig:learned-skill-excerpts}
+\end{figure*}
+
+\section{Prompt Templates}\label{app:prompts}
+
+The prompts follow the same context-to-harness compilation logic across experiments: the solver reflects on an execution context to propose candidate lessons, and the evolver curates these candidates against the existing harness. Below, we provide representative prompt templates that capture this common proposal-and-curation process.
+
+\subsection{Solver-Side Proposal Prompt}
+
+\begin{tcolorbox}[breakable, colback=gray!5, colframe=gray!50, fontupper=\small,
+title={\small Proposal prompt, compressed}]
+\textbf{Inputs:} evaluation result, verifier details or rubric feedback,
+trajectory signals, compressed trajectory, and related existing skills.\\[2pt]
+\textbf{Analyze the execution.}
+For each distinct issue, identify what went wrong and the concrete missing
+action, command, tool call, navigation step, or domain rule.\\[2pt]
+\textbf{Propose a reusable skill.}
+Choose a broad topic, decide \texttt{NEW}, \texttt{ENHANCE}, or \texttt{NONE},
+write a trigger-style description, and provide short bullet-point content with
+techniques and gotchas.\\[2pt]
+\textbf{Filter aggressively.}
+Skip generic advice, basic tool usage, exact task replay, and skills that would
+not help unseen tasks.
+\end{tcolorbox}
+
+\subsection{Evolver-Side Curator Prompt}
+
+\begin{tcolorbox}[breakable, colback=gray!5, colframe=gray!50, fontupper=\small,
+title={\small Curator prompt, compressed}]
+\textbf{Inputs:} topic, current skill library, budget, and proposals from the
+latest batch.\\[2pt]
+For each proposal, choose \texttt{ACCEPT}, \texttt{MERGE}, or \texttt{SKIP}.
+Prefer merging over duplication, respect the budget, require a clear trigger
+description, keep content short and actionable, and apply a generalizability
+test such as usefulness for multiple unseen tasks.
+\end{tcolorbox}
+
+\subsection{General Skill Curator}
+
+\begin{tcolorbox}[breakable, colback=gray!5, colframe=gray!50, fontupper=\small,
+title={\small General skill curator, compressed}]
+Analyze repeated patterns across tasks rather than within a single topic.
+Create or update a general skill only when a pattern appears across multiple
+contexts. General skills must avoid context-specific references and encode
+procedures that can guide planning, verification, recovery, or tool use across
+tasks.
+\end{tcolorbox}
+
+\section{Experimental Details}
+\label{app:details}
+All experiments use the same open-source pipeline with benchmark-specific adapters. WebArena uses browser workers with persistent application state. Terminal-Bench uses task-specific Docker images and executable verifiers. SWE-bench uses isolated repository environments and unit-test evaluation. TAU-Bench uses the official tool-use environment and verifier. CL-Bench uses a rubric-based judge pipeline.
+
+The harness is stored as Markdown skill files with lightweight YAML metadata, making the learned artifact inspectable and easy to transfer across runs. Each entry contains a trigger describing when it should be retrieved, a short actionable rule or procedure, optional evidence linking it to prior executions, and a scope indicating whether it is intended as cross-task guidance or task-type guidance. For harness selection, we use Claude Sonnet 4.5 across all experiments to retrieve relevant skills from the current harness before task execution.
+
+Unless otherwise specified, we use a batch size of 16. We set the maximum number of general skills and the maximum number of skills under each task-type topic to 5. This budget encourages the evolver to merge overlapping guidance and avoid accumulating overly detailed or task-specific records.
+
+\input{sections_new/checklist}

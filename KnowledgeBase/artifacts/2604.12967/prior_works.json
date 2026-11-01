@@ -1,0 +1,53 @@
+{
+  "prior_works": [
+    {
+      "title": "Dual Learning for Machine Translation",
+      "authors": "Di He et al.",
+      "year": 2016,
+      "arxiv_id": "1611.00179",
+      "role": "Inspiration",
+      "relationship_sentence": "「Cycle-Consistent Search」直接借鉴了该工作提出的对偶学习与循环一致性思想，将机器 translation 中的源到目标再重构回源的验证机制推广至搜索智能体的轨迹评估中。"
+    },
+    {
+      "title": "Unsupervised Machine Translation Using Monolingual Corpora Only",
+      "authors": "Guillaume Lample et al.",
+      "year": 2017,
+      "arxiv_id": "1711.00043",
+      "role": "Inspiration",
+      "relationship_sentence": "当前工作采用无监督重建误差作为奖励信号的设计，深受该论文中利用循环一致性（cycle-consistency）在无监督条件下对齐和评估变换质量的洞见所启发。"
+    },
+    {
+      "title": "Unsupervised Image-to-Image Translation Networks",
+      "authors": "Ming-Yu Liu et al.",
+      "year": 2017,
+      "arxiv_id": "1703.00848",
+      "role": "Inspiration",
+      "relationship_sentence": "论文中通过逆映射（inverse mapping）来评估前向生成过程质量的循环机制，直接源于该图像转换工作中所确立的循环一致性架构原理。"
+    },
+    {
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "authors": "Shunyu Yao et al.",
+      "year": 2022,
+      "arxiv_id": "2210.03629",
+      "role": "Foundation",
+      "relationship_sentence": "当前论文将搜索智能体定义为交替执行查询、检查观察的顺序决策过程，其基础架构和任务设定直接建立在该研究所开创的交错式推理与行动范式之上。"
+    },
+    {
+      "title": "Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions",
+      "authors": "Harsh Trivedi et al.",
+      "year": 2022,
+      "arxiv_id": "2212.10509",
+      "role": "Baseline",
+      "relationship_sentence": "该论文提出的「IRCoT」作为多步检索与思维链交织的标准方法，被当前工作用作衡量其无需黄金监督训练效果的关键对比基线。"
+    },
+    {
+      "title": "LUKE: Deep Contextualized Entity Representations with Entity-aware Self-attention",
+      "authors": "Ikuya Yamada et al.",
+      "year": 2020,
+      "arxiv_id": "2010.01057",
+      "role": "Inspiration",
+      "relationship_sentence": "为了解决循环一致性搜索中的信息泄漏与词汇捷径问题，当前论文引入的命名实体识别（NER）掩码策略直接借鉴了该工作对实体信息处理的技术方法。"
+    }
+  ],
+  "synthesis_narrative": "在自然语言处理和计算机视觉领域，循环一致性（cycle-consistency）原则通过对偶学习与图像到图像转换等开创性工作得到了广泛发展，其核心思想是利用逆向映射来重构原始输入，以此作为评估前向转换质量的有效代理。与此同时，大语言模型驱动的搜索智能体通过诸如「ReAct」等多步推理与工具调用框架，将知识检索成功演变为复杂的顺序决策过程。然而，现有的强化学习方法高度依赖昂贵的黄金标准答案监督，这构成了严重的可扩展性瓶颈。先前诸如「IRCoT」等交织检索方法虽然提升了多步查询表现，但并未摆脱对外部强监督的依赖。为了弥合这一缺口，当前研究巧妙地将传统跨域翻译中的循环一致性思想引入搜索领域，将搜索轨迹视为源问题的某种信息保持编码。然而，直接应用该机制会面临由于表面词汇重叠导致的严重信息泄漏问题。为此，论文结合了类似「LUKE」中针对实体处理的洞见，引入了最终响应排除和命名实体识别掩码等战略性信息瓶颈。通过将这些技术进行创新性融合，当前工作成功构建了一个无需黄金监督、仅依赖问题重构度作为代理奖励的可扩展搜索智能体训练框架「Cycle-Consistent Search」，从而在多个基准测试上实现了与监督方法相媲美的优异性能。"
+}

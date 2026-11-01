@@ -1,0 +1,71 @@
+{
+  "schema_version": "paper-wiki-assets-v1",
+  "slug": "2610.25078",
+  "created_at": "2026-10-24T14:08:31.933045+00:00",
+  "updated_at": "2026-10-24T14:16:14.802319+00:00",
+  "paper": {
+    "title": "CoEvo-RSI: When Harnesses Evolve, Which Models Should Follow?",
+    "authors": [
+      "Jiaqi Su",
+      "Guibin Zhang",
+      "Jie-Jing Shao",
+      "Cong Pang",
+      "Tiankuo Yao",
+      "Ivor Tsang",
+      "Haiyan Yin",
+      "Shuicheng YAN"
+    ],
+    "affiliations": [
+      ".2pt 11.4pt National University of Singapore",
+      ".2pt 11.4pt Agency for Science, Technology and Research (A STAR)",
+      ".2pt 11.4pt SenseTime Group Inc."
+    ],
+    "abstract": "Model--harness co-evolution has emerged as a prominent paradigm for recursive self-improving (RSI) agents, jointly evolving their execution scaffolds and intrinsic capabilities. We study the persistent yet often overlooked brain--body mismatch problem in this paradigm, where an evolving harness (body) demands behaviors its model (brain) has not learned or restricts capabilities it already possesses. We introduce , a RSI framework that advances model--harness co-evolution through agent-driven, bidirectional historical inheritance. Drawing on a shared evolutionary archive and execution feedback, a meta-agent coordinates harness development from historical designs with model checkpoint selection or merging and subsequent adaptation under the selected harness, aligning inherited capabilities with evolving execution requirements to reduce brain--body mismatch. Using only supervised fine-tuning (SFT) on its own rejection-sampled trajectories, makes Qwen3.5-9B competitive with larger models across diverse vertical applications, including multi-agent failure attribution, role-aware text-to-SQL, and smart-home instruction following. It surpasses DeepSeek-V4-Pro on TraceElephant ( +14.16 agent accuracy) and GLM-5.3 on HomeBench VM ( +4.90 success rate), underscoring the need for brain--body alignment and the potential of bidirectional historical inheritance to advance agent co-evolution.",
+    "year": 2026,
+    "venue": "",
+    "arxiv_id": "",
+    "tags": [],
+    "contribution_type": null,
+    "reviewed": false,
+    "meta_reviewed": true,
+    "prior_works_reviewed": false,
+    "added_date": "2026-10-24",
+    "blog_html_path": null,
+    "blog_html_generated_at": null
+  },
+  "source": {
+    "raw_dir": "KnowledgeBase/raw/2610.25078",
+    "entry_file": "main.tex",
+    "source_files": [
+      {
+        "path": "main.tex",
+        "sha256": "20b719882171f4f992a9c0e1e2409c8f384f02942f3b1289cd3e9a89c3eb0538",
+        "bytes": 91119
+      }
+    ],
+    "unresolved_inputs": []
+  },
+  "files": {
+    "paper_text": "assets/paper.md",
+    "sections": "assets/sections.json",
+    "figures": "assets/figures/manifest.json",
+    "references": "assets/references.json"
+  },
+  "counts": {
+    "sections": 23,
+    "figures": 7,
+    "references": 92
+  },
+  "parser": {
+    "name": "paper-wiki-latex-parser",
+    "version": "v1"
+  },
+  "warnings": [
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 24, column 2):\nunexpected end of input\n\n ^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 6, column 1):\nunexpected Tok (line 6, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{samepage}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 113, column 1):\nunexpected Tok (line 113, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 24, column 2):\nunexpected end of input\n\n ^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 6, column 1):\nunexpected Tok (line 6, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{samepage}\n^\n",
+    "pandoc markdown conversion failed; used fallback rules: Pandoc died with exitcode \"64\" during conversion: Error at (line 113, column 1):\nunexpected Tok (line 113, column 1) (CtrlSeq \"end\") \"\\\\end\"\nexpecting end of input\n\\end{document}\n^\n"
+  ]
+}

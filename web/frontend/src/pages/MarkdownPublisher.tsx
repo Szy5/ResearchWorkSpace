@@ -11,8 +11,9 @@ import {
   renderMarkdownDocument
 } from '../api/client'
 import FileField, { Field } from '../components/FileField'
+import JobSteps from '../components/JobSteps'
 
-export default function MarkdownPublisher() {
+export default function MarkdownPublisher({ embedded = false }: { embedded?: boolean }) {
   const [file, setFile] = useState<File | null>(null)
   const [images, setImages] = useState<File[]>([])
   const [cover, setCover] = useState<File | null>(null)
@@ -26,6 +27,7 @@ export default function MarkdownPublisher() {
   const [publishing, setPublishing] = useState(false)
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [publishJob, setPublishJob] = useState<JobResponse | null>(null)
 
   async function loadRecent() {
     try {
@@ -45,7 +47,10 @@ export default function MarkdownPublisher() {
       .then(async ([job]) => {
         if (!job || (job.status !== 'pending' && job.status !== 'running')) return
         setPublishing(true)
-        const settled = await pollJob(job.job_id, (update) => setStatus(update.progress || '正在上传到微信公众号...'))
+        const settled = await pollJob(job.job_id, (update) => {
+          setPublishJob(update)
+          setStatus(update.progress || '正在上传到微信公众号...')
+        })
         finishPublish(settled)
       })
       .catch(() => undefined)
@@ -73,6 +78,7 @@ export default function MarkdownPublisher() {
 
   function finishPublish(job: JobResponse) {
     setPublishing(false)
+    setPublishJob(job)
     if (job.status === 'succeeded') setStatus('已上传到微信公众号草稿箱。')
     else setError(job.error || '微信公众号上传失败')
   }
@@ -89,7 +95,11 @@ export default function MarkdownPublisher() {
         digest: digest || undefined,
         thumb_media_id: thumbMediaId || undefined
       })
-      const settled = await pollJob(job.job_id, (update) => setStatus(update.progress || '正在上传到微信公众号...'))
+      setPublishJob(job)
+      const settled = await pollJob(job.job_id, (update) => {
+        setPublishJob(update)
+        setStatus(update.progress || '正在上传到微信公众号...')
+      })
       finishPublish(settled)
     } catch (err) {
       setPublishing(false)
@@ -109,12 +119,16 @@ export default function MarkdownPublisher() {
   }
 
   return (
-    <section className="mx-auto max-w-6xl animate-fade-up">
-      <div>
-        <p className="page-kicker">Publish</p>
-        <h1 className="page-title mt-1">Markdown 发布到公众号</h1>
-        <p className="page-subtitle">上传 Markdown，生成微信兼容 HTML，确认预览后写入公众号草稿箱。</p>
-      </div>
+    <section className={embedded ? '' : 'mx-auto max-w-6xl animate-fade-up'}>
+      {embedded ? (
+        <p className="text-sm text-body">上传任意 Markdown，生成微信兼容 HTML，确认预览后写入公众号草稿箱。</p>
+      ) : (
+        <div>
+          <p className="page-kicker">Publish</p>
+          <h1 className="page-title mt-1">Markdown 发布到公众号</h1>
+          <p className="page-subtitle">上传 Markdown，生成微信兼容 HTML，确认预览后写入公众号草稿箱。</p>
+        </div>
+      )}
       {error ? <div className="alert-error mt-4">{error}</div> : null}
       {status ? <div className="alert-success mt-4">{status}</div> : null}
 
@@ -203,6 +217,11 @@ export default function MarkdownPublisher() {
               {publishing ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
               上传到草稿箱
             </button>
+            {publishJob?.steps && publishJob.steps.length > 0 ? (
+              <div className="rounded-lg border border-line bg-fog/50 p-3">
+                <JobSteps steps={publishJob.steps} />
+              </div>
+            ) : null}
           </section>
 
           {recent.length > 0 ? (

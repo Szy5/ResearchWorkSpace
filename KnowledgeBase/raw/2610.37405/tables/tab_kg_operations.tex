@@ -1,0 +1,51 @@
+\begin{table*}[t]
+\centering
+\small
+
+\resizebox{\textwidth}{!}{         
+\begin{tabular}{>{\centering\arraybackslash}m{2.5cm} m{3.8cm} m{5.0cm} m{3.5cm} m{2.2cm}}
+\toprule
+\textbf{Category} & \textbf{Function} & \textbf{Description} & \textbf{Input Parameters} & \textbf{Output} \\
+\midrule
+\multirow{2}{2.5cm}{\centering Relation search}
+  & \texttt{find\_outgoing\_relations}
+  & Given an entity, return all outgoing relations.
+  & \texttt{entity\_name}
+  & List of outgoing relations \\[4pt]
+  & \texttt{find\_incoming\_relations}
+  & Given an entity, return all incoming relations.
+  & \texttt{entity\_name}
+  & List of incoming relations \\
+\midrule
+\multirow{2}{2.5cm}{\centering Neighborhood expansion}
+  & \texttt{get\_tail\_entities}
+  & Follow the relation forward from head to tail.
+  & \texttt{head\_entity\_name}; \texttt{relation\_name}
+  & Set of tail entities \\[4pt]
+  & \texttt{get\_head\_entities}
+  & Follow the relation backward from tail to head.
+  & \texttt{tail\_entity\_name}; \texttt{relation\_name}
+  & Set of head entities \\
+\midrule
+\multicolumn{1}{>{\centering\arraybackslash}m{2.5cm}}{Constraint filtering}
+  & \texttt{get\_entity\_by\_constraint}
+  & Filter the provided \texttt{entity\_set} and return the entities satisfying the specified constraint.
+  & \texttt{entity\_set}; \texttt{relation}; \texttt{operator}; \texttt{value}
+  & Entity subset \\
+\midrule
+\multirow{2}{2.5cm}{\centering Set combination}
+  & \texttt{intersect}
+  & Return the intersection of the given list of entity sets.
+  & \texttt{entity\_set\_list}
+  & Intersection set \\[4pt]
+  & \texttt{union}
+  & Return the union of the given list of entity sets.
+  & \texttt{entity\_set\_list}
+  & Union set \\
+\bottomrule
+\end{tabular}}
+\caption{\textbf{The seven KG operations of the \texttt{kg-query} action.} Each operation is listed with its description, input parameters, and output.}
+\label{tab:kg_operations}
+
+\end{table*}
+

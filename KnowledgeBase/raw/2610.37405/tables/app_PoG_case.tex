@@ -1,0 +1,24 @@
+\begin{table*}[ht]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{8pt}
+\renewcommand{\arraystretch}{1.3}
+\caption{\textbf{Case study of PoG.} The trajectory reaches the correct answer through a shortcut retrieval and misses the bridge evidence.}
+
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.95\textwidth}}
+\rowcolor{gray!20}
+\textbf{Question:} Which airline flies the \textbf{Embraer 195} and is based at the airport named after \textbf{Margaret Kenyatta}'s father? \\[4pt]
+
+\rowcolor{blue!10}
+\texttt{Reasoning chains:}
+
+\textbf{Turn 1:}
+
+  Embraer 195 -> item operated -> Kenya Airways;\\
+  
+\rowcolor{red!30}
+\texttt{<answer>}Kenya Airways operates the Embraer 195 and is based at Jomo Kenyatta International Airport, which is named after Margaret Kenyatta's father. The answer is \{Kenya Airways\}{</answer>}\\
+\end{tabular}
+
+\label{tab:pogcase}
+\end{table*}

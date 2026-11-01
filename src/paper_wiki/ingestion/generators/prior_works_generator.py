@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -44,9 +45,27 @@ class PriorWorksGenerator:
             user = self._default_user_prompt(bundle)
         # complete_json 会自动处理 JSON fence、格式错误重试和 Pydantic 校验。
         response = self.llm.complete_json(system, user, _PriorWorksLLMResponse)
-        doc = PriorWorksDoc(prior_works=response.prior_works, synthesis_narrative=response.synthesis_narrative)
+        narrative = self.ensure_chinese_narrative(response.synthesis_narrative, slug=bundle.slug)
+        doc = PriorWorksDoc(prior_works=response.prior_works, synthesis_narrative=narrative)
         logger.info("prior_works.json 生成完成：slug=%s, prior_works=%d", bundle.slug, len(doc.prior_works))
         return doc
+
+    def ensure_chinese_narrative(self, narrative: str, *, slug: str = "") -> str:
+        """Translate the narrative when the model answered in English despite the prompt."""
+        text = narrative.strip()
+        if not text or len(re.findall(r"[\u4e00-\u9fff]", text)) >= 0.2 * len(re.sub(r"\s", "", text)):
+            return narrative
+        try:
+            translated = self.llm.complete(
+                "你是学术翻译。把用户给出的段落翻译成流畅的简体中文学术叙述，论文、方法、模型、数据集名称保留英文原名，"
+                "名称使用直引号，不要使用书名号。只输出译文，不要添加解释或标题。",
+                text,
+            ).strip()
+        except Exception as exc:  # keep the original rather than failing the artifact
+            logger.warning("先前工作叙述翻译失败，保留原文：slug=%s, error=%s", slug, exc)
+            return narrative
+        logger.info("先前工作叙述为英文，已翻译为中文：slug=%s", slug)
+        return translated or narrative
 
     def _default_user_prompt(self, bundle: PaperAssetsBundle) -> str:
         return f"""
@@ -76,7 +95,7 @@ JSON 字段必须为：
       "relationship_sentence": "一句话说明它与当前论文核心创新的直接关系"
     }}
   ],
-  "synthesis_narrative": "200-300 词综合叙述"
+  "synthesis_narrative": "300-500 字的中文综合叙述（论文与方法名保留英文）"
 }}
 """.strip()
 

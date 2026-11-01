@@ -91,7 +91,9 @@ prior_work_system_prompt="""
 
 ## 引用格式要求
 
-`relationship_sentence` 与 `synthesis_narrative` 中提到论文、模型、数据集名称时使用直引号 "…"，禁止使用中文书名号《…》。
+`relationship_sentence` 与 `synthesis_narrative` 必须用简体中文书写（论文、方法、模型、数据集名称保留英文原名），不要输出英文段落。
+
+`relationship_sentence` 与 `synthesis_narrative` 中提到论文、模型、数据集名称时使用直角引号「…」，不要使用英文双引号 "…"，也不要使用中文书名号《…》。英文双引号会破坏 JSON 解析。
 
 ---
 
@@ -109,7 +111,7 @@ prior_work_system_prompt="""
       "relationship_sentence": "一句具体说明其与核心创新之间直接关系的话"
     }
   ],
-  "synthesis_narrative": "200–300 词的流畅叙述：先描述前作中与当前论文相关的细节，再说明它们如何共同启发当前工作。"
+  "synthesis_narrative": "300–500 字的中文流畅叙述：先描述前作中与当前论文相关的细节，再说明它们如何共同启发当前工作。"
 }
 ```
 """
