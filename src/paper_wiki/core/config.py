@@ -44,6 +44,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
+        populate_by_name=True,
     )
 
     project_root: Path = Field(default_factory=find_project_root)
@@ -139,6 +140,31 @@ class Settings(BaseSettings):
     )
     max_parse_chars: int = 32000
     summary_max_context_chars: int = Field(default=60000, validation_alias=AliasChoices("SUMMARY_MAX_CONTEXT_CHARS"))
+
+    # LangSmith (LangChain Agent Lake) 轨迹采集配置；默认关闭，避免单测外发请求。
+    langsmith_tracing: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("LANGSMITH_TRACING", "LANGCHAIN_TRACING_V2"),
+    )
+    langsmith_api_key: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("LANGSMITH_API_KEY", "LANGCHAIN_API_KEY"),
+    )
+    langsmith_project: str = Field(
+        default="paper-wiki-reader",
+        validation_alias=AliasChoices("LANGSMITH_PROJECT", "LANGCHAIN_PROJECT"),
+    )
+    langsmith_endpoint: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("LANGSMITH_ENDPOINT", "LANGCHAIN_ENDPOINT"),
+    )
+
+    # 单篇论文 Agent Loop 预算与工具限流配置。
+    ingest_mode: str = Field(default="workflow", validation_alias=AliasChoices("INGEST_MODE"))
+    agent_max_steps: int = Field(default=8, validation_alias=AliasChoices("AGENT_MAX_STEPS"))
+    agent_max_read_lines: int = Field(default=150, validation_alias=AliasChoices("AGENT_MAX_READ_LINES"))
+    agent_max_read_chars: int = Field(default=8000, validation_alias=AliasChoices("AGENT_MAX_READ_CHARS"))
+    agent_max_grep_matches: int = Field(default=25, validation_alias=AliasChoices("AGENT_MAX_GREP_MATCHES"))
 
     def resolved_knowledge_base_dir(self) -> Path:
         """返回知识库根目录；默认 `KnowledgeBase/`，集中存放 raw / artifacts / graph。"""

@@ -121,6 +121,7 @@ class AssetsManifest(BaseModel):
     counts: AssetCounts
     parser: ParserInfo = Field(default_factory=ParserInfo)
     warnings: list[str] = Field(default_factory=list)
+    last_trace_id: str | None = None
 
     @field_validator("slug")
     @classmethod

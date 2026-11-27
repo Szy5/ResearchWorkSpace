@@ -16,8 +16,10 @@ from paper_wiki.discovery.exceptions import DiscoveryError, RecommendError
 from paper_wiki.graph.neo4j_store import Neo4jGraphStore, load_graph_event
 from paper_wiki.graph.planner import GraphPlanner
 from paper_wiki.graph.state_store import GraphStateStore
+from paper_wiki.ingestion.agent.summary_agent import DEFAULT_AGENT_SUMMARY_PROMPT
+from paper_wiki.ingestion.generators.summary_generator import DEFAULT_SUMMARY_PROMPT
 from paper_wiki.ingestion.latex_parser import LaTeXParser
-from paper_wiki.ingestion.pipeline import IngestPipeline, TARGET_ALIASES
+from paper_wiki.ingestion.pipeline import INGEST_MODES, IngestPipeline, TARGET_ALIASES
 from paper_wiki.publishing.cursor_render import render_blog_html
 from paper_wiki.publishing.exceptions import PublishingError
 from paper_wiki.publishing.models import WeChatDraftOptions
@@ -118,6 +120,14 @@ def discover_reviewed_slugs(artifacts_dir: Path) -> list[str]:
     return slugs
 
 
+def _normalize_ingest_mode(mode: str) -> str:
+    normalized = mode.strip().lower()
+    if normalized not in INGEST_MODES:
+        allowed = ", ".join(INGEST_MODES)
+        raise ValueError(f"Unknown ingest mode: {mode}. Allowed values: {allowed}")
+    return normalized
+
+
 def _run_ingest_for_slugs(
     slugs: list[str],
     *,
@@ -127,10 +137,21 @@ def _run_ingest_for_slugs(
     prior_works_prompt: str | None,
     sci_pattern_prompt: str | None,
     only: list[str] | None,
+    mode: str | None = None,
 ) -> None:
     if not slugs:
         print("[yellow]No pending raw papers found.[/yellow]")
         return
+
+    normalized_mode = _normalize_ingest_mode(mode) if mode is not None else None
+    if summary_prompt is not None:
+        effective_summary_prompt: str | None = summary_prompt
+    elif normalized_mode == "agent":
+        effective_summary_prompt = DEFAULT_AGENT_SUMMARY_PROMPT
+    elif normalized_mode == "workflow":
+        effective_summary_prompt = DEFAULT_SUMMARY_PROMPT
+    else:
+        effective_summary_prompt = None
 
     try:
         pipeline = IngestPipeline()
@@ -142,13 +163,15 @@ def _run_ingest_for_slugs(
 
     for slug in slugs:
         try:
+            extra_kwargs = {"mode": normalized_mode} if normalized_mode is not None else {}
             result = pipeline.run(
                 slug,
                 overwrite=overwrite,
-                summary_prompt=summary_prompt,
+                summary_prompt=effective_summary_prompt,
                 prior_works_prompt=prior_works_prompt,
                 sci_pattern_prompt=sci_pattern_prompt,
                 only=only,
+                **extra_kwargs,
             )
             print(f"[green]Generated Layer1 semantic artifacts for {slug}[/green]")
             if manifest_path := getattr(result, "manifest_path", None):
@@ -160,6 +183,15 @@ def _run_ingest_for_slugs(
             }
             for path in generated_paths.values():
                 print(f"- {Path(path)}")
+            if agent_stats := getattr(result, "agent_stats", None):
+                print(
+                    f"- agent: steps={agent_stats.get('steps')}, "
+                    f"tool_calls={agent_stats.get('tool_calls')}, "
+                    f"prompt_tokens={agent_stats.get('prompt_tokens')}, "
+                    f"cached_tokens={agent_stats.get('cached_tokens')}, "
+                    f"completion_tokens={agent_stats.get('completion_tokens')}, "
+                    f"trace_id={agent_stats.get('trace_id') or 'disabled'}"
+                )
         except Exception as exc:
             failures.append(slug)
             if verbose:
@@ -262,10 +294,15 @@ def ingest(
         "--only",
         help="只生成指定语义产物，可重复传入：summary、prior_works、sci_pattern；也接受 prior-works、pattern。",
     ),
+    mode: str | None = typer.Option(
+        None,
+        "--mode",
+        help="精读生成模式：workflow 或 agent；未传时读取 INGEST_MODE（默认 workflow）。",
+    ),
     summary_prompt: str | None = typer.Option(
-        "paper_summary_v5.py",
+        None,
         "--summary-prompt",
-        help="摘要 prompt 文件，默认 paper_summary_v5.py；可传相对 prompts/ 的路径或绝对路径。",
+        help="摘要 prompt 文件；workflow 模式默认 paper_summary_v5.py，agent 模式默认 paper_summary_agent_v1.py。",
     ),
     prior_works_prompt: str | None = typer.Option(
         "prior_work_prompt.py",
@@ -284,6 +321,8 @@ def ingest(
     configure_logging(verbose)
     try:
         _normalize_only_targets(only)
+        if mode is not None:
+            _normalize_ingest_mode(mode)
     except ValueError as exc:
         logger.error("%s", exc)
         raise typer.Exit(code=1) from exc
@@ -295,6 +334,7 @@ def ingest(
         prior_works_prompt=prior_works_prompt,
         sci_pattern_prompt=sci_pattern_prompt,
         only=only,
+        mode=mode,
     )
 
 
@@ -307,10 +347,15 @@ def ingest_all(
         "--only",
         help="只生成指定语义产物，可重复传入：summary、prior_works、sci_pattern；也接受 prior-works、pattern。",
     ),
+    mode: str | None = typer.Option(
+        None,
+        "--mode",
+        help="精读生成模式：workflow 或 agent；未传时读取 INGEST_MODE（默认 workflow）。",
+    ),
     summary_prompt: str | None = typer.Option(
-        "paper_summary_v5.py",
+        None,
         "--summary-prompt",
-        help="摘要 prompt 文件，默认 paper_summary_v5.py；可传相对 prompts/ 的路径或绝对路径。",
+        help="摘要 prompt 文件；workflow 模式默认 paper_summary_v5.py，agent 模式默认 paper_summary_agent_v1.py。",
     ),
     prior_works_prompt: str | None = typer.Option(
         "prior_work_prompt.py",
@@ -329,6 +374,8 @@ def ingest_all(
     configure_logging(verbose)
     try:
         _normalize_only_targets(only)
+        if mode is not None:
+            _normalize_ingest_mode(mode)
         settings = get_settings()
         slugs = discover_pending_slugs(
             settings.resolved_raw_dir(),
@@ -349,6 +396,7 @@ def ingest_all(
         prior_works_prompt=prior_works_prompt,
         sci_pattern_prompt=sci_pattern_prompt,
         only=only,
+        mode=mode,
     )
 
 

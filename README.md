@@ -160,8 +160,8 @@ cd web/frontend && npm install && npm run dev
 | `paper-wiki recommend run` | 基于 Zotero 口味生成每日推荐快照 | `paper-wiki recommend run --max-papers 15` |
 | `paper-wiki parse <slug>` | 仅解析 LaTeX 检查章节与 token 规模 | `paper-wiki parse GraphWalker --verbose` |
 | `paper-wiki assets <slug...>` | 确定性构建 `manifest.json` 与 `assets/` | `paper-wiki assets GraphWalker --overwrite` |
-| `paper-wiki ingest <slug...>` | 生成语义产物（`--only summary\|prior_works\|sci_pattern`） | `paper-wiki ingest GraphWalker --overwrite` |
-| `paper-wiki ingest-all` | 批量补齐 `raw/` 下缺失产物的论文 | `paper-wiki ingest-all --only summary` |
+| `paper-wiki ingest <slug...>` | 生成语义产物（`--only` 指定目标；`--mode workflow\|agent` 切换单轮或文件夹 Agent Loop） | `paper-wiki ingest GraphWalker --only summary --mode agent --overwrite` |
+| `paper-wiki ingest-all` | 批量补齐 `raw/` 下缺失产物的论文（支持 `--mode workflow\|agent`） | `paper-wiki ingest-all --only summary` |
 
 ### 图谱与发布（Layer 2 / WeChat）
 
@@ -184,6 +184,15 @@ BASE_URL=https://your-api-base-url/v1
 API_KEY=your-api-key
 # SUMMARY_MAX_CONTEXT_CHARS=60000
 # LLM_HTTP_PROXY=http://127.0.0.1:7890
+
+# ── 1.5 Agent Loop 与 LangSmith Agent Lake 轨迹存储（可选，配合 --mode agent 或 INGEST_MODE=agent） ──
+# INGEST_MODE=agent
+# LANGSMITH_TRACING=true
+# LANGSMITH_API_KEY=lsv2_pt_your-langsmith-api-key
+# LANGSMITH_PROJECT=paper-wiki-reader
+# AGENT_MAX_STEPS=8
+# AGENT_MAX_READ_LINES=150
+# AGENT_MAX_GREP_MATCHES=25
 
 # ── 2. 微信公众号与无头排版（可选） ──
 WECHAT_APPID=your-appid
@@ -226,7 +235,7 @@ Paper-wiki/
 │   ├── core/                   # 配置、Pydantic 模型、任务进度
 │   ├── discovery/              # arXiv 检索/拉取与 Zotero 推荐
 │   ├── graph/                  # 图谱增量规划与 Neo4j 写入
-│   ├── ingestion/              # LaTeX 解析、精读/前作/范式生成器与 Pipeline
+│   ├── ingestion/              # LaTeX 解析、精读/前作/范式生成器、单篇 Agent Loop 与 Pipeline
 │   ├── publishing/             # 论文透镜公众号组装、Cursor 排版、封面生成与微信 API
 │   └── web/                    # FastAPI 路由、Schema 与后台任务服务
 ├── web/frontend/               # Vite + React + TypeScript 前端工作台

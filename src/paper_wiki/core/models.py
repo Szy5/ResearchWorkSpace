@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 from pathlib import Path
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -93,3 +94,5 @@ class IngestResult(BaseModel):
     sci_pattern_path: Path
     generated_paths: dict[str, Path] = Field(default_factory=dict)
     assets: PaperAssetsBundle
+    trace_id: str | None = None
+    agent_stats: dict[str, Any] | None = None

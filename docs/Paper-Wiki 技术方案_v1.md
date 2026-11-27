@@ -1,10 +1,18 @@
 # Paper-Wiki 技术方案 v1.5
 
-> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-11-03 | 状态：持续维护
+> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-11-27 | 状态：持续维护
 
 ---
 
 ## 零、当前实现状态
+
+### 单篇论文文件夹 Agent Loop 与 LangSmith Agent Lake 轨迹存储（2026-11-27，已实现）
+
+- 新增 `src/paper_wiki/ingestion/agent/` 子包，在不改动默认单轮 `workflow` 流水线的前提下，为 Layer 1 精读生成新增 `--mode agent` 选项及 `.env` 开关 `INGEST_MODE=agent`（同时作用于 CLI 与 Web 后台生成任务，默认 prompt 为 `prompts/paper_summary_agent_v1.py`）。
+- **只读 `raw/` 源码优先沙箱（`sandbox.py`）**：将单篇论文的 `raw/{slug}/`（原始 `.tex` / `tables/*.tex` / `appendix*.tex` / `.bib`，主读区）与 `artifacts/{slug}/assets/`（辅助区，含已转码配图路径）暴露为受控虚拟路径，提供 `list_files`、`read_lines`、`grep_files` 三个只读工具（默认作用域均为 `raw/`），强制过滤样式/二进制噪音、禁止路径穿越与符号链接逃逸，并对单次返回行数/字符数/匹配数设硬上限（`AGENT_MAX_READ_LINES` / `AGENT_MAX_READ_CHARS` / `AGENT_MAX_GREP_MATCHES`）。Turn 0 注入确定性「论文源码环境地图」（`raw/` 文件清单、主 `.tex` 入口与 `\section`/`\input` 行号索引、以及 `assets/figures/` 可用配图清单）。
+- **轻量 Append-Only Agent Loop（`loop.py` + `summary_agent.py`）**：基于现有 OpenAI-compatible SDK 手写受控循环（默认 `AGENT_MAX_STEPS=8`），支持单轮并行工具调用、严格 Append-Only 消息历史以最大化前缀 Prompt Caching（同时兼容 OpenAI `prompt_tokens_details.cached_tokens` 与 DeepSeek `prompt_cache_hit_tokens`），并在最后一步自动关闭工具强制收口；最终 Markdown 复用 `SummaryGenerator` 现有去重、路径重写与图注编号后处理。
+- **LangChain Agent Lake 接入（`tracing.py`）**：新增 `langsmith>=0.3.0` 依赖，通过 `wrap_openai`、`@traceable` 与 `tracing_context` 将完整阅读轨迹（根链 + 每轮 LLM 调用 + 每次沙箱工具调用 + tags/metadata）异步上报到 LangSmith（SmithDB），并在 `manifest.json` 新增可选字段 `last_trace_id` 关联最近一次 Agent 轨迹（`LANGSMITH_TRACING` 未开启时完全无外发请求）。
+- **当前范围边界**：Phase 1 的 Agent Loop 聚焦单篇文件夹内的 `summary.md` 精读与轨迹落盘；`prior_works`/`sci_pattern` 共享上下文、Web 人工 Review Diff 自动通过 `create_feedback` 回传 LangSmith 以及离线 RSI Playbook 演化留待 Phase 2。
 
 ### Web 阅读工作台增量（2026-11-03，已实现）
 
@@ -35,13 +43,13 @@
 | 层次 | 当前状态 | 已落地内容 | 尚未落地内容 |
 | ---- | -------- | ---------- | ------------ |
 | Layer 0 | 已实现 | `LaTeXParser`、入口文件识别、`\input` / `\include` 内联、核心章节抽取、`paper-wiki parse` | 更复杂 LaTeX 语义解析、PDF OCR/正文回退 |
-| Layer 1 | 已实现 | `assets/` 包、`PaperAssetsBuilder`、`AssetsReader`、`PaperAssetsBundle` canonical input、最小 assets contract、`paper-wiki assets <slug...>`、`IngestPipeline` 先构建/复用 assets 再按独立 step 生成 `summary.md`、`prior_works.json`、`sci_pattern.json`，并在 summary 新生成后追加 JSON 语义产物派生的范式/前作综合补充；`SummaryGenerator`、`PriorWorksGenerator`、`PatternGenerator`、Pydantic 校验、prompt 切换、单篇/多篇 `paper-wiki ingest`、`--only` 单语义产物重跑、raw 扫描式 `paper-wiki ingest-all`，并将主论文元信息和 review 状态统一保存在 `manifest.json` 的 `paper` 字段 | 正式 review 命令 |
+| Layer 1 | 已实现 | `assets/` 包、`PaperAssetsBuilder`、`AssetsReader`、`PaperAssetsBundle` canonical input、最小 assets contract、`paper-wiki assets <slug...>`、`IngestPipeline` 先构建/复用 assets 再按独立 step 生成 `summary.md`、`prior_works.json`、`sci_pattern.json`，并在 summary 新生成后追加 JSON 语义产物派生的范式/前作综合补充；`SummaryGenerator`、`PriorWorksGenerator`、`PatternGenerator`、**单篇论文文件夹 Agent Loop（`ingestion/agent/`，`--mode agent` + LangSmith Agent Lake 轨迹上报与 `manifest.last_trace_id`）**、Pydantic 校验、prompt 切换、单篇/多篇 `paper-wiki ingest`、`--only` 单语义产物重跑、raw 扫描式 `paper-wiki ingest-all`，并将主论文元信息和 review 状态统一保存在 `manifest.json` 的 `paper` 字段 | 正式 review 命令、`prior_works`/`sci_pattern` 共享 Agent 阅读上下文、Review Diff 自动回传 LangSmith feedback 与离线 RSI Playbook 演化 |
 | 发现层 | 已实现 | `discovery/` 包、`paper-wiki search`、`paper-wiki fetch`、`paper-wiki recommend run`、arXiv export API 检索、按 arXiv ID 下载源码/PDF 到 `raw/{slug}/`、RSS 优先且 export API submittedDate fallback 的每日候选池（`normalize_arxiv_id` 已剥离 RSS `oai:arXiv.org:` 前缀）、Zotero 语料、sentence-transformers 重排序、`.recommendations/{date}.json` / `latest.json` 快照、Web 接入（`/api/recommendations/*`、`/api/search`、`/api/papers/fetch`） | 多源检索、本地 reviewed 论文语料源 |
 | Layer 2 | 部分实现 | `graph/` 包、reviewed artifacts 读取、Paper 节点与 typed prior-work 关系建模、`graph_state/` 快照、`graph_updates.jsonl` 事件日志、`paper-wiki graph plan/apply`、Neo4j 幂等入库；详见 [Neo4j 科学发现图谱需求与技术方案](./Neo4j%20科学发现图谱需求与技术方案.md) | `wiki/` 包、全局目录、概念页、日志、更多图谱查询 |
 | 发布扩展 | 已实现 | `publishing/` 包、`paper-wiki publish wechat`、artifact HTML 定位、图片上传替换、草稿创建；确定性 Markdown→摸鱼绿公众号 HTML 渲染器，输出保存在 `artifacts/.publishing/` 并通过 Web 预览/后台发布；精读笔记一键发布（LLM 标题摘要、封面、公式图片，产物在 `artifacts/{slug}/wechat/`）与任务步骤可视化 | 自动群发、多平台发布、发布统计 |
 | Web 原型 | 已实现 | FastAPI + React 工作站；推荐/检索、论文审查、Paper 管理（筛选/批量审查）、Markdown 公众号发布；`JobManager` 使用线程池并将任务落盘到 `artifacts/.jobs/`，`GET /api/jobs` 支持恢复与历史查询，前端批量暂存写入 localStorage | 图谱管理、论文删除/回收站、失败任务一键重试、鉴权、可跨进程恢复执行的队列 |
 | Layer 3 | 未实现 | 无 | `retrieval/` 包、向量库、GraphRAG、FastAPI API |
-| 测试 | 部分实现 | parser、assets builder、models、mock LLM pipeline、CLI 多 slug ingest/assets、raw 待处理发现、discovery 单元/集成测试（含 RSS `oai:` id 归一化回归测试）、Web discovery 路由单元测试、graph planner 增量事件、微信公众号发布 mock 测试；当前 `pytest` 66 passed | graph/retrieval/api/e2e 测试、真实微信 API smoke test |
+| 测试 | 部分实现 | parser、assets builder、models、mock LLM pipeline、**单篇 Agent 沙箱与 Agent Loop 单元测试**、CLI 多 slug ingest/assets/`--mode agent`、raw 待处理发现、discovery 单元/集成测试（含 RSS `oai:` id 归一化回归测试）、Web discovery 路由单元测试、graph planner 增量事件、微信公众号发布 mock 测试；当前 `pytest` 179 passed | graph/retrieval/api/e2e 测试、真实微信 API smoke test |
 
 当前实现范围必须继续遵守 Layer 0/Layer 1 边界：assets 与 ingest 只生成 `artifacts/{paper-slug}/` 下的 deterministic assets 和独立语义产物，不写入 `wiki/`、图谱、embedding 或检索索引。
 
@@ -52,6 +60,7 @@
 | ------------ | -------------------------- | -------------------------- |
 | 语言           | Python 3.11+               | 生态最丰富，LLM/向量库均有一流支持        |
 | LLM API      | OpenAI-compatible API（已实现 OpenAI/DeepSeek 配置分支） | 通过统一 SDK 与 `.env` 支持模型切换 |
+| Agent 轨迹与可观测性 | LangSmith Python SDK（`langsmith>=0.3.0`，`wrap_openai` + `@traceable`） | 零框架侵入接入 LangChain Agent Lake（SmithDB），存储单篇 Agent Loop 完整阅读轨迹 |
 | LaTeX 解析     | 自实现预处理（正则 + 文件拼接）          | 轻量，负责入口识别、`\input` / `\include` 内联、章节与 assets 抽取 |
 | LaTeX → Markdown 正文规范化 | Pandoc via `pypandoc_binary`，失败时回退到本地规则 | 普通段落、列表、引用、行内样式由 Pandoc 统一转换；图片落盘、references、复杂表格/算法块仍由 assets builder 控制 |
 | 向量库          | ChromaDB（规划）              | 本地持久化、内置元数据过滤、无需部署         |

@@ -16,6 +16,7 @@ from paper_wiki.assets.models import AssetsManifest, PaperAssetsBundle
 from paper_wiki.assets.reader import AssetsReader
 from paper_wiki.core.config import Settings, get_settings
 from paper_wiki.core.models import IngestResult, PriorWorksDoc, SciPatternDoc
+from paper_wiki.ingestion.agent.summary_agent import AgentSummaryGenerator, DEFAULT_AGENT_SUMMARY_PROMPT
 from paper_wiki.ingestion.generators.pattern_generator import PatternGenerator
 from paper_wiki.ingestion.generators.prior_works_generator import PriorWorksGenerator
 from paper_wiki.ingestion.generators.summary_generator import SummaryGenerator
@@ -26,6 +27,7 @@ from paper_wiki.ingestion.prior_works_backfill import backfill_prior_works_from_
 logger = logging.getLogger(__name__)
 
 SEMANTIC_ARTIFACT_TARGETS = ("summary", "prior_works", "sci_pattern")
+INGEST_MODES = ("workflow", "agent")
 TARGET_ALIASES = {
     "summary": "summary",
     "prior_works": "prior_works",
@@ -56,8 +58,10 @@ class IngestPipeline:
         settings: Settings | None = None,
         llm: LLMClient | None = None,
         parser: LaTeXParser | None = None,
+        agent_summary_generator: AgentSummaryGenerator | None = None,
     ) -> None:
         self.settings = settings or get_settings()
+        self._explicit_llm = llm is not None
         self.llm = llm or build_llm_client(self.settings)
         self.parser = parser or LaTeXParser(max_chars=self.settings.max_parse_chars)
         self.assets_builder = PaperAssetsBuilder(self.settings, self.parser)
@@ -67,6 +71,7 @@ class IngestPipeline:
             self.settings.resolved_prompts_dir(),
             max_context_chars=self.settings.summary_max_context_chars,
         )
+        self._agent_summary_generator = agent_summary_generator
         self.prior_works_generator = PriorWorksGenerator(
             self.llm,
             self.settings.resolved_prompts_dir(),
@@ -78,6 +83,14 @@ class IngestPipeline:
             max_context_chars=self.settings.max_parse_chars,
         )
 
+    def _get_agent_summary_generator(self) -> AgentSummaryGenerator:
+        if self._agent_summary_generator is None:
+            self._agent_summary_generator = AgentSummaryGenerator(
+                self.summary_generator,
+                settings=self.settings,
+            )
+        return self._agent_summary_generator
+
     def run(
         self,
         slug: str,
@@ -88,11 +101,18 @@ class IngestPipeline:
         sci_pattern_prompt: str | None = None,
         only: Sequence[str] | None = None,
         expected_updated_at: str | None = None,
+        mode: str | None = None,
     ) -> IngestResult:
         """
         执行 ingest；不会更新 wiki、图谱、向量库等 Layer2/Layer3 资源。
         """
-        logger.info("开始执行 Layer0/Layer1 ingest：slug=%s", slug)
+        if mode is not None:
+            normalized_mode = self._normalize_mode(mode)
+        elif self._explicit_llm and self._agent_summary_generator is None:
+            normalized_mode = "workflow"
+        else:
+            normalized_mode = self._normalize_mode(self.settings.ingest_mode)
+        logger.info("开始执行 Layer0/Layer1 ingest：slug=%s, mode=%s", slug, normalized_mode)
         selected_targets = self._normalize_targets(only)
 
         paper_dir = self.settings.resolved_raw_dir() / slug
@@ -134,12 +154,25 @@ class IngestPipeline:
         base_version = bundle.manifest.updated_at
         generated_paths: dict[str, Path] = {}
         generated_artifacts: dict[str, Any] = {}
+        trace_id: str | None = None
+        agent_stats: dict[str, Any] | None = None
         # Model/validation failures must not overwrite a usable reading note.
         with TemporaryDirectory(prefix=".ingest-", dir=artifact_dir) as staging:
             staging_dir = Path(staging)
             for index, step in enumerate(selected_steps, start=2):
-                logger.info("步骤 %d/%d：生成 %s", index, total_steps, step.filename)
-                artifact = step.generate(bundle, step.prompt_file)
+                logger.info("步骤 %d/%d：生成 %s（mode=%s）", index, total_steps, step.filename, normalized_mode)
+                if step.target == "summary" and normalized_mode == "agent":
+                    agent_gen = self._get_agent_summary_generator()
+                    agent_output = agent_gen.generate_with_meta(
+                        bundle,
+                        raw_dir=paper_dir,
+                        prompt_file=step.prompt_file or DEFAULT_AGENT_SUMMARY_PROMPT,
+                    )
+                    artifact: Any = agent_output.markdown
+                    trace_id = agent_output.trace_id
+                    agent_stats = agent_gen.stats_dict(agent_output)
+                else:
+                    artifact = step.generate(bundle, step.prompt_file)
                 if step.target == "prior_works" and isinstance(artifact, PriorWorksDoc):
                     artifact = self._backfill_prior_works(artifact)
                 (staging_dir / step.filename).write_text(step.serialize(artifact), encoding="utf-8")
@@ -161,6 +194,8 @@ class IngestPipeline:
                 if "prior_works" in selected_targets:
                     manifest.paper.prior_works_reviewed = False
                 manifest.paper.reviewed = manifest.paper.meta_reviewed and manifest.paper.prior_works_reviewed
+                if trace_id:
+                    manifest.last_trace_id = trace_id
                 manifest.updated_at = datetime.now(timezone.utc).isoformat()
                 staged_manifest = staging_dir / "manifest.json"
                 staged_manifest.write_text(manifest.model_dump_json(indent=2) + "\n", encoding="utf-8")
@@ -181,6 +216,8 @@ class IngestPipeline:
             sci_pattern_path=sci_pattern_path,
             generated_paths=generated_paths,
             assets=bundle,
+            trace_id=trace_id,
+            agent_stats=agent_stats,
         )
 
     def _backfill_prior_works(self, artifact: PriorWorksDoc) -> PriorWorksDoc:
@@ -316,6 +353,13 @@ class IngestPipeline:
 
     def _pattern_label(self, pattern_id: str, pattern_name: str) -> str:
         return f"{pattern_id} {pattern_name}".strip()
+
+    def _normalize_mode(self, mode: str) -> str:
+        normalized = mode.strip().lower()
+        if normalized not in INGEST_MODES:
+            allowed = ", ".join(INGEST_MODES)
+            raise ValueError(f"Unknown ingest mode: {mode}. Allowed values: {allowed}")
+        return normalized
 
     def _normalize_targets(self, only: Sequence[str] | None) -> tuple[str, ...]:
         if not only:
