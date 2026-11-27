@@ -1,493 +1,239 @@
 # Paper-Wiki
 
-**把科研论文自动转化为结构化、可积累的个人论文知识库。**
+<p align="center">
+  <img src="img/pic_1.png" alt="Paper-Wiki Architecture Banner" width="100%" />
+</p>
+
+<p align="center">
+  <strong>把科研论文自动转化为结构化、可积累、可发布的个人研究知识库。</strong>
+</p>
+
+<p align="center">
+  <a href="#核心能力">核心能力</a> ·
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#web-阅读与发布工作台">Web 工作台</a> ·
+  <a href="#cli-命令速查">CLI 速查</a> ·
+  <a href="#项目结构">项目结构</a> ·
+  <a href="#相关文档">相关文档</a>
+</p>
 
 ---
 
 ## 简介
 
-Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `KnowledgeBase/raw/` 下的 LaTeX 论文源码，先构建 deterministic **paper assets**，再按需调用 LLM 生成每篇论文的 **Layer 1 语义产物**，审查通过后可选地把论文、作者、科学范式增量写入 **Layer 2 Neo4j 图谱**。
+**Paper-Wiki** 是一个面向研究者与工程师的个人科研论文知识库与内容工作台。它从 arXiv / LaTeX 源码出发，先构建确定性的 **Paper Assets**（正文、章节、配图、参考文献），再按需生成结构化的**精读笔记、前作谱系与科学发现范式**；经过人工核验后，既可增量入库至 **Neo4j 科学发现图谱**，也可通过 **「论文透镜 · PaperLens」** 排版流水线一键生成微信公众号草稿。
 
-当前已实现：
-
-| 层级    | 能力                                                                               | 状态         |
-| ------- | ---------------------------------------------------------------------------------- | ------------ |
-| Layer 0 | LaTeX 解析、章节抽取、图表路径保留                                                 | ✅           |
-| Layer 1 | deterministic assets +`summary.md` / `prior_works.json` / `sci_pattern.json` | ✅           |
-| 发现层  | Paper2Search / Paper2Recommend：arXiv 检索、按 ID 拉取、Zotero 口味推荐            | ✅ CLI + Web |
-| Layer 2 | Neo4j 科学发现图谱增量入库（Paper / Author / Pattern 三种节点）                    | ✅           |
-| 发布    | 精读笔记一键生成公众号标题/摘要/封面/排版并创建草稿；也支持上传 Markdown 或已有 HTML | ✅           |
-| Web v1  | FastAPI + React 工作站：推荐/检索/审查/管理/Markdown 发布/持久任务                 | ✅           |
-| Layer 3 | 向量检索、图谱查询、HTTP API                                                       | 🚧 规划中    |
-
-**设计灵感：** [LLM Wiki](docs/llm_wiki.md) · [Sci-Reasoning](https://github.com/AmberLJC/Sci-Reasoning)
-
-本文档下半部分是一份**操作手册**：每个命令都单独列出用途、全部参数和示例，跟着第「操作手册」章节从上到下执行即可完成一篇论文从入库到图谱的全流程，不需要再去翻代码。
+> 设计灵感：[Sci-Reasoning](https://github.com/AmberLJC/Sci-Reasoning)
 
 ---
 
-## 阅读工作台（2026-11-03）
-
-Web 首期重构已落地，入口为「发现 / 论文库 / 写作与发布」，待核验是论文库快捷视图，任务与管理位于侧栏底部。
-
-- **发现**：关键词搜索与 arXiv ID/链接添加共用输入框；点标题预览、勾选批量生成，已选论文留在原位。推荐显示真实日期与排序降级状态，移除无对应来源的缩略图。
-- **阅读**：正文独立滚动，论文列表可收起，目录/前作/核验按需打开，支持专注阅读和窄屏列表/详情切换。
-- **连续工作**：Hash 链接保留论文、搜索与核验筛选；检索快照、滚动位置和未保存草稿保留在当前浏览器会话。跨设备阅读进度与正式收藏/已读模型尚未实现。
-- **编辑与核验**：普通保存不自动核验；未保存离开提供保存/放弃/继续编辑；保存冲突保留草稿并允许下载备份。重新生成需明确覆盖范围，新内容重新进入待核验。
-- **后台任务**：逐篇提交、状态恢复、单篇失败重试和结果跳转；断网显示同步异常，不把它当成任务已失败。
-- **公众号**：先检查预览，再明确创建草稿；过期预览阻止提交，同一表单的连续点击防止重复创建。
-
-本轮同时修复精读重跑的写入保护：复用已有 Assets 以保留人工元信息，模型生成/校验先在单篇 artifacts 下暂存，持文件锁检查 manifest 版本后再替换目标文件；并发编辑发生时拒绝覆盖。显式重建原始 Assets 仍使用 `paper-wiki assets <slug> --overwrite`。
-
-实施与验收见 [前端与交互重构计划](<docs/Paper-Wiki 前端与交互重构-实施计划.md>)。修改前端后运行 `cd web/frontend && npm run build`，现有 FastAPI 服务可直接提供新的 `dist/`；Python 代码变更需要重启后端进程生效。开发服务器默认代理 `http://127.0.0.1:8000`，可用 `PAPER_WIKI_API_PROXY` 覆盖。
-
-## 快速开始
-
-```bash
-# 1. 克隆并安装
-git clone https://github.com/Szy5/ResearchWorkSpace.git
-cd ResearchWorkSpace
-conda create -n paper-wiki -c conda-forge python=3.11 -y && conda activate paper-wiki
-pip install -r requirements.txt && pip install -e .
-
-# 2. 配置 LLM（复制模板后填入密钥）
-cp .env.example .env
-
-# 3. 放入论文 LaTeX 到 KnowledgeBase/raw/{paper-slug}/，先解析/构建 assets，再生成语义产物
-paper-wiki parse GraphWalker
-paper-wiki assets GraphWalker
-paper-wiki ingest GraphWalker --overwrite
-```
-
-产物输出到 `KnowledgeBase/artifacts/GraphWalker/`：
-
-```
-KnowledgeBase/artifacts/GraphWalker/
-├── manifest.json
-├── assets/
-│   ├── paper.md
-│   ├── sections.json
-│   ├── figures/
-│   │   ├── manifest.json
-│   │   └── ...
-│   └── references.json
-├── summary.md          # assets 下游：精读摘要正文，可附加科学发现范式和先前工作分析
-├── prior_works.json    # assets 下游：直接前作与思想谱系
-└── sci_pattern.json    # assets 下游：科学创新范式分类
-```
-
----
-
-## 安装与配置
-
-### 环境要求
-
-- Python **3.11+**
-- 任意 **OpenAI 兼容** API（OpenAI / Azure / 自建网关等）
-- （可选）Neo4j 实例（本地或 Aura），仅 Layer 2 图谱入库需要
-
-### 依赖安装
-
-```bash
-conda create -n paper-wiki -c conda-forge --override-channels python=3.11 -y
-conda activate paper-wiki
-pip install -r requirements.txt
-pip install --no-build-isolation -e .
-```
-
-若 pip 镜像缺包，可改用官方 PyPI：
-
-```bash
-pip install -i https://pypi.org/simple -r requirements.txt
-pip install -i https://pypi.org/simple --no-build-isolation -e .
-```
-
-### `.env` 配置
-
-在项目根目录创建 `.env`（可参考 `.env.example`）：
-
-```bash
-MODEL_NAME=your-model-name
-BASE_URL=https://your-api-base-url/v1
-API_KEY=your-api-key
-
-# 可选：精读笔记（summary）输入的最大字符数，默认 60000；只影响 summary，不影响 prior works / pattern
-# SUMMARY_MAX_CONTEXT_CHARS=60000
-
-# 可选：微信公众号草稿发布
-WECHAT_APPID=your-wechat-official-account-appid
-WECHAT_SECRET=your-wechat-official-account-secret
-WECHAT_AUTHOR=Paper-Wiki
-# 可选：出口 IP 不固定时，让微信 API 请求走固定 IP 的代理（该 IP 需加入公众号 IP 白名单）
-# WECHAT_PROXY=http://user:pass@your-fixed-ip-host:3128
-# WECHAT_COVER_PATH=artifacts/GraphWalker/cover.jpg
-# WECHAT_THUMB_MEDIA_ID=already-uploaded-cover-media-id
-
-# 可选：Neo4j 图谱增量入库
-NEO4J_URI=bolt://localhost:7687
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=your-password
-NEO4J_DATABASE=neo4j
-
-# 可选：Paper2Search / Paper2Recommend
-ARXIV_MIN_INTERVAL=4.0
-SEARCH_MAX_RESULTS=10
-FETCH_DOWNLOAD_TIMEOUT_SECONDS=60
-ZOTERO_ID=your-zotero-user-or-group-id
-ZOTERO_KEY=your-zotero-api-key
-ZOTERO_LIBRARY_TYPE=user
-ZOTERO_IGNORE=
-ARXIV_QUERY=cs.AI+cs.LG+cs.CL+cs.IR
-MAX_PAPER_NUM=15
-RECOMMEND_CANDIDATE_POOL_SIZE=200
-RECOMMEND_EMBEDDING_MODEL=avsolatorio/GIST-small-Embedding-v0
-```
-
-也兼容 OpenAI 官方变量名：`OPENAI_MODEL` / `OPENAI_BASE_URL` / `OPENAI_API_KEY`。
-
-未安装 console script 的开发环境，可以用 `PYTHONPATH=src python -m paper_wiki.cli.main ...` 调用同一套 CLI，下文所有命令都可以这样替换。
-
-> ⚠️ 请勿将 `.env`、API Key 或微信公众号 AppSecret 提交到版本控制。
-
----
-
-## 操作手册
-
-按论文从加入到入图谱的自然顺序排列：**发现/添加论文 → 解析 → 构建 assets → 生成语义产物 → 人工审查 → 图谱入库 → 发布 → Web 界面**。每个命令都列出了它接受的**全部**参数；只写"必填"的参数是可以直接运行的最小命令，其余都有默认值。
-
-### 1. `paper-wiki search` — 检索 arXiv 候选论文
-
-不落盘，只打印候选列表，用于决定要不要 `fetch`。
-
-| 参数                      | 类型 | 必填 | 默认值                     | 说明                      |
-| ------------------------- | ---- | ---- | -------------------------- | ------------------------- |
-| `query`（位置参数）     | str  | 是   | -                          | arXiv 关键词检索查询      |
-| `--start-year`          | int  | 否   | `2020`                   | 起始年份                  |
-| `--end-year`            | int  | 否   | `2026`                   | 结束年份                  |
-| `--max-results`, `-n` | int  | 否   | 读取`SEARCH_MAX_RESULTS` | 最大返回条数              |
-| `--verbose`, `-v`     | flag | 否   | `False`                  | 输出 DEBUG 日志和异常堆栈 |
-
-```bash
-paper-wiki search "graph neural network" --start-year 2024 --end-year 2026 -n 10
-```
-
-### 2. `paper-wiki fetch` — 下载 arXiv 源码到 raw/
-
-按 arXiv ID 下载 LaTeX 源码和 PDF 到 `raw/{slug}/`，`slug` 由 arXiv ID 自动推出。
-
-| 参数                     | 类型 | 必填 | 默认值    | 说明                              |
-| ------------------------ | ---- | ---- | --------- | --------------------------------- |
-| `arxiv_id`（位置参数） | str  | 是   | -         | 例如`2401.12345`                |
-| `--and-ingest`         | flag | 否   | `False` | 下载完成后立即运行 Layer 1 ingest |
-| `--overwrite`, `-f`  | flag | 否   | `False` | 允许覆盖已有`raw/{slug}/`       |
-| `--verbose`, `-v`    | flag | 否   | `False` | 输出 DEBUG 日志和异常堆栈         |
-
-```bash
-paper-wiki fetch 2406.00552
-paper-wiki fetch 2406.00552 --and-ingest --overwrite
-```
-
-### 3. `paper-wiki recommend run` — 生成每日推荐快照
-
-基于 Zotero 语料的阅读口味，从当日 arXiv 候选池里挑出 Top K，写入 `artifacts/.recommendations/{date}.json` 和 `latest.json`。
-
-| 参数                     | 类型 | 必填 | 默认值                | 说明                      |
-| ------------------------ | ---- | ---- | --------------------- | ------------------------- |
-| `--max-papers`, `-n` | int  | 否   | 读取`MAX_PAPER_NUM` | 推荐 Top K 数量           |
-| `--arxiv-query`        | str  | 否   | 读取`ARXIV_QUERY`   | 覆盖候选池查询            |
-| `--verbose`, `-v`    | flag | 否   | `False`             | 输出 DEBUG 日志和异常堆栈 |
-
-```bash
-paper-wiki recommend run --max-papers 15
-```
-
-### 4. `paper-wiki parse` — 解析检查（Layer 0，不调用 LLM）
-
-只解析 `raw/{slug}` 的 LaTeX 并打印摘要，方便在生成产物前确认主文件识别、章节命中和 token 规模是否正常。
-
-| 参数                  | 类型 | 必填 | 默认值    | 说明                  |
-| --------------------- | ---- | ---- | --------- | --------------------- |
-| `slug`（位置参数）  | str  | 是   | -         | `raw/{slug}` 目录名 |
-| `--verbose`, `-v` | flag | 否   | `False` | 输出 DEBUG 级别日志   |
-
-```bash
-paper-wiki parse GraphWalker
-paper-wiki parse GraphWalker --verbose
-```
-
-解析器按以下优先级寻找主文件：`main.tex` → `paper.tex` → `article.tex` → 含 `\begin{document}` 的 `.tex` → 体积最大的 `.tex`。关注输出中的 `entry_file`、`matched_sections`、`estimated_tokens`，确认无误后再继续。
-
-### 5. `paper-wiki assets` — 构建论文 Assets（Layer 1 deterministic，不调用 LLM）
-
-只构建 `artifacts/{slug}/manifest.json` 和 `assets/` 下的通用论文资产（`paper.md`/`sections.json`/`figures/`/`references.json`），不调用 LLM。
-
-| 参数                    | 类型      | 必填 | 默认值    | 说明                            |
-| ----------------------- | --------- | ---- | --------- | ------------------------------- |
-| `slugs`（位置参数）   | list[str] | 是   | -         | 一个或多个`raw/{slug}` 目录名 |
-| `--overwrite`, `-f` | flag      | 否   | `False` | 允许覆盖已有 assets             |
-| `--verbose`, `-v`   | flag      | 否   | `False` | 输出 DEBUG 日志和异常堆栈       |
-
-```bash
-paper-wiki assets GraphWalker
-paper-wiki assets GraphWalker 2508.00719 --overwrite
-```
-
-### 6. `paper-wiki ingest` — 生成 Layer 1 语义产物
-
-在 assets 基础上调用 LLM，生成 `summary.md`、`prior_works.json`、`sci_pattern.json` 三个独立产物。会先构建或复用 assets，三者共享同一份 assets 输入但可以独立生成或重跑。
-
-| 参数                     | 类型      | 必填 | 默认值                             | 说明                                                                                                          |
-| ------------------------ | --------- | ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `slugs`（位置参数）    | list[str] | 是   | -                                  | 一个或多个`raw/{slug}` 目录名                                                                               |
-| `--overwrite`, `-f`  | flag      | 否   | `False`                          | 允许覆盖所选 Layer 1 语义产物                                                                                 |
-| `--verbose`, `-v`    | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                                                                                     |
-| `--only`               | list[str] | 否   | 不传=全部三个                      | 只生成指定产物，可重复传入：`summary`/`prior_works`/`sci_pattern`（也接受 `prior-works`/`pattern`） |
-| `--summary-prompt`     | str       | 否   | `paper_summary_v5.py`            | 摘要 prompt 文件；可传`prompts/` 下相对路径或绝对路径                                                       |
-| `--prior-works-prompt` | str       | 否   | `prior_work_prompt.py`           | 前作谱系 prompt 文件                                                                                          |
-| `--sci-pattern-prompt` | str       | 否   | `sci_pattern_classify_prompt.py` | 科学范式 prompt 文件                                                                                          |
-
-```bash
-paper-wiki ingest GraphWalker --overwrite
-paper-wiki ingest GraphWalker 2508.00719 --overwrite --verbose
-paper-wiki ingest GraphWalker --only summary --overwrite
-paper-wiki ingest GraphWalker --overwrite \
-  --summary-prompt paper_summary_v3.py \
-  --prior-works-prompt prior_work_prompt.py \
-  --sci-pattern-prompt sci_pattern_classify_prompt.py
-```
-
-传入多个 slug 时按顺序逐篇生成；若某篇失败，CLI 会继续处理后续论文，并在结束时返回非零退出码。每次新生成 `summary.md` 后，pipeline 会把已生成或已有的 `sci_pattern.json` 追加为 `## 科学发现范式` 小节，把 `prior_works.json` 的 `synthesis_narrative` 追加为 `## 先前工作分析` 小节；对应 JSON 不存在时跳过该小节。
-
-### 7. `paper-wiki ingest-all` — 批量生成 Layer 1 语义产物
-
-扫描 `raw/` 下所有论文目录，只为缺少所选产物的论文生成（不重复调用 LLM），加 `--overwrite` 才会重跑全部。
-
-| 参数                     | 类型      | 必填 | 默认值                             | 说明                                            |
-| ------------------------ | --------- | ---- | ---------------------------------- | ----------------------------------------------- |
-| `--overwrite`, `-f`  | flag      | 否   | `False`                          | 重跑`raw/` 下所有论文；默认只处理缺产物的论文 |
-| `--verbose`, `-v`    | flag      | 否   | `False`                          | 输出 DEBUG 日志和异常堆栈                       |
-| `--only`               | list[str] | 否   | 不传=全部三个                      | 同`ingest` 的 `--only`                      |
-| `--summary-prompt`     | str       | 否   | `paper_summary_v5.py`            | 同`ingest`                                    |
-| `--prior-works-prompt` | str       | 否   | `prior_work_prompt.py`           | 同`ingest`                                    |
-| `--sci-pattern-prompt` | str       | 否   | `sci_pattern_classify_prompt.py` | 同`ingest`                                    |
-
-```bash
-paper-wiki ingest-all
-paper-wiki ingest-all --overwrite --only summary
-```
-
-### 8. 人工审查（无 CLI 命令，直接编辑或走 Web 审查页）
-
-`manifest.json` 的 `paper.meta_reviewed` 和 `paper.prior_works_reviewed` 默认都是 `false`，两者都为 `true` 才允许该论文进入 Layer 2 图谱（见下一节）。可以直接编辑 `artifacts/{slug}/manifest.json`，也可以通过 [`paper-wiki web`](#12-paper-wiki-web--启动本地-web-原型) 的审查页勾选。
-
-入库前建议核对：
-
-- `manifest.json` 中的标题、作者、年份、venue、arXiv ID 是否准确（对应 `meta_reviewed`）
-- `summary.md` 正文是否有幻觉
-- `prior_works.json` 前作标题、年份、角色是否准确，`sci_pattern.json` 范式分类是否符合判断（对应 `prior_works_reviewed`）
-
-### 9. `paper-wiki graph plan` — 生成 Layer 2 图谱增量事件
-
-只读取 `meta_reviewed && prior_works_reviewed` 均为 `true` 的 `artifacts/{slug}/`，把 Paper / Author / Pattern 节点和三类关系（前作关系、`AUTHORED`、`CLASSIFIED_AS`）与本地快照 `graph_state/` 做 diff，追加幂等事件到 `graph_updates/graph_updates.jsonl`。**不连接 Neo4j**，可以反复跑做 dry-run。
-
-| 参数                     | 类型           | 必填               | 默认值    | 说明                                                                    |
-| ------------------------ | -------------- | ------------------ | --------- | ----------------------------------------------------------------------- |
-| `slugs`（位置参数）    | list[str]\| 空 | 与`--all` 二选一 | -         | 一个或多个`artifacts/{slug}` 目录名                                   |
-| `--all`                | flag           | 否                 | `False` | 扫描`artifacts/` 下所有已审查完成的论文并全部 plan，不需要手动列 slug |
-| `--include-unreviewed` | flag           | 否                 | `False` | 允许为未审查完成的 artifact 也生成图谱事件（调试用）                    |
-| `--verbose`, `-v`    | flag           | 否                 | `False` | 输出 DEBUG 日志和异常堆栈                                               |
-
-```bash
-paper-wiki graph plan 2307.07697
-paper-wiki graph plan 2307.07697 GraphWalker
-paper-wiki graph plan --all
-```
-
-### 10. `paper-wiki graph apply` — 把增量事件写入 Neo4j
-
-读取 `graph_updates/graph_updates.jsonl` 中未应用的事件（按 `checkpoint.json` 记录的位置），幂等 `MERGE` 进 Neo4j，写完更新 checkpoint。
-
-| 参数                                      | 类型 | 必填 | 默认值               | 说明                                                                          |
-| ----------------------------------------- | ---- | ---- | -------------------- | ----------------------------------------------------------------------------- |
-| `--since-checkpoint` / `--from-start` | flag | 否   | `since-checkpoint` | 默认只应用 checkpoint 之后的新事件；`--from-start` 从第一行重新应用全部事件 |
-| `--verbose`, `-v`                     | flag | 否   | `False`            | 输出 DEBUG 日志和异常堆栈                                                     |
-
-```bash
-paper-wiki graph apply
-paper-wiki graph apply --from-start   # 全量重放，配合 clear_graph() 做全库重建时使用
-```
-
-典型日常用法：随时在审查页把新论文标记为已审查，然后定期跑一次 `paper-wiki graph plan --all && paper-wiki graph apply`。
-
-### 11. `paper-wiki publish` — 发布 Layer 1 产物
-
-#### 11.1 `publish render-html` — 排版为公众号 HTML
-
-调用本机 Cursor 无头模式，把 `artifacts/{slug}/summary.md` 排版成公众号 HTML。
-
-| 参数                  | 类型 | 必填 | 默认值                      | 说明                        |
-| --------------------- | ---- | ---- | --------------------------- | --------------------------- |
-| `slug`（位置参数）  | str  | 是   | -                           | `artifacts/{slug}` 目录名 |
-| `--theme`           | str  | 否   | 读取`CURSOR_RENDER_THEME` | 排版主题                    |
-| `--verbose`, `-v` | flag | 否   | `False`                   | 输出 DEBUG 日志和异常堆栈   |
-
-```bash
-paper-wiki publish render-html GraphWalker
-```
-
-#### 11.2 `publish wechat` — 创建微信公众号草稿
-
-读取 `artifacts/{slug}/` 下已有的 HTML 文件，上传正文中的本地图片并替换为微信图片 URL，创建公众号图文草稿。**不会**触发 ingest、graph plan 或覆盖原始 HTML。
-
-| 参数                  | 类型 | 必填 | 默认值                        | 说明                                                               |
-| --------------------- | ---- | ---- | ----------------------------- | ------------------------------------------------------------------ |
-| `slug`（位置参数）  | str  | 是   | -                             | `artifacts/{slug}` 目录名                                        |
-| `--html`            | str  | 是   | -                             | `artifacts/{slug}/` 下要发布的 HTML 文件名或相对路径             |
-| `--title`           | str  | 否   | 使用 HTML 文件名              | 微信草稿标题                                                       |
-| `--author`          | str  | 否   | 读取`WECHAT_AUTHOR`         | 作者                                                               |
-| `--digest`          | str  | 否   | 无                            | 图文摘要                                                           |
-| `--cover`           | Path | 否   | 读取`WECHAT_COVER_PATH`     | 封面图路径；可传 artifact 内相对路径或项目根相对路径               |
-| `--thumb-media-id`  | str  | 否   | 读取`WECHAT_THUMB_MEDIA_ID` | 已上传封面永久素材 ID，传了就跳过封面上传                          |
-| `--save-rendered`   | flag | 否   | `False`                     | 把图片 URL 替换后的 HTML 另存为`{原文件名}_wechat_rendered.html` |
-| `--verbose`, `-v` | flag | 否   | `False`                     | 输出 DEBUG 日志和异常堆栈                                          |
-
-```bash
-paper-wiki publish wechat GraphWalker \
-  --html article.html \
-  --title "GraphWalker 论文精读" \
-  --author "Paper-Wiki" \
-  --digest "GraphWalker 方法与实验速览" \
-  --cover figures/cover.jpg \
-  --save-rendered
-```
-
-封面二选一：传 `--cover`/`WECHAT_COVER_PATH` 会上传封面并使用返回的永久素材 `media_id`；传 `--thumb-media-id`/`WECHAT_THUMB_MEDIA_ID` 复用已上传过的封面素材。HTML 必须位于 `artifacts/{slug}/` 内，扩展名为 `.html`/`.htm`；本地图片支持 `jpg/jpeg/png/gif`，远程 `http/https` 图片保留原 URL；命令会拒绝空 HTML、`<script>` 和外部 stylesheet 以避免公众号草稿接口报错。
-
-### 12. `paper-wiki web` — 启动本地 Web 原型
-
-后端读取同一份 `artifacts/` 状态，不引入额外数据库。
-
-| 参数                  | 类型 | 必填 | 默认值        | 说明                |
-| --------------------- | ---- | ---- | ------------- | ------------------- |
-| `--host`            | str  | 否   | `127.0.0.1` | 监听地址            |
-| `--port`            | int  | 否   | `8000`      | 监听端口            |
-| `--reload`          | flag | 否   | `False`     | 开发模式自动重载    |
-| `--verbose`, `-v` | flag | 否   | `False`     | 输出 DEBUG 级别日志 |
-
-```bash
-paper-wiki web --host 127.0.0.1 --port 8000 --reload
-```
-
-前端是独立 Vite 工程：
-
-```bash
-cd web/frontend
-npm install
-npm run dev
-```
-
-浏览器打开 Vite 输出的本地地址，默认把 `/api` 代理到 `http://127.0.0.1:8000`。首页展示今日推荐和检索入口；"全部论文/待审查"用于单篇审查，"管理"提供论文表格筛选、批量审查和任务历史，"公众号发布"支持上传 UTF-8 Markdown、可选正文图片/封面、预览摸鱼绿主题 HTML，并提交微信公众号草稿。
-
-推荐刷新、批量 ingest 和 Markdown 发布都由后台 job 执行。任务状态按 job 独立落盘到 `artifacts/.jobs/{job_id}.json`，前端暂存区同时保存在浏览器 `localStorage`；切换页面或刷新浏览器后会从 `GET /api/jobs` 找回并继续展示进度。页面离开不会取消服务端任务；如果服务进程本身在任务完成前退出，重启后该任务会被标记失败并提示重新提交。
-
-**精读笔记一键发布**：在「公众号发布 → 论文精读笔记」选择论文（或在论文详情页点「发布到公众号」），点「一键发布」即可依次完成：LLM 生成公众号标题和摘要 → 配图转 JPG → 公式转图片 → 生成封面 → 上传微信并创建草稿。也可以点「先生成预览」，在页面里修改标题/摘要/作者、上传自定义封面、在手机框里预览，确认后再发布。每个后台任务都会显示步骤条，正在等待 LLM 或微信 API 时会明确标出。产物保存在 `artifacts/{slug}/wechat/`（`article.html`、`images/`、`formulas/`、`cover.jpg`、`package.json`），不会改动 `summary.md`。标题/摘要 prompt 默认 `prompts/wechat_headline_v1.py`，可用 `.env` 的 `WECHAT_HEADLINE_PROMPT_PATH` 覆盖。准备发布时会把精读笔记改写成约 3000 字、无公式的公众号正文（可用 `WECHAT_ARTICLE_PROMPT_PATH` / `WECHAT_ARTICLE_TARGET_CHARS` 调整）；封面优先整张使用方法/框架图（没有方法图时才回退到标题卡片）；文章开头会自动放方法/框架图（方法章节里仍保留同一张图），其下的论文信息卡把标题、作者、单位（逐行列出）和来源分块展示（单位从 raw LaTeX 的 `\affiliations`/`\affiliation`/`\affil`/`\institute`/`\icmlaffiliation` 或 `\author` 块中尽力提取）；正文章节标题自动编号（会去掉笔记里手写的 `1.` 之类编号），列表使用原生缩进列表，支持嵌套；summary 末尾的「科学发现范式」「先前工作分析」也会一起发布。注意：调用微信 API 的服务器出口 IP 必须加入公众号后台的 IP 白名单，否则会报 40164，报错里会给出当前出口 IP；如果出口 IP 经常变化（例如校园网 NAT），在 `.env` 设置 `WECHAT_PROXY` 让微信请求走固定 IP 的代理。
-
-Markdown 发布中间产物保存在 `artifacts/.publishing/{document_id}/`，包括 `source.md`、`article.html`、可选图片与 `meta.json`。生成的 HTML 仅使用公众号兼容的正文片段和内联样式；上传微信前仍会复用现有本地图片上传替换、封面素材和草稿创建逻辑。
-
----
-
-## 典型工作流速查
-
-只想知道"按什么顺序敲命令"，不需要参数细节时看这里：
-
-```bash
-# 发现并添加一篇论文
-paper-wiki search "graph neural network" -n 10
-paper-wiki fetch 2406.00552
-
-# 生成产物
-paper-wiki parse 2406.00552          # 可选，先检查解析是否正常
-paper-wiki assets 2406.00552
-paper-wiki ingest 2406.00552 --overwrite
-
-# 人工审查：编辑 artifacts/2406.00552/manifest.json，
-# 或用 `paper-wiki web` 打开审查页把 meta_reviewed / prior_works_reviewed 都勾上
-
-# 增量入图谱
-paper-wiki graph plan --all
-paper-wiki graph apply
-
-# 可选：发布到公众号
-paper-wiki publish render-html 2406.00552
-paper-wiki publish wechat 2406.00552 --html article.html
-```
-
-新增一批论文后，只需要重复"生成产物 → 人工审查 → `graph plan --all && graph apply`"这三步。
-
----
-
-## 项目结构
-
-```
-Paper-wiki/
-├── KnowledgeBase/              # 运行时知识库（下载、产物、图谱；与代码分离）
-│   ├── raw/{paper-slug}/       # Layer 0：LaTeX 源码（只读）
-│   ├── artifacts/{paper-slug}/ # Layer 1：assets + 语义产物输出
-│   ├── graph_state/            # Layer 2：本地图谱快照（papers/authors/patterns/relations...)
-│   └── graph_updates/          # Layer 2：增量 JSONL 事件 + apply checkpoint
-├── prompts/                # LLM prompt 模板与范式 taxonomy
-├── src/paper_wiki/         # 核心代码
-│   ├── cli/                # Typer CLI
-│   ├── core/                # 配置、模型、枚举
-│   ├── assets/              # deterministic paper assets builder
-│   ├── ingestion/           # 解析器、生成器、Pipeline
-│   ├── discovery/           # arXiv search/fetch + Zotero/arXiv recommend
-│   ├── graph/               # reviewed artifacts -> graph state / Neo4j events
-│   ├── publishing/          # HTML artifact 发布到微信公众号草稿
-│   └── web/                 # FastAPI Web 原型入口层
-├── web/frontend/           # Vite + React + TypeScript 前端原型
-├── tests/                  # 单元测试与集成测试
-└── docs/                   # 需求与技术方案文档
-```
+## 核心能力
+
+| 模块 | 能力说明 | 状态 |
+| --- | --- | :---: |
+| **发现与推荐** | arXiv 关键词检索、按 ID/链接拉取源码、基于 Zotero 口味的每日论文推荐 | ✅ |
+| **Layer 0 / 1 Assets** | 确定性 LaTeX 解析与资产抽取（`paper.md`、`sections.json`、`figures/`、`references.json`） | ✅ |
+| **Layer 1 语义精读** | 生成精读笔记（`summary.md`）、前作谱系（`prior_works.json`）与科学发现范式（`sci_pattern.json`） | ✅ |
+| **Web 阅读工作台** | FastAPI + React 工作站：发现、专注阅读、编辑保护、独立核验、批量后台任务 | ✅ |
+| **公众号一键发布** | 内置「论文透镜 · PaperLens」海军蓝学术主题，自动生成标题/摘要/封面/排版 HTML 并推送草稿箱 | ✅ |
+| **Layer 2 知识图谱** | 经人工核验后幂等增量同步至 Neo4j（`Paper` / `Author` / `Pattern` 节点与关系） | ✅ |
+| **Layer 3 检索接口** | 向量检索、图谱问答与对外 HTTP API | 🚧 规划中 |
 
 ---
 
 ## 架构概览
 
+```text
+  arXiv / Zotero 推荐  ──▶  KnowledgeBase/raw/{slug}/ (LaTeX 源码，只读)
+                                      │
+                                      ▼  Layer 0 / Layer 1 (deterministic，不调用 LLM)
+                     manifest.json · paper.md · sections · figures · references
+                                      │
+                                      ▼  Layer 1 LLM Pipeline (prompts/)
+                       summary.md · prior_works.json · sci_pattern.json
+                                      │
+                        ┌─────────────┴─────────────┐
+                        ▼                           ▼
+               Web 审查与独立核验             「论文透镜」公众号发布
+           (meta & prior_works 核验)      标题/摘要 · 配图去重 · 海军蓝排版
+                        │                           │
+                        ▼                           ▼
+           Neo4j 科学发现图谱 (Layer 2)       微信公众号草稿箱
 ```
-  KnowledgeBase/raw/{slug}/          prompts/
-  LaTeX + figures               +   模板 / taxonomy
-        │                                │
-        └────────────────┬───────────────┘
-                         ▼
-          ┌──────────────┐
-          │  LaTeX Parser │  Layer 0
-          └──────┬───────┘
-                 ▼
-          ┌──────────────┐
-          │ Assets Builder│  Layer 1
-          └──────┬───────┘
-                 ▼
- manifest.json · assets/paper.md · sections · figures · references
-                 │
-                 ▼
-          ┌──────────────┐
-          │  LLM Pipeline │  Layer 1 downstream
-          └──────┬───────┘
-                 ▼
-     summary.md · prior_works.json · sci_pattern.json
-                 │
-        ┌────────┴────────┐
-        ▼                 ▼
- graph plan/apply      publish wechat
-  (meta_reviewed &&        │
-   prior_works_reviewed)   ▼
-        │            微信公众号草稿
-        ▼
-  Neo4j：Paper / Author / Pattern
-        │
-        ▼  （规划中）
-      Wiki · RAG API      Layer 2 / 3
+
+---
+
+## 快速开始
+
+### 1. 环境安装
+
+需要 **Python 3.11+** 及任意 **OpenAI 兼容** LLM API（可选：Node.js 18+ 用于构建前端、Neo4j 用于图谱入库）。
+
+```bash
+git clone https://github.com/Szy5/ResearchWorkSpace.git
+cd ResearchWorkSpace
+
+conda create -n paper-wiki -c conda-forge python=3.11 -y
+conda activate paper-wiki
+pip install -r requirements.txt
+pip install -e .
+```
+
+> 若 pip 镜像缺包，可加 `-i https://pypi.org/simple` 使用官方 PyPI 源。
+
+### 2. 配置 `.env`
+
+```bash
+cp .env.example .env
+```
+
+填入最基础的 LLM 配置即可运行 Layer 0 / Layer 1（也兼容 `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL`）：
+
+```bash
+MODEL_NAME=your-model-name
+BASE_URL=https://your-api-base-url/v1
+API_KEY=your-api-key
+```
+
+### 3. 跑通第一篇论文（CLI）
+
+```bash
+# 1. 拉取 arXiv 论文源码到 KnowledgeBase/raw/{slug}/
+paper-wiki fetch 2406.00552
+
+# 2. 确定性构建 Layer 1 assets（不调用 LLM）
+paper-wiki assets 2406.00552
+
+# 3. 生成精读笔记、前作谱系与科学发现范式
+paper-wiki ingest 2406.00552 --overwrite
+```
+
+产物输出在 `KnowledgeBase/artifacts/{slug}/`：
+
+```text
+KnowledgeBase/artifacts/{slug}/
+├── manifest.json          # 论文元信息、来源哈希与人工核验状态
+├── assets/                # 确定性资产：paper.md / sections.json / figures/ / references.json
+├── summary.md             # 精读笔记（问题与动机 / 核心思路 / 方法架构 / 实验与分析 / 边界与思考 / 结语）
+├── prior_works.json       # 直接前作与思想演进脉络
+├── sci_pattern.json       # 科学发现范式分类
+└── wechat/                # 公众号发布包：article.md / article.html / cover.jpg / images/ / package.json
+```
+
+### 4. 启动 Web 工作台
+
+```bash
+# 启动后端 API（如已构建前端 dist/，可直接访问 http://127.0.0.1:8000）
+paper-wiki web --host 127.0.0.1 --port 8000 --reload
+
+# 前端开发模式（另开终端）
+cd web/frontend && npm install && npm run dev
+```
+
+生产环境部署说明见 [DEPLOY.md](DEPLOY.md)。
+
+---
+
+## Web 阅读与发布工作台
+
+- **发现**：统一搜索框支持关键词检索与 arXiv ID / 链接识别；展示基于 Zotero 口味的每日推荐，支持原位多选与批量提交精读生成。
+- **论文库与专注阅读**：支持按状态筛选与待核验快捷视图；正文独立滚动、目录/前作/核验按需展开；编辑带未保存离开提醒与乐观锁冲突保护。
+- **独立人工核验**：区分普通保存与人工确认（元信息核验与前作核验相互独立），双项通过后才允许增量入库 Neo4j。
+- **后台任务持久化**：推荐刷新、批量精读、公众号排版与发布均异步执行并落盘至 `artifacts/.jobs/`，刷新页面自动恢复进度，支持单篇失败重试。
+- **写作与发布（论文透镜 · PaperLens）**：
+  - 自动生成公众号标题/摘要、提取精简作者与机构、去重配图并优先选取方法框架图作为封面；
+  - 默认调用 Cursor 无头模式 + `gzh-design` 的 **`论文透镜`**（深海军蓝学术内参主题）生成 100% 公众号合规 HTML 片段（期刊题头 + 30 秒核心速览 + `01–06` 主章节 + 低权重延伸档案 + 品牌尾卡）；
+  - 支持在页面内预览、修改标题/摘要/封面，确认后再推送到微信公众号草稿箱；也支持上传独立 Markdown 文章直接排版发布。
+
+---
+
+## CLI 命令速查
+
+未安装 console script 时，可用 `PYTHONPATH=src python -m paper_wiki.cli.main ...` 替代 `paper-wiki`。
+
+### 发现与入库（Layer 0 / 1）
+
+| 命令 | 用途 | 常用示例 |
+| --- | --- | --- |
+| `paper-wiki search <query>` | 检索 arXiv 候选论文 | `paper-wiki search "knowledge graph agent" --start-year 2024 -n 10` |
+| `paper-wiki fetch <arxiv_id>` | 下载源码到 `raw/`（可加 `--and-ingest`） | `paper-wiki fetch 2406.00552 --and-ingest --overwrite` |
+| `paper-wiki recommend run` | 基于 Zotero 口味生成每日推荐快照 | `paper-wiki recommend run --max-papers 15` |
+| `paper-wiki parse <slug>` | 仅解析 LaTeX 检查章节与 token 规模 | `paper-wiki parse GraphWalker --verbose` |
+| `paper-wiki assets <slug...>` | 确定性构建 `manifest.json` 与 `assets/` | `paper-wiki assets GraphWalker --overwrite` |
+| `paper-wiki ingest <slug...>` | 生成语义产物（`--only summary\|prior_works\|sci_pattern`） | `paper-wiki ingest GraphWalker --overwrite` |
+| `paper-wiki ingest-all` | 批量补齐 `raw/` 下缺失产物的论文 | `paper-wiki ingest-all --only summary` |
+
+### 图谱与发布（Layer 2 / WeChat）
+
+| 命令 | 用途 | 常用示例 |
+| --- | --- | --- |
+| `paper-wiki graph plan [slugs... \| --all]` | 针对已核验论文生成幂等图谱增量事件（不连 Neo4j） | `paper-wiki graph plan --all` |
+| `paper-wiki graph apply` | 将未应用的增量事件 `MERGE` 进 Neo4j | `paper-wiki graph apply` |
+| `paper-wiki publish render-html <slug>` | 调用 Cursor 无头模式排版为公众号 HTML | `paper-wiki publish render-html 2611.15268 --theme 论文透镜` |
+| `paper-wiki publish wechat <slug> --html <file>` | 上传本地图片并创建微信公众号草稿 | `paper-wiki publish wechat 2611.15268 --html wechat/article.html` |
+| `paper-wiki web` | 启动 FastAPI 后端服务 | `paper-wiki web --host 127.0.0.1 --port 8000` |
+
+---
+
+## 完整 `.env` 选配参考
+
+```bash
+# ── 1. 核心 LLM（必填） ──
+MODEL_NAME=your-model-name
+BASE_URL=https://your-api-base-url/v1
+API_KEY=your-api-key
+# SUMMARY_MAX_CONTEXT_CHARS=60000
+# LLM_HTTP_PROXY=http://127.0.0.1:7890
+
+# ── 2. 微信公众号与无头排版（可选） ──
+WECHAT_APPID=your-appid
+WECHAT_SECRET=your-secret
+WECHAT_AUTHOR=论文透镜
+# WECHAT_PROXY=http://user:pass@fixed-ip-host:3128   # 出口 IP 不固定时走白名单代理
+CURSOR_API_KEY=your-cursor-api-key                   # Cursor 无头排版（agent -p）所需
+CURSOR_RENDER_THEME=论文透镜                          # 默认海军蓝主题，也可切换其它 gzh-design 主题
+
+# ── 3. 论文发现与 Zotero 推荐（可选） ──
+ARXIV_QUERY=cs.AI+cs.LG+cs.CL+cs.IR
+MAX_PAPER_NUM=15
+ZOTERO_ID=your-zotero-id
+ZOTERO_KEY=your-zotero-key
+
+# ── 4. Layer 2 Neo4j 图谱（可选） ──
+NEO4J_URI=bolt://localhost:7687
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-password
+NEO4J_DATABASE=neo4j
+```
+
+> ⚠️ 请勿提交 `.env` 或任何 API Key / AppSecret 到版本控制。
+
+---
+
+## 项目结构
+
+```text
+Paper-wiki/
+├── KnowledgeBase/              # 运行时数据（默认被 git 忽略，与代码解耦）
+│   ├── raw/{slug}/             # Layer 0：LaTeX 源码（只读）
+│   ├── artifacts/{slug}/       # Layer 1：assets、精读、前作、范式与公众号发布包
+│   ├── graph_state/            # Layer 2：本地图谱快照
+│   └── graph_updates/          # Layer 2：增量 JSONL 事件与 checkpoint
+├── prompts/                    # LLM Prompt 模板与科学发现范式 taxonomy
+├── src/paper_wiki/             # Python 核心包
+│   ├── assets/                 # 确定性 paper assets 构建与读取
+│   ├── cli/                    # Typer CLI 入口
+│   ├── core/                   # 配置、Pydantic 模型、任务进度
+│   ├── discovery/              # arXiv 检索/拉取与 Zotero 推荐
+│   ├── graph/                  # 图谱增量规划与 Neo4j 写入
+│   ├── ingestion/              # LaTeX 解析、精读/前作/范式生成器与 Pipeline
+│   ├── publishing/             # 论文透镜公众号组装、Cursor 排版、封面生成与微信 API
+│   └── web/                    # FastAPI 路由、Schema 与后台任务服务
+├── web/frontend/               # Vite + React + TypeScript 前端工作台
+├── deploy/                     # 生产部署脚本与配置（见 DEPLOY.md）
+├── tests/                      # 单元测试与集成测试
+├── docs/                       # 核心需求与技术架构文档
+└── img/                        # README 展示图
 ```
 
 ---
@@ -495,68 +241,34 @@ Paper-wiki/
 ## 开发与测试
 
 ```bash
+# 运行 Python 单元测试与集成测试
 pytest
+
+# 运行前端测试与构建
 cd web/frontend && npm test && npm run build
 ```
 
-测试覆盖：LaTeX 解析与章节匹配、assets builder、Pydantic schema 校验、mock LLM 端到端 ingest、discovery search/fetch/recommend 单元与集成流程、Layer 2 图谱 planner/neo4j_store（Paper/Author/Pattern 节点、三类关系、增量 diff 与幂等性）、Web API 路由与异步任务、前端发现/阅读/任务交互、导航恢复、草稿保护、独立核验与公众号预览流程、微信公众号 HTML 定位/校验/图片替换/草稿请求。
-
-更多约定见 [AGENTS.md](AGENTS.md)；设计文档见 [docs/](docs/)，其中 [Neo4j 科学发现图谱需求与技术方案.md](<docs/Neo4j%20科学发现图谱需求与技术方案.md>) 是 Layer 2 图谱的完整建模文档（节点/关系定义、去重规则、增量事件设计）。
-
 ---
 
-## 常见问题
+## 相关文档
 
-**parse 没有命中章节？**
-
-检查主文件是否正确，或章节标题是否过于特殊。关键词维护于 `src/paper_wiki/ingestion/latex_parser.py` 的 `TARGET_SECTIONS`。
-
-**ingest JSON 校验失败？**
-
-模型输出不符合 schema 时会自动重试。仍失败时可换更强模型，或调整对应 prompt。
-
-**summary 里图片预览空白？**
-
-LaTeX 图多为 `.pdf`，多数 Markdown 预览不支持内嵌 PDF。优先检查 `artifacts/{slug}/assets/figures/manifest.json` 中的 `asset_path` 和 `source_path`；也可 Ctrl+点击原始路径，或安装 VS Code 的 `vscode-pdf` 插件查看。
-
-**`graph plan` 报错说论文没有 review？**
-
-确认 `artifacts/{slug}/manifest.json` 里 `paper.meta_reviewed` 和 `paper.prior_works_reviewed` 是否都是 `true`——两者必须同时为真才允许入库；调试时可以加 `--include-unreviewed` 绕过检查。
-
-**conda / pip 装包失败？**
-
-conda 使用 `conda-forge` 渠道；pip 可加 `-i https://pypi.org/simple` 使用官方源。
+- 工程规范与边界：[AGENTS.md](AGENTS.md)
+- 部署运维指南：[DEPLOY.md](DEPLOY.md)
+- 项目总需求文档：[docs/项目-需求文档.md](docs/项目-需求文档.md)
+- 总体技术方案：[docs/Paper-Wiki 技术方案_v1.md](<docs/Paper-Wiki%20技术方案_v1.md>)
+- Assets 设计方案：[docs/Paper2Assets-设计方案.md](docs/Paper2Assets-设计方案.md)
+- 公众号发布方案：[docs/Paper2Blogs-技术方案.md](docs/Paper2Blogs-技术方案.md)
+- Layer 2 图谱方案：[docs/Neo4j 科学发现图谱需求与技术方案.md](<docs/Neo4j%20科学发现图谱需求与技术方案.md>)
 
 ---
 
 ## 路线图
 
-- [X] Layer 0 LaTeX 解析
-- [X] Layer 1 deterministic paper assets contract
-- [X] Layer 1 独立语义产物生成、单步重跑与 prompt 透传
-- [X] raw 待处理论文自动发现与批量 ingest
-- [X] 摘要 Markdown 图片引用与格式规范
-- [X] 微信公众号 HTML 草稿发布
-- [X] Web 原型 v1：论文列表、审查编辑、异步 ingest、微信发布入口
-- [X] Paper2Search / Paper2Recommend：arXiv 检索、按 ID 拉取、Zotero 口味每日推荐（CLI）
-- [X] Web 接入发现层：统一 `Home` 发现页、检索/添加与批量生成汇入待核验队列
-- [X] Markdown 上传、公众号 HTML 预览与后台草稿发布
-- [X] Paper 管理页：组合筛选、批量审查、后台任务历史
-- [X] 推荐/批量生成任务离页继续执行、任务落盘与页面恢复
-- [X] Layer 2 Neo4j 科学发现图谱增量入库：Paper / Author / Pattern 三种节点，`graph plan --all` 批量入库
-- [X] 阅读工作台首期：轻量视觉、连续多选、页面恢复、草稿保护与独立核验
-- [ ] 收藏/已读模型、原文对照与研究专题
-- [ ] Layer 3 向量检索与 API
-
----
-
-## 相关链接
-
-- 仓库：[github.com/Szy5/ResearchWorkSpace](https://github.com/Szy5/ResearchWorkSpace)
-- 需求文档：[docs/项目-需求文档.md](docs/项目-需求文档.md)
-- 技术方案：[docs/Paper-Wiki 技术方案_v1.md](<docs/Paper-Wiki%20技术方案_v1.md>)
-- Layer 2 图谱方案：[docs/Neo4j 科学发现图谱需求与技术方案.md](<docs/Neo4j%20科学发现图谱需求与技术方案.md>)
-
----
-
-如果这个项目对你有帮助，欢迎 Star ⭐
+- [x] Layer 0 LaTeX 解析 & Layer 1 确定性 Paper Assets
+- [x] 结构化精读笔记、前作谱系与科学发现范式生成
+- [x] arXiv 检索/拉取与 Zotero 口味每日推荐
+- [x] Web 阅读工作台（发现、专注阅读、草稿保护、独立核验、持久化后台任务）
+- [x] 「论文透镜 · PaperLens」海军蓝公众号一键排版与草稿推送
+- [x] Layer 2 Neo4j 科学发现图谱增量入库
+- [ ] 收藏 / 已读模型、原文双栏对照与专题合集
+- [ ] Layer 3 向量检索与问答 API
