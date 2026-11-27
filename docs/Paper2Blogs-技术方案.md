@@ -397,7 +397,7 @@ def render_blog_html(slug: str, settings: Settings, *, theme: str | None = None)
 | 字段 | 环境变量 | 默认值 | 说明 |
 | --- | --- | --- | --- |
 | `cursor_headless_binary` | `CURSOR_HEADLESS_BINARY` | `"agent"` | Cursor 无头模式可执行文件名/路径 |
-| `cursor_headless_timeout_seconds` | `CURSOR_HEADLESS_TIMEOUT_SECONDS` | `300` | 子进程超时时间；真实调用实测 2 分 10 秒～2 分 55 秒，默认值留有余量 |
+| `cursor_headless_timeout_seconds` | `CURSOR_HEADLESS_TIMEOUT_SECONDS` | `600` | 子进程超时时间；含插件同步 + gzh-design，常见 2～8 分钟；默认 600。`cursor_render` 会对 git 做 HTTPS shim，避免 GitHub SSH 挂死 |
 | `cursor_render_theme` | `CURSOR_RENDER_THEME` | `"摸鱼绿"` | 默认排版主题，`RenderBlogHtmlRequest.theme` 可覆盖 |
 | `cursor_render_prompt_path` | `CURSOR_RENDER_PROMPT_PATH` | `"blog_html_render_v1.py"` | 排版指令 prompt 文件路径 |
 

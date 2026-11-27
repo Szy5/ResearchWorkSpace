@@ -90,9 +90,50 @@ def test_repository_lists_and_loads_papers(tmp_path: Path) -> None:
 
     assert [item.slug for item in items] == ["demo-paper"]
     assert items[0].primary_pattern == "P05"
+    assert items[0].wechat_published_at is None
     assert detail.meta.title == "Demo Paper"
     assert detail.summary.startswith("# Summary")
     assert detail.references_count == 1
+
+
+def test_repository_infers_arxiv_id_from_slug_when_blank(tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+    artifacts_dir = settings.resolved_artifacts_dir()
+    _write_demo_artifact(artifacts_dir, slug="2601.12345")
+    manifest_path = artifacts_dir / "2601.12345" / "manifest.json"
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    payload["paper"]["arxiv_id"] = ""
+    manifest_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    repository = PaperRepository(settings)
+    item = repository.list_papers()[0]
+    detail = repository.get_paper("2601.12345")
+
+    assert item.arxiv_id == "2601.12345"
+    assert detail.meta.arxiv_id == "2601.12345"
+
+
+def test_repository_exposes_wechat_published_at(tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+    artifacts_dir = settings.resolved_artifacts_dir()
+    _write_demo_artifact(artifacts_dir)
+    wechat_dir = artifacts_dir / "demo-paper" / "wechat"
+    wechat_dir.mkdir(parents=True)
+    (wechat_dir / "package.json").write_text(
+        json.dumps(
+            {
+                "slug": "demo-paper",
+                "title": "Demo",
+                "prepared_at": "2026-11-11T00:00:00+00:00",
+                "published_at": "2026-11-11T12:00:00+00:00",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    items = PaperRepository(settings).list_papers()
+
+    assert items[0].wechat_published_at == "2026-11-11T12:00:00+00:00"
 
 
 def test_repository_rejects_stale_updates(tmp_path: Path) -> None:
@@ -187,3 +228,12 @@ def test_legacy_manifest_with_reviewed_true_implicitly_migrates_sub_flags(tmp_pa
     assert detail.meta.reviewed is True
     assert detail.meta.meta_reviewed is True
     assert detail.meta.prior_works_reviewed is True
+
+
+def test_library_exposes_arxiv_identity_for_candidate_deduplication(tmp_path: Path) -> None:
+    settings = _settings(tmp_path)
+    _write_demo_artifact(settings.resolved_artifacts_dir())
+    repository = PaperRepository(settings)
+    current = repository.get_paper("demo-paper")
+    repository.update_meta("demo-paper", {"arxiv_id": "2501.12345"}, expected_updated_at=current.updated_at)
+    assert repository.list_papers()[0].arxiv_id == "2501.12345"

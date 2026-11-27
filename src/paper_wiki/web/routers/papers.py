@@ -122,6 +122,7 @@ def _ingest_task(
         pipeline.run(
             slug,
             overwrite=payload.overwrite,
+            expected_updated_at=payload.expected_updated_at,
             summary_prompt=payload.summary_prompt,
             prior_works_prompt=payload.prior_works_prompt,
             sci_pattern_prompt=payload.sci_pattern_prompt,

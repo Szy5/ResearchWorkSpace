@@ -4,36 +4,36 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: '#0c1222',
-        'ink-soft': '#243044',
-        body: '#5a6578',
-        muted: '#8a93a3',
-        canvas: '#ffffff',
-        fog: '#eef1f5',
-        line: '#d5dbe5',
-        'line-strong': '#b8c0ce',
-        // Primary accent (was moss): cool cobalt, not teal-on-cream
-        moss: '#1f5eff',
-        'moss-deep': '#0f3fcc',
-        'moss-soft': '#e8efff',
-        // Secondary mark (was copper): amber for pattern tags only
-        copper: '#b45309',
-        'copper-soft': '#fff4e6',
-        rail: '#121826',
-        'rail-line': '#2a3348',
-        'rail-mute': '#9aa3b5',
+        ink: '#34372f',
+        'ink-soft': '#4b5045',
+        body: '#6b7065',
+        muted: '#7d8275',
+        canvas: '#fffefa',
+        fog: '#f5f5ef',
+        line: '#e3e5db',
+        'line-strong': '#c4c9ba',
+        // Restrained sage accent.
+        moss: '#53664c',
+        'moss-deep': '#3d5038',
+        'moss-soft': '#edf1e7',
+        // Amber for uncertainty and attention.
+        copper: '#936a32',
+        'copper-soft': '#faf3e5',
+        rail: '#f2f3ec',
+        'rail-line': '#e0e3d7',
+        'rail-mute': '#7b8270',
         error: '#c62828',
         'error-soft': '#fdecea',
         'error-line': '#f0c2c0',
-        'code-ink': '#0f172a'
+        'code-ink': '#30352c'
       },
       fontFamily: {
         sans: ['"IBM Plex Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         serif: ['"IBM Plex Serif"', 'Georgia', 'serif']
       },
       boxShadow: {
-        soft: '0 1px 0 rgba(12, 18, 34, 0.04), 0 8px 20px rgba(12, 18, 34, 0.05)',
-        lift: '0 2px 4px rgba(12, 18, 34, 0.05), 0 14px 32px rgba(12, 18, 34, 0.08)'
+        soft: '0 1px 2px rgba(40, 48, 32, 0.025)',
+        lift: '0 10px 35px rgba(40, 48, 32, 0.09)'
       },
       keyframes: {
         'fade-up': {

@@ -1,6 +1,7 @@
-import { Circle, Filter, Layers3 } from 'lucide-react'
+import { useRef } from 'react'
+import { CheckCircle2, FileText, Search } from 'lucide-react'
 import { PaperListItem } from '../api/client'
-
+import useScrollMemory from '../hooks/useScrollMemory'
 type Props = {
   papers: PaperListItem[]
   selectedSlug: string | null
@@ -9,8 +10,10 @@ type Props = {
   reviewedFilter: boolean | undefined
   onSelect: (slug: string) => void
   onReviewedFilter: (reviewed: boolean | undefined) => void
+  query?: string
+  onQuery?: (query: string) => void
+  onRetry?: () => void
 }
-
 export default function Dashboard({
   papers,
   selectedSlug,
@@ -18,72 +21,110 @@ export default function Dashboard({
   error,
   reviewedFilter,
   onSelect,
-  onReviewedFilter
+  onReviewedFilter,
+  query = '',
+  onQuery,
+  onRetry
 }: Props) {
+  const list = useRef<HTMLDivElement>(null)
+  useScrollMemory(
+    list,
+    `paper-wiki.library-scroll.${query}.${reviewedFilter}`,
+    !loading
+  )
   return (
-    <section className="min-h-[calc(100vh-112px)] border-r border-line pr-0 lg:h-full lg:min-h-0 lg:overflow-y-auto lg:pr-5">
-      <div className="mb-5 flex items-end justify-between gap-3">
-        <div>
-          <p className="page-kicker">Library</p>
-          <h1 className="mt-1 font-serif text-[24px] font-medium tracking-tight">我的论文</h1>
-          <p className="mt-1 text-sm text-body">{papers.length} 篇产物</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Filter size={16} className="text-muted" />
-          <div className="relative">
-            <select
-              className="field-select h-9 w-auto min-w-[7.5rem]"
-              value={reviewedFilter === undefined ? 'all' : String(reviewedFilter)}
-              onChange={(event) => {
-                const value = event.target.value
-                onReviewedFilter(value === 'all' ? undefined : value === 'true')
-              }}
+    <section className="library-panel" aria-label="论文库">
+      <header className="library-header">
+        <p className="eyebrow">YOUR LIBRARY</p>
+        <h1>
+          论文库 <span>{papers.length}</span>
+        </h1>
+        <label className="library-search">
+          <Search size={15} />
+          <input
+            aria-label="搜索我的论文"
+            placeholder="搜索标题、作者或 ID"
+            value={query}
+            onChange={(e) => onQuery?.(e.target.value)}
+          />
+        </label>
+        <div className="library-filters" aria-label="核验筛选">
+          {[
+            { label: '全部', value: undefined },
+            { label: '待核验', value: false },
+            { label: '已核验', value: true }
+          ].map((item) => (
+            <button
+              key={item.label}
+              aria-pressed={reviewedFilter === item.value}
+              className={reviewedFilter === item.value ? 'is-selected' : ''}
+              onClick={() => onReviewedFilter(item.value)}
             >
-              <option value="all">全部</option>
-              <option value="false">待审查</option>
-              <option value="true">已审查</option>
-            </select>
-          </div>
+              {item.label}
+            </button>
+          ))}
         </div>
-      </div>
-      {error ? <div className="alert-error mb-3">{error}</div> : null}
-      {loading ? <div className="text-sm text-body">加载中...</div> : null}
-      {!loading && papers.length === 0 ? (
-        <div className="empty-state">
-          <p className="font-serif text-lg font-medium tracking-tight">书架还是空的</p>
-          <p className="mt-2 text-sm text-body">去首页搜索或添加 arXiv 论文，开始积累。</p>
-        </div>
-      ) : null}
-      <div className="space-y-3">
-        {papers.map((paper) => (
-          <button
-            key={paper.slug}
-            className={`paper-card ${selectedSlug === paper.slug ? 'paper-card-active' : ''}`}
-            onClick={() => onSelect(paper.slug)}
-          >
-            <div className="flex items-start gap-3">
-              <Circle
-                size={11}
-                className={paper.reviewed ? 'mt-1.5 fill-moss text-moss' : 'mt-1.5 fill-copper text-copper'}
-              />
-              <div className="min-w-0 flex-1">
-                <h2 className="line-clamp-2 text-left font-serif text-[16px] font-medium tracking-tight">{paper.title}</h2>
-                <p className="mt-1 truncate text-left text-xs text-body">{paper.authors.join(', ') || paper.slug}</p>
-              </div>
-            </div>
-            <p className="mt-3 line-clamp-3 text-left text-sm leading-6 text-body">{paper.abstract || '暂无摘要'}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-              {paper.venue ? <span className="badge">{paper.venue}</span> : null}
-              {paper.year ? <span className="badge">{paper.year}</span> : null}
-              {paper.primary_pattern ? (
-                <span className="badge badge-pattern">
-                  <Layers3 size={12} />
-                  {paper.primary_pattern}
-                </span>
-              ) : null}
-            </div>
+      </header>
+      {error && (
+        <div role="alert" className="alert-error m-3">
+          {error}
+          <button className="ml-2 underline" onClick={onRetry}>
+            重试
           </button>
-        ))}
+        </div>
+      )}
+      <div ref={list} className="library-list" aria-busy={loading}>
+        {loading && !papers.length ? (
+          <div className="p-4 text-sm text-body">加载论文中…</div>
+        ) : !papers.length ? (
+          <div className="px-5 py-12 text-center">
+            <FileText size={25} className="mx-auto mb-4 text-muted" />
+            <p className="text-sm">
+              {query || reviewedFilter !== undefined
+                ? '没有符合条件的论文'
+                : '从第一篇论文开始'}
+            </p>
+            <p className="mt-2 text-xs leading-6 text-body">
+              {query || reviewedFilter !== undefined
+                ? '调整搜索词或核验筛选后再试。'
+                : '去发现页搜索或添加 arXiv 论文。'}
+            </p>
+          </div>
+        ) : (
+          papers.map((paper) => (
+            <button
+              key={paper.slug}
+              className={`library-item ${selectedSlug === paper.slug ? 'is-selected' : ''}`}
+              aria-current={selectedSlug === paper.slug ? 'true' : undefined}
+              onClick={() => onSelect(paper.slug)}
+            >
+              <div className="flex items-start gap-2">
+                <h2>{paper.title}</h2>
+                {paper.reviewed && (
+                  <CheckCircle2
+                    className="mt-1 flex-none text-moss"
+                    size={13}
+                    aria-label="已核验"
+                  />
+                )}
+              </div>
+              <p className="mt-2 truncate text-xs text-muted">
+                {paper.authors.slice(0, 2).join(', ') || paper.slug}
+                {paper.year ? ` · ${paper.year}` : ''}
+              </p>
+              <p className="mt-2 line-clamp-2 text-xs leading-5 text-body">
+                {paper.abstract || '打开查看精读笔记'}
+              </p>
+              <div className="mt-3 flex items-center gap-2 text-[10px] text-muted">
+                {paper.venue && <span>{paper.venue}</span>}
+                <span>{paper.reviewed ? '已核验' : '待核验'}</span>
+                {paper.primary_pattern && (
+                  <span className="ml-auto">{paper.primary_pattern}</span>
+                )}
+              </div>
+            </button>
+          ))
+        )}
       </div>
     </section>
   )

@@ -1,8 +1,14 @@
 # Paper Assets 需求与设计方案
 
-> 版本：v0.2 | 创建：2026-07-13 | 最后更新：2026-07-13 | 状态：最小 contract 已实现，持续维护
+> 版本：v0.2 | 创建：2026-07-13 | 最后更新：2026-11-03 | 状态：最小 contract 已实现，持续维护
 
 ---
+
+## 2026-11-03 下游重跑约定（已实现）
+
+最小 Assets Contract 保持不变。`ingest --overwrite` 复用已有 canonical Assets，覆盖范围为选中的 Layer 1 语义产物，以保留 manifest.paper 中的人工元信息；需要重新解析源文件时显式执行 `paper-wiki assets <slug> --overwrite`。已有 Assets 不完整时需先显式修复，不静默重建。
+
+语义生成先在单篇 artifacts 的临时目录完成，成功后在 `.paper-wiki.lock` 内核对 manifest.updated_at，再逐文件替换并更新 manifest 版本。生成失败或版本冲突保留旧语义产物。重跑 summary/prior_works 分别清除对应的人工核验标记，新生成内容不继承旧版核验结论。summary 保持内容型 Markdown，不增加元数据 frontmatter。
 
 ## 一、背景与目标
 

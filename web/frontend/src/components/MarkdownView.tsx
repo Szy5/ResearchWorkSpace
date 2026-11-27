@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import Dialog from './Dialog'
+import { normalizeMathDelimiters } from '../utils/reading'
 import ReactMarkdown from 'react-markdown'
 import rehypeKatex from 'rehype-katex'
 import remarkGfm from 'remark-gfm'
@@ -36,21 +38,11 @@ function artifactImageUrl(slug: string | undefined, src: string | undefined) {
   return `/api/papers/${encodeURIComponent(slug)}/files/${encoded}`
 }
 
-function normalizeMathDelimiters(markdown: string) {
-  return markdown
-    .replace(/\\\[([\s\S]*?)\\\]/g, (_match, expression: string) => `\n\n$$\n${expression.trim()}\n$$\n\n`)
-    .replace(/\\\(([\s\S]*?)\\\)/g, (_match, expression: string) => `$${expression.trim()}$`)
-    .replace(
-      /\\begin\{equation\*?\}([\s\S]*?)\\end\{equation\*?\}/g,
-      (_match, expression: string) => `\n\n$$\n${expression.trim()}\n$$\n\n`
-    )
-}
-
 export default function MarkdownView({ markdown, slug }: Props) {
   const [expandedSrc, setExpandedSrc] = useState<string | null>(null)
 
   if (!markdown.trim()) {
-    return <div className="markdown-empty">No summary yet.</div>
+    return <div className="markdown-empty">还没有精读笔记，请先生成精读。</div>
   }
 
   const normalizedMarkdown = normalizeQuotes(normalizeMathDelimiters(markdown))
@@ -61,15 +53,40 @@ export default function MarkdownView({ markdown, slug }: Props) {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
         components={{
+          h1: ({ node, children }) => (
+            <h1 id={`section-${node?.position?.start.line}`}>{children}</h1>
+          ),
+          h2: ({ node, children }) => (
+            <h2 id={`section-${node?.position?.start.line}`}>{children}</h2>
+          ),
+          h3: ({ node, children }) => (
+            <h3 id={`section-${node?.position?.start.line}`}>{children}</h3>
+          ),
+          table: ({ children }) => (
+            <div className="table-scroll">
+              <table>{children}</table>
+            </div>
+          ),
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target={href?.startsWith('http') ? '_blank' : undefined}
+              rel="noreferrer"
+            >
+              {children}
+            </a>
+          ),
           img: ({ src, alt }) => {
             const resolved = artifactImageUrl(slug, src)
             return (
-              <img
-                src={resolved}
-                alt={alt ?? ''}
-                loading="lazy"
+              <button
+                type="button"
+                className="figure-button"
+                aria-label={`放大图片：${alt || '论文配图'}`}
                 onClick={() => setExpandedSrc(resolved)}
-              />
+              >
+                <img src={resolved} alt={alt ?? ''} loading="lazy" />
+              </button>
             )
           }
         }}
@@ -77,9 +94,13 @@ export default function MarkdownView({ markdown, slug }: Props) {
         {normalizedMarkdown}
       </ReactMarkdown>
       {expandedSrc ? (
-        <div className="image-lightbox-backdrop" onClick={() => setExpandedSrc(null)}>
-          <img src={expandedSrc} alt="" />
-        </div>
+        <Dialog
+          title="论文配图"
+          className="image-lightbox-backdrop"
+          onClose={() => setExpandedSrc(null)}
+        >
+          <img src={expandedSrc} alt="放大的论文配图" />
+        </Dialog>
       ) : null}
     </div>
   )

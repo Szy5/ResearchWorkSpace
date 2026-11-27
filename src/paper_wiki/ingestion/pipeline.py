@@ -2,12 +2,17 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+from datetime import datetime, timezone
 import logging
+import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
+from filelock import FileLock
+
 from paper_wiki.assets.builder import PaperAssetsBuilder
-from paper_wiki.assets.models import PaperAssetsBundle
+from paper_wiki.assets.models import AssetsManifest, PaperAssetsBundle
 from paper_wiki.assets.reader import AssetsReader
 from paper_wiki.core.config import Settings, get_settings
 from paper_wiki.core.models import IngestResult, PriorWorksDoc, SciPatternDoc
@@ -82,6 +87,7 @@ class IngestPipeline:
         prior_works_prompt: str | None = None,
         sci_pattern_prompt: str | None = None,
         only: Sequence[str] | None = None,
+        expected_updated_at: str | None = None,
     ) -> IngestResult:
         """
         执行 ingest；不会更新 wiki、图谱、向量库等 Layer2/Layer3 资源。
@@ -117,32 +123,52 @@ class IngestPipeline:
         # 先生成/复用通用 assets，再通过 canonical bundle 供所选 generator 消费。
         total_steps = len(selected_steps) + 1
         logger.info("步骤 1/%d：构建 Layer1 通用 assets", total_steps)
-        if manifest_path.exists() and not overwrite:
+        if manifest_path.exists():
             logger.info("assets 已存在，复用 assets：%s", manifest_path)
         else:
             self.assets_builder.build(slug, overwrite=overwrite)
         bundle = self.assets_reader.load(slug)
 
+        if expected_updated_at is not None and bundle.manifest.updated_at != expected_updated_at:
+            raise RuntimeError("论文已被其他操作更新，请重新加载后再生成。")
+        base_version = bundle.manifest.updated_at
         generated_paths: dict[str, Path] = {}
         generated_artifacts: dict[str, Any] = {}
-        for index, step in enumerate(selected_steps, start=2):
-            output_path = artifact_dir / step.filename
-            logger.info("步骤 %d/%d：生成 %s", index, total_steps, step.filename)
-            artifact = step.generate(bundle, step.prompt_file)
-            if step.target == "prior_works" and isinstance(artifact, PriorWorksDoc):
-                artifact = self._backfill_prior_works(artifact)
-            output_path.write_text(step.serialize(artifact), encoding="utf-8")
-            generated_paths[step.target] = output_path
-            generated_artifacts[step.target] = artifact
-            logger.info("已写入：%s", output_path)
+        # Model/validation failures must not overwrite a usable reading note.
+        with TemporaryDirectory(prefix=".ingest-", dir=artifact_dir) as staging:
+            staging_dir = Path(staging)
+            for index, step in enumerate(selected_steps, start=2):
+                logger.info("步骤 %d/%d：生成 %s", index, total_steps, step.filename)
+                artifact = step.generate(bundle, step.prompt_file)
+                if step.target == "prior_works" and isinstance(artifact, PriorWorksDoc):
+                    artifact = self._backfill_prior_works(artifact)
+                (staging_dir / step.filename).write_text(step.serialize(artifact), encoding="utf-8")
+                generated_paths[step.target] = artifact_dir / step.filename
+                generated_artifacts[step.target] = artifact
 
-        if "summary" in generated_paths:
-            self._append_summary_semantic_context(
-                summary_path,
-                prior_works_path,
-                sci_pattern_path,
-                generated_artifacts=generated_artifacts,
-            )
+            if "summary" in generated_paths:
+                self._append_summary_semantic_context(
+                    staging_dir / "summary.md", prior_works_path, sci_pattern_path,
+                    generated_artifacts=generated_artifacts,
+                )
+            # Match the Web editor's optimistic lock: an edit during generation wins.
+            with FileLock(str(artifact_dir / ".paper-wiki.lock")):
+                manifest = AssetsManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+                if manifest.updated_at != base_version:
+                    raise RuntimeError("生成期间论文被修改，本次结果未覆盖现有内容；请重新加载后再试。")
+                if "summary" in selected_targets:
+                    manifest.paper.meta_reviewed = False
+                if "prior_works" in selected_targets:
+                    manifest.paper.prior_works_reviewed = False
+                manifest.paper.reviewed = manifest.paper.meta_reviewed and manifest.paper.prior_works_reviewed
+                manifest.updated_at = datetime.now(timezone.utc).isoformat()
+                staged_manifest = staging_dir / "manifest.json"
+                staged_manifest.write_text(manifest.model_dump_json(indent=2) + "\n", encoding="utf-8")
+                for output_path in generated_paths.values():
+                    os.replace(staging_dir / output_path.name, output_path)
+                    logger.info("已写入：%s", output_path)
+                os.replace(staged_manifest, manifest_path)
+                bundle.manifest = manifest
         logger.info("Layer1 语义产物生成完成：slug=%s, targets=%s", slug, ", ".join(selected_targets))
 
         # 返回路径和 canonical assets bundle，便于 CLI、测试或后续任务复用。

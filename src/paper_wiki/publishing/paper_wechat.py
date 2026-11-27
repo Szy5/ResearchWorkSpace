@@ -190,7 +190,44 @@ def _read_meta(artifact_dir: Path) -> PaperAssetMeta:
     manifest_path = artifact_dir / "manifest.json"
     if not manifest_path.is_file():
         return PaperAssetMeta()
-    return AssetsManifest.model_validate_json(manifest_path.read_text(encoding="utf-8")).paper
+    manifest = AssetsManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+    paper = manifest.paper
+    if paper.arxiv_id.strip():
+        return paper
+    from paper_wiki.discovery.sources.arxiv_source import infer_arxiv_id_from_slug
+
+    inferred = infer_arxiv_id_from_slug(manifest.slug)
+    if not inferred:
+        return paper
+    return paper.model_copy(update={"arxiv_id": inferred})
+
+
+def _venue_year_prefix(meta: PaperAssetMeta) -> str:
+    """Build ``NeurIPS 2026 | `` style prefix from curated venue/year metadata."""
+    venue = " ".join((meta.venue or "").split())
+    if not venue:
+        return ""
+    year = meta.year
+    venue_has_year = bool(re.search(r"\b(?:19|20)\d{2}\b", venue))
+    if venue_has_year or year is None:
+        return f"{venue} | "
+    if 2015 <= year <= 2035:
+        return f"{venue} {year} | "
+    # Ignore obviously wrong years (e.g. package copyright dates) but keep venue.
+    return f"{venue} | "
+
+
+def _with_venue_prefix(title: str, meta: PaperAssetMeta) -> str:
+    prefix = _venue_year_prefix(meta)
+    clean = " ".join((title or "").split())
+    if not prefix or not clean:
+        return clean
+    if clean.casefold().startswith(prefix.casefold()):
+        return clean
+    venue = " ".join((meta.venue or "").split())
+    if venue and clean.casefold().startswith(f"{venue.casefold()} "):
+        return clean
+    return f"{prefix}{clean}"
 
 
 def _people(settings: Settings, slug: str, meta: PaperAssetMeta) -> tuple[list[str], list[str]]:
@@ -242,10 +279,12 @@ def generate_headline(
 ) -> WeChatHeadline:
     prompt_path = resolve_prompt_path(settings.resolved_prompts_dir(), settings.wechat_headline_prompt_path)
     prompt_vars = load_prompt_module(prompt_path)
+    prefix = _venue_year_prefix(meta)
     user = (
         prompt_vars["wechat_headline_user_prompt"]
         .replace("{PAPER_TITLE}", meta.title or slug)
         .replace("{PAPER_META}", _meta_line(meta) or "未知")
+        .replace("{VENUE_PREFIX}", prefix or "（无）")
         .replace("{ARTICLE}", article[:12000])
     )
     return llm.complete_json(prompt_vars["wechat_headline_system_prompt"].strip(), user, WeChatHeadline)
@@ -464,6 +503,9 @@ def prepare_paper_wechat(
                 progress.detail("LLM 调用失败，已回退到论文标题和开头段落")
                 generated = _fallback_headline(meta, note_for_headline, slug)
             headline = WeChatHeadline(title=title or generated.title, digest=digest or generated.digest)
+    # Idempotent: skip if the title already starts with venue / venue+year.
+    if not (title and digest) and not keep_previous:
+        headline = WeChatHeadline(title=_with_venue_prefix(headline.title, meta), digest=headline.digest)
 
     source_path = out_dir / SOURCE_FILE
     with progress.step("adapt"):

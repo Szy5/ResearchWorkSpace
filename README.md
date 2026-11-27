@@ -26,6 +26,21 @@ Paper-Wiki 是一个**个人科研论文知识库**工具。它读取 `Knowledge
 
 ---
 
+## 阅读工作台（2026-11-03）
+
+Web 首期重构已落地，入口为「发现 / 论文库 / 写作与发布」，待核验是论文库快捷视图，任务与管理位于侧栏底部。
+
+- **发现**：关键词搜索与 arXiv ID/链接添加共用输入框；点标题预览、勾选批量生成，已选论文留在原位。推荐显示真实日期与排序降级状态，移除无对应来源的缩略图。
+- **阅读**：正文独立滚动，论文列表可收起，目录/前作/核验按需打开，支持专注阅读和窄屏列表/详情切换。
+- **连续工作**：Hash 链接保留论文、搜索与核验筛选；检索快照、滚动位置和未保存草稿保留在当前浏览器会话。跨设备阅读进度与正式收藏/已读模型尚未实现。
+- **编辑与核验**：普通保存不自动核验；未保存离开提供保存/放弃/继续编辑；保存冲突保留草稿并允许下载备份。重新生成需明确覆盖范围，新内容重新进入待核验。
+- **后台任务**：逐篇提交、状态恢复、单篇失败重试和结果跳转；断网显示同步异常，不把它当成任务已失败。
+- **公众号**：先检查预览，再明确创建草稿；过期预览阻止提交，同一表单的连续点击防止重复创建。
+
+本轮同时修复精读重跑的写入保护：复用已有 Assets 以保留人工元信息，模型生成/校验先在单篇 artifacts 下暂存，持文件锁检查 manifest 版本后再替换目标文件；并发编辑发生时拒绝覆盖。显式重建原始 Assets 仍使用 `paper-wiki assets <slug> --overwrite`。
+
+实施与验收见 [前端与交互重构计划](<docs/Paper-Wiki 前端与交互重构-实施计划.md>)。修改前端后运行 `cd web/frontend && npm run build`，现有 FastAPI 服务可直接提供新的 `dist/`；Python 代码变更需要重启后端进程生效。开发服务器默认代理 `http://127.0.0.1:8000`，可用 `PAPER_WIKI_API_PROXY` 覆盖。
+
 ## 快速开始
 
 ```bash
@@ -484,7 +499,7 @@ pytest
 cd web/frontend && npm test && npm run build
 ```
 
-测试覆盖：LaTeX 解析与章节匹配、assets builder、Pydantic schema 校验、mock LLM 端到端 ingest、discovery search/fetch/recommend 单元与集成流程、Layer 2 图谱 planner/neo4j_store（Paper/Author/Pattern 节点、三类关系、增量 diff 与幂等性）、Web API 路由与异步任务、前端 TodayFeed/SearchAndAdd 批量生成与检索交互、微信公众号 HTML 定位/校验/图片替换/草稿请求。
+测试覆盖：LaTeX 解析与章节匹配、assets builder、Pydantic schema 校验、mock LLM 端到端 ingest、discovery search/fetch/recommend 单元与集成流程、Layer 2 图谱 planner/neo4j_store（Paper/Author/Pattern 节点、三类关系、增量 diff 与幂等性）、Web API 路由与异步任务、前端发现/阅读/任务交互、导航恢复、草稿保护、独立核验与公众号预览流程、微信公众号 HTML 定位/校验/图片替换/草稿请求。
 
 更多约定见 [AGENTS.md](AGENTS.md)；设计文档见 [docs/](docs/)，其中 [Neo4j 科学发现图谱需求与技术方案.md](<docs/Neo4j%20科学发现图谱需求与技术方案.md>) 是 Layer 2 图谱的完整建模文档（节点/关系定义、去重规则、增量事件设计）。
 
@@ -524,11 +539,13 @@ conda 使用 `conda-forge` 渠道；pip 可加 `-i https://pypi.org/simple` 使�
 - [X] 微信公众号 HTML 草稿发布
 - [X] Web 原型 v1：论文列表、审查编辑、异步 ingest、微信发布入口
 - [X] Paper2Search / Paper2Recommend：arXiv 检索、按 ID 拉取、Zotero 口味每日推荐（CLI）
-- [X] Web 接入发现层：今日推荐 `TodayFeed`、检索/添加 `SearchAndAdd`、批量生成汇入待审查队列
+- [X] Web 接入发现层：统一 `Home` 发现页、检索/添加与批量生成汇入待核验队列
 - [X] Markdown 上传、公众号 HTML 预览与后台草稿发布
 - [X] Paper 管理页：组合筛选、批量审查、后台任务历史
 - [X] 推荐/批量生成任务离页继续执行、任务落盘与页面恢复
 - [X] Layer 2 Neo4j 科学发现图谱增量入库：Paper / Author / Pattern 三种节点，`graph plan --all` 批量入库
+- [X] 阅读工作台首期：轻量视觉、连续多选、页面恢复、草稿保护与独立核验
+- [ ] 收藏/已读模型、原文对照与研究专题
 - [ ] Layer 3 向量检索与 API
 
 ---

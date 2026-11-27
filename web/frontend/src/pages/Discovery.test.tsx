@@ -1,190 +1,172 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-import Home from './Home'
-
+import Home, { arxivIdFromInput } from './Home'
 const candidate = {
   title: 'Attention Is All You Need',
   authors: ['Vaswani'],
   year: 2017,
-  abstract: 'A new simple network architecture.',
-  url: 'https://arxiv.org/abs/1706.03762',
+  abstract: 'A simple architecture.',
+  url: '',
   venue: '',
   arxiv_id: '1706.03762',
   citation_count: null,
   publication_date: null,
   source: 'arxiv',
-  score: 9.1
+  score: 9
 }
-
-function jobResponse(overrides: Record<string, unknown>) {
-  return {
-    job_id: 'job-1',
-    slug: '1706.03762',
-    target: 'fetch_and_ingest',
-    status: 'pending',
-    created_at: '2026-07-14T00:00:00+00:00',
-    started_at: null,
-    finished_at: null,
-    error: null,
-    result: null,
-    progress: null,
-    ...overrides
-  }
+const snapshot = {
+  date: '2020-01-01',
+  generated_at: '',
+  corpus_size: 5,
+  candidate_pool_size: 1,
+  candidates: [
+    {
+      ...candidate,
+      display_summary: '一句话讲清注意力',
+      reason: '与《Deep Learning》相似度92%'
+    }
+  ],
+  degraded: true
 }
-
-describe('Home / RecommendedSection', () => {
+describe('Discovery interactions', () => {
   beforeEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  test('staging a recommended candidate removes it from the pool and reports it via onStage', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: RequestInfo | URL) => {
         const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json({
-            date: '2026-07-14',
-            generated_at: '2026-07-14T00:00:00+00:00',
-            corpus_size: 5,
-            candidate_pool_size: 1,
-            candidates: [{ ...candidate, reason: '与 "Deep Learning" 相似度92%' }],
-            degraded: false
-          })
-        }
+        if (path.startsWith('/api/recommendations/today'))
+          return Response.json(snapshot)
+        if (path.startsWith('/api/jobs?')) return Response.json([])
+        if (path.startsWith('/api/search')) return Response.json([candidate])
         return Response.json({ detail: 'not found' }, { status: 404 })
       })
     )
-
-    const onStage = vi.fn()
+  })
+  test('selected papers remain visible and can be unselected', async () => {
     const user = userEvent.setup()
-    render(<Home stagedKeys={new Set()} onStage={onStage} onIngested={vi.fn()} />)
-
-    await screen.findByText('Attention Is All You Need')
-    expect(screen.getByText(/相似度92%/)).toBeInTheDocument()
-
-    await user.click(screen.getAllByRole('checkbox')[0])
-    expect(onStage).toHaveBeenCalledWith([{ key: '1706.03762', candidate: expect.objectContaining({ arxiv_id: '1706.03762' }), slug: undefined }])
-  })
-
-  test('a candidate already present in stagedKeys is not shown in the pool', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL) => {
-        const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json({
-            date: '2026-07-14',
-            generated_at: '2026-07-14T00:00:00+00:00',
-            corpus_size: 5,
-            candidate_pool_size: 1,
-            candidates: [{ ...candidate, reason: '' }],
-            degraded: false
-          })
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
+    const onUnstage = vi.fn()
+    render(
+      <Home
+        stagedKeys={new Set(['1706.03762'])}
+        onStage={vi.fn()}
+        onUnstage={onUnstage}
+        onIngested={vi.fn()}
+      />
     )
-
-    render(<Home stagedKeys={new Set(['1706.03762'])} onStage={vi.fn()} onIngested={vi.fn()} />)
-
-    await screen.findByText('今日候选都已加入生成暂存区。')
-    expect(screen.queryByText('Attention Is All You Need')).not.toBeInTheDocument()
+    const checkbox = await screen.findByRole('checkbox', { name: /取消选择/ })
+    expect(checkbox).toBeChecked()
+    await user.click(checkbox)
+    expect(onUnstage).toHaveBeenCalledWith('1706.03762')
+    expect(
+      screen.getByRole('button', { name: candidate.title })
+    ).toBeInTheDocument()
   })
-
-  test('prefers the LLM display_summary over the raw abstract', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL) => {
-        const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json({
-            date: '2026-07-14',
-            generated_at: '2026-07-14T00:00:00+00:00',
-            corpus_size: 5,
-            candidate_pool_size: 1,
-            candidates: [{ ...candidate, reason: '', display_summary: '一句话讲清楚注意力机制。' }],
-            degraded: false
-          })
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
+  test('explains stale snapshots and degraded ranking without unrelated thumbnails', async () => {
+    render(
+      <Home stagedKeys={new Set()} onStage={vi.fn()} onIngested={vi.fn()} />
     )
-
-    render(<Home stagedKeys={new Set()} onStage={vi.fn()} onIngested={vi.fn()} />)
-
-    await screen.findByText('一句话讲清楚注意力机制。')
-    expect(screen.queryByText('A new simple network architecture.')).not.toBeInTheDocument()
+    await screen.findByRole('heading', { name: '最近推荐' })
+    expect(screen.getByText(/尚未更新到今天/)).toBeInTheDocument()
+    expect(screen.getByText(/未经兴趣相似度排序/)).toBeInTheDocument()
+    expect(screen.getByText(/与"Deep Learning"相似度92%/)).toBeInTheDocument()
+    expect(screen.getByText('一句话讲清注意力')).toBeInTheDocument()
+    expect(document.querySelector('img')).toBeNull()
   })
-})
-
-describe('Home / SearchSection', () => {
-  beforeEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  test('checking a keyword search result stages it directly', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async (url: RequestInfo | URL) => {
-        const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json(null)
-        }
-        if (path.startsWith('/api/search')) {
-          return Response.json([candidate])
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
-      })
-    )
-
-    const onStage = vi.fn()
+  test('invalid years do not submit requests', async () => {
     const user = userEvent.setup()
-    render(<Home stagedKeys={new Set()} onStage={onStage} onIngested={vi.fn()} />)
-
-    await user.type(screen.getByPlaceholderText(/transformer attention mechanism/), 'attention')
-    await user.click(screen.getByText('搜索'))
-
-    await screen.findByText('Attention Is All You Need')
-    await user.click(screen.getByRole('checkbox'))
-
-    expect(onStage).toHaveBeenCalledWith([{ key: '1706.03762', candidate, slug: undefined }])
+    render(
+      <Home stagedKeys={new Set()} onStage={vi.fn()} onIngested={vi.fn()} />
+    )
+    await user.type(screen.getByRole('textbox'), 'attention')
+    await user.click(screen.getByRole('button', { name: /年份/ }))
+    await user.clear(screen.getByLabelText('起始年份'))
+    await user.type(screen.getByLabelText('起始年份'), '2099')
+    await user.click(screen.getByRole('button', { name: '搜索' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('请输入有效年份')
+    expect(
+      vi
+        .mocked(fetch)
+        .mock.calls.some(([url]) => String(url).startsWith('/api/search'))
+    ).toBe(false)
   })
-
-  test('fetch by arXiv id with immediate ingest notifies the caller', async () => {
-    let fetchPolls = 0
+  test('failed search preserves previous results and labels their query', async () => {
+    const user = userEvent.setup()
+    render(
+      <Home stagedKeys={new Set()} onStage={vi.fn()} onIngested={vi.fn()} />
+    )
+    await user.type(screen.getByRole('textbox'), 'attention')
+    await user.click(screen.getByRole('button', { name: '搜索' }))
+    await screen.findByRole('heading', { name: /检索结果/ })
+    vi.mocked(fetch).mockImplementation(async () =>
+      Response.json({ detail: 'Network unavailable' }, { status: 503 })
+    )
+    await user.clear(screen.getByRole('textbox'))
+    await user.type(screen.getByRole('textbox'), 'memory')
+    await user.click(screen.getByRole('button', { name: '搜索' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      '上次成功检索“attention”'
+    )
+    expect(
+      screen.getByRole('heading', { name: /检索结果/ })
+    ).toBeInTheDocument()
+  })
+  test('known papers open directly instead of being generated twice', async () => {
+    const user = userEvent.setup()
+    const onOpenPaper = vi.fn()
+    render(
+      <Home
+        stagedKeys={new Set()}
+        onStage={vi.fn()}
+        onIngested={vi.fn()}
+        onOpenPaper={onOpenPaper}
+        papers={[{ slug: '1706.03762', title: candidate.title } as never]}
+      />
+    )
+    await user.click(await screen.findByRole('button', { name: '打开论文' }))
+    expect(onOpenPaper).toHaveBeenCalledWith('1706.03762')
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  })
+  test('arxiv URLs use the explicit add flow and optional immediate generation', async () => {
+    const base = fetch
+    const onIngested = vi.fn()
     vi.stubGlobal(
       'fetch',
       vi.fn(async (url: RequestInfo | URL, init?: RequestInit) => {
-        const path = String(url)
-        if (path.startsWith('/api/recommendations/today')) {
-          return Response.json(null)
+        if (String(url) === '/api/papers/fetch') {
+          expect(JSON.parse(String(init?.body))).toMatchObject({
+            arxiv_id: '1706.03762',
+            and_ingest: true
+          })
+          return Response.json({ job_id: 'fetch-1' })
         }
-        if (path === '/api/papers/fetch' && init?.method === 'POST') {
-          return Response.json(jobResponse({ status: 'pending', slug: '1706.03762' }))
-        }
-        if (path === '/api/jobs/job-1') {
-          fetchPolls += 1
-          if (fetchPolls < 2) {
-            return Response.json(jobResponse({ status: 'running', progress: '📄 已找到论文主文件，正在下载 PDF...' }))
-          }
-          return Response.json(jobResponse({ status: 'succeeded', result: { slug: '1706.03762' } }))
-        }
-        return Response.json({ detail: 'not found' }, { status: 404 })
+        if (String(url) === '/api/jobs/fetch-1')
+          return Response.json({
+            status: 'succeeded',
+            result: { slug: '1706.03762' }
+          })
+        return base(url, init)
       })
     )
-
-    const onIngested = vi.fn()
     const user = userEvent.setup()
-    render(<Home stagedKeys={new Set()} onStage={vi.fn()} onIngested={onIngested} />)
-
-    await user.click(screen.getByText('或按 arXiv ID 直接添加'))
-    await user.type(screen.getByPlaceholderText('2401.12345'), '1706.03762')
-    await user.click(screen.getByLabelText(/拉取后立即生成/))
-    await user.click(screen.getByText('拉取'))
-
-    await screen.findByText('📄 已找到论文主文件，正在下载 PDF...')
-    await waitFor(() => expect(onIngested).toHaveBeenCalledWith('1706.03762'), { timeout: 5000 })
-  }, 10000)
+    render(
+      <Home stagedKeys={new Set()} onStage={vi.fn()} onIngested={onIngested} />
+    )
+    await user.type(
+      screen.getByRole('textbox'),
+      'https://arxiv.org/abs/1706.03762'
+    )
+    await user.click(screen.getByLabelText(/下载后立即生成/))
+    await user.click(screen.getByRole('button', { name: '添加论文' }))
+    await waitFor(() => expect(onIngested).toHaveBeenCalledWith('1706.03762'))
+  })
+  test.each([
+    ['1706.03762', '1706.03762'],
+    ['https://arxiv.org/pdf/2401.12345v2.pdf', '2401.12345v2'],
+    ['arXiv:hep-th/9901001', 'hep-th/9901001'],
+    ['graph retrieval', null],
+    ['https://evil.example/1706.03762', null]
+  ])('recognizes paper input %s', (value, expected) => {
+    expect(arxivIdFromInput(value)).toBe(expected)
+  })
 })

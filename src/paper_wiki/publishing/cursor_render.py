@@ -4,6 +4,7 @@ import logging
 import os
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
 from paper_wiki.core.config import Settings
@@ -13,6 +14,56 @@ from paper_wiki.publishing.html_processor import sanitize_wechat_blog_html, vali
 
 logger = logging.getLogger(__name__)
 
+_GIT_HTTPS_SHIM_SCRIPT = """#!/usr/bin/env bash
+set -euo pipefail
+REAL_GIT={real_git!r}
+PROXY="${{HTTPS_PROXY:-${{https_proxy:-${{HTTP_PROXY:-${{http_proxy:-}}}}}}}}"
+ARGS=()
+ARGS+=(-c "url.https://github.com/.insteadOf=git@github.com:")
+ARGS+=(-c "url.https://github.com/.insteadOf=ssh://git@github.com/")
+if [[ -n "$PROXY" ]]; then
+  ARGS+=(-c "http.proxy=$PROXY" -c "https.proxy=$PROXY")
+fi
+exec "$REAL_GIT" "${{ARGS[@]}}" "$@"
+"""
+
+
+def _http_proxy_from_env(env: dict[str, str]) -> str:
+    for key in ("HTTPS_PROXY", "https_proxy", "HTTP_PROXY", "http_proxy"):
+        value = (env.get(key) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _ensure_git_https_shim(env: dict[str, str]) -> None:
+    """Force child ``git`` to use HTTPS + HTTP proxy when fetching Cursor plugins.
+
+    ``agent -p`` syncs marketplace plugins from ``git@github.com:cursor/plugins.git``
+    over SSH. On hosts where GitHub SSH is blocked/hangs, the headless agent never
+    produces output and trips ``CURSOR_HEADLESS_TIMEOUT_SECONDS``. ``GIT_CONFIG_*``
+    is stripped from the git child, so we prepend a PATH shim instead.
+    """
+    proxy = _http_proxy_from_env(env)
+    if not proxy:
+        return
+
+    real_git = shutil.which("git", path=env.get("PATH")) or "/usr/bin/git"
+    shim_dir = Path(tempfile.gettempdir()) / f"paper-wiki-git-shim-{os.getuid()}"
+    shim_dir.mkdir(parents=True, exist_ok=True)
+    shim_path = shim_dir / "git"
+    script = _GIT_HTTPS_SHIM_SCRIPT.format(real_git=real_git)
+    if not shim_path.is_file() or shim_path.read_text(encoding="utf-8") != script:
+        shim_path.write_text(script, encoding="utf-8")
+        shim_path.chmod(0o755)
+
+    env["PATH"] = f"{shim_dir}{os.pathsep}{env.get('PATH', '')}"
+    # If anything still tries SSH, fail fast instead of hanging for the full timeout.
+    env.setdefault(
+        "GIT_SSH_COMMAND",
+        "ssh -o BatchMode=yes -o ConnectTimeout=5 -o ConnectionAttempts=1",
+    )
+
 
 def _cursor_subprocess_env(settings: Settings) -> dict[str, str]:
     """Build env for ``agent -p``. Headless print mode needs CURSOR_API_KEY."""
@@ -20,6 +71,7 @@ def _cursor_subprocess_env(settings: Settings) -> dict[str, str]:
     key = (settings.cursor_api_key or env.get("CURSOR_API_KEY") or "").strip()
     if key:
         env["CURSOR_API_KEY"] = key
+    _ensure_git_https_shim(env)
     return env
 
 

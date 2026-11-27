@@ -1,10 +1,32 @@
 # Paper-Wiki 技术方案 v1.5
 
-> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-08-05 | 状态：持续维护
+> 作者：架构设计草稿 | 创建：2026-06-24 | 最后更新：2026-11-03 | 状态：持续维护
 
 ---
 
 ## 零、当前实现状态
+
+### Web 阅读工作台增量（2026-11-03，已实现）
+
+- 前端继续使用 React/Vite/Tailwind，颜色与间距统一为轻量阅读样式。`App` 维护长期存在的发现页、批量选择与任务订阅；不引入新全局状态库。
+- `useWorkspaceRoute` 使用 `#/home`、`#/papers/{slug}?q=...&reviewed=false`、`#/publish/{slug}`、`#/publish?document=...`、`#/manage`，适配现有 FastAPI 静态目录挂载。论文库搜索输入替换当前历史项，打开论文/切页写入历史；浏览器前进后退走同一离开保护。
+- `NavigationGuardProvider` 注册各编辑区域的脏状态，提供保存/放弃/继续编辑和 beforeunload 提醒；`Dialog` 统一焦点约束、Esc 与关闭后焦点返回。
+- `useScrollMemory` 与带版本/内容指纹的 sessionStorage 保存页面、列表、正文位置；检索快照及笔记草稿同样属于当前浏览器会话。localStorage 保留布局偏好、已选论文与 job ID。存储不可用时应用仍可使用，但恢复能力降级。
+- `PaperDetail` 按 slug 独立实例化、忽略过期异步加载；正文滚动与辅助面板分离。笔记首个同名标题仅在展示时去重；目录与数学规范化后的 Markdown 使用相同章节位置。
+- 保存元信息仍使用 `PATCH /api/papers/{slug}/meta`，不再隐式发送 `meta_reviewed=true`。核验动作单独设置 `meta_reviewed` 或 `prior_works_reviewed`，继续由服务端派生整体 reviewed。前作编辑改为受控表单，纳入同一草稿保护。
+- `PaperListItem` 新增默认空字符串的 `arxiv_id`，支持自定义 slug 论文与 arXiv 候选去重。`IngestRequest` 新增可选 `expected_updated_at`，阅读页重跑发送当前版本。
+- `useBatchGeneration` 保留 v1 本地选择存储键，逐篇提交以隔离部分失败；持 job ID 重连轮询、失败项单独重试。失去网络仅报告同步异常；没有 ID 的中断提交从任务列表核对。HTTP 提交去重限于当前客户端，不等同于服务端全局幂等。
+- 通用 `pollJob` 改为串行请求，避免定时器叠加请求。公众号流程先预览再显式创建草稿，禁止过期包提交；同一表单的连续点击去重，状态不确定时引导核对后台结果。
+- Vite API 代理可用 `PAPER_WIKI_API_PROXY` 覆盖，默认仍为 `http://127.0.0.1:8000`。未新增运行依赖。
+
+### Layer 1 重跑提交保护（2026-11-03，已实现）
+
+`IngestPipeline.run` 对已有 manifest 复用 canonical Assets，经 `AssetsReader` 加载；`overwrite` 允许覆盖所选语义产物，显式重建 Assets 仍走 assets 命令。生成内容先写单篇 artifacts 下的临时目录并完成语义附录拼接；生成与验证失败时不替换旧产物。
+
+提交使用与 Web 编辑相同的 `.paper-wiki.lock`，比较生成开始时 manifest.updated_at 与最新版本。可选 expected_updated_at 还用于开始前检查；发生并发编辑则终止覆盖。每个输出以 `os.replace` 替换，manifest 最后更新版本；这是单文件原子替换，不保证多个文件在进程崩溃时作为整体事务提交。
+
+元信息保持原值；summary 重跑重置 meta_reviewed，prior_works 重跑重置 prior_works_reviewed，再派生整体 reviewed。此更改不触发图谱、wiki、嵌入或检索索引更新。
+
 
 本文档是长期维护文档，既记录已经落地的工程设计，也保留后续 Layer 2/Layer 3 的规划。每次功能实现、架构调整或范围变更后，都应同步更新本节与相关设计章节。Web v1 原型现在作为本地审查工作站入口存在，但不等同于 Layer 3 检索 API。
 
@@ -704,7 +726,7 @@ sequenceDiagram
 
     User->>CLI: paper-wiki ingest {slug} [slug ...] / ingest-all
     CLI->>Pipeline: run(slug, only=None)
-    Pipeline->>AssetsBuilder: build(slug) when assets missing or overwrite=true
+    Pipeline->>AssetsBuilder: build(slug) only when assets manifest is missing
     AssetsBuilder-->>Pipeline: manifest.json + assets/
     Pipeline->>AssetsReader: load(slug)
     AssetsReader-->>Pipeline: PaperAssetsBundle
@@ -757,7 +779,7 @@ sequenceDiagram
 
     User->>CLI: paper-wiki ingest {slug} [slug ...] / ingest-all
     CLI->>Pipeline: run(slug, only=selected targets)
-    Pipeline->>AssetsBuilder: build(slug) when assets missing or overwrite=true
+    Pipeline->>AssetsBuilder: build(slug) only when assets manifest is missing
     AssetsBuilder-->>Pipeline: manifest.json + assets/
     Pipeline->>AssetsReader: load(slug)
     AssetsReader-->>Pipeline: PaperAssetsBundle
@@ -793,6 +815,7 @@ sequenceDiagram
 - `/api/publishing/markdown/*` 把 UTF-8 Markdown、可选正文图片/封面保存到 `artifacts/.publishing/{document_id}/`。`publishing/markdown_renderer.py` 确定性输出摸鱼绿主题正文片段，只使用内联样式和 `span leaf`，不包含脚本、外链 CSS 或文档外壳；草稿发布复用现有图片替换和 WeChat client，并作为后台 job 执行。未提供封面或 `thumb_media_id` 时，`publishing/cover_generator.py` 按标题生成 JPEG 封面并上传。
 - **精读笔记一键发布（2026-10，排版策略 2026-10-31 更新）**：`web/routers/wechat.py` 提供 `GET /api/publishing/wechat/config`、`GET|PATCH /api/papers/{slug}/wechat`、`POST /api/papers/{slug}/wechat/prepare`（body 可带 `title/digest/author/regenerate_headline/publish`，`publish=true` 即一键发布）、`POST /api/papers/{slug}/wechat/publish`、`POST|DELETE /api/papers/{slug}/wechat/cover`、`GET /api/papers/{slug}/wechat/preview`。核心逻辑在 `publishing/paper_wechat.py`：读取 `summary.md`（剥离尾部语义附录后的正文只用于生成标题/摘要）→ 用 `prompts/wechat_headline_v1.py` 调用 LLM 生成标题/摘要，失败回退 → **正文不再 LLM 改写**，对全文做 `strip_formulas` 后作为底稿（v5 summary 本身已是约 5 分钟、无公式的粗读博客）→ 图片复制到 `wechat/images/` 并转 JPG（PDF 取首页、长边 ≤1280、<950KB），优先把 framework/overview/pipeline/model/框架/概览/流程/架构 类图作为封面与开头方法图；方法图经 `lead_figure_caption` 取图注后，与标题/作者/单位/来源信息块一并前置写入 `wechat/article.md`（方法章节原图保留）→ 调用 `publishing/cursor_render.render_markdown_html`（Cursor 无头 `agent -p --force --trust`，prompt `blog_html_render_v1.py`，默认主题「摸鱼绿」，走 gzh-design skill）生成 `wechat/article.html`，产物校验 `validate_wechat_html` → 生成封面 → 写 `package.json`。发布时复用 `wechat_publisher` 上传封面、正文图片并创建草稿。`markdown_renderer` 仍保留给「上传 Markdown」发布页使用。`PriorWorksGenerator.ensure_chinese_narrative` 与 `WECHAT_PROXY` 行为不变。
 - **作者与单位（2026-10）**：`LaTeXParser._extract_authors` 改为读取所有 `\author` 块（含 authblk 多处 `\author[..]{}`、`\icmlauthor`），在有独立单位命令时把 `\author` 内所有行视为作者，否则每个 `\And` 分组取到第一条单位行之前的所有行；新增 `_extract_affiliations`，只保留匹配机构关键词的行。`PaperAssetMeta` 新增 `affiliations: list[str]`（默认空，旧 manifest 兼容），`paper-wiki assets` 写入该字段。
+- **arXiv ID 回填与公众号标题会议前缀（2026-11-25）**：`PaperAssetsBuilder` 在写入 `manifest.json` 时用 `infer_arxiv_id_from_slug(slug)` 填充 `paper.arxiv_id`（重建时保留已有 venue/year/审查标记）；列表/详情/公众号 `_read_meta` 在字段为空时同样从 slug 推断。`prepare_paper_wechat` 生成标题后若元信息有会议名，自动加 `NeurIPS 2026 | ` 风格前缀（年份仅在 2015–2035 时拼接；标题已带前缀则不重复）。
 - **任务步骤（2026-10）**：`core/progress.py` 用 ContextVar 提供 `plan/step/detail/skip`，业务代码在 job 线程外调用是 no-op。`JobManager.submit(..., steps=[StepSpec])` 预登记步骤，`_JobProgressSink` 更新 `JobRecord.steps`（`pending|running|succeeded|failed|skipped`、`external`、`detail`、起止时间）；ingest 不改管线代码，而由 `progress_messages.step_for_log` 把日志行映射到 fetch/assets/summary/prior_works/sci_pattern 步骤。前端 `components/JobSteps.tsx` 渲染步骤条与计时，`external` 非空且运行中时显示"正在请求 LLM / 微信 API"。微信错误码在 `publishing/exceptions.py` 中附中文提示。
 - 今日推荐卡片使用固定两列布局：文本占剩余宽度，缩略图始终位于整个卡片的右侧。
 

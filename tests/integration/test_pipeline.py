@@ -156,3 +156,63 @@ def test_pipeline_enriches_summary_from_existing_semantic_artifacts(tmp_path: Pa
     assert "P05 Data & Evaluation Engineering" in summary_text
     assert "## 先前工作分析" in summary_text
     assert "奠定了评测设置与路径推理的问题形式" in summary_text
+
+
+def test_regeneration_preserves_metadata_and_invalidates_only_changed_review_gate(tmp_path: Path) -> None:
+    import json
+
+    settings = Settings(project_root=Path.cwd(), raw_dir=Path("tests/fixtures"), artifacts_dir=tmp_path, prompts_dir=Path("prompts"), api_key="test")
+    pipeline = IngestPipeline(settings=settings, llm=FakeLLM())
+    result = pipeline.run("sample_paper", overwrite=True)
+    manifest = json.loads(result.manifest_path.read_text())
+    manifest["paper"].update(title="Human-corrected title", year=2025, arxiv_id="2501.12345", meta_reviewed=True, prior_works_reviewed=True, reviewed=True)
+    result.manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    source_assets = (result.artifact_dir / "assets" / "paper.md").read_bytes()
+    prior = result.prior_works_path.read_bytes()
+    pipeline.run("sample_paper", overwrite=True, only=["summary"], expected_updated_at=manifest["updated_at"])
+    next_manifest = json.loads(result.manifest_path.read_text())
+    assert next_manifest["paper"]["title"] == "Human-corrected title"
+    assert next_manifest["paper"]["arxiv_id"] == "2501.12345"
+    assert next_manifest["paper"]["meta_reviewed"] is False
+    assert next_manifest["paper"]["prior_works_reviewed"] is True
+    assert next_manifest["paper"]["reviewed"] is False
+    assert next_manifest["updated_at"] != manifest["updated_at"]
+    assert (result.artifact_dir / "assets" / "paper.md").read_bytes() == source_assets
+    assert result.prior_works_path.read_bytes() == prior
+
+
+def test_failed_generation_keeps_existing_note_and_metadata(tmp_path: Path, monkeypatch) -> None:
+    settings = Settings(project_root=Path.cwd(), raw_dir=Path("tests/fixtures"), artifacts_dir=tmp_path, prompts_dir=Path("prompts"), api_key="test")
+    pipeline = IngestPipeline(settings=settings, llm=FakeLLM())
+    result = pipeline.run("sample_paper", overwrite=True)
+    note = result.summary_path.read_bytes()
+    manifest = result.manifest_path.read_bytes()
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("mock model failure")
+
+    monkeypatch.setattr(pipeline.summary_generator, "generate", fail)
+    with pytest.raises(RuntimeError, match="mock model failure"):
+        pipeline.run("sample_paper", overwrite=True, only=["summary"])
+    assert result.summary_path.read_bytes() == note
+    assert result.manifest_path.read_bytes() == manifest
+    assert not list(result.artifact_dir.glob(".ingest-*"))
+
+
+def test_edit_during_generation_wins_over_generated_result(tmp_path: Path, monkeypatch) -> None:
+    from paper_wiki.web.services.paper_repository import PaperRepository
+
+    settings = Settings(project_root=Path.cwd(), raw_dir=Path("tests/fixtures"), artifacts_dir=tmp_path, prompts_dir=Path("prompts"), api_key="test")
+    pipeline = IngestPipeline(settings=settings, llm=FakeLLM())
+    pipeline.run("sample_paper", overwrite=True)
+    repository = PaperRepository(settings)
+
+    def edit_during_generation(bundle, prompt_file):
+        current = repository.get_paper("sample_paper")
+        repository.update_summary("sample_paper", "Human edit wins\n", expected_updated_at=current.updated_at)
+        return "Generated replacement"
+
+    monkeypatch.setattr(pipeline.summary_generator, "generate", edit_during_generation)
+    with pytest.raises(RuntimeError, match="生成期间论文被修改"):
+        pipeline.run("sample_paper", overwrite=True, only=["summary"])
+    assert repository.get_paper("sample_paper").summary == "Human edit wins\n"

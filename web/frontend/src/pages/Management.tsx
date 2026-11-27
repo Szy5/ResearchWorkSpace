@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { CheckCircle2, Circle, ExternalLink, History, Loader2, RefreshCw } from 'lucide-react'
-import { JobResponse, PaperListItem, batchReview, listJobs, listPapers } from '../api/client'
+import {
+  CheckCircle2,
+  Circle,
+  ExternalLink,
+  History,
+  Loader2,
+  RefreshCw
+} from 'lucide-react'
+import {
+  JobResponse,
+  PaperListItem,
+  batchReview,
+  listJobs,
+  listPapers
+} from '../api/client'
 import SelectField from '../components/SelectField'
 
 type Props = {
@@ -23,7 +36,10 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
     setLoading(true)
     setError(null)
     try {
-      const [nextPapers, nextJobs] = await Promise.all([listPapers(), listJobs({ limit: 100 })])
+      const [nextPapers, nextJobs] = await Promise.all([
+        listPapers(),
+        listJobs({ limit: 100 })
+      ])
       setPapers(nextPapers)
       setJobs(nextJobs)
     } catch (err) {
@@ -38,15 +54,24 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
   }, [])
 
   const patterns = useMemo(
-    () => Array.from(new Set(papers.map((paper) => paper.primary_pattern).filter(Boolean))).sort(),
+    () =>
+      Array.from(
+        new Set(papers.map((paper) => paper.primary_pattern).filter(Boolean))
+      ).sort(),
     [papers]
   )
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase()
     return papers.filter((paper) => {
-      const matchesQuery = !needle || `${paper.title} ${paper.slug} ${paper.authors.join(' ')}`.toLowerCase().includes(needle)
-      const matchesStatus = statusFilter === 'all' || String(paper.reviewed) === statusFilter
-      const matchesPattern = patternFilter === 'all' || paper.primary_pattern === patternFilter
+      const matchesQuery =
+        !needle ||
+        `${paper.title} ${paper.slug} ${paper.authors.join(' ')}`
+          .toLowerCase()
+          .includes(needle)
+      const matchesStatus =
+        statusFilter === 'all' || String(paper.reviewed) === statusFilter
+      const matchesPattern =
+        patternFilter === 'all' || paper.primary_pattern === patternFilter
       return matchesQuery && matchesStatus && matchesPattern
     })
   }, [papers, patternFilter, query, statusFilter])
@@ -68,8 +93,11 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
   }
 
   function toggleAll() {
-    const allSelected = visible.length > 0 && visible.every((paper) => selected.has(paper.slug))
-    setSelected(allSelected ? new Set() : new Set(visible.map((paper) => paper.slug)))
+    const allSelected =
+      visible.length > 0 && visible.every((paper) => selected.has(paper.slug))
+    setSelected(
+      allSelected ? new Set() : new Set(visible.map((paper) => paper.slug))
+    )
   }
 
   return (
@@ -77,10 +105,16 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="page-kicker">Manage</p>
-          <h1 className="page-title mt-1">Paper 管理</h1>
-          <p className="page-subtitle">集中筛选、批量审查论文，并查看所有后台任务。</p>
+          <h1 className="page-title mt-1">论文与任务管理</h1>
+          <p className="page-subtitle">
+            集中筛选、批量核验论文，并查看所有后台任务。
+          </p>
         </div>
-        <button className="action-button" onClick={() => void load()} disabled={loading}>
+        <button
+          className="action-button"
+          onClick={() => void load()}
+          disabled={loading}
+        >
           <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
           刷新
         </button>
@@ -98,13 +132,13 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
           />
           <SelectField
             className="w-auto min-w-[8.5rem]"
-            ariaLabel="按审查状态筛选"
+            ariaLabel="按核验状态筛选"
             value={statusFilter}
             onChange={setStatusFilter}
             options={[
               { value: 'all', label: '全部状态' },
-              { value: 'false', label: '待审查' },
-              { value: 'true', label: '已审查' }
+              { value: 'false', label: '待核验' },
+              { value: 'true', label: '已核验' }
             ]}
           />
           <SelectField
@@ -117,11 +151,19 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
               ...patterns.map((pattern) => ({ value: pattern, label: pattern }))
             ]}
           />
-          <button className="button-primary h-10" disabled={saving || selected.size === 0} onClick={() => void setBatchReviewed(true)}>
-            标记已审查
+          <button
+            className="button-primary h-10"
+            disabled={saving || selected.size === 0}
+            onClick={() => void setBatchReviewed(true)}
+          >
+            标记已核验
           </button>
-          <button className="action-button h-10" disabled={saving || selected.size === 0} onClick={() => void setBatchReviewed(false)}>
-            退回待审查
+          <button
+            className="action-button h-10"
+            disabled={saving || selected.size === 0}
+            onClick={() => void setBatchReviewed(false)}
+          >
+            退回待核验
           </button>
         </div>
         <div className="overflow-x-auto">
@@ -133,7 +175,10 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
                     type="checkbox"
                     className="check"
                     aria-label="选择全部论文"
-                    checked={visible.length > 0 && visible.every((paper) => selected.has(paper.slug))}
+                    checked={
+                      visible.length > 0 &&
+                      visible.every((paper) => selected.has(paper.slug))
+                    }
                     onChange={toggleAll}
                   />
                 </th>
@@ -157,20 +202,33 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
                       onChange={() =>
                         setSelected((prev) => {
                           const next = new Set(prev)
-                          next.has(paper.slug) ? next.delete(paper.slug) : next.add(paper.slug)
+                          next.has(paper.slug)
+                            ? next.delete(paper.slug)
+                            : next.add(paper.slug)
                           return next
                         })
                       }
                     />
                   </td>
                   <td className="max-w-md">
-                    <p className="font-serif text-[15px] font-medium tracking-tight">{paper.title}</p>
-                    <p className="mt-1 truncate text-xs text-body">{paper.authors.join(', ') || paper.slug}</p>
+                    <p className="font-serif text-[15px] font-medium tracking-tight">
+                      {paper.title}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-body">
+                      {paper.authors.join(', ') || paper.slug}
+                    </p>
                   </td>
-                  <td className="text-body">{[paper.year, paper.venue].filter(Boolean).join(' · ') || '—'}</td>
+                  <td className="text-body">
+                    {[paper.year, paper.venue].filter(Boolean).join(' · ') ||
+                      '—'}
+                  </td>
                   <td>{paper.primary_pattern || '—'}</td>
                   <td className="text-xs text-body">
-                    {[paper.has_summary && 'Summary', paper.has_prior_works && 'Prior Works', paper.has_sci_pattern && 'Pattern']
+                    {[
+                      paper.has_summary && 'Summary',
+                      paper.has_prior_works && 'Prior Works',
+                      paper.has_sci_pattern && 'Pattern'
+                    ]
                       .filter(Boolean)
                       .join(' · ') || '—'}
                   </td>
@@ -178,17 +236,20 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
                     {paper.reviewed ? (
                       <span className="inline-flex items-center gap-1 text-moss">
                         <CheckCircle2 size={14} />
-                        已审查
+                        已核验
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 text-copper">
                         <Circle size={14} />
-                        待审查
+                        待核验
                       </span>
                     )}
                   </td>
                   <td>
-                    <button className="action-button" onClick={() => onOpenPaper(paper.slug)}>
+                    <button
+                      className="action-button"
+                      onClick={() => onOpenPaper(paper.slug)}
+                    >
                       <ExternalLink size={14} />
                       打开
                     </button>
@@ -205,7 +266,9 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
           </div>
         ) : null}
         {!loading && visible.length === 0 ? (
-          <div className="border-t border-line/80 px-4 py-10 text-center text-sm text-body">没有匹配的论文。</div>
+          <div className="border-t border-line/80 px-4 py-10 text-center text-sm text-body">
+            没有匹配的论文。
+          </div>
         ) : null}
       </section>
 
@@ -214,7 +277,9 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
           <History size={17} className="text-moss" />
           <div>
             <p className="panel-title">History</p>
-            <h2 className="font-serif text-xl font-medium tracking-tight">任务历史</h2>
+            <h2 className="font-serif text-xl font-medium tracking-tight">
+              任务历史
+            </h2>
           </div>
         </div>
         <div className="max-h-96 overflow-auto">
@@ -231,7 +296,9 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
             <tbody>
               {jobs.map((job) => (
                 <tr key={job.job_id}>
-                  <td className="whitespace-nowrap text-xs text-body">{new Date(job.created_at).toLocaleString()}</td>
+                  <td className="whitespace-nowrap text-xs text-body">
+                    {new Date(job.created_at).toLocaleString()}
+                  </td>
                   <td>{job.slug}</td>
                   <td>{job.target}</td>
                   <td>
@@ -241,13 +308,17 @@ export default function Management({ onOpenPaper, onChanged }: Props) {
                       {job.status}
                     </span>
                   </td>
-                  <td className="max-w-xl text-xs text-body">{job.error || job.progress || '—'}</td>
+                  <td className="max-w-xl text-xs text-body">
+                    {job.error || job.progress || '—'}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
           {!loading && jobs.length === 0 ? (
-            <div className="px-4 py-10 text-center text-sm text-body">还没有任务记录。</div>
+            <div className="px-4 py-10 text-center text-sm text-body">
+              还没有任务记录。
+            </div>
           ) : null}
         </div>
       </section>

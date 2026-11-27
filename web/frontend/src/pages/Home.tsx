@@ -1,6 +1,16 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react'
-import { AlertTriangle, Download, Loader2, RefreshCw, Search, Sparkles } from 'lucide-react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import {
+  ArrowRight,
+  BookOpen,
+  ExternalLink,
+  Loader2,
+  RefreshCw,
+  Search,
+  SlidersHorizontal,
+  Sparkles
+} from 'lucide-react'
+import {
+  PaperListItem,
   RecommendationSnapshot,
   SearchCandidate,
   fetchPaper,
@@ -11,359 +21,566 @@ import {
   searchPapers
 } from '../api/client'
 import CandidateCard from '../components/CandidateCard'
-import { StagedCandidate } from '../hooks/useBatchGeneration'
+import Dialog from '../components/Dialog'
+import { JobState, StagedCandidate } from '../hooks/useBatchGeneration'
+import { readStored, writeStored } from '../utils/storage'
 
 type Props = {
   stagedKeys: Set<string>
   onStage: (items: StagedCandidate[]) => void
   onIngested: (slug: string) => void
+  onUnstage?: (key: string) => void
+  jobStatus?: Record<string, JobState>
+  papers?: PaperListItem[]
+  onOpenPaper?: (slug: string) => void
+  recentSlug?: string | null
 }
-
-export default function Home({ stagedKeys, onStage, onIngested }: Props) {
-  const [results, setResults] = useState<SearchCandidate[]>([])
-  const [searched, setSearched] = useState(false)
-
-  return (
-    <section className="mx-auto max-w-3xl animate-fade-up">
-      <header className="pb-2 pt-4">
-        <p className="page-kicker">Discover</p>
-        <h1 className="page-title mt-2">找到下一篇值得读的论文</h1>
-        <p className="page-subtitle max-w-xl">
-          搜索 arXiv、按 ID 拉取，或从今日推荐里挑选；勾选后进入暂存区批量生成精读产物。
-        </p>
-      </header>
-      <SearchBar onResults={(next) => { setResults(next); setSearched(true) }} onStage={onStage} onIngested={onIngested} />
-      {searched ? (
-        <SearchResultsFeed results={results} stagedKeys={stagedKeys} onStage={onStage} />
-      ) : null}
-      <RecommendedFeed stagedKeys={stagedKeys} onStage={onStage} />
-    </section>
+type SearchSnapshot = {
+  query: string
+  startYear: number
+  endYear: number
+  results: SearchCandidate[]
+  completedQuery: string
+  searched: boolean
+}
+const SEARCH_KEY = 'paper-wiki.discovery.v2'
+export function arxivIdFromInput(value: string): string | null {
+  const trimmed = value
+    .trim()
+    .replace(/^arxiv:/i, '')
+    .replace(/\.pdf(?:\?.*)?$/i, '')
+  const match = trimmed.match(
+    /^(?:https?:\/\/(?:www\.)?arxiv\.org\/(?:abs|pdf)\/)?(\d{4}\.\d{4,5}(?:v\d+)?|[a-z-]+(?:\.[A-Z]{2})?\/\d{7}(?:v\d+)?)(?:[?#].*)?$/i
   )
+  return match?.[1] || null
 }
-
-function stageOne(candidate: SearchCandidate, onStage: Props['onStage'], slug?: string) {
-  onStage([{ key: candidate.arxiv_id, candidate, slug }])
-}
-
-function SearchBar({
-  onResults,
+export default function Home({
+  stagedKeys,
   onStage,
-  onIngested
-}: {
-  onResults: (results: SearchCandidate[]) => void
-  onStage: Props['onStage']
-  onIngested: Props['onIngested']
-}) {
-  const [query, setQuery] = useState('')
-  const [startYear, setStartYear] = useState(2020)
-  const [endYear, setEndYear] = useState(2026)
+  onIngested,
+  onUnstage,
+  jobStatus = {},
+  papers = [],
+  onOpenPaper,
+  recentSlug
+}: Props) {
+  const [search, setSearch] = useState<SearchSnapshot>(() =>
+    readStored(
+      SEARCH_KEY,
+      {
+        query: '',
+        startYear: 2020,
+        endYear: new Date().getFullYear(),
+        results: [],
+        completedQuery: '',
+        searched: false
+      },
+      true
+    )
+  )
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [showIdInput, setShowIdInput] = useState(false)
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [andIngest, setAndIngest] = useState(false)
+  const [preview, setPreview] = useState<SearchCandidate | null>(null)
+  const sequence = useRef(0)
+  const importing = useRef(false)
+  useEffect(() => {
+    writeStored(SEARCH_KEY, search, true)
+  }, [search])
+  const inputId = arxivIdFromInput(search.query)
+  const recent = papers.find((paper) => paper.slug === recentSlug)
+  const findKnown = (candidate: SearchCandidate) =>
+    papers.find(
+      (paper) =>
+        (paper.arxiv_id || paper.slug)
+          .replace(/^arXiv-/i, '')
+          .replace(/v\d+$/, '') === candidate.arxiv_id.replace(/v\d+$/, '')
+    )
+  function toggle(candidate: SearchCandidate) {
+    if (stagedKeys.has(candidate.arxiv_id)) onUnstage?.(candidate.arxiv_id)
+    else onStage([{ key: candidate.arxiv_id, candidate, slug: undefined }])
+  }
+  async function submit(event: FormEvent) {
     event.preventDefault()
-    if (!query.trim()) return
+    const query = search.query.trim()
+    if (!query || importing.current) return
+    const requestId = ++sequence.current
+    setError('')
+    setNotice('')
+    const id = arxivIdFromInput(query)
+    if (!id && /arxiv\.org|^arxiv:/i.test(query)) {
+      setError('这个 arXiv 链接无法识别，请输入完整链接或论文 ID。')
+      return
+    }
+    if (
+      !id &&
+      (!Number.isInteger(search.startYear) ||
+        !Number.isInteger(search.endYear) ||
+        search.startYear < 1991 ||
+        search.startYear > search.endYear ||
+        search.endYear > new Date().getFullYear())
+    ) {
+      setFiltersOpen(true)
+      setError(
+        '请输入有效年份：起始年份不得晚于结束年份，结束年份不得超过今年。'
+      )
+      return
+    }
     setLoading(true)
-    setError(null)
     try {
-      const candidates = await searchPapers({ q: query, start_year: startYear, end_year: endYear })
-      onResults(candidates)
+      if (id) {
+        const known = findKnown({ arxiv_id: id } as SearchCandidate)
+        if (known && onOpenPaper) {
+          onOpenPaper(known.slug)
+          return
+        }
+        importing.current = true
+        setNotice('正在添加论文，可在任务面板查看后台进度…')
+        const job = await fetchPaper(id, { andIngest })
+        const settled = await pollJob(job.job_id, (update) => {
+          if (requestId === sequence.current)
+            setNotice(update.progress || '正在处理论文…')
+        })
+        if (settled.status === 'failed')
+          throw new Error(settled.error || '添加失败，请在任务面板查看原因')
+        const slug = String(settled.result?.slug || id)
+        if (andIngest) {
+          setNotice('精读已生成')
+          onIngested(slug)
+        } else {
+          onStage([
+            {
+              key: id,
+              slug,
+              candidate: {
+                title: id,
+                arxiv_id: id,
+                authors: [],
+                year: null,
+                abstract: '',
+                venue: '',
+                url: `https://arxiv.org/abs/${id}`,
+                citation_count: null,
+                publication_date: null,
+                source: 'arxiv',
+                score: null
+              }
+            }
+          ])
+          setNotice('论文已添加并选中，点击“生成精读”继续。')
+        }
+      } else {
+        const results = await searchPapers({
+          q: query,
+          start_year: search.startYear,
+          end_year: search.endYear
+        })
+        if (requestId === sequence.current)
+          setSearch((prev) => ({
+            ...prev,
+            results,
+            completedQuery: query,
+            searched: true
+          }))
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      if (requestId === sequence.current)
+        setError(err instanceof Error ? err.message : '请求失败，请重试')
     } finally {
-      setLoading(false)
+      importing.current = false
+      if (requestId === sequence.current) setLoading(false)
     }
   }
-
+  const renderCandidate = (candidate: SearchCandidate) => {
+    const known = findKnown(candidate)
+    return (
+      <CandidateCard
+        key={candidate.arxiv_id}
+        candidate={candidate}
+        selected={stagedKeys.has(candidate.arxiv_id)}
+        status={jobStatus[candidate.arxiv_id]?.status}
+        onToggleSelect={() => toggle(candidate)}
+        onPreview={() => setPreview(candidate)}
+        onOpenPaper={
+          known && onOpenPaper ? () => onOpenPaper(known.slug) : undefined
+        }
+      />
+    )
+  }
   return (
-    <div className="pb-6 pt-6">
-      <form className="search-shell" onSubmit={submit}>
-        <Search size={18} className="flex-none text-muted" />
-        <input
-          className="h-14 min-w-0 flex-1 bg-transparent text-base outline-none placeholder:text-muted"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="搜索 arXiv 论文，比如 transformer attention mechanism"
-        />
-        <button className="button-primary h-11 flex-none" type="submit" disabled={loading}>
-          {loading ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
-          搜索
-        </button>
-      </form>
-
-      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-body">
-        <span className="font-medium text-ink-soft">年份</span>
-        <input
-          className="h-8 w-20 rounded-md border border-line bg-canvas px-2 text-xs outline-none transition focus:border-moss/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          type="number"
-          value={startYear}
-          onChange={(event) => setStartYear(Number(event.target.value))}
-        />
-        <span className="text-muted">–</span>
-        <input
-          className="h-8 w-20 rounded-md border border-line bg-canvas px-2 text-xs outline-none transition focus:border-moss/50 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-          type="number"
-          value={endYear}
-          onChange={(event) => setEndYear(Number(event.target.value))}
-        />
-        <span className="h-3 w-px bg-line" />
-        <button className="font-medium text-moss underline-offset-4 hover:underline" onClick={() => setShowIdInput((prev) => !prev)}>
-          或按 arXiv ID 直接添加
-        </button>
-      </div>
-
-      {error ? <div className="alert-error mt-3">{error}</div> : null}
-      {showIdInput ? <FetchByIdTab onStage={onStage} onIngested={onIngested} /> : null}
-    </div>
-  )
-}
-
-function SearchResultsFeed({
-  results,
-  stagedKeys,
-  onStage
-}: {
-  results: SearchCandidate[]
-  stagedKeys: Set<string>
-  onStage: Props['onStage']
-}) {
-  const visibleResults = useMemo(
-    () => results.filter((candidate) => !stagedKeys.has(candidate.arxiv_id)),
-    [results, stagedKeys]
-  )
-
-  return (
-    <section className="mt-2">
-      <div className="mb-3 flex items-end justify-between gap-3">
-        <div>
-          <p className="page-kicker">Search</p>
-          <h2 className="mt-1 font-serif text-[22px] tracking-tight">检索结果</h2>
+    <section className="discovery-page">
+      <header className="discovery-heading">
+        <p className="eyebrow">
+          <span className="status-dot" /> YOUR RESEARCH, IN FOCUS
+        </p>
+        <h1>从一篇好论文开始。</h1>
+        <p>发现值得读的工作，让每一次阅读留下积累。</p>
+      </header>
+      <form onSubmit={submit} className="discovery-search">
+        <div className="search-shell">
+          <Search size={19} className="text-muted" />
+          <input
+            aria-label="搜索 arXiv 或添加论文"
+            value={search.query}
+            onChange={(event) =>
+              setSearch((prev) => ({ ...prev, query: event.target.value }))
+            }
+            placeholder="搜索 arXiv，或粘贴论文链接 / ID"
+          />
+          <button
+            className="button-primary h-10"
+            disabled={loading || !search.query.trim()}
+          >
+            {loading ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : (
+              <ArrowRight size={16} />
+            )}
+            {inputId ? '添加论文' : '搜索'}
+          </button>
         </div>
-        <p className="text-xs text-muted">{visibleResults.length} 篇可添加</p>
-      </div>
-      {visibleResults.length === 0 ? (
-        <div className="empty-state">
-          <p className="text-sm text-body">
-            {results.length > 0 ? '搜索结果都已加入生成暂存区。' : '没有找到匹配的论文，换个关键词试试。'}
-          </p>
+        <div className="search-options">
+          <span>搜索范围：arXiv</span>
+          <button
+            type="button"
+            aria-expanded={filtersOpen}
+            onClick={() => setFiltersOpen(!filtersOpen)}
+          >
+            <SlidersHorizontal size={13} />
+            年份 {search.startYear}–{search.endYear}
+          </button>
         </div>
-      ) : (
-        <div className="mt-3 grid grid-cols-1 gap-3">
-          {visibleResults.map((candidate) => (
-            <CandidateCard
-              key={candidate.arxiv_id}
-              candidate={candidate}
-              onToggleSelect={() => stageOne(candidate, onStage)}
+        {filtersOpen && (
+          <div className="flex flex-wrap items-center gap-3 pb-3 text-xs">
+            <label>
+              起始年份{' '}
+              <input
+                className="year-input"
+                aria-label="起始年份"
+                type="number"
+                min={1991}
+                value={search.startYear || ''}
+                onChange={(e) =>
+                  setSearch((prev) => ({
+                    ...prev,
+                    startYear: Number(e.target.value)
+                  }))
+                }
+              />
+            </label>
+            <label>
+              结束年份{' '}
+              <input
+                className="year-input"
+                aria-label="结束年份"
+                type="number"
+                max={new Date().getFullYear()}
+                value={search.endYear || ''}
+                onChange={(e) =>
+                  setSearch((prev) => ({
+                    ...prev,
+                    endYear: Number(e.target.value)
+                  }))
+                }
+              />
+            </label>
+          </div>
+        )}
+        {inputId && (
+          <label className="check-row pb-3 text-xs">
+            <input
+              type="checkbox"
+              className="check"
+              checked={andIngest}
+              onChange={(e) => setAndIngest(e.target.checked)}
             />
-          ))}
+            下载后立即生成精读笔记、前作分析与创新范式
+          </label>
+        )}
+      </form>
+      {error && (
+        <div role="alert" className="alert-error mb-5">
+          {error}
+          {search.searched && (
+            <p className="mt-1 text-xs">
+              下方仍显示上次成功检索“{search.completedQuery}”的结果。
+            </p>
+          )}
         </div>
+      )}
+      {notice && (
+        <p role="status" className="alert-success mb-5">
+          {notice}
+        </p>
+      )}
+      {recent && onOpenPaper && (
+        <button
+          className="continue-reading"
+          onClick={() => onOpenPaper(recent.slug)}
+        >
+          <BookOpen size={20} />
+          <span>
+            <small>继续上次阅读</small>
+            <strong>{recent.title}</strong>
+          </span>
+          <ArrowRight size={17} />
+        </button>
+      )}
+      {search.searched && (
+        <section className="feed-section">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">SEARCH RESULTS</p>
+              <h2>
+                检索结果 <span>{search.results.length}</span>
+              </h2>
+              <p>
+                “{search.completedQuery}” · 点击标题预览，勾选后批量生成精读
+              </p>
+            </div>
+            <button
+              className="text-link text-xs"
+              onClick={() =>
+                setSearch((prev) => ({
+                  ...prev,
+                  searched: false,
+                  results: [],
+                  completedQuery: ''
+                }))
+              }
+            >
+              收起结果
+            </button>
+          </div>
+          {search.results.length ? (
+            <div className="candidate-list">
+              {search.results.map(renderCandidate)}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <h3>没有找到匹配的论文</h3>
+              <p className="mt-2 text-sm text-body">
+                尝试更短的关键词，或扩大年份范围。
+              </p>
+            </div>
+          )}
+        </section>
+      )}
+      <RecommendedFeed renderCandidate={renderCandidate} />
+      {preview && (
+        <Dialog
+          title="论文预览"
+          className="candidate-preview"
+          onClose={() => setPreview(null)}
+        >
+          <div className="p-6">
+            <p className="eyebrow">ARXIV · {preview.arxiv_id}</p>
+            <h3 className="mt-3 font-serif text-2xl leading-snug">
+              {preview.title}
+            </h3>
+            <p className="mt-3 text-sm text-body">
+              {preview.authors.join(', ')}
+              {preview.year ? ` · ${preview.year}` : ''}
+            </p>
+            <p className="my-6 whitespace-pre-wrap text-sm leading-7 text-ink-soft">
+              {preview.abstract ||
+                preview.display_summary ||
+                '暂无摘要，请查看原文。'}
+            </p>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <a
+                className="action-button"
+                href={`https://arxiv.org/abs/${preview.arxiv_id}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                查看原文 <ExternalLink size={13} />
+              </a>
+              {findKnown(preview) && onOpenPaper ? (
+                <button
+                  className="button-primary h-9"
+                  onClick={() => {
+                    setPreview(null)
+                    onOpenPaper(findKnown(preview)!.slug)
+                  }}
+                >
+                  打开论文
+                </button>
+              ) : (
+                <button
+                  className="button-primary h-9"
+                  disabled={['pending', 'running', 'succeeded'].includes(
+                    jobStatus[preview.arxiv_id]?.status
+                  )}
+                  onClick={() => toggle(preview)}
+                >
+                  {stagedKeys.has(preview.arxiv_id)
+                    ? '取消选择'
+                    : '选择这篇论文'}
+                </button>
+              )}
+            </div>
+          </div>
+        </Dialog>
       )}
     </section>
   )
 }
-
-function RecommendedFeed({ stagedKeys, onStage }: Pick<Props, 'stagedKeys' | 'onStage'>) {
+function RecommendedFeed({
+  renderCandidate
+}: {
+  renderCandidate: (candidate: SearchCandidate) => React.ReactNode
+}) {
   const [snapshot, setSnapshot] = useState<RecommendationSnapshot | null>(null)
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshProgress, setRefreshProgress] = useState<string | null>(null)
-
+  const [error, setError] = useState('')
+  const [progress, setProgress] = useState('')
+  const locked = useRef(false)
+  const mounted = useRef(true)
   useEffect(() => {
-    void loadSnapshot()
-    void resumeRefresh()
+    mounted.current = true
+    void getRecommendationsToday()
+      .then((next) => {
+        if (mounted.current) setSnapshot(next)
+      })
+      .catch((err) => {
+        if (mounted.current) setError(String(err.message))
+      })
+      .finally(() => {
+        if (mounted.current) setLoading(false)
+      })
+    void listJobs({ target: 'recommend_refresh', limit: 1 })
+      .then(async (jobs) => {
+        if (!mounted.current || locked.current) return
+        const active = jobs.find((job) =>
+          ['pending', 'running'].includes(job.status)
+        )
+        if (active) await watch(active.job_id)
+      })
+      .catch(() => undefined)
+    return () => {
+      mounted.current = false
+    }
   }, [])
-
-  async function resumeRefresh() {
-    try {
-      const jobs = await listJobs({ target: 'recommend_refresh', limit: 1 })
-      const latest = jobs[0]
-      if (!latest || (latest.status !== 'pending' && latest.status !== 'running')) return
-      setRefreshing(true)
-      setRefreshProgress(latest.progress || '后台生成中...')
-      const settled = await pollJob(latest.job_id, (update) => setRefreshProgress(update.progress))
-      if (settled.status === 'succeeded') {
-        await loadSnapshot()
-      } else {
-        setError(settled.error ?? 'Refresh failed')
-      }
-    } catch {
-      // Task recovery is best-effort; the current snapshot remains usable.
-    } finally {
-      setRefreshing(false)
-      setRefreshProgress(null)
-    }
-  }
-
-  async function loadSnapshot() {
-    setLoading(true)
-    setError(null)
-    try {
-      setSnapshot(await getRecommendationsToday())
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function refresh() {
+  async function watch(jobId: string) {
+    locked.current = true
     setRefreshing(true)
-    setError(null)
-    setRefreshProgress(null)
     try {
-      const job = await refreshRecommendations()
-      window.localStorage.setItem('paper-wiki.recommendation-job', job.job_id)
-      const settled = await pollJob(job.job_id, (update) => setRefreshProgress(update.progress))
-      if (settled.status === 'succeeded') {
-        setSnapshot(settled.result as unknown as RecommendationSnapshot)
-      } else {
-        setError(settled.error ?? 'Refresh failed')
-      }
+      const settled = await pollJob(jobId, (update) => {
+        if (mounted.current) setProgress(update.progress || '正在更新…')
+      })
+      if (settled.status === 'failed')
+        throw new Error(settled.error || '更新推荐失败')
+      const next = await getRecommendationsToday()
+      if (mounted.current) setSnapshot(next)
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      if (mounted.current)
+        setError(
+          err instanceof Error ? err.message : '同步失败，请稍后查看任务面板'
+        )
     } finally {
-      window.localStorage.removeItem('paper-wiki.recommendation-job')
-      setRefreshing(false)
-      setRefreshProgress(null)
+      locked.current = false
+      if (mounted.current) {
+        setRefreshing(false)
+        setProgress('')
+      }
     }
   }
-
-  const pool = useMemo(
-    () => (snapshot?.candidates ?? []).filter((candidate) => !stagedKeys.has(candidate.arxiv_id)),
-    [snapshot, stagedKeys]
-  )
-
+  async function refresh() {
+    if (locked.current) return
+    locked.current = true
+    setRefreshing(true)
+    setError('')
+    try {
+      const jobs = await listJobs({ target: 'recommend_refresh', limit: 5 })
+      const running = jobs.find((job) =>
+        ['pending', 'running'].includes(job.status)
+      )
+      const job = running || (await refreshRecommendations())
+      await watch(job.job_id)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '更新失败')
+      locked.current = false
+      setRefreshing(false)
+    }
+  }
+  const today = new Date().toLocaleDateString('sv-SE')
+  const fresh = snapshot?.date === today
   return (
-    <section className="mt-10">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <section className="feed-section">
+      <div className="section-heading">
         <div>
-          <p className="page-kicker">Today</p>
-          <h2 className="mt-1 font-serif text-[24px] tracking-tight">今日推荐</h2>
-          <p className="mt-1 text-sm text-body">
+          <p className="eyebrow">A LITTLE DISCOVERY, EVERY DAY</p>
+          <h2>
+            {snapshot && !fresh ? '最近推荐' : '今日推荐'}{' '}
+            <Sparkles size={17} />
+          </h2>
+          <p>
             {snapshot
-              ? `${snapshot.date} · 候选池 ${snapshot.candidate_pool_size} 篇 · 口味语料 ${snapshot.corpus_size} 篇`
-              : '基于你的 Zotero 口味语料，每天从 arXiv 新增里挑出最相关的一批论文'}
+              ? `${snapshot.date} · ${snapshot.candidates.length} 篇论文 · 基于 ${snapshot.corpus_size} 篇阅读偏好语料`
+              : '从你的研究兴趣出发，发现下一篇值得读的工作。'}
           </p>
         </div>
-        <button className="action-button" disabled={refreshing} onClick={() => void refresh()}>
-          <RefreshCw size={16} className={refreshing ? 'animate-spin' : ''} />
-          {refreshing ? refreshProgress || '生成中...' : '刷新推荐'}
+        <button
+          className="action-button"
+          disabled={refreshing}
+          onClick={() => void refresh()}
+        >
+          <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
+          {refreshing ? '更新中…' : '更新推荐'}
         </button>
       </div>
-
-      {snapshot?.degraded ? (
-        <div className="alert-warn mb-4 flex items-center gap-2">
-          <AlertTriangle size={16} />
-          Embedding 模型不可用，本次推荐按原始候选顺序展示，未做相似度排序。
+      {snapshot && !fresh && (
+        <p className="feed-notice">
+          这是最新可用的推荐，尚未更新到今天。你可以继续浏览或更新推荐。
+        </p>
+      )}
+      {snapshot?.degraded && (
+        <p className="feed-notice">
+          个性化排序暂不可用，当前按候选原始顺序展示；以下论文未经兴趣相似度排序。
+        </p>
+      )}
+      {error && (
+        <div role="alert" className="alert-error mb-4">
+          {error}
+          <button className="ml-3 underline" onClick={() => void refresh()}>
+            重试更新
+          </button>
         </div>
-      ) : null}
-      {error ? <div className="alert-error mb-4">{error}</div> : null}
+      )}
+      {progress && (
+        <p role="status" className="mb-4 text-sm text-body">
+          {progress}
+        </p>
+      )}
       {loading ? (
-        <div className="flex items-center gap-2 text-sm text-body">
-          <Loader2 size={16} className="animate-spin" />
-          加载推荐中...
+        <div className="space-y-3" aria-label="加载推荐中">
+          <div className="loading-skeleton h-28" />
+          <div className="loading-skeleton h-28" />
         </div>
-      ) : null}
-
-      {!loading && pool.length === 0 ? (
-        <div className="empty-state">
-          <Sparkles className="mx-auto mb-3 text-moss" size={28} />
-          <p className="font-serif text-lg tracking-tight text-ink">
-            {snapshot ? '今日候选都已加入生成暂存区。' : '还没有今日推荐快照。'}
-          </p>
-          <p className="mt-2 text-sm text-body">
-            {snapshot ? '去暂存区批量生成，或稍后再回来看新的推荐。' : '点一下，按你的口味生成今天的候选池。'}
-          </p>
-          {!snapshot ? (
-            <button className="button-primary mt-5 h-10 inline-flex" disabled={refreshing} onClick={() => void refresh()}>
-              <RefreshCw size={16} />
-              立即生成推荐
-            </button>
-          ) : null}
+      ) : snapshot?.candidates.length ? (
+        <div className="candidate-list">
+          {snapshot.candidates.map(renderCandidate)}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3">
-          {pool.map((candidate) => (
-            <CandidateCard
-              key={candidate.arxiv_id}
-              candidate={candidate}
-              onToggleSelect={() => stageOne(candidate, onStage)}
-              showThumbnail
-            />
-          ))}
+        <div className="empty-state">
+          <Sparkles size={24} className="mx-auto mb-4 text-muted" />
+          <h3>{snapshot ? '这次没有匹配的推荐' : '还没有推荐，开始发现吧'}</h3>
+          <p className="mt-2 text-sm text-body">
+            更新推荐后，可在这里挑选论文并生成精读。
+          </p>
+          <button
+            className="action-button mt-5"
+            disabled={refreshing}
+            onClick={() => void refresh()}
+          >
+            生成推荐 <ArrowRight size={14} />
+          </button>
         </div>
       )}
     </section>
-  )
-}
-
-function FetchByIdTab({ onStage, onIngested }: Pick<Props, 'onStage' | 'onIngested'>) {
-  const [arxivId, setArxivId] = useState('')
-  const [andIngest, setAndIngest] = useState(false)
-  const [fetching, setFetching] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [status, setStatus] = useState<string | null>(null)
-
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const id = arxivId.trim()
-    if (!id) return
-    setFetching(true)
-    setError(null)
-    setStatus('正在下载 PDF / LaTeX 源码...')
-    try {
-      const job = await fetchPaper(id, { andIngest })
-      const settled = await pollJob(job.job_id, (update) => {
-        if (update.progress) setStatus(update.progress)
-      })
-      if (settled.status !== 'succeeded') {
-        setError(settled.error ?? 'Fetch failed')
-        return
-      }
-      const slug = String(settled.result?.slug ?? id)
-      if (andIngest) {
-        setStatus(`已生成三件套，进入待审查队列：${slug}`)
-        onIngested(slug)
-      } else {
-        setStatus(`已拉取源文件到 raw/${slug}/，已加入生成暂存区`)
-        onStage([{ key: id, slug, candidate: { title: slug, authors: [], year: null, abstract: '', url: '', venue: '', arxiv_id: id, citation_count: null, publication_date: null, source: 'arxiv', score: null } }])
-      }
-      setArxivId('')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
-    } finally {
-      setFetching(false)
-    }
-  }
-
-  return (
-    <div className="surface-card mt-4 max-w-xl p-4">
-      <p className="panel-title">按 arXiv ID 添加</p>
-      <form className="mt-3 flex items-center gap-2" onSubmit={submit}>
-        <input
-          className="field-input flex-1"
-          value={arxivId}
-          onChange={(event) => setArxivId(event.target.value)}
-          placeholder="2401.12345"
-        />
-        <button className="action-button" type="submit" disabled={fetching}>
-          {fetching ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-          拉取
-        </button>
-      </form>
-      <label className="check-row mt-3">
-        <input
-          type="checkbox"
-          className="check"
-          checked={andIngest}
-          onChange={(event) => setAndIngest(event.target.checked)}
-        />
-        拉取后立即生成 Summary / Prior Works / Pattern
-      </label>
-      {error ? <div className="alert-error mt-4">{error}</div> : null}
-      {status && !error ? <div className="alert-success mt-4">{status}</div> : null}
-    </div>
   )
 }

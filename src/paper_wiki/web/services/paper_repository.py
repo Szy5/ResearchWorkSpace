@@ -73,10 +73,13 @@ class PaperRepository:
             raise PaperValidationError(str(exc)) from exc
 
         artifact_dir = bundle.artifact_dir
+        meta = map_paper_meta(bundle.manifest.paper)
+        if not meta.arxiv_id:
+            meta = meta.model_copy(update={"arxiv_id": self._effective_arxiv_id(bundle.manifest)})
         return PaperDetail(
             slug=slug,
             updated_at=bundle.manifest.updated_at,
-            meta=map_paper_meta(bundle.manifest.paper),
+            meta=meta,
             summary=self._read_optional_text(artifact_dir / "summary.md"),
             prior_works=self._read_optional_json(artifact_dir / "prior_works.json"),
             sci_pattern=self._read_optional_json(artifact_dir / "sci_pattern.json"),
@@ -230,6 +233,7 @@ class PaperRepository:
     def _list_item(self, manifest: AssetsManifest, artifact_dir: Path) -> PaperListItem:
         sci_pattern = self._read_optional_json(artifact_dir / "sci_pattern.json") or {}
         return PaperListItem(
+            arxiv_id=self._effective_arxiv_id(manifest),
             slug=manifest.slug,
             title=manifest.paper.title or manifest.slug,
             authors=manifest.paper.authors,
@@ -243,7 +247,25 @@ class PaperRepository:
             has_sci_pattern=(artifact_dir / "sci_pattern.json").is_file(),
             primary_pattern=str(sci_pattern.get("primary_pattern") or ""),
             primary_pattern_name=str(sci_pattern.get("primary_pattern_name") or ""),
+            wechat_published_at=self._wechat_published_at(artifact_dir),
         )
+
+    def _effective_arxiv_id(self, manifest: AssetsManifest) -> str:
+        if manifest.paper.arxiv_id.strip():
+            return manifest.paper.arxiv_id.strip()
+        from paper_wiki.discovery.sources.arxiv_source import infer_arxiv_id_from_slug
+
+        return infer_arxiv_id_from_slug(manifest.slug)
+
+    def _wechat_published_at(self, artifact_dir: Path) -> str | None:
+        payload = self._read_optional_json(artifact_dir / "wechat" / "package.json")
+        if not isinstance(payload, dict):
+            return None
+        value = payload.get("published_at")
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+        return None
+
 
     def _matches_query(self, item: PaperListItem, query: str) -> bool:
         needle = query.casefold().strip()

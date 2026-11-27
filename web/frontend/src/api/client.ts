@@ -1,4 +1,5 @@
 export type PaperListItem = {
+  arxiv_id?: string
   slug: string
   title: string
   authors: string[]
@@ -12,6 +13,7 @@ export type PaperListItem = {
   has_sci_pattern: boolean
   primary_pattern: string
   primary_pattern_name: string
+  wechat_published_at?: string | null
 }
 
 export type PaperMetaDTO = {
@@ -137,7 +139,9 @@ export type FetchResult = {
   source_file_count: number
 }
 
-export type BatchIngestItem = { arxiv_id: string; slug?: undefined } | { slug: string; arxiv_id?: undefined }
+export type BatchIngestItem =
+  | { arxiv_id: string; slug?: undefined }
+  | { slug: string; arxiv_id?: undefined }
 
 export type PublishWeChatPayload = {
   html_path: string
@@ -164,14 +168,19 @@ type RequestOptions = {
   body?: unknown
 }
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  path: string,
+  options: RequestOptions = {}
+): Promise<T> {
   const response = await fetch(path, {
     method: options.method ?? 'GET',
     headers: options.body ? { 'Content-Type': 'application/json' } : undefined,
     body: options.body ? JSON.stringify(options.body) : undefined
   })
   if (!response.ok) {
-    const payload = await response.json().catch(() => ({ detail: response.statusText }))
+    const payload = await response
+      .json()
+      .catch(() => ({ detail: response.statusText }))
     throw new Error(payload.detail ?? response.statusText)
   }
   return response.json() as Promise<T>
@@ -179,7 +188,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
 export function listPapers(params: { reviewed?: boolean; q?: string } = {}) {
   const search = new URLSearchParams()
-  if (params.reviewed !== undefined) search.set('reviewed', String(params.reviewed))
+  if (params.reviewed !== undefined)
+    search.set('reviewed', String(params.reviewed))
   if (params.q) search.set('q', params.q)
   const suffix = search.toString() ? `?${search.toString()}` : ''
   return request<PaperListItem[]>(`/api/papers${suffix}`)
@@ -199,48 +209,84 @@ export type PaperMetaEdits = {
   tags: string[]
 }
 
-/** Saves edited meta fields and marks the "meta + summary" review switch as done. */
-export function updateMeta(slug: string, expectedUpdatedAt: string, edits: PaperMetaEdits) {
+/** Save metadata without implicitly marking human verification complete. */
+export function updateMeta(
+  slug: string,
+  expectedUpdatedAt: string,
+  edits: PaperMetaEdits
+) {
   return request<PaperDetail>(`/api/papers/${encodeURIComponent(slug)}/meta`, {
     method: 'PATCH',
-    body: { expected_updated_at: expectedUpdatedAt, ...edits, meta_reviewed: true }
+    body: { expected_updated_at: expectedUpdatedAt, ...edits }
   })
 }
 
 /** Marks the "prior works" review switch as done, independent of the meta switch. */
-export function markPriorWorksReviewed(slug: string, expectedUpdatedAt: string) {
+export function markPriorWorksReviewed(
+  slug: string,
+  expectedUpdatedAt: string
+) {
   return request<PaperDetail>(`/api/papers/${encodeURIComponent(slug)}/meta`, {
     method: 'PATCH',
     body: { expected_updated_at: expectedUpdatedAt, prior_works_reviewed: true }
   })
 }
 
-export function updateSummary(slug: string, expectedUpdatedAt: string, summary: string) {
-  return request<PaperDetail>(`/api/papers/${encodeURIComponent(slug)}/summary`, {
-    method: 'PATCH',
-    body: { expected_updated_at: expectedUpdatedAt, summary }
-  })
+export function updateSummary(
+  slug: string,
+  expectedUpdatedAt: string,
+  summary: string
+) {
+  return request<PaperDetail>(
+    `/api/papers/${encodeURIComponent(slug)}/summary`,
+    {
+      method: 'PATCH',
+      body: { expected_updated_at: expectedUpdatedAt, summary }
+    }
+  )
 }
 
-export function updatePriorWorks(slug: string, expectedUpdatedAt: string, priorWorks: PriorWorksPayload) {
-  return request<PaperDetail>(`/api/papers/${encodeURIComponent(slug)}/prior-works`, {
-    method: 'PATCH',
-    body: { expected_updated_at: expectedUpdatedAt, ...priorWorks }
-  })
+export function updatePriorWorks(
+  slug: string,
+  expectedUpdatedAt: string,
+  priorWorks: PriorWorksPayload
+) {
+  return request<PaperDetail>(
+    `/api/papers/${encodeURIComponent(slug)}/prior-works`,
+    {
+      method: 'PATCH',
+      body: { expected_updated_at: expectedUpdatedAt, ...priorWorks }
+    }
+  )
 }
 
-export function startIngest(slug: string, only: string[] = ['summary'], overwrite = true) {
-  return request<JobResponse>(`/api/papers/${encodeURIComponent(slug)}/ingest`, {
-    method: 'POST',
-    body: { only, overwrite }
-  })
+export function startIngest(
+  slug: string,
+  only: string[] = ['summary'],
+  overwrite = true,
+  expectedUpdatedAt?: string
+) {
+  return request<JobResponse>(
+    `/api/papers/${encodeURIComponent(slug)}/ingest`,
+    {
+      method: 'POST',
+      body: { only, overwrite, expected_updated_at: expectedUpdatedAt }
+    }
+  )
 }
 
 export function getJob(jobId: string) {
   return request<JobResponse>(`/api/jobs/${encodeURIComponent(jobId)}`)
 }
 
-export function listJobs(params: { slug?: string; target?: string; status?: string; limit?: number } = {}) {
+export function listJobs(
+  params: {
+    slug?: string
+    target?: string
+    status?: string
+    limit?: number
+  } = {}
+) {
   const search = new URLSearchParams()
   if (params.slug) search.set('slug', params.slug)
   if (params.target) search.set('target', params.target)
@@ -265,22 +311,37 @@ export function publishWeChat(slug: string, payload: PublishWeChatPayload) {
 }
 
 export function renderBlogHtml(slug: string, theme?: string) {
-  return request<JobResponse>(`/api/papers/${encodeURIComponent(slug)}/blog/render-html`, {
-    method: 'POST',
-    body: { theme: theme ?? null }
-  })
+  return request<JobResponse>(
+    `/api/papers/${encodeURIComponent(slug)}/blog/render-html`,
+    {
+      method: 'POST',
+      body: { theme: theme ?? null }
+    }
+  )
 }
 
 export function getRecommendationsToday(date?: string) {
   const suffix = date ? `?date=${encodeURIComponent(date)}` : ''
-  return request<RecommendationSnapshot | null>(`/api/recommendations/today${suffix}`)
+  return request<RecommendationSnapshot | null>(
+    `/api/recommendations/today${suffix}`
+  )
 }
 
-export function refreshRecommendations(params: { max_papers?: number; arxiv_query?: string } = {}) {
-  return request<JobResponse>('/api/recommendations/refresh', { method: 'POST', body: params })
+export function refreshRecommendations(
+  params: { max_papers?: number; arxiv_query?: string } = {}
+) {
+  return request<JobResponse>('/api/recommendations/refresh', {
+    method: 'POST',
+    body: params
+  })
 }
 
-export function searchPapers(params: { q: string; start_year?: number; end_year?: number; max_results?: number }) {
+export function searchPapers(params: {
+  q: string
+  start_year?: number
+  end_year?: number
+  max_results?: number
+}) {
   const search = new URLSearchParams()
   search.set('q', params.q)
   if (params.start_year) search.set('start_year', String(params.start_year))
@@ -289,10 +350,17 @@ export function searchPapers(params: { q: string; start_year?: number; end_year?
   return request<SearchCandidate[]>(`/api/search?${search.toString()}`)
 }
 
-export function fetchPaper(arxivId: string, options: { andIngest?: boolean; overwrite?: boolean } = {}) {
+export function fetchPaper(
+  arxivId: string,
+  options: { andIngest?: boolean; overwrite?: boolean } = {}
+) {
   return request<JobResponse>('/api/papers/fetch', {
     method: 'POST',
-    body: { arxiv_id: arxivId, and_ingest: options.andIngest ?? false, overwrite: options.overwrite ?? false }
+    body: {
+      arxiv_id: arxivId,
+      and_ingest: options.andIngest ?? false,
+      overwrite: options.overwrite ?? false
+    }
   })
 }
 
@@ -314,9 +382,14 @@ export async function renderMarkdownDocument(input: {
   for (const image of input.images ?? []) form.append('images', image)
   if (input.cover) form.append('cover', input.cover)
   form.append('theme', input.theme ?? '摸鱼绿')
-  const response = await fetch('/api/publishing/markdown/render', { method: 'POST', body: form })
+  const response = await fetch('/api/publishing/markdown/render', {
+    method: 'POST',
+    body: form
+  })
   if (!response.ok) {
-    const payload = await response.json().catch(() => ({ detail: response.statusText }))
+    const payload = await response
+      .json()
+      .catch(() => ({ detail: response.statusText }))
     throw new Error(payload.detail ?? response.statusText)
   }
   return response.json() as Promise<MarkdownDocument>
@@ -327,17 +400,27 @@ export function listMarkdownDocuments() {
 }
 
 export function getMarkdownDocument(documentId: string) {
-  return request<MarkdownDocument>(`/api/publishing/markdown/${encodeURIComponent(documentId)}`)
+  return request<MarkdownDocument>(
+    `/api/publishing/markdown/${encodeURIComponent(documentId)}`
+  )
 }
 
 export function publishMarkdownDocument(
   documentId: string,
-  payload: { title?: string; author?: string; digest?: string; thumb_media_id?: string }
+  payload: {
+    title?: string
+    author?: string
+    digest?: string
+    thumb_media_id?: string
+  }
 ) {
-  return request<JobResponse>(`/api/publishing/markdown/${encodeURIComponent(documentId)}/publish`, {
-    method: 'POST',
-    body: payload
-  })
+  return request<JobResponse>(
+    `/api/publishing/markdown/${encodeURIComponent(documentId)}/publish`,
+    {
+      method: 'POST',
+      body: payload
+    }
+  )
 }
 
 export function getWeChatConfig() {
@@ -345,60 +428,92 @@ export function getWeChatConfig() {
 }
 
 export function getWeChatPackage(slug: string) {
-  return request<WeChatPackage | null>(`/api/papers/${encodeURIComponent(slug)}/wechat`)
+  return request<WeChatPackage | null>(
+    `/api/papers/${encodeURIComponent(slug)}/wechat`
+  )
 }
 
 export function prepareWeChatPackage(
   slug: string,
-  payload: { title?: string; digest?: string; author?: string; regenerate_headline?: boolean; publish?: boolean }
+  payload: {
+    title?: string
+    digest?: string
+    author?: string
+    regenerate_headline?: boolean
+    publish?: boolean
+  }
 ) {
-  return request<JobResponse>(`/api/papers/${encodeURIComponent(slug)}/wechat/prepare`, { method: 'POST', body: payload })
+  return request<JobResponse>(
+    `/api/papers/${encodeURIComponent(slug)}/wechat/prepare`,
+    { method: 'POST', body: payload }
+  )
 }
 
 export function publishWeChatPackage(slug: string) {
-  return request<JobResponse>(`/api/papers/${encodeURIComponent(slug)}/wechat/publish`, { method: 'POST', body: {} })
+  return request<JobResponse>(
+    `/api/papers/${encodeURIComponent(slug)}/wechat/publish`,
+    { method: 'POST', body: {} }
+  )
 }
 
-export function updateWeChatPackage(slug: string, payload: { title?: string; digest?: string; author?: string }) {
-  return request<WeChatPackage>(`/api/papers/${encodeURIComponent(slug)}/wechat`, { method: 'PATCH', body: payload })
+export function updateWeChatPackage(
+  slug: string,
+  payload: { title?: string; digest?: string; author?: string }
+) {
+  return request<WeChatPackage>(
+    `/api/papers/${encodeURIComponent(slug)}/wechat`,
+    { method: 'PATCH', body: payload }
+  )
 }
 
 export async function uploadWeChatCover(slug: string, file: File) {
   const form = new FormData()
   form.append('file', file)
-  const response = await fetch(`/api/papers/${encodeURIComponent(slug)}/wechat/cover`, { method: 'POST', body: form })
+  const response = await fetch(
+    `/api/papers/${encodeURIComponent(slug)}/wechat/cover`,
+    { method: 'POST', body: form }
+  )
   if (!response.ok) {
-    const payload = await response.json().catch(() => ({ detail: response.statusText }))
+    const payload = await response
+      .json()
+      .catch(() => ({ detail: response.statusText }))
     throw new Error(payload.detail ?? response.statusText)
   }
   return response.json() as Promise<WeChatPackage>
 }
 
 export function resetWeChatCover(slug: string) {
-  return request<WeChatPackage>(`/api/papers/${encodeURIComponent(slug)}/wechat/cover`, { method: 'DELETE' })
+  return request<WeChatPackage>(
+    `/api/papers/${encodeURIComponent(slug)}/wechat/cover`,
+    { method: 'DELETE' }
+  )
 }
 
-/** Poll a job until it reaches a terminal state, calling onUpdate on every tick. */
-export function pollJob(jobId: string, onUpdate?: (job: JobResponse) => void, intervalMs = 900): Promise<JobResponse> {
-  return new Promise((resolve, reject) => {
-    let failures = 0
-    const timer = window.setInterval(() => {
-      getJob(jobId)
-        .then((job) => {
-          failures = 0
-          onUpdate?.(job)
-          if (job.status === 'succeeded' || job.status === 'failed') {
-            window.clearInterval(timer)
-            resolve(job)
-          }
-        })
-        .catch((err) => {
-          failures += 1
-          if (failures >= 5) {
-            window.clearInterval(timer)
-            reject(err instanceof Error ? err : new Error(String(err)))
-          }
-        })
-    }, intervalMs)
+/** Human verification is an explicit action, separate from saving content. */
+export function markMetaReviewed(slug: string, expectedUpdatedAt: string) {
+  return request<PaperDetail>(`/api/papers/${encodeURIComponent(slug)}/meta`, {
+    method: 'PATCH',
+    body: { expected_updated_at: expectedUpdatedAt, meta_reviewed: true }
   })
+}
+
+/** Sequential polling avoids overlapping requests and stale terminal responses. */
+export async function pollJob(
+  jobId: string,
+  onUpdate?: (job: JobResponse) => void,
+  intervalMs = 900
+): Promise<JobResponse> {
+  let failures = 0
+  for (;;) {
+    try {
+      const job = await getJob(jobId)
+      failures = 0
+      onUpdate?.(job)
+      if (job.status === 'succeeded' || job.status === 'failed') return job
+    } catch (err) {
+      failures += 1
+      if (failures >= 5) throw err
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, intervalMs))
+  }
 }

@@ -27,6 +27,7 @@ class PaperMetaDTO(BaseModel):
 
 
 class PaperListItem(BaseModel):
+    arxiv_id: str = ""
     slug: str
     title: str
     authors: list[str] = Field(default_factory=list)
@@ -40,6 +41,7 @@ class PaperListItem(BaseModel):
     has_sci_pattern: bool = False
     primary_pattern: str = ""
     primary_pattern_name: str = ""
+    wechat_published_at: str | None = None
 
 
 class PaperDetail(BaseModel):
@@ -89,6 +91,7 @@ class PriorWorksPatch(BaseModel):
 
 
 class IngestRequest(BaseModel):
+    expected_updated_at: str | None = None
     overwrite: bool = False
     only: list[str] | None = None
     summary_prompt: str | None = "paper_summary_v5.py"

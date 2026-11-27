@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { JobResponse, listJobs } from '../api/client'
+import { readStored, writeStored } from '../utils/storage'
 import { isActiveJob } from '../utils/jobLabels'
 
 const RECENT_MS = 30 * 60 * 1000
@@ -20,8 +21,16 @@ function isRecentFinished(job: JobResponse, now = Date.now()): boolean {
 export function useActivityJobs() {
   const [jobs, setJobs] = useState<JobResponse[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set())
+  const [dismissed, setDismissed] = useState<Set<string>>(() => {
+    const saved = readStored<unknown>('paper-wiki.dismissed-jobs', [])
+    return new Set(
+      Array.isArray(saved) ? saved.filter((id) => typeof id === 'string') : []
+    )
+  })
   const inFlight = useRef(false)
+  useEffect(() => {
+    writeStored('paper-wiki.dismissed-jobs', [...dismissed].slice(-300))
+  }, [dismissed])
 
   const refresh = useCallback(async () => {
     if (inFlight.current) return
@@ -41,7 +50,10 @@ export function useActivityJobs() {
   const recentJobs = useMemo(
     () =>
       jobs.filter(
-        (job) => !isActiveJob(job) && isRecentFinished(job) && !dismissed.has(job.job_id)
+        (job) =>
+          !isActiveJob(job) &&
+          isRecentFinished(job) &&
+          !dismissed.has(job.job_id)
       ),
     [jobs, dismissed]
   )

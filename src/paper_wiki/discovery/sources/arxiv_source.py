@@ -189,6 +189,28 @@ def slug_for_arxiv_id(arxiv_id: str) -> str:
     return normalize_arxiv_id(arxiv_id).replace("/", "-")
 
 
+_MODERN_ARXIV_SLUG = re.compile(r"^\d{4}\.\d{4,5}$")
+_LEGACY_ARXIV_SLUG = re.compile(r"^([a-z]+(?:-[a-z]+)?)-(\d{7})$", re.IGNORECASE)
+
+
+def infer_arxiv_id_from_slug(slug: str) -> str:
+    """Recover an arXiv id from a paper slug when metadata left it blank.
+
+    Fetch uses ``slug_for_arxiv_id`` (``/`` → ``-``), so modern ids stay
+    ``2605.06614`` and legacy ids become ``hep-th-9901001``.
+    """
+    value = (slug or "").strip()
+    if not value:
+        return ""
+    normalized = normalize_arxiv_id(value)
+    if _MODERN_ARXIV_SLUG.fullmatch(normalized):
+        return normalized
+    legacy = _LEGACY_ARXIV_SLUG.fullmatch(normalized)
+    if legacy:
+        return f"{legacy.group(1)}/{legacy.group(2)}"
+    return ""
+
+
 def find_main_tex(source_dir: Path) -> Path:
     tex_files = [path for path in source_dir.rglob("*.tex") if path.is_file()]
     if not tex_files:

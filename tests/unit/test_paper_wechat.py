@@ -13,7 +13,10 @@ from paper_wiki.core.config import Settings
 from paper_wiki.ingestion.llm_client import LLMClient
 from paper_wiki.publishing.markdown_renderer import render_markdown_for_wechat
 from paper_wiki.publishing.math_render import latex_to_inline_html
+from paper_wiki.assets.models import PaperAssetMeta
 from paper_wiki.publishing.paper_wechat import (
+    _venue_year_prefix,
+    _with_venue_prefix,
     adapt_article_for_wechat,
     cjk_char_count,
     lead_figure_caption,
@@ -192,13 +195,53 @@ def _fake_cursor_render(markdown_path, settings, *, theme=None, preferred_name=N
             src = stripped[stripped.index("](") + 2 : -1]
             parts.append(f'<p><img src="{src}" alt="{alt}"></p>')
         elif stripped.startswith("**标题**"):
-            parts.append("<p><span>>标题<</span></p><p>" + stripped + "</p>")
+            parts.append("<p><span>标题</span></p><p>" + stripped + "</p>")
         elif stripped:
             parts.append(f"<p>{stripped}</p>")
     parts.append("</section>")
     target = markdown_path.parent / (preferred_name or "article.html")
     target.write_text("\n".join(parts), encoding="utf-8")
     return target
+
+
+def test_venue_year_prefix_formats_conference_title() -> None:
+    meta = PaperAssetMeta(venue="NeurIPS", year=2026)
+    assert _venue_year_prefix(meta) == "NeurIPS 2026 | "
+    assert _with_venue_prefix("Demo：一句话说清核心贡献", meta) == "NeurIPS 2026 | Demo：一句话说清核心贡献"
+    # Idempotent and tolerant of venue-only / bad years.
+    assert _with_venue_prefix("NeurIPS 2026 | Demo", meta) == "NeurIPS 2026 | Demo"
+    assert _venue_year_prefix(PaperAssetMeta(venue="ACL 2026", year=2026)) == "ACL 2026 | "
+    assert _venue_year_prefix(PaperAssetMeta(venue="NeurIPS", year=1994)) == "NeurIPS | "
+    assert _venue_year_prefix(PaperAssetMeta()) == ""
+
+
+def test_prepare_prefixes_generated_title_with_venue_year(settings: Settings) -> None:
+    artifact = settings.resolved_artifacts_dir() / "demo"
+    (artifact / "manifest.json").write_text(
+        json.dumps(
+            {
+                "slug": "demo",
+                "created_at": "2026-11-11T00:00:00+00:00",
+                "updated_at": "2026-11-11T00:00:00+00:00",
+                "paper": {
+                    "title": "Demo Paper",
+                    "authors": ["Ada"],
+                    "venue": "NeurIPS",
+                    "year": 2026,
+                    "arxiv_id": "2605.06614",
+                },
+                "source": {"raw_dir": "raw/demo", "entry_file": "main.tex"},
+                "counts": {"sections": 1, "figures": 1, "references": 0},
+            }
+        ),
+        encoding="utf-8",
+    )
+    with patch("paper_wiki.publishing.paper_wechat.render_markdown_html", side_effect=_fake_cursor_render):
+        package = prepare_paper_wechat(settings, "demo", llm=FakeLLM())
+    assert package.title.startswith("NeurIPS 2026 | ")
+    assert "arXiv:2605.06614" in (settings.resolved_artifacts_dir() / "demo" / "wechat" / "article.md").read_text(
+        encoding="utf-8"
+    )
 
 
 def test_prepare_builds_package_with_llm_headline(settings: Settings) -> None:

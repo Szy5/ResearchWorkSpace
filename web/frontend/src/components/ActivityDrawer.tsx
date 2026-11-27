@@ -1,252 +1,224 @@
-import { useEffect } from 'react'
-import { AlertCircle, Check, Loader2, Sparkles, X } from 'lucide-react'
+import { ArrowRight, Check, Loader2, RefreshCw, X } from 'lucide-react'
 import { JobResponse } from '../api/client'
 import { JobState, StagedCandidate } from '../hooks/useBatchGeneration'
 import { jobStatusLabel, jobTargetLabel } from '../utils/jobLabels'
-import { normalizeQuotes } from '../utils/textFormat'
-import { CandidateStatusBadge } from './CandidateCard'
+import Dialog from './Dialog'
 import JobSteps from './JobSteps'
-
+import { CandidateStatusBadge } from './CandidateCard'
 type Props = {
   open: boolean
   onClose: () => void
   staged: StagedCandidate[]
   jobStatus: Record<string, JobState>
+  jobIds?: Record<string, string>
   generating: boolean
+  sending?: boolean
   activeJobs: JobResponse[]
   recentJobs: JobResponse[]
+  connectionError?: string | null
   onUnstage: (key: string) => void
   onGenerate: () => void
+  onRetry: (key: string) => void
   onDismissJob: (jobId: string) => void
   onDismissAllRecent: () => void
   onOpenManage?: () => void
+  onOpenResult: (slug: string, target?: string) => void
 }
-
-function JobCard({
-  job,
-  onDismiss
-}: {
-  job: JobResponse
-  onDismiss?: () => void
-}) {
-  const busy = job.status === 'pending' || job.status === 'running'
-  return (
-    <li className="rounded-xl border border-line bg-canvas p-3.5">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-moss">
-            {jobTargetLabel(job.target)}
-          </p>
-          <p className="mt-1 truncate font-serif text-[15px] font-medium tracking-tight text-ink">{job.slug}</p>
-        </div>
-        {onDismiss && !busy ? (
-          <button className="icon-button h-7 w-7 flex-none" title="忽略" onClick={onDismiss}>
-            <X size={13} />
-          </button>
-        ) : null}
-      </div>
-      <div className="mt-2 flex items-center gap-2">
-        <JobStatusChip status={job.status} />
-        <span className="text-[11px] text-muted">{new Date(job.created_at).toLocaleTimeString()}</span>
-      </div>
-      {job.steps && job.steps.length > 0 ? (
-        <div className="mt-3">
-          <JobSteps steps={job.steps} compact />
-        </div>
-      ) : job.progress ? (
-        <p className="mt-2 text-xs leading-5 text-body">{normalizeQuotes(job.progress)}</p>
-      ) : null}
-      {job.status === 'failed' && job.error ? <p className="mt-1 text-xs text-error">{job.error}</p> : null}
-    </li>
-  )
-}
-
-function JobStatusChip({ status }: { status: JobResponse['status'] }) {
-  if (status === 'pending' || status === 'running') {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-moss-soft px-2 py-1 text-xs text-moss">
-        <Loader2 size={12} className={status === 'running' ? 'animate-spin' : ''} />
-        {jobStatusLabel(status)}
-      </span>
-    )
-  }
-  if (status === 'succeeded') {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-md bg-moss-soft px-2 py-1 text-xs text-moss">
-        <Check size={12} />
-        {jobStatusLabel(status)}
-      </span>
-    )
-  }
-  return (
-    <span className="inline-flex items-center gap-1 rounded-md bg-error-soft px-2 py-1 text-xs text-error">
-      <AlertCircle size={12} />
-      {jobStatusLabel(status)}
-    </span>
-  )
-}
-
 export default function ActivityDrawer({
   open,
   onClose,
   staged,
   jobStatus,
-  generating,
+  jobIds = {},
+  sending,
   activeJobs,
   recentJobs,
+  connectionError,
   onUnstage,
   onGenerate,
+  onRetry,
   onDismissJob,
   onDismissAllRecent,
-  onOpenManage
+  onOpenManage,
+  onOpenResult
 }: Props) {
-  useEffect(() => {
-    if (!open) return
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKeyDown)
-    return () => document.removeEventListener('keydown', onKeyDown)
-  }, [open, onClose])
-
   if (!open) return null
-
-  return (
-    <div className="fixed inset-0 z-40 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-ink/25 backdrop-blur-[1px]"
-        aria-label="关闭任务面板"
-        onClick={onClose}
-      />
-      <aside
-        className="relative flex h-full w-full max-w-md animate-fade-in flex-col border-l border-line bg-canvas shadow-lift"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="activity-drawer-title"
-      >
-        <div className="flex-none border-b border-line px-5 py-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="panel-title">Activity</p>
-              <h2 id="activity-drawer-title" className="mt-1 font-serif text-[22px] font-medium tracking-tight">
-                任务
-              </h2>
-              <p className="mt-1 text-xs text-body">
-                {activeJobs.length > 0
-                  ? `${activeJobs.length} 个任务进行中`
-                  : staged.length > 0
-                    ? `已暂存 ${staged.length} 篇，可批量生成`
-                    : '后台任务与批量生成'}
-              </p>
+  const tracked = new Set(Object.values(jobIds))
+  const eligible = staged.filter(
+    (item) =>
+      !['pending', 'running', 'succeeded'].includes(
+        jobStatus[item.key]?.status ?? 'idle'
+      )
+  )
+  const jobs = (list: JobResponse[], terminal = false) =>
+    list
+      .filter((job) => !tracked.has(job.job_id))
+      .map((job) => (
+        <article className="task-card" key={job.job_id}>
+          <p className="text-xs text-body">
+            {jobTargetLabel(job.target)} ·{' '}
+            {new Date(job.created_at).toLocaleString()}
+          </p>
+          <h3 className="mt-2 text-sm font-medium">{job.slug}</h3>
+          <p className="mt-2 flex items-center gap-1.5 text-xs">
+            {!terminal && <Loader2 className="animate-spin" size={12} />}
+            {jobStatusLabel(job.status)}
+          </p>
+          {job.steps?.length ? (
+            <div className="mt-3">
+              <JobSteps steps={job.steps} compact />
             </div>
-            <button className="icon-button h-9 w-9 flex-none" title="关闭" onClick={onClose}>
-              <X size={16} />
-            </button>
-          </div>
-          {onOpenManage ? (
-            <button
-              className="action-button mt-3 h-9 w-full justify-center text-xs"
-              onClick={() => {
-                onOpenManage()
-                onClose()
-              }}
-            >
-              打开管理页查看完整历史
-            </button>
-          ) : null}
-        </div>
-
-        <div className="min-h-0 flex-1 overflow-y-auto">
-          <section className="border-b border-line p-4">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">进行中</h3>
-              <span className="text-[11px] text-body">{activeJobs.length}</span>
-            </div>
-            {activeJobs.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-line px-3 py-4 text-center text-xs text-muted">
-                当前没有运行中的任务
-              </p>
-            ) : (
-              <ul className="space-y-3">
-                {activeJobs.map((job) => (
-                  <JobCard key={job.job_id} job={job} />
-                ))}
-              </ul>
-            )}
-          </section>
-
-          {recentJobs.length > 0 ? (
-            <section className="border-b border-line p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">最近完成</h3>
-                <button className="text-[11px] font-medium text-muted hover:text-ink" onClick={onDismissAllRecent}>
-                  全部清除
+          ) : (
+            <p className="mt-2 text-xs text-body">{job.progress}</p>
+          )}
+          {job.error && (
+            <p className="mt-3 break-words text-xs text-error">{job.error}</p>
+          )}
+          {terminal && (
+            <div className="mt-3 flex gap-3">
+              {job.status === 'succeeded' && (
+                <button
+                  className="text-link text-xs"
+                  onClick={() =>
+                    onOpenResult(
+                      String(job.result?.slug || job.slug),
+                      job.target
+                    )
+                  }
+                >
+                  查看结果 <ArrowRight size={12} />
                 </button>
-              </div>
-              <ul className="space-y-3">
-                {recentJobs.slice(0, 8).map((job) => (
-                  <JobCard key={job.job_id} job={job} onDismiss={() => onDismissJob(job.job_id)} />
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          <section className="p-4">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">生成暂存区</h3>
-              <span className="text-[11px] text-body">已暂存 {staged.length} 篇</span>
+              )}
+              <button
+                className="text-xs text-muted"
+                onClick={() => onDismissJob(job.job_id)}
+              >
+                隐藏这条提示
+              </button>
             </div>
+          )}
+        </article>
+      ))
+  return (
+    <Dialog title="任务中心" className="activity-panel" onClose={onClose}>
+      <div className="drawer-body">
+        <p className="mb-5 text-xs leading-6 text-body">
+          任务在后台执行。关闭面板或切换页面后，仍可回来查看进度。
+        </p>
+        {connectionError && (
+          <p role="status" className="alert-warn mb-4">
+            {connectionError}
+          </p>
+        )}
+        <section>
+          <div className="section-heading mb-3">
+            <h3 className="text-sm font-medium">
+              已选论文 <span className="text-muted">{staged.length}</span>
+            </h3>
             <button
-              className="button-primary mb-3 h-10 w-full justify-center"
-              disabled={generating || staged.length === 0}
+              className="button-primary h-9 text-xs"
+              disabled={sending || !eligible.length}
               onClick={onGenerate}
             >
-              <Sparkles size={16} className={generating ? 'animate-spin' : ''} />
-              {generating ? '批量生成中...' : '批量生成'}
+              {sending
+                ? '提交中…'
+                : `生成精读${eligible.length ? `（${eligible.length}）` : ''}`}
             </button>
-            {staged.length === 0 ? (
-              <div className="empty-state px-4 py-8">
-                <p className="font-serif text-sm font-medium tracking-tight text-ink">暂存区空着</p>
-                <p className="mt-2 text-xs leading-5 text-body">从首页勾选论文后，在这里批量生成三件套。</p>
-              </div>
-            ) : (
-              <ul className="space-y-3">
-                {staged.map((item) => {
-                  const state = jobStatus[item.key]
-                  const busy = state?.status === 'pending' || state?.status === 'running'
-                  return (
-                    <li key={item.key} className="rounded-xl border border-line bg-canvas p-3.5">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="line-clamp-2 min-w-0 flex-1 font-serif text-[15px] font-medium leading-snug tracking-tight">
-                          {item.candidate.title || item.key}
-                        </p>
-                        <button
-                          className="icon-button h-7 w-7 flex-none"
-                          title="移出暂存区"
-                          disabled={busy}
-                          onClick={() => onUnstage(item.key)}
-                        >
-                          <X size={13} />
-                        </button>
-                      </div>
-                      <div className="mt-2">
-                        <CandidateStatusBadge status={state?.status ?? 'idle'} error={state?.error} />
-                      </div>
-                      {state?.progress ? (
-                        <p className="mt-1 text-xs text-body">{normalizeQuotes(state.progress)}</p>
-                      ) : null}
-                      {state?.status === 'failed' && state.error ? (
-                        <p className="mt-1 text-xs text-error">{state.error}</p>
-                      ) : null}
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
+          </div>
+          <p className="mb-4 text-xs text-body">
+            生成精读笔记、前作分析和创新范式。
+          </p>
+          {!staged.length && (
+            <p className="empty-state px-4 py-6 text-xs text-body">
+              在发现页勾选论文，再到这里批量生成。
+            </p>
+          )}
+          {staged.map((item) => {
+            const state = jobStatus[item.key]
+            const busy = ['pending', 'running'].includes(state?.status)
+            return (
+              <article key={item.key} className="task-card">
+                <div className="flex items-start gap-3">
+                  <h3 className="min-w-0 flex-1 text-sm font-medium leading-6">
+                    {item.candidate.title}
+                  </h3>
+                  <CandidateStatusBadge status={state?.status ?? 'idle'} />
+                  {!busy && (
+                    <button
+                      className="text-muted"
+                      aria-label={`移除 ${item.candidate.title}`}
+                      onClick={() => onUnstage(item.key)}
+                    >
+                      <X size={15} />
+                    </button>
+                  )}
+                </div>
+                <p className="mt-2 text-xs text-muted">
+                  {item.key}
+                  {!state && ' · 尚未提交'}
+                </p>
+                {state?.progress && (
+                  <p className="mt-3 text-xs leading-6 text-body">
+                    {state.progress}
+                  </p>
+                )}
+                {state?.error && (
+                  <p className="mt-3 break-words text-xs leading-6 text-error">
+                    {state.error}
+                  </p>
+                )}
+                {state?.status === 'failed' && (
+                  <button
+                    className="action-button mt-3 h-8 text-xs"
+                    disabled={sending}
+                    onClick={() => onRetry(item.key)}
+                  >
+                    <RefreshCw size={12} />
+                    仅重试这篇
+                  </button>
+                )}
+                {state?.status === 'succeeded' && (
+                  <button
+                    className="text-link mt-3 text-xs"
+                    onClick={() =>
+                      onOpenResult(state.slug || item.slug || item.key)
+                    }
+                  >
+                    <Check size={12} />
+                    打开精读 <ArrowRight size={12} />
+                  </button>
+                )}
+              </article>
+            )
+          })}
+        </section>
+        {activeJobs.some((job) => !tracked.has(job.job_id)) && (
+          <section className="mt-6">
+            <h3 className="mb-3 text-sm font-medium">其他后台任务</h3>
+            {jobs(activeJobs)}
           </section>
-        </div>
-      </aside>
-    </div>
+        )}
+        {recentJobs.some((job) => !tracked.has(job.job_id)) && (
+          <section className="mt-6">
+            <div className="mb-3 flex justify-between">
+              <h3 className="text-sm font-medium">最近完成</h3>
+              <button
+                className="text-xs text-muted"
+                onClick={onDismissAllRecent}
+              >
+                隐藏完成提示
+              </button>
+            </div>
+            {jobs(recentJobs, true)}
+          </section>
+        )}
+        <button
+          className="action-button mt-6 w-full justify-center"
+          onClick={onOpenManage}
+        >
+          查看完整任务历史 <ArrowRight size={13} />
+        </button>
+      </div>
+    </Dialog>
   )
 }

@@ -107,6 +107,13 @@ def test_normalize_arxiv_id_strips_oai_prefix() -> None:
     assert arxiv_source.normalize_arxiv_id("oai:arXiv.org:2607.10562v3") == "2607.10562"
 
 
+def test_infer_arxiv_id_from_slug() -> None:
+    assert arxiv_source.infer_arxiv_id_from_slug("2605.06614") == "2605.06614"
+    assert arxiv_source.infer_arxiv_id_from_slug("2605.06614v2") == "2605.06614"
+    assert arxiv_source.infer_arxiv_id_from_slug("hep-th-9901001") == "hep-th/9901001"
+    assert arxiv_source.infer_arxiv_id_from_slug("demo-paper") == ""
+
+
 def test_find_main_tex_prefers_single_matching_bbl(tmp_path: Path) -> None:
     source = tmp_path / "source"
     source.mkdir()

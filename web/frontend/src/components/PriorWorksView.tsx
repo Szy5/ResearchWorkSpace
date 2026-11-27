@@ -1,177 +1,189 @@
-import { useEffect, useState } from 'react'
-import { Check, Edit3, ExternalLink, Plus, Trash2 } from 'lucide-react'
+import { ExternalLink, Plus, Trash2 } from 'lucide-react'
 import { PriorWorksPayload } from '../api/client'
 import { normalizeQuotes } from '../utils/textFormat'
-import ReviewBadge from './ReviewBadge'
-
-type EntryDraft = {
-  title: string
-  authorsText: string
-  year: string
-  arxivId: string
-  role: string
-  relationshipSentence: string
-}
-
 type Props = {
   value: PriorWorksPayload | null
-  mode: 'preview' | 'edit'
-  reviewed: boolean
-  onModeChange: (mode: 'preview' | 'edit') => void
-  onSave: (payload: PriorWorksPayload) => void
+  editing?: boolean
+  onChange?: (value: PriorWorksPayload) => void
 }
-
-function draftsFromValue(value: PriorWorksPayload | null): EntryDraft[] {
-  return (value?.prior_works ?? []).map((work) => ({
-    title: work.title,
-    authorsText: work.authors,
-    year: work.year ? String(work.year) : '',
-    arxivId: work.arxiv_id,
-    role: work.role,
-    relationshipSentence: work.relationship_sentence
-  }))
-}
-
-export default function PriorWorksView({ value, mode, reviewed, onModeChange, onSave }: Props) {
-  const works = value?.prior_works ?? []
-  const [entries, setEntries] = useState<EntryDraft[]>(() => draftsFromValue(value))
-
-  useEffect(() => {
-    if (mode === 'edit') setEntries(draftsFromValue(value))
-  }, [mode, value])
-
-  function updateEntry(index: number, patch: Partial<EntryDraft>) {
-    setEntries((prev) => prev.map((entry, entryIndex) => (entryIndex === index ? { ...entry, ...patch } : entry)))
-  }
-
-  function removeEntry(index: number) {
-    setEntries((prev) => prev.filter((_, entryIndex) => entryIndex !== index))
-  }
-
-  function addEntry() {
-    setEntries((prev) => [
-      ...prev,
-      { title: '', authorsText: '', year: '', arxivId: '', role: 'Baseline', relationshipSentence: '' }
-    ])
-  }
-
-  function review() {
-    onSave({
-      prior_works: entries.map((entry) => ({
-        title: entry.title,
-        authors: entry.authorsText,
-        year: entry.year.trim() ? Number(entry.year) : null,
-        arxiv_id: entry.arxivId,
-        role: entry.role,
-        relationship_sentence: entry.relationshipSentence
-      })),
-      synthesis_narrative: value?.synthesis_narrative ?? ''
+export default function PriorWorksView({ value, editing, onChange }: Props) {
+  const doc = value || { prior_works: [], synthesis_narrative: '' }
+  function change(
+    index: number,
+    patch: Partial<PriorWorksPayload['prior_works'][number]>
+  ) {
+    onChange?.({
+      ...doc,
+      prior_works: doc.prior_works.map((work, i) =>
+        i === index ? { ...work, ...patch } : work
+      )
     })
   }
-
   return (
-    <section className="side-panel">
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <h2 className="panel-title">Prior Works</h2>
-          <p className="mt-1 text-xs text-body">{works.length} entries</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <ReviewBadge reviewed={reviewed} label="前作" />
-          <div className="segmented-control compact" aria-label="Prior works view mode">
-            <button className={mode === 'preview' ? 'is-selected' : ''} onClick={() => onModeChange('preview')}>
-              Preview
-            </button>
-            <button className={mode === 'edit' ? 'is-selected' : ''} onClick={() => onModeChange('edit')}>
-              <Edit3 size={14} />
-              Edit
-            </button>
-          </div>
-        </div>
-      </div>
-      {mode === 'edit' ? (
-        <div className="prior-list">
-          {entries.length === 0 ? <div className="text-sm text-body">No prior works yet.</div> : null}
-          {entries.map((entry, index) => (
-            <article className="prior-card" key={index}>
-              <div className="flex items-start justify-between gap-3">
-                <input
-                  className="field-input"
-                  placeholder="Title"
-                  value={entry.title}
-                  onChange={(event) => updateEntry(index, { title: event.target.value })}
-                />
-                <button className="icon-button flex-none" title="Remove" onClick={() => removeEntry(index)}>
+    <div className="prior-list">
+      {editing ? (
+        <label className="field">
+          <span className="field-label">前作综合分析</span>
+          <textarea
+            className="field-textarea min-h-28"
+            aria-label="前作综合分析"
+            value={doc.synthesis_narrative}
+            onChange={(e) =>
+              onChange?.({ ...doc, synthesis_narrative: e.target.value })
+            }
+          />
+        </label>
+      ) : (
+        doc.synthesis_narrative && (
+          <p className="prior-synthesis">
+            {normalizeQuotes(doc.synthesis_narrative)}
+          </p>
+        )
+      )}
+      {!doc.prior_works.length && (
+        <p className="py-4 text-sm text-body">暂无前作分析。</p>
+      )}
+      {doc.prior_works.map((work, index) => (
+        <article className="prior-card" key={index}>
+          {editing ? (
+            <>
+              <div className="flex items-start gap-2">
+                <label className="field flex-1">
+                  <span className="field-label">论文标题</span>
+                  <input
+                    className="field-input"
+                    aria-label={`前作 ${index + 1} 标题`}
+                    value={work.title}
+                    onChange={(e) => change(index, { title: e.target.value })}
+                  />
+                </label>
+                <button
+                  className="icon-button mt-6"
+                  aria-label={`移除前作 ${index + 1}`}
+                  onClick={() =>
+                    onChange?.({
+                      ...doc,
+                      prior_works: doc.prior_works.filter((_, i) => i !== index)
+                    })
+                  }
+                >
                   <Trash2 size={14} />
                 </button>
               </div>
-              <div className="mt-2 grid grid-cols-3 gap-2">
+              <label className="field mt-3">
+                <span className="field-label">作者</span>
                 <input
-                  className="field-input col-span-2 h-9 text-xs"
-                  placeholder="Authors"
-                  value={entry.authorsText}
-                  onChange={(event) => updateEntry(index, { authorsText: event.target.value })}
+                  className="field-input"
+                  value={work.authors}
+                  onChange={(e) => change(index, { authors: e.target.value })}
                 />
-                <input
-                  className="field-input h-9 text-xs"
-                  placeholder="Year"
-                  type="number"
-                  value={entry.year}
-                  onChange={(event) => updateEntry(index, { year: event.target.value })}
-                />
+              </label>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <label className="field">
+                  <span className="field-label">年份</span>
+                  <input
+                    className="field-input"
+                    type="number"
+                    value={work.year || ''}
+                    onChange={(e) =>
+                      change(index, {
+                        year: e.target.value ? Number(e.target.value) : null
+                      })
+                    }
+                  />
+                </label>
+                <label className="field">
+                  <span className="field-label">arXiv ID</span>
+                  <input
+                    className="field-input"
+                    value={work.arxiv_id}
+                    onChange={(e) =>
+                      change(index, { arxiv_id: e.target.value })
+                    }
+                  />
+                </label>
               </div>
-              <input
-                className="field-input mt-2 h-9 text-xs"
-                placeholder="arXiv ID"
-                value={entry.arxivId}
-                onChange={(event) => updateEntry(index, { arxivId: event.target.value })}
-              />
-              <p className="prior-relationship">
-                <span className="role-badge">{entry.role}</span> {normalizeQuotes(entry.relationshipSentence)}
-              </p>
-            </article>
-          ))}
-          <button className="action-button w-full justify-center" onClick={addEntry}>
-            <Plus size={16} />
-            添加新前作
-          </button>
-          <button className="action-button w-full justify-center" onClick={review}>
-            <Check size={16} />
-            Review
-          </button>
-        </div>
-      ) : (
-        <div className="prior-list">
-          {value?.synthesis_narrative ? (
-            <div className="prior-synthesis">{normalizeQuotes(value.synthesis_narrative)}</div>
-          ) : null}
-          {works.length === 0 ? <div className="text-sm text-body">No prior works yet.</div> : null}
-          {works.map((work, index) => (
-            <article className="prior-card" key={`${work.title}-${index}`}>
-              <div className="flex items-start justify-between gap-3">
-                <h3>{work.title}</h3>
+              <label className="field mt-3">
+                <span className="field-label">前作角色</span>
+                <select
+                  className="field-select"
+                  value={work.role}
+                  onChange={(e) => change(index, { role: e.target.value })}
+                >
+                  {[
+                    'Baseline',
+                    'Inspiration',
+                    'Gap Identification',
+                    'Foundation',
+                    'Extension',
+                    'Related Problem'
+                  ].map((role) => (
+                    <option key={role}>{role}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="field mt-3">
+                <span className="field-label">与当前论文的关系</span>
+                <textarea
+                  className="field-textarea"
+                  value={work.relationship_sentence}
+                  onChange={(e) =>
+                    change(index, { relationship_sentence: e.target.value })
+                  }
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <div className="flex items-start gap-3">
+                <h3 className="flex-1">{work.title}</h3>
                 <span className="role-badge">{work.role}</span>
               </div>
               <p className="prior-meta">
                 {work.authors}
                 {work.year ? ` · ${work.year}` : ''}
               </p>
-              {work.arxiv_id ? (
+              <p className="prior-relationship">
+                {normalizeQuotes(work.relationship_sentence)}
+              </p>
+              {work.arxiv_id && (
                 <a
                   className="prior-link"
                   href={`https://arxiv.org/abs/${work.arxiv_id}`}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <ExternalLink size={13} />
-                  {work.arxiv_id}
+                  查看原文 <ExternalLink size={12} />
                 </a>
-              ) : null}
-              <p className="prior-relationship">{normalizeQuotes(work.relationship_sentence)}</p>
-            </article>
-          ))}
-        </div>
+              )}
+            </>
+          )}
+        </article>
+      ))}
+      {editing && (
+        <button
+          className="action-button w-full justify-center"
+          onClick={() =>
+            onChange?.({
+              ...doc,
+              prior_works: [
+                ...doc.prior_works,
+                {
+                  title: '',
+                  authors: '',
+                  year: null,
+                  arxiv_id: '',
+                  role: 'Baseline',
+                  relationship_sentence: ''
+                }
+              ]
+            })
+          }
+        >
+          <Plus size={14} />
+          添加前作
+        </button>
       )}
-    </section>
+    </div>
   )
 }

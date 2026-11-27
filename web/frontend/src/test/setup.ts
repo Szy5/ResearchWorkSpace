@@ -1,10 +1,17 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import { afterEach, beforeEach, vi } from 'vitest'
 
+beforeEach(() => {
+  window.localStorage.clear()
+  window.sessionStorage.clear()
+  window.history.replaceState(null, '', '/')
+})
 afterEach(() => {
   cleanup()
+  vi.unstubAllGlobals()
 })
+HTMLElement.prototype.scrollIntoView = vi.fn()
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

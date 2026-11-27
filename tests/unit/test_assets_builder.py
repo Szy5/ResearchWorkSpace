@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import fitz
@@ -114,6 +115,39 @@ Ours & 1.0 \\
     assert '"summary"' not in manifest
     assert '"prior_works"' not in manifest
     assert '"sci_pattern"' not in manifest
+
+
+def test_assets_builder_fills_arxiv_id_from_slug(tmp_path: Path) -> None:
+    raw_dir = tmp_path / "raw"
+    artifacts_dir = tmp_path / "artifacts"
+    paper_dir = raw_dir / "2605.06614"
+    paper_dir.mkdir(parents=True)
+    (paper_dir / "main.tex").write_text(
+        r"""
+\documentclass{article}
+\title{SkillOS}
+\author{Ada Lovelace}
+\begin{document}
+\begin{abstract}
+A demo abstract.
+\end{abstract}
+\section{Introduction}
+Hello.
+\end{document}
+""".strip(),
+        encoding="utf-8",
+    )
+    settings = Settings(
+        project_root=tmp_path,
+        raw_dir=raw_dir,
+        artifacts_dir=artifacts_dir,
+        prompts_dir=Path("prompts"),
+        api_key="test",
+    )
+
+    result = PaperAssetsBuilder(settings=settings).build("2605.06614", overwrite=True)
+    manifest = json.loads(result.manifest_path.read_text(encoding="utf-8"))
+    assert manifest["paper"]["arxiv_id"] == "2605.06614"
 
 
 def test_assets_reader_loads_existing_assets_as_bundle(tmp_path: Path) -> None:

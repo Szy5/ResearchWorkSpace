@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from pathlib import Path
+import os
 import subprocess
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from paper_wiki.publishing.cursor_render import render_blog_html, render_markdown_html
+from paper_wiki.publishing.cursor_render import (
+    _cursor_subprocess_env,
+    render_blog_html,
+    render_markdown_html,
+)
 from paper_wiki.publishing.exceptions import CursorRenderError, HTMLValidationError
 
 
@@ -41,6 +46,26 @@ def _make_summary(tmp_path: Path, slug: str = "Demo") -> Path:
     artifact_dir.mkdir(parents=True)
     (artifact_dir / "summary.md").write_text("# Demo\n\nContent", encoding="utf-8")
     return artifact_dir
+
+
+def test_cursor_subprocess_env_injects_git_https_shim_when_proxy_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    settings = _make_settings(tmp_path)
+    monkeypatch.setenv("HTTPS_PROXY", "http://127.0.0.1:17897")
+    monkeypatch.setenv("PATH", "/usr/bin:/bin")
+
+    env = _cursor_subprocess_env(settings)
+
+    shim_dir = Path(env["PATH"].split(os.pathsep, 1)[0])
+    shim = shim_dir / "git"
+    assert shim.is_file()
+    assert os.access(shim, os.X_OK)
+    script = shim.read_text(encoding="utf-8")
+    assert "url.https://github.com/.insteadOf=git@github.com:" in script
+    assert "http.proxy=$PROXY" in script
+    assert env["CURSOR_API_KEY"] == "test-cursor-key"
+    assert "ConnectTimeout=5" in env["GIT_SSH_COMMAND"]
 
 
 def test_render_blog_html_missing_summary_raises(tmp_path: Path) -> None:

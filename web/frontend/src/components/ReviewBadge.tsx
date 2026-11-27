@@ -12,7 +12,7 @@ export default function ReviewBadge({ reviewed, label }: Props) {
     >
       {reviewed ? <CheckCircle2 size={14} /> : <Circle size={14} />}
       {label}
-      {reviewed ? '已审查' : '待审查'}
+      {reviewed ? '已核验' : '待核验'}
     </span>
   )
 }

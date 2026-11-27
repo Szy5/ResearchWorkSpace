@@ -87,8 +87,9 @@ class Settings(BaseSettings):
     wechat_proxy: str | None = Field(default=None, validation_alias=AliasChoices("WECHAT_PROXY"))
     cursor_headless_binary: str = Field(default="agent", validation_alias=AliasChoices("CURSOR_HEADLESS_BINARY"))
     cursor_headless_timeout_seconds: float = Field(
-        default=300.0,
+        default=600.0,
         validation_alias=AliasChoices("CURSOR_HEADLESS_TIMEOUT_SECONDS"),
+        description="agent -p wall timeout; plugin sync + gzh-design often needs 3~8 minutes.",
     )
     cursor_api_key: str | None = Field(
         default=None,

@@ -5,7 +5,7 @@ import json
 import logging
 import re
 import shutil
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from paper_wiki.assets.models import (
@@ -97,11 +97,34 @@ class PaperAssetsBuilder:
         figures_doc = FiguresDoc(figures=figures)
         references_doc = ReferencesDoc(references=references)
         now = datetime.now(timezone.utc).isoformat()
+        previous = self._read_existing_manifest(manifest_path)
+        previous_paper = previous.paper if previous is not None else None
+        from paper_wiki.discovery.sources.arxiv_source import infer_arxiv_id_from_slug
+
+        inferred_arxiv_id = infer_arxiv_id_from_slug(slug)
+        paper_meta = PaperAssetMeta(
+            title=title,
+            authors=authors,
+            affiliations=affiliations,
+            abstract=abstract,
+            # Fetch slug is the arXiv id; keep human-edited venue/year/review flags on rebuild.
+            arxiv_id=(previous_paper.arxiv_id if previous_paper and previous_paper.arxiv_id else inferred_arxiv_id),
+            year=previous_paper.year if previous_paper else None,
+            venue=previous_paper.venue if previous_paper else "",
+            tags=list(previous_paper.tags) if previous_paper else [],
+            contribution_type=previous_paper.contribution_type if previous_paper else None,
+            reviewed=previous_paper.reviewed if previous_paper else False,
+            meta_reviewed=previous_paper.meta_reviewed if previous_paper else False,
+            prior_works_reviewed=previous_paper.prior_works_reviewed if previous_paper else False,
+            added_date=previous_paper.added_date if previous_paper else date.today(),
+            blog_html_path=previous_paper.blog_html_path if previous_paper else None,
+            blog_html_generated_at=previous_paper.blog_html_generated_at if previous_paper else None,
+        )
         manifest = AssetsManifest(
             slug=slug,
-            created_at=now,
+            created_at=previous.created_at if previous is not None else now,
             updated_at=now,
-            paper=PaperAssetMeta(title=title, authors=authors, affiliations=affiliations, abstract=abstract),
+            paper=paper_meta,
             source=SourceProvenance(
                 raw_dir=str((self.settings.resolved_raw_dir() / slug).relative_to(self.settings.project_root))
                 if (self.settings.resolved_raw_dir() / slug).is_relative_to(self.settings.project_root)
@@ -133,6 +156,15 @@ class PaperAssetsBuilder:
             figures_manifest_path=figures_manifest_path,
             references_path=references_path,
         )
+
+    def _read_existing_manifest(self, manifest_path: Path) -> AssetsManifest | None:
+        if not manifest_path.is_file():
+            return None
+        try:
+            return AssetsManifest.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            logger.warning("无法读取已有 manifest，将重建元信息：%s, error=%s", manifest_path, exc)
+            return None
 
     def _load_merged_latex(self, paper_dir: Path) -> tuple[Path, str]:
         if not paper_dir.exists() or not paper_dir.is_dir():
