@@ -138,3 +138,16 @@ def test_supplement_figures_skips_llm_when_enough_figures() -> None:
 
     assert generator._supplement_figures(summary, _bundle()) == summary
     assert llm.calls == 0
+
+
+def test_deduplicate_figures_drops_repeated_path() -> None:
+    generator = SummaryGenerator(_DummyLLM(), prompts_dir=None)  # type: ignore[arg-type]
+    summary = (
+        "# T\n\n## 方法架构\n\n"
+        "![图 1：框架](assets/figures/graphwalker_overview.jpg)\n\n"
+        "## 实验与分析\n\n"
+        "![图 2：误重复](assets/figures/graphwalker_overview.jpg)\n"
+    )
+    cleaned = generator._deduplicate_figures(summary, _bundle())
+    assert cleaned.count("assets/figures/graphwalker_overview.jpg") == 1
+    assert "误重复" not in cleaned

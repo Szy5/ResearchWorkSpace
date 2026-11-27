@@ -23,9 +23,10 @@ from typing import Literal
 from PIL import Image
 from pydantic import BaseModel, Field, field_validator
 
-from paper_wiki.assets.models import AssetsManifest, PaperAssetMeta
+from paper_wiki.assets.models import AssetsManifest, FiguresDoc, PaperAssetMeta
 from paper_wiki.core import progress
 from paper_wiki.core.config import Settings
+from paper_wiki.core.models import PriorWorksDoc, SciPatternDoc
 from paper_wiki.core.progress import StepSpec
 from paper_wiki.core.validation import validate_slug
 from paper_wiki.ingestion.llm_client import LLMClient, build_llm_client
@@ -55,6 +56,101 @@ MAX_IMAGE_WIDTH = 1280
 _DISPLAY_MATH_RE = re.compile(r"\$\$[\s\S]+?\$\$")
 _INLINE_MATH_RE = re.compile(r"(?<![\\$])\$(?!\s)([^$\n]+?)(?<!\s)\$(?!\d)")
 _CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+
+_LATEX_SYMBOL_MAP: dict[str, str] = {
+    "times": "×",
+    "cdot": "·",
+    "pm": "±",
+    "mp": "∓",
+    "in": "∈",
+    "notin": "∉",
+    "subseteq": "⊆",
+    "subset": "⊂",
+    "cup": "∪",
+    "cap": "∩",
+    "le": "≤",
+    "leq": "≤",
+    "ge": "≥",
+    "geq": "≥",
+    "neq": "≠",
+    "ne": "≠",
+    "approx": "≈",
+    "sim": "~",
+    "equiv": "≡",
+    "to": "→",
+    "rightarrow": "→",
+    "leftarrow": "←",
+    "leftrightarrow": "↔",
+    "Rightarrow": "⇒",
+    "infty": "∞",
+    "dagger": "†",
+    "ddagger": "‡",
+    "emptyset": "∅",
+    "varnothing": "∅",
+    "sum": "Σ",
+    "prod": "Π",
+    "llbracket": "⟦",
+    "rrbracket": "⟧",
+    "langle": "⟨",
+    "rangle": "⟩",
+    "alpha": "α",
+    "beta": "β",
+    "gamma": "γ",
+    "delta": "δ",
+    "epsilon": "ε",
+    "varepsilon": "ε",
+    "theta": "θ",
+    "lambda": "λ",
+    "mu": "μ",
+    "pi": "π",
+    "rho": "ρ",
+    "sigma": "σ",
+    "tau": "τ",
+    "phi": "φ",
+    "varphi": "φ",
+    "omega": "ω",
+    "Delta": "Δ",
+    "Sigma": "Σ",
+    "Theta": "Θ",
+    "Omega": "Ω",
+    "ldots": "…",
+    "cdots": "…",
+    "dots": "…",
+    "quad": " ",
+    "qquad": " ",
+    "left": "",
+    "right": "",
+}
+_SUPERSCRIPT_MAP = str.maketrans("0123456789+-=()nijk", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱʲᵏ")
+_LATEX_TEXT_WRAPPERS = ("mathcal", "mathrm", "mathbf", "boldsymbol", "bm", "mathbb", "text", "texttt", "textit", "textbf", "operatorname")
+
+_PRIOR_ROLE_LABELS: dict[str, str] = {
+    "Foundation": "理论基石",
+    "Gap Identification": "缺口对照",
+    "Baseline": "核心基线",
+    "Inspiration": "关键启发",
+    "Extension": "直接延伸",
+    "Problem Formulation": "问题定义",
+}
+
+_LEGACY_HEADING_MAP: dict[str, str] = {
+    "三句话": "核心速览",
+    "三句话看懂": "核心速览",
+    "论文速览": "核心速览",
+    "动机": "问题与动机",
+    "为什么要做这件事": "问题与动机",
+    "研究背景与问题": "问题与动机",
+    "方法": "方法架构",
+    "方法怎么做": "方法架构",
+    "方法详解": "方法架构",
+    "方法要点": "方法架构",
+    "效果如何": "实验与分析",
+    "实验结果": "实验与分析",
+    "值得关注的点": "边界与思考",
+    "局限与思考": "边界与思考",
+    "读后小结": "结语",
+    "总结": "结语",
+}
 
 PREPARE_STEPS = [
     StepSpec("read", "读取精读笔记"),
@@ -150,10 +246,60 @@ def cjk_char_count(text: str) -> int:
     return len(_CJK_RE.findall(text or ""))
 
 
+def _latex_to_plain_text(expr: str) -> str:
+    """Convert inline LaTeX math into clean Unicode plain text without raw commands."""
+    text = expr.strip()
+    # Unwrap \frac{a}{b} -> a/b (up to 2 nested levels).
+    for _ in range(2):
+        text = re.sub(
+            r"\\(?:d|t)?frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}",
+            lambda m: f"{m.group(1).strip()}/{m.group(2).strip()}",
+            text,
+        )
+    # Accents like \hat{y}, \bar{c}, \tilde{x}.
+    text = re.sub(r"\\hat\s*\{([^{}]+)\}", lambda m: f"{m.group(1).strip()}\u0302", text)
+    text = re.sub(r"\\bar\s*\{([^{}]+)\}", lambda m: f"{m.group(1).strip()}\u0304", text)
+    text = re.sub(r"\\tilde\s*\{([^{}]+)\}", lambda m: f"{m.group(1).strip()}\u0303", text)
+    # Unwrap font/style commands: \mathcal{D} -> D, \mathrm{SVTS} -> SVTS.
+    wrapper_pattern = re.compile(r"\\(?:" + "|".join(_LATEX_TEXT_WRAPPERS) + r")\s*\{([^{}]*)\}")
+    for _ in range(3):
+        next_text = wrapper_pattern.sub(r"\1", text)
+        if next_text == text:
+            break
+        text = next_text
+    # Named symbols & Greek letters.
+    text = re.sub(
+        r"\\([A-Za-z]+)",
+        lambda m: _LATEX_SYMBOL_MAP.get(m.group(1), ""),
+        text,
+    )
+    text = text.replace(r"\%", "%").replace(r"\_", "_").replace(r"\{", "{").replace(r"\}", "}")
+    # Convert simple superscripts: ^{dagger} -> †, ^{-6} -> ⁻⁶, ^2 -> ².
+    text = re.sub(r"\^\s*\{?†\}?", "†", text)
+    text = re.sub(
+        r"\^\s*\{([0-9+\-=()nijk]{1,4})\}",
+        lambda m: m.group(1).translate(_SUPERSCRIPT_MAP),
+        text,
+    )
+    text = re.sub(
+        r"\^([0-9nijk])(?![A-Za-z0-9])",
+        lambda m: m.group(1).translate(_SUPERSCRIPT_MAP),
+        text,
+    )
+    # Simplify braced subscripts: _{ans} -> _ans.
+    text = re.sub(r"_\s*\{([A-Za-z0-9,+-]{1,12})\}", r"_\1", text)
+    text = text.replace("{", "").replace("}", "").replace("\\", "")
+    text = re.sub(r"\s*([∈≤≥≠≈→←×·])\s*", r" \1 ", text)
+    text = re.sub(r"\s{2,}", " ", text).strip()
+    return text
+
+
 def strip_formulas(markdown_text: str) -> str:
-    """Remove display/inline LaTeX so WeChat body never depends on formula images."""
+    """Remove display math and convert inline LaTeX into readable plain text."""
     text = _DISPLAY_MATH_RE.sub("", markdown_text)
-    text = _INLINE_MATH_RE.sub(lambda match: match.group(1).replace("\\", ""), text)
+    # Smooth dangling colons left behind when a display equation was removed.
+    text = re.sub(r"：\s*\n{2,}(?=(?:其中|即|这里|式中))", "，", text)
+    text = _INLINE_MATH_RE.sub(lambda match: _latex_to_plain_text(match.group(1)), text)
     return re.sub(r"\n{3,}", "\n\n", text).strip() + "\n"
 
 
@@ -233,13 +379,12 @@ def _with_venue_prefix(title: str, meta: PaperAssetMeta) -> str:
 def _people(settings: Settings, slug: str, meta: PaperAssetMeta) -> tuple[list[str], list[str]]:
     """Authors and affiliations for the info card.
 
-    Manifests written before affiliations were parsed (or with the old first-line-only
-    author parser) are completed read-only from raw LaTeX; human-edited author lists
-    that are not a prefix of the raw list are kept as-is.
+    Manifests written before affiliations were parsed (or with older author/affiliation
+    gluing bugs) are refreshed read-only from raw LaTeX while keeping genuine human edits.
     """
     authors, affiliations = list(meta.authors), list(meta.affiliations)
     raw_dir = settings.resolved_raw_dir() / slug
-    if affiliations or not raw_dir.is_dir():
+    if not raw_dir.is_dir():
         return authors, affiliations
     try:
         from paper_wiki.ingestion.latex_parser import LaTeXParser
@@ -248,9 +393,20 @@ def _people(settings: Settings, slug: str, meta: PaperAssetMeta) -> tuple[list[s
     except Exception as exc:  # raw tree without a parsable .tex entry
         logger.info("无法从 raw 补全作者单位：slug=%s, %s", slug, exc)
         return authors, affiliations
-    if raw_authors and authors == raw_authors[: len(authors)]:
-        authors = raw_authors
-    return authors, raw_affiliations
+    if raw_authors:
+        glued_single = len(authors) == 1 and " ".join(raw_authors).casefold() == authors[0].casefold()
+        if not authors or authors == raw_authors[: len(authors)] or glued_single:
+            authors = raw_authors
+    if raw_affiliations:
+        joined_old = " ".join(affiliations).casefold()
+        glued_affils = (
+            bool(affiliations)
+            and len(raw_affiliations) > len(affiliations)
+            and all(item.casefold() in joined_old for item in raw_affiliations)
+        )
+        if not affiliations or glued_affils:
+            affiliations = raw_affiliations
+    return authors, affiliations
 
 
 def _meta_line(meta: PaperAssetMeta) -> str:
@@ -322,24 +478,52 @@ def _encode_for_wechat(source: Path, target: Path) -> Path:
     return target
 
 
+_EXPERIMENT_SECTION_RE = re.compile(r"result|experiment|ablation|eval|analysis|benchmark|additional", re.IGNORECASE)
+
+
+def _load_figures_meta(artifact_dir: Path) -> dict[str, tuple[str, str, str]]:
+    """Return map of normalized asset_path -> (section_id, label, original_caption)."""
+    manifest_path = artifact_dir / "assets" / "figures" / "manifest.json"
+    if not manifest_path.is_file():
+        return {}
+    try:
+        doc = FiguresDoc.model_validate_json(manifest_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+    return {
+        figure.asset_path.lstrip("./"): (figure.section_id, figure.label, figure.caption)
+        for figure in doc.figures
+        if figure.asset_path
+    }
+
+
 def _localize_images(
     article: str, artifact_dir: Path, out_dir: Path, warnings: list[str]
 ) -> tuple[str, list[str], str | None]:
-    """Copy referenced figures into wechat/images and rewrite links.
+    """Copy referenced figures into wechat/images, drop duplicate embeds, and rewrite links.
 
     Returns ``(markdown, image paths, method figure)``; the method/framework figure, when
-    recognised, is listed first and is used both as cover source and as the lead figure.
+    recognised, is listed first for the WeChat cover without duplicating it in the body.
     """
     images_dir = out_dir / "images"
+    figures_meta = _load_figures_meta(artifact_dir)
     copied: dict[str, str] = {}
+    seen_hashes: dict[str, str] = {}
+    emitted: set[str] = set()
     order: list[str] = []
     labels: dict[str, str] = {}
+    section_ids: dict[str, str] = {}
+    image_line_re = re.compile(
+        r"^!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)[ \t]*(?:\n(?:[ \t]*\n)?\*{1,2}图\s*\d*\s*[:：][^\n]*\*{1,2}[ \t]*)?$",
+        re.MULTILINE,
+    )
 
     def repl(match: re.Match[str]) -> str:
         alt, raw = match.group(1), match.group(2).strip()
         if raw.startswith(("http://", "https://")):
             return match.group(0)
-        source = (artifact_dir / raw.lstrip("./")).resolve()
+        normalized_raw = raw.lstrip("./")
+        source = (artifact_dir / normalized_raw).resolve()
         try:
             source.relative_to(artifact_dir.resolve())
         except ValueError:
@@ -348,34 +532,60 @@ def _localize_images(
         if not source.is_file():
             warnings.append(f"图片不存在，已从正文移除：{raw}")
             return ""
-        if raw not in copied:
-            stem = f"{len(copied) + 1:02d}_{re.sub(r'[^A-Za-z0-9_-]+', '_', source.stem)[:40]}"
-            try:
-                target = _encode_for_wechat(source, images_dir / stem)
-            except Exception as exc:  # unreadable / unsupported image
-                warnings.append(f"图片无法处理，已从正文移除：{raw}（{exc}）")
-                return ""
-            copied[raw] = target.relative_to(out_dir).as_posix()
-            order.append(copied[raw])
-            caption_line = re.match(r"[ \t]*\n(?:[ \t]*\n)?\*{1,2}(图[^\n]*)", article[match.end():])
-            labels[copied[raw]] = f"{alt} {caption_line.group(1) if caption_line else ''} {source.stem}"
-            progress.detail(f"已处理 {len(copied)} 张图片")
-        return f"![{alt}]({copied[raw]})"
+        source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+        if normalized_raw not in copied:
+            if source_hash in seen_hashes:
+                copied[normalized_raw] = seen_hashes[source_hash]
+            else:
+                stem = f"{len(order) + 1:02d}_{re.sub(r'[^A-Za-z0-9_-]+', '_', source.stem)[:40]}"
+                try:
+                    target = _encode_for_wechat(source, images_dir / stem)
+                except Exception as exc:  # unreadable / unsupported image
+                    warnings.append(f"图片无法处理，已从正文移除：{raw}（{exc}）")
+                    return ""
+                rel_target = target.relative_to(out_dir).as_posix()
+                copied[normalized_raw] = rel_target
+                seen_hashes[source_hash] = rel_target
+                order.append(rel_target)
+                sec_id, fig_label, orig_caption = figures_meta.get(normalized_raw, ("", "", ""))
+                section_ids[rel_target] = sec_id
+                labels[rel_target] = f"{fig_label} {orig_caption} {alt} {source.stem}"
+                progress.detail(f"已处理 {len(order)} 张图片")
+        target_rel = copied[normalized_raw]
+        if target_rel in emitted:
+            warnings.append(f"已移除正文重复配图：{raw}")
+            return ""
+        emitted.add(target_rel)
+        return f"![{alt}]({target_rel})"
 
-    rewritten = _IMAGE_LINK_RE.sub(repl, article)
-    # Method overview figures make the most recognisable cover; move one to the front.
-    preferred = next((path for path in order if _COVER_HINT_RE.search(labels.get(path, ""))), None)
+    rewritten = image_line_re.sub(repl, article)
+    rewritten = _IMAGE_LINK_RE.sub(
+        lambda m: f"![{m.group(1)}]({copied.get(m.group(2).strip().lstrip('./'), m.group(2).strip())})",
+        rewritten,
+    )
+    rewritten = re.sub(r"\n{3,}", "\n\n", rewritten).strip() + "\n"
+
+    # Prefer a method/overview figure outside experiment/results sections for the cover.
+    non_exp_preferred = next(
+        (
+            path
+            for path in order
+            if _COVER_HINT_RE.search(labels.get(path, ""))
+            and not _EXPERIMENT_SECTION_RE.search(section_ids.get(path, ""))
+        ),
+        None,
+    )
+    preferred = non_exp_preferred or next(
+        (path for path in order if _COVER_HINT_RE.search(labels.get(path, ""))),
+        None,
+    )
     if preferred:
         order = [preferred, *[path for path in order if path != preferred]]
     return rewritten, order, preferred
 
 
 def lead_figure_caption(article: str, path: str) -> str | None:
-    """Return the caption of the method figure at ``path``; leave the body figure in place.
-
-    The same figure is also rendered at the top of the WeChat article, so the method
-    section keeps its illustration. Returns ``None`` when ``path`` is not in the body.
-    """
+    """Return the caption of the method figure at ``path``; leave the body figure in place."""
     pattern = re.compile(
         rf"^!\[([^\]]*)\]\({re.escape(path)}\)[ \t]*(?:\n(?:[ \t]*\n)?\*{{1,2}}图\s*\d*\s*[:：]\s*(.+?)\*{{1,2}}[ \t]*)?$",
         re.MULTILINE,
@@ -387,6 +597,42 @@ def lead_figure_caption(article: str, path: str) -> str | None:
     return (caption or alt).strip()
 
 
+def _format_authors_compact(authors: list[str]) -> str:
+    clean = [name.strip() for name in authors if name.strip()]
+    if not clean:
+        return ""
+    if len(clean) <= 5:
+        return ", ".join(clean)
+    return f"{', '.join(clean[:3])} 等 {len(clean)} 位作者"
+
+
+def _format_affiliations_compact(affiliations: list[str]) -> str:
+    clean: list[str] = []
+    for item in affiliations:
+        text = re.sub(r"\s+", " ", item).strip(" ,;")
+        if text and text not in clean:
+            clean.append(text)
+    if not clean:
+        return ""
+    if len(clean) <= 4:
+        return " · ".join(clean)
+    return " · ".join(clean[:4]) + f" 等 {len(clean)} 家机构"
+
+
+def _read_primary_pattern(artifact_dir: Path, article: str) -> str | None:
+    pattern_path = artifact_dir / "sci_pattern.json"
+    if pattern_path.is_file():
+        try:
+            doc = SciPatternDoc.model_validate_json(pattern_path.read_text(encoding="utf-8"))
+            label = f"{doc.primary_pattern.value} {doc.primary_pattern_name}".strip()
+            if label:
+                return label
+        except Exception:
+            pass
+    match = re.search(r"^\s*-\s*主要范式[:：]\s*(.+?)\s*$", article, flags=re.MULTILINE)
+    return match.group(1).strip() if match else None
+
+
 def _info_card_markdown(
     *,
     title: str,
@@ -395,47 +641,127 @@ def _info_card_markdown(
     venue: str | None,
     year: int | None,
     arxiv_id: str | None,
+    primary_pattern: str | None = None,
 ) -> str:
-    """Plain Markdown for the paper info block; Cursor / gzh-design styles it."""
+    """Compact paper dossier Markdown for PaperLens; omits empty fields automatically."""
     lines = [f"**标题**：{title}"]
-    if authors:
-        lines.append(f"**作者**：{'，'.join(authors)}")
-    if affiliations:
-        lines.append("**单位**：")
-        lines.extend(f"{index}. {name}" for index, name in enumerate(affiliations[:8], start=1))
-    source_parts = [part for part in [venue, str(year or ""), f"arXiv:{arxiv_id}" if arxiv_id else ""] if part]
+    author_line = _format_authors_compact(authors)
+    if author_line:
+        lines.append(f"**作者**：{author_line}")
+    affil_line = _format_affiliations_compact(affiliations)
+    if affil_line:
+        lines.append(f"**单位**：{affil_line}")
+    year_str = str(year) if year is not None and 2015 <= year <= 2035 else ""
+    source_parts = [part for part in [venue, year_str, f"arXiv:{arxiv_id}" if arxiv_id else ""] if part]
     if source_parts:
         lines.append(f"**来源**：{' · '.join(source_parts)}")
+    if primary_pattern:
+        lines.append(f"**范式**：{primary_pattern}")
     return "\n".join(lines) + "\n"
+
+
+def _normalize_wechat_headings(article: str) -> str:
+    """Standardize legacy casual H2 headings into PaperLens editorial headings."""
+    def repl(match: re.Match[str]) -> str:
+        raw = match.group(1).strip()
+        return f"## {_LEGACY_HEADING_MAP.get(raw, raw)}"
+
+    return re.sub(r"^##[ \t]+([^\n]+?)[ \t]*$", repl, article, flags=re.MULTILINE)
+
+
+def _split_long_paragraph(paragraph: str, max_chars: int = 160) -> list[str]:
+    """Break an overly dense Chinese paragraph into readable <=max_chars chunks."""
+    text = paragraph.strip()
+    if cjk_char_count(text) <= max_chars:
+        return [text] if text else []
+    sentences = [part.strip() for part in re.split(r"(?<=[。！？；])", text) if part.strip()]
+    if len(sentences) <= 1:
+        return [text]
+    chunks: list[str] = []
+    current = ""
+    for sentence in sentences:
+        if current and cjk_char_count(current + sentence) > max_chars:
+            chunks.append(current.strip())
+            current = sentence
+        else:
+            current += sentence
+    if current.strip():
+        chunks.append(current.strip())
+    return chunks
+
+
+def _format_prior_works_appendix(artifact_dir: Path, fallback_text: str) -> str:
+    """Format prior works as a concise evolution timeline instead of a 600-char wall of text."""
+    prior_path = artifact_dir / "prior_works.json"
+    if prior_path.is_file():
+        try:
+            doc = PriorWorksDoc.model_validate_json(prior_path.read_text(encoding="utf-8"))
+        except Exception:
+            doc = None
+        if doc is not None and doc.prior_works:
+            lines: list[str] = []
+            for item in doc.prior_works[:4]:
+                short_title = item.title.split(":", 1)[0].strip() or item.title.strip()
+                role = _PRIOR_ROLE_LABELS.get(item.role, item.role)
+                meta_bits = [bit for bit in (str(item.year) if item.year else "", role) if bit]
+                meta_tag = f"（{' · '.join(meta_bits)}）" if meta_bits else ""
+                lines.append(f"- **{short_title}**{meta_tag}：{item.relationship_sentence.strip()}")
+            if doc.synthesis_narrative.strip():
+                sentences = [s.strip() for s in re.split(r"(?<=[。！？])", doc.synthesis_narrative.strip()) if s.strip()]
+                takeaway = "".join(sentences[-2:]) if len(sentences) >= 2 else doc.synthesis_narrative.strip()
+                lines.append("")
+                lines.append(f"**脉络收束**：{takeaway}")
+            return "\n".join(lines).strip()
+    paragraphs = [p.strip() for p in re.split(r"\n{2,}", fallback_text.strip()) if p.strip()]
+    split_paragraphs = [chunk for para in paragraphs for chunk in _split_long_paragraph(para)]
+    return "\n\n".join(split_paragraphs).strip()
+
+
+def _polish_appendix_for_wechat(article: str, artifact_dir: Path) -> str:
+    """Keep knowledge-base appendix readable and clearly separated as low-weight reference."""
+    pattern = re.compile(r"^##\s+(" + "|".join(map(re.escape, APPENDIX_HEADINGS)) + r")\s*$", re.MULTILINE)
+    first = pattern.search(article)
+    if not first:
+        return article
+    body = article[: first.start()].rstrip()
+    tail = article[first.start() :].strip()
+
+    prior_re = re.compile(r"^##\s+先前工作分析\s*\n([\s\S]*?)(?=^##\s+|\Z)", re.MULTILINE)
+    match = prior_re.search(tail)
+    if match:
+        formatted_prior = _format_prior_works_appendix(artifact_dir, match.group(1))
+        tail = tail[: match.start()] + f"## 先前工作分析\n\n{formatted_prior}\n" + tail[match.end() :]
+
+    if not body.endswith("---"):
+        body = f"{body}\n\n---"
+    return f"{body}\n\n{tail.strip()}\n"
 
 
 def _prepend_lead_and_info(
     article: str,
     *,
-    method_figure: str | None,
-    lead_caption: str | None,
+    method_figure: str | None = None,
+    lead_caption: str | None = None,
     title: str,
     authors: list[str],
     affiliations: list[str],
     venue: str | None,
     year: int | None,
     arxiv_id: str | None,
+    primary_pattern: str | None = None,
 ) -> str:
-    """Insert the lead method figure and paper info card after the H1 title."""
-    blocks: list[str] = []
-    if method_figure:
-        blocks.append(f"![{lead_caption or ''}]({method_figure})")
-    blocks.append(
-        _info_card_markdown(
-            title=title,
-            authors=authors,
-            affiliations=affiliations,
-            venue=venue,
-            year=year,
-            arxiv_id=arxiv_id,
-        ).rstrip()
-    )
-    insert = "\n\n".join(blocks) + "\n\n"
+    """Insert the compact paper dossier card after the H1 title (without duplicating figures)."""
+    del method_figure, lead_caption  # Method figure stays once in the Method Architecture section.
+    info = _info_card_markdown(
+        title=title,
+        authors=authors,
+        affiliations=affiliations,
+        venue=venue,
+        year=year,
+        arxiv_id=arxiv_id,
+        primary_pattern=primary_pattern,
+    ).rstrip()
+    insert = f"{info}\n\n"
     match = re.match(r"^(#[^\n]*\n+)", article)
     if match:
         return match.group(1) + insert + article[match.end() :]
@@ -510,10 +836,12 @@ def prepare_paper_wechat(
     source_path = out_dir / SOURCE_FILE
     with progress.step("adapt"):
         # summary.md is already the WeChat-ready blog (v5: ~5 min, no formulas);
-        # only strip residual LaTeX as a safety net, then hand off to Cursor layout.
+        # normalize legacy headings, polish residual LaTeX and appendix layout for PaperLens.
         article = strip_formulas(full_article)
+        article = _normalize_wechat_headings(article)
+        article = _polish_appendix_for_wechat(article, artifact_dir)
         chars = cjk_char_count(article)
-        progress.detail(f"直接使用 summary.md（已去公式），约 {chars} 字")
+        progress.detail(f"已整理公众号正文（无公式 + 精简附录），约 {chars} 字")
         out_dir.mkdir(parents=True, exist_ok=True)
 
     with progress.step("images"):
@@ -521,20 +849,18 @@ def prepare_paper_wechat(
             shutil.rmtree(out_dir / name, ignore_errors=True)
         out_dir.mkdir(parents=True, exist_ok=True)
         article, images, method_figure = _localize_images(article, artifact_dir, out_dir, warnings)
-        lead_caption = lead_figure_caption(article, method_figure) if method_figure else None
-        if method_figure and lead_caption is None:
-            lead_caption = ""
         authors, affiliations = _people(settings, slug, meta)
+        primary_pattern = _read_primary_pattern(artifact_dir, full_article)
         article = _prepend_lead_and_info(
             article,
             method_figure=method_figure,
-            lead_caption=lead_caption,
             title=meta.title or slug,
             authors=authors,
             affiliations=affiliations,
             venue=meta.venue,
             year=meta.year,
             arxiv_id=meta.arxiv_id,
+            primary_pattern=primary_pattern,
         )
         source_path.write_text(article, encoding="utf-8")
 

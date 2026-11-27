@@ -12,11 +12,11 @@ from paper_wiki.publishing.wechat_limits import TITLE_LIMIT, fit_wechat_length
 COVER_WIDTH = 1800
 COVER_HEIGHT = 766
 
-_BG_TOP = (6, 78, 59)  # #064E3B
-_BG_BOTTOM = (5, 150, 105)  # #059669
-_ACCENT = (167, 243, 208)  # #A7F3D0
+_BG_TOP = (15, 23, 42)  # #0F172A
+_BG_BOTTOM = (30, 58, 138)  # #1E3A8A
+_ACCENT = (191, 219, 254)  # #BFDBFE
 _TEXT = (255, 255, 255)
-_MUTED = (209, 250, 229)
+_MUTED = (219, 234, 254)  # #DBEAFE
 
 # (path, has_latin_glyphs). DroidSansFallback only covers CJK, so Latin runs
 # fall back to a separate font.
@@ -206,7 +206,7 @@ def generate_wechat_cover(
     title: str,
     output_path: Path,
     *,
-    brand: str = "Paper-Wiki",
+    brand: str = "PaperLens · 论文透镜",
     kicker: str = "",
     subtitle: str = "",
     figure_path: Path | None = None,

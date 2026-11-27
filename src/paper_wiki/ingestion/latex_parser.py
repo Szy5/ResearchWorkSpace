@@ -40,6 +40,30 @@ _INSTITUTION_RE = re.compile(
 )
 
 
+_GENERIC_EMAIL_DOMAINS = {
+    "gmail",
+    "googlemail",
+    "outlook",
+    "hotmail",
+    "live",
+    "yahoo",
+    "icloud",
+    "me",
+    "qq",
+    "163",
+    "126",
+    "sina",
+    "foxmail",
+    "proton",
+    "protonmail",
+    "edu",
+    "ac",
+    "org",
+    "com",
+    "net",
+}
+
+
 def _looks_like_person(name: str) -> bool:
     """排除 MBZUAI、PolyU、MIT CSAIL 这类混在作者行里的机构缩写。"""
     if len(name) < 2 or name.isupper():
@@ -442,7 +466,10 @@ class LaTeXParser:
             raw = re.sub(r"\\textsuperscript\s*\{(?:[^{}]|\{[^{}]*\})*\}", " ", raw)
         raw = re.sub(r"\\(?:begin|end)\{(?:tabular|center|minipage)\*?\}(?:\{[^{}]*\}|\[[^\]]*\])*", "\n", raw)
         raw = re.sub(r"\\['`^\"~=.]\{?([A-Za-z])\}?", r"\1", raw)
-        raw = re.sub(r"\\(?:footnotemark|quad|qquad|hfill|newline|par)\b(?:\[[^\]]*\])?", " ", raw).replace("~", " ")
+        # \quad / \qquad / \hfill commonly separate authors or institutions on the same line.
+        raw = re.sub(r"\\(?:quad|qquad|hfill)\b", " ; ", raw)
+        raw = re.sub(r"\\(?:newline|par)\b", "\n", raw)
+        raw = re.sub(r"\\footnotemark\b(?:\[[^\]]*\])?", " ", raw).replace("~", " ")
         raw = raw.replace("\\&", "\x00")
         groups = re.split(r"\\(?:AND|And|and)\b", raw)
         result: list[list[str]] = []
@@ -458,6 +485,16 @@ class LaTeXParser:
             if lines:
                 result.append(lines)
         return result
+
+    @staticmethod
+    def _extract_email_domains(raw_blocks: list[str]) -> set[str]:
+        domains: set[str] = set()
+        for block in raw_blocks:
+            for match in re.finditer(r"@([A-Za-z0-9-]+)\.[A-Za-z]{2,}", block):
+                domain = match.group(1).lower()
+                if len(domain) >= 4 and domain not in _GENERIC_EMAIL_DOMAINS:
+                    domains.add(domain)
+        return domains
 
     @staticmethod
     def _looks_like_affiliation(line: str) -> bool:
@@ -492,16 +529,18 @@ class LaTeXParser:
         return authors
 
     def _extract_affiliations(self, text: str) -> list[str]:
-        """尽力提取作者单位；只保留像机构名的行（大学、研究院、实验室、公司等）。"""
+        """尽力提取作者单位；保留机构名以及与作者邮箱域名匹配的组织名。"""
         blocks: list[str] = []
         for command in _AFFILIATION_COMMANDS:
             blocks.extend(args[0] for args in self._iter_command_args(text, command))
         blocks.extend(args[1] for args in self._iter_command_args(text, "icmlaffiliation", 2))
+        author_blocks = [args[0] for args in self._iter_command_args(text, "author")]
+        email_domains = self._extract_email_domains(blocks + author_blocks)
         if not blocks:
             lines = [
                 line
-                for args in self._iter_command_args(text, "author")
-                for group in self._author_lines(args[0])
+                for raw_block in author_blocks
+                for group in self._author_lines(raw_block)
                 for line in group[1:]
             ]
         else:
@@ -510,7 +549,11 @@ class LaTeXParser:
         for line in lines:
             for part in re.split(r";|,\s*\d+(?=[A-Z])", line):
                 name = re.sub(r"^\d+\s*", "", part).strip(" ,;")
-                if not name or "@" in name or not _INSTITUTION_RE.search(name):
+                if not name or "@" in name:
+                    continue
+                compact = re.sub(r"[^a-z0-9]", "", name.lower())
+                matches_domain = any(domain in compact for domain in email_domains)
+                if not _INSTITUTION_RE.search(name) and not matches_domain:
                     continue
                 if name not in affiliations:
                     affiliations.append(name)

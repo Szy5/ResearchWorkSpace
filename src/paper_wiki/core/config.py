@@ -96,7 +96,7 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("CURSOR_API_KEY"),
         description="Cursor headless (-p) API key; browser `agent login` is not enough for print mode.",
     )
-    cursor_render_theme: str = Field(default="摸鱼绿", validation_alias=AliasChoices("CURSOR_RENDER_THEME"))
+    cursor_render_theme: str = Field(default="论文透镜", validation_alias=AliasChoices("CURSOR_RENDER_THEME"))
     cursor_render_prompt_path: str = Field(
         default="blog_html_render_v1.py",
         validation_alias=AliasChoices("CURSOR_RENDER_PROMPT_PATH"),

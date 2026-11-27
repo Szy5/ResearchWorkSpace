@@ -44,7 +44,7 @@ def test_sanitize_removes_highlights_slider_and_simplifies_part_titles() -> None
     assert "01" in html
     assert "三句话看懂" in html
     assert "正文段落" in html
-    assert 'font-size:22px;font-weight:900;color:#059669' in html
+    assert 'font-size:20px;font-weight:800;color:#1E3A8A' in html
 
 
 def test_sanitize_keeps_plain_html() -> None:

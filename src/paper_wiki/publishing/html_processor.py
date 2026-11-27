@@ -62,10 +62,10 @@ def _simplify_part_chapter_titles(soup: BeautifulSoup) -> None:
             continue
         replacement = BeautifulSoup(
             (
-                '<section style="margin:40px 0 20px;display:flex;align-items:baseline;gap:10px;">'
-                f'<span style="font-size:22px;font-weight:900;color:#059669;line-height:1;">'
+                '<section style="margin:38px 0 18px;padding-bottom:10px;border-bottom:1px solid #E2E8F0;display:flex;align-items:baseline;gap:10px;">'
+                f'<span style="font-size:20px;font-weight:800;color:#1E3A8A;line-height:1;">'
                 f'<span leaf="">{escape(number)}</span></span>'
-                f'<span style="font-size:18px;font-weight:800;color:#111827;line-height:1.4;">'
+                f'<span style="font-size:18px;font-weight:800;color:#0F172A;line-height:1.4;">'
                 f'<span leaf="">{escape(title)}</span></span>'
                 "</section>"
             ),

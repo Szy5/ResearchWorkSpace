@@ -262,13 +262,16 @@ def test_prepare_builds_package_with_llm_headline(settings: Settings) -> None:
     with Image.open(image) as img:
         assert img.width <= 1280
     html = (out / "article.html").read_text(encoding="utf-8")
+    article_md = (out / "article.md").read_text(encoding="utf-8")
     assert 'src="images/01_framework.jpg"' in html
     assert "科学发现范式" in html
-    assert "$" not in (out / "article.md").read_text(encoding="utf-8")
-    assert "**标题**" in (out / "article.md").read_text(encoding="utf-8")
-    assert html.index("01_framework.jpg") < html.index(">标题<")
-    # Lead figure is a copy; the method section still keeps its own figure.
-    assert html.count("01_framework.jpg") == 2
+    assert "$" not in article_md
+    assert "**标题**" in article_md
+    assert "**单位**" not in article_md  # empty affiliations are omitted
+    assert "**范式**：P1" in article_md
+    assert html.index(">标题<") < html.index("01_framework.jpg")
+    # Method figure is not duplicated at the top; it appears once in the body.
+    assert html.count("01_framework.jpg") == 1
     assert load_package(settings, "demo") == package
 
 
@@ -408,6 +411,28 @@ Changsha, China
     assert parser._extract_authors(inline) == ["Jinhao Jiang", "Kun Zhou"]
     assert parser._extract_affiliations(inline) == ["Gaoling School of Artificial Intelligence, Renmin University of China"]
 
+    quad_authors = r"""
+\author{Yujia Zhang\footnotemark[1] \quad Xinqi Ren\footnotemark[1] \quad Shixiong Zhou \quad Jia Meng \\
+  Brightendata \\
+  \texttt{\{zhangyujia, renxinqi\}@brightendata.com}}
+"""
+    assert parser._extract_authors(quad_authors) == ["Yujia Zhang", "Xinqi Ren", "Shixiong Zhou", "Jia Meng"]
+    assert parser._extract_affiliations(quad_authors) == ["Brightendata"]
+
+    quad_affils = r"""
+\author{Zongyuan Sun\texorpdfstring{$^{1,*}$}{}, Shuai Zhao\texorpdfstring{$^{1,\dagger}$}{}}
+\affiliation{%
+  \institution{$^{1}$Beijing University of Posts and Telecommunications, Beijing, China\quad $^{2}$University of Helsinki, Helsinki, Finland}
+  \institution{$^{3}$University of Amsterdam, Amsterdam, Netherlands\quad $^{4}$Nanyang Technological University, Singapore}
+}
+"""
+    assert parser._extract_affiliations(quad_affils) == [
+        "Beijing University of Posts and Telecommunications, Beijing, China",
+        "University of Helsinki, Helsinki, Finland",
+        "University of Amsterdam, Amsterdam, Netherlands",
+        "Nanyang Technological University, Singapore",
+    ]
+
 
 def test_wechat_ip_whitelist_error_names_current_ip() -> None:
     from paper_wiki.publishing.exceptions import WeChatAPIError
@@ -440,11 +465,99 @@ def test_lead_figure_caption_handles_old_caption_line() -> None:
 
 
 def test_strip_formulas_removes_latex() -> None:
-    text = "奖励 $R_S$ 与\n\n$$\\mathcal{J}(\\theta)$$\n\n结束。"
+    text = (
+        "奖励 $R_S$ 与任务集 $\\mathcal{D}_{\\mathrm{SVTS}}$，学习率 $1\\times 10^{-6}$，"
+        "参考 $\\text{KG-R1}^\\dagger$，方差为：\n\n$$\\mathcal{J}(\\theta)$$\n\n其中 $\\hat{y}^j \\in [0,1]$ 结束。"
+    )
     cleaned = strip_formulas(text)
     assert "$" not in cleaned
     assert "R_S" in cleaned
+    assert "D_SVTS" in cleaned
+    assert "mathcal" not in cleaned
+    assert "mathrm" not in cleaned
+    assert "1 × 10⁻⁶" in cleaned
+    assert "KG-R1†" in cleaned
+    assert "方差为，其中" in cleaned
     assert "结束" in cleaned
+
+
+def test_prepare_deduplicates_images_normalizes_headings_and_formats_prior_works(settings: Settings) -> None:
+    artifact = settings.resolved_artifacts_dir() / "demo"
+    Image.new("RGB", (800, 500), (20, 90, 140)).save(artifact / "assets" / "figures" / "ablation.png")
+    (artifact / "assets" / "figures" / "manifest.json").write_text(
+        json.dumps(
+            {
+                "figures": [
+                    {
+                        "id": "fig-ablation",
+                        "label": "fig:ablation",
+                        "caption": "Ablation curve",
+                        "source_path": "figures/ablation.pdf",
+                        "asset_path": "assets/figures/ablation.png",
+                        "section_id": "sec-main-results",
+                        "status": "rendered",
+                    },
+                    {
+                        "id": "fig-framework",
+                        "label": "fig:framework",
+                        "caption": "Overall architecture of Demo",
+                        "source_path": "figures/framework.pdf",
+                        "asset_path": "assets/figures/framework.png",
+                        "section_id": "sec-method",
+                        "status": "rendered",
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    (artifact / "prior_works.json").write_text(
+        json.dumps(
+            {
+                "prior_works": [
+                    {
+                        "title": "PriorNet: A Baseline Framework",
+                        "authors": "Alice et al.",
+                        "year": 2024,
+                        "arxiv_id": "2401.00001",
+                        "role": "Baseline",
+                        "relationship_sentence": "提供了核心对比基线。",
+                    }
+                ],
+                "synthesis_narrative": "先前研究奠定了基础。本文进一步去除了标注依赖。",
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    (artifact / "summary.md").write_text(
+        "# Demo Paper\n\n"
+        "> **一句话导读**：测试导读。\n\n"
+        "## 动机\n\n背景段落。\n\n"
+        "## 方法\n\n![图 1：整体流程](assets/figures/ablation.png)\n\n"
+        "![图 2：架构](assets/figures/framework.png)\n\n"
+        "## 效果如何\n\n![图 3：消融](assets/figures/ablation.png)\n\n"
+        "## 值得关注的点\n\n边界讨论。\n\n"
+        "## 读后小结\n\n小结收尾。\n\n"
+        "## 科学发现范式\n\n- 主要范式：P04 Modular Pipeline Composition\n\n"
+        "## 先前工作分析\n\n很长一段文字。\n",
+        encoding="utf-8",
+    )
+    with patch("paper_wiki.publishing.paper_wechat.render_markdown_html", side_effect=_fake_cursor_render):
+        package = prepare_paper_wechat(settings, "demo", llm=FakeLLM())
+
+    article_md = (artifact / "wechat" / "article.md").read_text(encoding="utf-8")
+    assert "## 问题与动机" in article_md
+    assert "## 方法架构" in article_md
+    assert "## 实验与分析" in article_md
+    assert "## 边界与思考" in article_md
+    assert "## 结语" in article_md
+    assert "**范式**：P04 Modular Pipeline Composition" in article_md
+    assert "- **PriorNet**（2024 · 核心基线）：提供了核心对比基线。" in article_md
+    assert article_md.count("01_ablation.jpg") == 1
+    assert any("重复配图" in w for w in package.warnings)
+    # Cover prefers method-section framework figure over main-results curve despite caption wording.
+    assert package.cover_figure == "images/02_framework.jpg"
 
 
 def test_adapt_article_for_wechat_strips_formulas(settings: Settings) -> None:

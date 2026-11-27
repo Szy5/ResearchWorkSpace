@@ -27,10 +27,21 @@ _FIGURE_SUPPLEMENT_USER = """笔记目前的小节标题：
 {FIGURES}
 
 请挑选最多 {N} 张最有助于读者理解论文的图（优先方法流程图、主结果图、分析图），为每张图：
-- heading：从上面的小节标题中原样选一个最贴切的放置位置：方法图放方法相关小节，实验、消融、训练曲线等分析图放实验/效果相关小节；不要选"论文速览""三句话看懂""值得关注的点""读后小结"这类导读或收尾小节；
+- heading：从上面的小节标题中原样选一个最贴切的放置位置：方法图放「方法架构」相关小节，实验、消融、训练曲线等分析图放「实验与分析」相关小节；不要选"核心速览""论文速览""三句话看懂""边界与思考""值得关注的点""结语""读后小结"这类导读或收尾小节；
 - caption：根据原图注写一句中文图注（15~40 字，说明图里展示了什么），不要加"图 N："前缀。
 
 输出格式：{{"placements": [{{"path": "...", "heading": "...", "caption": "..."}}]}}"""
+
+_SKIP_FIGURE_HEADING_KEYWORDS = (
+    "速览",
+    "三句话",
+    "边界与思考",
+    "值得关注",
+    "局限",
+    "结语",
+    "读后小结",
+    "总结",
+)
 
 
 class _FigurePlacement(BaseModel):
@@ -68,10 +79,41 @@ class SummaryGenerator:
         content = self.llm.complete(system, user).strip()
         content = self._rewrite_figure_paths(content, bundle)
         summary = self._clean_summary_content(content)
+        summary = self._deduplicate_figures(summary, bundle)
         summary = self._supplement_figures(summary, bundle)
+        summary = self._deduplicate_figures(summary, bundle)
         summary = self._number_figure_captions(summary)
         logger.info("summary.md 生成完成：slug=%s, chars=%d", bundle.slug, len(summary))
         return summary
+
+    def _deduplicate_figures(self, summary: str, bundle: PaperAssetsBundle) -> str:
+        """Drop duplicate figure embeds pointing to the same image path or identical source hash."""
+        hash_by_path = {
+            figure.asset_path: figure.source_sha256
+            for figure in bundle.figures.figures
+            if figure.asset_path and figure.source_sha256
+        }
+        seen_paths: set[str] = set()
+        seen_hashes: set[str] = set()
+        dropped = 0
+
+        def repl(match: re.Match[str]) -> str:
+            nonlocal dropped
+            path = match.group(2).strip()
+            digest = hash_by_path.get(path, "")
+            if path in seen_paths or (digest and digest in seen_hashes):
+                dropped += 1
+                return ""
+            seen_paths.add(path)
+            if digest:
+                seen_hashes.add(digest)
+            return match.group(0)
+
+        cleaned = self._IMAGE_LINE_RE.sub(repl, summary)
+        if dropped:
+            logger.info("已移除重复配图：slug=%s, dropped=%d", bundle.slug, dropped)
+            cleaned = re.sub(r"\n{3,}", "\n\n", cleaned).strip() + "\n"
+        return cleaned
 
     def _supplement_figures(self, summary: str, bundle: PaperAssetsBundle) -> str:
         """Ask for placements of unused figures when the draft has too few; insertion itself is deterministic."""
@@ -83,7 +125,7 @@ class SummaryGenerator:
         headings = [
             match.group(2).strip()
             for match in re.finditer(r"^(#{2,3})\s+(.+?)\s*$", summary, flags=re.MULTILINE)
-            if "速览" not in match.group(2)
+            if not any(keyword in match.group(2) for keyword in _SKIP_FIGURE_HEADING_KEYWORDS)
         ]
         if not headings:
             return summary
