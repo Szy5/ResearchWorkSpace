@@ -127,6 +127,7 @@ class AgentSummaryGenerator:
             "trace_id": output.trace_id,
             "prompt_tokens": output.usage.prompt_tokens,
             "cached_tokens": output.usage.cached_tokens,
+            "cache_write_tokens": output.usage.cache_write_tokens,
             "completion_tokens": output.usage.completion_tokens,
             "total_tokens": output.usage.total_tokens,
             "llm_calls": output.usage.llm_calls,

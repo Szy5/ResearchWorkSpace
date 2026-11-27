@@ -25,6 +25,7 @@ class AgentUsage(BaseModel):
     completion_tokens: int = 0
     total_tokens: int = 0
     cached_tokens: int = 0
+    cache_write_tokens: int = 0
     llm_calls: int = 0
     tool_calls: int = 0
 
@@ -77,8 +78,26 @@ def _extract_cached_tokens(usage: Any) -> int:
     return 0
 
 
-def _accumulate_usage(target: AgentUsage, response: Any) -> None:
-    usage = getattr(response, "usage", None)
+def _extract_cache_write_tokens(usage: Any) -> int:
+    """Extract Anthropic/proxy cache creation tokens when available."""
+    if usage is None:
+        return 0
+    details = getattr(usage, "prompt_tokens_details", None)
+    if details is not None:
+        for attr in ("cache_write_tokens", "cached_creation_tokens", "cache_creation_input_tokens"):
+            val = getattr(details, attr, None)
+            if isinstance(val, int):
+                return val
+            if isinstance(details, dict) and isinstance(details.get(attr), int):
+                return details[attr]
+    for attr in ("cache_creation_input_tokens", "claude_cache_creation_5_m_tokens"):
+        val = getattr(usage, attr, None)
+        if isinstance(val, int):
+            return val
+    return 0
+
+
+def _accumulate_usage(target: AgentUsage, usage: Any) -> None:
     target.llm_calls += 1
     if usage is None:
         return
@@ -89,17 +108,16 @@ def _accumulate_usage(target: AgentUsage, response: Any) -> None:
     target.completion_tokens += int(completion)
     target.total_tokens += int(total)
     target.cached_tokens += _extract_cached_tokens(usage)
+    target.cache_write_tokens += _extract_cache_write_tokens(usage)
 
 
-def _serialize_assistant_message(message: Any) -> dict[str, Any]:
-    """Keep only standard OpenAI assistant fields for maximum proxy compatibility."""
-    payload: dict[str, Any] = {
-        "role": "assistant",
-        "content": getattr(message, "content", None) or "",
-    }
-    tool_calls = getattr(message, "tool_calls", None)
-    if tool_calls:
-        payload["tool_calls"] = [
+def _consume_completion(response_or_stream: Any) -> tuple[str, list[dict[str, Any]], Any]:
+    """Normalize both non-streaming ChatCompletion and SSE chunk streams into (content, tool_calls, usage)."""
+    if hasattr(response_or_stream, "choices"):
+        message = response_or_stream.choices[0].message
+        content = getattr(message, "content", None) or ""
+        raw_tcs = getattr(message, "tool_calls", None) or []
+        tool_calls = [
             {
                 "id": tc.id,
                 "type": getattr(tc, "type", "function") or "function",
@@ -108,8 +126,52 @@ def _serialize_assistant_message(message: Any) -> dict[str, Any]:
                     "arguments": tc.function.arguments or "{}",
                 },
             }
-            for tc in tool_calls
+            for tc in raw_tcs
         ]
+        return content, tool_calls, getattr(response_or_stream, "usage", None)
+
+    content_parts: list[str] = []
+    tc_map: dict[int, dict[str, Any]] = {}
+    final_usage: Any = None
+    for chunk in response_or_stream:
+        chunk_usage = getattr(chunk, "usage", None)
+        if chunk_usage is not None:
+            final_usage = chunk_usage
+        choices = getattr(chunk, "choices", None) or []
+        if not choices:
+            continue
+        delta = getattr(choices[0], "delta", None)
+        if delta is None:
+            continue
+        delta_content = getattr(delta, "content", None)
+        if delta_content:
+            content_parts.append(delta_content)
+        for delta_tc in getattr(delta, "tool_calls", None) or []:
+            idx = getattr(delta_tc, "index", 0)
+            entry = tc_map.setdefault(
+                idx,
+                {"id": "", "type": "function", "function": {"name": "", "arguments": ""}},
+            )
+            if getattr(delta_tc, "id", None):
+                entry["id"] = delta_tc.id
+            if getattr(delta_tc, "type", None):
+                entry["type"] = delta_tc.type
+            fn = getattr(delta_tc, "function", None)
+            if fn is not None:
+                if getattr(fn, "name", None):
+                    entry["function"]["name"] += fn.name
+                if getattr(fn, "arguments", None):
+                    entry["function"]["arguments"] += fn.arguments
+
+    ordered_tcs = [tc_map[idx] for idx in sorted(tc_map)]
+    return "".join(content_parts), ordered_tcs, final_usage
+
+
+def _build_assistant_message(content: str, tool_calls: list[dict[str, Any]]) -> dict[str, Any]:
+    """Keep only standard OpenAI assistant fields for maximum proxy compatibility."""
+    payload: dict[str, Any] = {"role": "assistant", "content": content}
+    if tool_calls:
+        payload["tool_calls"] = tool_calls
     return payload
 
 
@@ -148,10 +210,13 @@ class PaperAgentLoop:
         *,
         client: Any | None = None,
         max_steps: int | None = None,
+        stream: bool | None = None,
     ) -> None:
         self.settings = settings or get_settings()
         self.max_steps = max(2, max_steps or self.settings.agent_max_steps)
         raw_client = client if client is not None else _build_openai_client(self.settings)
+        # Default to SSE streaming for real OpenAI clients to avoid 60s reverse-proxy 504 timeouts.
+        self._use_streaming = stream if stream is not None else isinstance(raw_client, OpenAI)
         self.client = maybe_wrap_openai(raw_client, self.settings)
 
     def run(
@@ -212,30 +277,32 @@ class PaperAgentLoop:
                 "messages": messages,
                 "temperature": 0.1,
             }
+            if self._use_streaming:
+                request_kwargs["stream"] = True
+                request_kwargs["stream_options"] = {"include_usage": True}
             if not is_last_step:
                 request_kwargs["tools"] = TOOL_SCHEMAS
                 request_kwargs["tool_choice"] = "auto"
 
             logger.info("Agent Loop 第 %d/%d 步：slug=%s, model=%s", step, self.max_steps, slug, self.settings.model_name)
             response = self.client.chat.completions.create(**request_kwargs)
-            _accumulate_usage(usage, response)
-
-            message = response.choices[0].message
-            messages.append(_serialize_assistant_message(message))
-            tool_calls = getattr(message, "tool_calls", None) or []
+            content_raw, tool_calls, step_usage = _consume_completion(response)
+            _accumulate_usage(usage, step_usage)
+            messages.append(_build_assistant_message(content_raw, tool_calls))
 
             if not tool_calls or is_last_step:
-                content = (getattr(message, "content", None) or "").strip()
+                content = content_raw.strip()
                 if not content:
                     raise ValueError(f"Agent returned empty final content on step {step} for slug={slug}")
                 trace_id = current_trace_id()
                 logger.info(
-                    "Agent Loop 完成：slug=%s, steps=%d, tool_calls=%d, prompt_tokens=%d, cached_tokens=%d, completion_tokens=%d, trace_id=%s",
+                    "Agent Loop 完成：slug=%s, steps=%d, tool_calls=%d, prompt_tokens=%d, cached_tokens=%d, cache_write_tokens=%d, completion_tokens=%d, trace_id=%s",
                     slug,
                     step,
                     usage.tool_calls,
                     usage.prompt_tokens,
                     usage.cached_tokens,
+                    usage.cache_write_tokens,
                     usage.completion_tokens,
                     trace_id,
                 )
@@ -248,8 +315,8 @@ class PaperAgentLoop:
                 )
 
             for tc in tool_calls:
-                tool_name = tc.function.name
-                raw_args = tc.function.arguments or "{}"
+                tool_name = tc["function"]["name"]
+                raw_args = tc["function"]["arguments"] or "{}"
                 try:
                     parsed_args = json.loads(raw_args)
                     if not isinstance(parsed_args, dict):
@@ -272,7 +339,7 @@ class PaperAgentLoop:
                 messages.append(
                     {
                         "role": "tool",
-                        "tool_call_id": tc.id,
+                        "tool_call_id": tc["id"],
                         "content": tool_output,
                     }
                 )

@@ -138,6 +138,76 @@ def test_agent_loop_parallel_tools_prompt_cache_and_usage(tmp_path: Path) -> Non
     assert "Invalid JSON arguments" in tool_messages[2]["content"]
 
 
+def test_agent_loop_assembles_streaming_tool_calls_and_cache_write_usage(tmp_path: Path) -> None:
+    raw_dir = tmp_path / "raw" / "p_stream"
+    artifact_dir = tmp_path / "artifacts" / "p_stream"
+    raw_dir.mkdir(parents=True)
+    (artifact_dir / "assets").mkdir(parents=True)
+    (raw_dir / "main.tex").write_text("Accuracy is 77.6%.\n", encoding="utf-8")
+
+    def _chunk(content: str = "", tool_calls: list[Any] | None = None, usage: Any = None) -> SimpleNamespace:
+        delta = SimpleNamespace(content=content, tool_calls=tool_calls or [])
+        return SimpleNamespace(choices=[SimpleNamespace(delta=delta)], usage=usage)
+
+    stream_step_1 = [
+        _chunk(
+            tool_calls=[
+                SimpleNamespace(index=0, id="tc-s1", type="function", function=SimpleNamespace(name="read_", arguments='{"path":'))
+            ]
+        ),
+        _chunk(
+            tool_calls=[
+                SimpleNamespace(index=0, id=None, type=None, function=SimpleNamespace(name="lines", arguments=' "raw/main.tex"}'))
+            ]
+        ),
+        SimpleNamespace(
+            choices=[],
+            usage=SimpleNamespace(
+                prompt_tokens=1000,
+                completion_tokens=40,
+                total_tokens=1040,
+                prompt_tokens_details=SimpleNamespace(cached_tokens=200, cache_write_tokens=750),
+            ),
+        ),
+    ]
+    stream_step_2 = [
+        _chunk(content="# Search-RSI\n\n"),
+        _chunk(content="27B 达到 77.6%。"),
+        SimpleNamespace(
+            choices=[],
+            usage=SimpleNamespace(
+                prompt_tokens=1400,
+                completion_tokens=90,
+                total_tokens=1490,
+                prompt_tokens_details=SimpleNamespace(cached_tokens=950, cache_write_tokens=400),
+            ),
+        ),
+    ]
+    fake_client = _FakeCompletionClient([stream_step_1, stream_step_2])
+    settings = Settings(
+        project_root=Path.cwd(),
+        api_key="test",
+        model_name="claude-sonnet-5-5",
+        langsmith_tracing=False,
+        langsmith_api_key=None,
+    )
+    loop = PaperAgentLoop(settings=settings, client=fake_client, max_steps=4, stream=True)
+    result = loop.run(
+        slug="p_stream",
+        system_prompt="SYS",
+        initial_user_prompt="MAP",
+        sandbox=PaperSandbox(raw_dir=raw_dir, artifact_dir=artifact_dir),
+    )
+
+    assert result.steps == 2
+    assert "77.6%" in result.content
+    assert result.usage.tool_calls == 1
+    assert result.usage.cached_tokens == 1150
+    assert result.usage.cache_write_tokens == 1150
+    assert fake_client.requests[0]["stream"] is True
+    assert fake_client.requests[0]["stream_options"] == {"include_usage": True}
+
+
 def test_agent_loop_forces_final_answer_at_max_steps(tmp_path: Path) -> None:
     raw_dir = tmp_path / "raw" / "p2"
     artifact_dir = tmp_path / "artifacts" / "p2"
