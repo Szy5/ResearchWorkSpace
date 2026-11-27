@@ -633,17 +633,38 @@ def _read_primary_pattern(artifact_dir: Path, article: str) -> str | None:
     return match.group(1).strip() if match else None
 
 
+def _paper_links(settings: Settings, slug: str, meta: PaperAssetMeta) -> tuple[str, str]:
+    """Resolve (paper_url, code_url) from manifest metadata with read-only raw LaTeX fallback."""
+    paper_url = (meta.url or "").strip()
+    if not paper_url and (meta.arxiv_id or "").strip():
+        paper_url = f"https://arxiv.org/abs/{meta.arxiv_id.strip()}"
+    code_url = (meta.code_url or "").strip()
+    if not code_url:
+        raw_dir = settings.resolved_raw_dir() / slug
+        if raw_dir.is_dir():
+            try:
+                from paper_wiki.ingestion.latex_parser import LaTeXParser
+
+                code_url = LaTeXParser().extract_code_url(raw_dir)
+            except Exception as exc:
+                logger.info("无法从 raw 提取代码链接：slug=%s, %s", slug, exc)
+    return paper_url, code_url
+
+
 def _info_card_markdown(
     *,
     title: str,
     authors: list[str],
     affiliations: list[str],
-    venue: str | None,
-    year: int | None,
-    arxiv_id: str | None,
+    url: str = "",
+    code_url: str = "",
+    venue: str | None = None,
+    year: int | None = None,
+    arxiv_id: str | None = None,
     primary_pattern: str | None = None,
 ) -> str:
-    """Compact paper dossier Markdown for PaperLens; omits empty fields automatically."""
+    """Minimal top paper info Markdown: Title, Authors, Affiliations, URL, and Code."""
+    del venue, year, arxiv_id, primary_pattern
     lines = [f"**标题**：{title}"]
     author_line = _format_authors_compact(authors)
     if author_line:
@@ -651,13 +672,17 @@ def _info_card_markdown(
     affil_line = _format_affiliations_compact(affiliations)
     if affil_line:
         lines.append(f"**单位**：{affil_line}")
-    year_str = str(year) if year is not None and 2015 <= year <= 2035 else ""
-    source_parts = [part for part in [venue, year_str, f"arXiv:{arxiv_id}" if arxiv_id else ""] if part]
-    if source_parts:
-        lines.append(f"**来源**：{' · '.join(source_parts)}")
-    if primary_pattern:
-        lines.append(f"**范式**：{primary_pattern}")
+    if url.strip():
+        lines.append(f"**URL**：{url.strip()}")
+    if code_url.strip():
+        lines.append(f"**Code**：{code_url.strip()}")
     return "\n".join(lines) + "\n"
+
+
+def _source_footer_line(venue: str | None, year: int | None, arxiv_id: str | None) -> str:
+    year_str = str(year) if year is not None and 2015 <= year <= 2035 else ""
+    parts = [part for part in [venue, year_str, f"arXiv:{arxiv_id}" if arxiv_id else ""] if part]
+    return f"**原文检索**：{' · '.join(parts)}" if parts else ""
 
 
 def _normalize_wechat_headings(article: str) -> str:
@@ -717,6 +742,29 @@ def _format_prior_works_appendix(artifact_dir: Path, fallback_text: str) -> str:
     return "\n\n".join(split_paragraphs).strip()
 
 
+def _format_sci_pattern_appendix(artifact_dir: Path, fallback_text: str) -> str:
+    """Keep only the concise reasoning prose under 科学发现范式 (omit primary/secondary tags)."""
+    pattern_path = artifact_dir / "sci_pattern.json"
+    if pattern_path.is_file():
+        try:
+            doc = SciPatternDoc.model_validate_json(pattern_path.read_text(encoding="utf-8"))
+            if doc.reasoning.strip():
+                return doc.reasoning.strip()
+        except Exception:
+            pass
+    kept: list[str] = []
+    for raw_line in fallback_text.splitlines():
+        line = raw_line.strip()
+        if not line:
+            continue
+        if re.match(r"^[-*]?\s*(?:主要范式|次要范式)\s*[:：]", line):
+            continue
+        line = re.sub(r"^[-*]?\s*分类理由\s*[:：]\s*", "", line)
+        if line:
+            kept.append(line)
+    return "\n\n".join(kept).strip()
+
+
 def _polish_appendix_for_wechat(article: str, artifact_dir: Path) -> str:
     """Keep knowledge-base appendix readable and clearly separated as low-weight reference."""
     pattern = re.compile(r"^##\s+(" + "|".join(map(re.escape, APPENDIX_HEADINGS)) + r")\s*$", re.MULTILINE)
@@ -725,6 +773,13 @@ def _polish_appendix_for_wechat(article: str, artifact_dir: Path) -> str:
         return article
     body = article[: first.start()].rstrip()
     tail = article[first.start() :].strip()
+
+    sci_re = re.compile(r"^##\s+科学发现范式\s*\n([\s\S]*?)(?=^##\s+|\Z)", re.MULTILINE)
+    sci_match = sci_re.search(tail)
+    if sci_match:
+        formatted_sci = _format_sci_pattern_appendix(artifact_dir, sci_match.group(1))
+        replacement = f"## 科学发现范式\n\n{formatted_sci}\n\n" if formatted_sci else "## 科学发现范式\n\n"
+        tail = tail[: sci_match.start()] + replacement + tail[sci_match.end() :]
 
     prior_re = re.compile(r"^##\s+先前工作分析\s*\n([\s\S]*?)(?=^##\s+|\Z)", re.MULTILINE)
     match = prior_re.search(tail)
@@ -745,27 +800,29 @@ def _prepend_lead_and_info(
     title: str,
     authors: list[str],
     affiliations: list[str],
+    url: str = "",
+    code_url: str = "",
     venue: str | None,
     year: int | None,
     arxiv_id: str | None,
     primary_pattern: str | None = None,
 ) -> str:
-    """Insert the compact paper dossier card after the H1 title (without duplicating figures)."""
-    del method_figure, lead_caption  # Method figure stays once in the Method Architecture section.
+    """Insert Title/Authors/Affiliations/URL/Code card at top and source reference at bottom."""
+    del method_figure, lead_caption, primary_pattern
     info = _info_card_markdown(
         title=title,
         authors=authors,
         affiliations=affiliations,
-        venue=venue,
-        year=year,
-        arxiv_id=arxiv_id,
-        primary_pattern=primary_pattern,
+        url=url,
+        code_url=code_url,
     ).rstrip()
     insert = f"{info}\n\n"
     match = re.match(r"^(#[^\n]*\n+)", article)
-    if match:
-        return match.group(1) + insert + article[match.end() :]
-    return insert + article
+    out = (match.group(1) + insert + article[match.end() :]) if match else (insert + article)
+    source_line = _source_footer_line(venue, year, arxiv_id)
+    if source_line:
+        out = f"{out.rstrip()}\n\n{source_line}\n"
+    return out
 
 
 _COVER_HINT_RE = re.compile(
@@ -850,6 +907,7 @@ def prepare_paper_wechat(
         out_dir.mkdir(parents=True, exist_ok=True)
         article, images, method_figure = _localize_images(article, artifact_dir, out_dir, warnings)
         authors, affiliations = _people(settings, slug, meta)
+        paper_url, code_url = _paper_links(settings, slug, meta)
         primary_pattern = _read_primary_pattern(artifact_dir, full_article)
         article = _prepend_lead_and_info(
             article,
@@ -857,6 +915,8 @@ def prepare_paper_wechat(
             title=meta.title or slug,
             authors=authors,
             affiliations=affiliations,
+            url=paper_url,
+            code_url=code_url,
             venue=meta.venue,
             year=meta.year,
             arxiv_id=meta.arxiv_id,

@@ -63,6 +63,12 @@ const initialDrafts = (paper: Detail): Drafts => ({
     year: paper.meta.year,
     venue: paper.meta.venue,
     arxiv_id: paper.meta.arxiv_id,
+    url:
+      paper.meta.url ||
+      (paper.meta.arxiv_id
+        ? `https://arxiv.org/abs/${paper.meta.arxiv_id}`
+        : ''),
+    code_url: paper.meta.code_url || '',
     tags: paper.meta.tags
   },
   prior: paper.prior_works
@@ -544,14 +550,27 @@ function PaperReader({
                   <RefreshCw size={13} />
                   重新生成精读
                 </button>
-                {detail.meta.arxiv_id && (
+                {(detail.meta.url || detail.meta.arxiv_id) && (
                   <a
                     className="text-link"
-                    href={`https://arxiv.org/abs/${detail.meta.arxiv_id}`}
+                    href={
+                      detail.meta.url ||
+                      `https://arxiv.org/abs/${detail.meta.arxiv_id}`
+                    }
                     target="_blank"
                     rel="noreferrer"
                   >
                     查看原文 <ExternalLink size={12} />
+                  </a>
+                )}
+                {detail.meta.code_url && (
+                  <a
+                    className="text-link"
+                    href={detail.meta.code_url}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    代码仓库 <ExternalLink size={12} />
                   </a>
                 )}
               </footer>
@@ -727,6 +746,26 @@ function PaperReader({
                           value={drafts.meta.arxiv_id}
                           onChange={(e) =>
                             setMeta({ arxiv_id: e.target.value })
+                          }
+                        />
+                      </label>
+                      <label className="field">
+                        <span className="field-label">论文链接（URL）</span>
+                        <input
+                          className="field-input"
+                          placeholder="https://arxiv.org/abs/..."
+                          value={drafts.meta.url}
+                          onChange={(e) => setMeta({ url: e.target.value })}
+                        />
+                      </label>
+                      <label className="field">
+                        <span className="field-label">代码仓库（Code）</span>
+                        <input
+                          className="field-input"
+                          placeholder="https://github.com/..."
+                          value={drafts.meta.code_url}
+                          onChange={(e) =>
+                            setMeta({ code_url: e.target.value })
                           }
                         />
                       </label>

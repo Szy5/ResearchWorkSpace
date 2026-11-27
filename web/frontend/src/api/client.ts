@@ -23,6 +23,8 @@ export type PaperMetaDTO = {
   year: number | null
   venue: string
   arxiv_id: string
+  url?: string
+  code_url?: string
   tags: string[]
   reviewed: boolean
   meta_reviewed: boolean
@@ -206,6 +208,8 @@ export type PaperMetaEdits = {
   year: number | null
   venue: string
   arxiv_id: string
+  url: string
+  code_url: string
   tags: string[]
 }
 

@@ -239,9 +239,23 @@ def test_prepare_prefixes_generated_title_with_venue_year(settings: Settings) ->
     with patch("paper_wiki.publishing.paper_wechat.render_markdown_html", side_effect=_fake_cursor_render):
         package = prepare_paper_wechat(settings, "demo", llm=FakeLLM())
     assert package.title.startswith("NeurIPS 2026 | ")
-    assert "arXiv:2605.06614" in (settings.resolved_artifacts_dir() / "demo" / "wechat" / "article.md").read_text(
-        encoding="utf-8"
-    )
+    article_md = (settings.resolved_artifacts_dir() / "demo" / "wechat" / "article.md").read_text(encoding="utf-8")
+    assert "arXiv:2605.06614" in article_md
+    assert "**URL**：https://arxiv.org/abs/2605.06614" in article_md
+
+
+def test_latex_code_url_extraction_prefers_paper_repo() -> None:
+    import paper_wiki.assets  # noqa: F401
+    from paper_wiki.ingestion.latex_parser import LaTeXParser
+
+    tex = r"""
+\newcommand{\repourl}{\url{https://github.com/Brightendata/knowledge-in-the-harness}}
+\begin{document}
+Our code is available at \repourl.
+\bibliography{refs}
+https://github.com/other/ignored-after-bib
+"""
+    assert LaTeXParser._extract_code_url(tex) == "https://github.com/Brightendata/knowledge-in-the-harness"
 
 
 def test_prepare_builds_package_with_llm_headline(settings: Settings) -> None:
@@ -268,7 +282,7 @@ def test_prepare_builds_package_with_llm_headline(settings: Settings) -> None:
     assert "$" not in article_md
     assert "**标题**" in article_md
     assert "**单位**" not in article_md  # empty affiliations are omitted
-    assert "**范式**：P1" in article_md
+    assert "**范式**" not in article_md  # top card stays strictly Title/Authors/Affiliations
     assert html.index(">标题<") < html.index("01_framework.jpg")
     # Method figure is not duplicated at the top; it appears once in the body.
     assert html.count("01_framework.jpg") == 1
@@ -539,7 +553,7 @@ def test_prepare_deduplicates_images_normalizes_headings_and_formats_prior_works
         "## 效果如何\n\n![图 3：消融](assets/figures/ablation.png)\n\n"
         "## 值得关注的点\n\n边界讨论。\n\n"
         "## 读后小结\n\n小结收尾。\n\n"
-        "## 科学发现范式\n\n- 主要范式：P04 Modular Pipeline Composition\n\n"
+        "## 科学发现范式\n\n- 主要范式：P04 Modular Pipeline Composition\n- 次要范式：P01 Gap-Driven Reframing\n- 分类理由：拆分为两层模块协同改进。\n\n"
         "## 先前工作分析\n\n很长一段文字。\n",
         encoding="utf-8",
     )
@@ -552,7 +566,10 @@ def test_prepare_deduplicates_images_normalizes_headings_and_formats_prior_works
     assert "## 实验与分析" in article_md
     assert "## 边界与思考" in article_md
     assert "## 结语" in article_md
-    assert "**范式**：P04 Modular Pipeline Composition" in article_md
+    assert "**范式**" not in article_md
+    assert "主要范式" not in article_md
+    assert "次要范式" not in article_md
+    assert "拆分为两层模块协同改进。" in article_md
     assert "- **PriorNet**（2024 · 核心基线）：提供了核心对比基线。" in article_md
     assert article_md.count("01_ablation.jpg") == 1
     assert any("重复配图" in w for w in package.warnings)

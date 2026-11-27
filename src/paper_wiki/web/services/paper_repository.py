@@ -74,8 +74,20 @@ class PaperRepository:
 
         artifact_dir = bundle.artifact_dir
         meta = map_paper_meta(bundle.manifest.paper)
+        updates: dict[str, str] = {}
         if not meta.arxiv_id:
-            meta = meta.model_copy(update={"arxiv_id": self._effective_arxiv_id(bundle.manifest)})
+            inferred_arxiv = self._effective_arxiv_id(bundle.manifest)
+            if inferred_arxiv:
+                updates["arxiv_id"] = inferred_arxiv
+        effective_arxiv = updates.get("arxiv_id", meta.arxiv_id)
+        if not meta.url and effective_arxiv:
+            updates["url"] = f"https://arxiv.org/abs/{effective_arxiv}"
+        if not meta.code_url:
+            inferred_code = self._infer_code_url(slug)
+            if inferred_code:
+                updates["code_url"] = inferred_code
+        if updates:
+            meta = meta.model_copy(update=updates)
         return PaperDetail(
             slug=slug,
             updated_at=bundle.manifest.updated_at,
@@ -256,6 +268,17 @@ class PaperRepository:
         from paper_wiki.discovery.sources.arxiv_source import infer_arxiv_id_from_slug
 
         return infer_arxiv_id_from_slug(manifest.slug)
+
+    def _infer_code_url(self, slug: str) -> str:
+        raw_dir = self.settings.resolved_raw_dir() / slug
+        if not raw_dir.is_dir():
+            return ""
+        try:
+            from paper_wiki.ingestion.latex_parser import LaTeXParser
+
+            return LaTeXParser().extract_code_url(raw_dir)
+        except Exception:
+            return ""
 
     def _wechat_published_at(self, artifact_dir: Path) -> str | None:
         payload = self._read_optional_json(artifact_dir / "wechat" / "package.json")

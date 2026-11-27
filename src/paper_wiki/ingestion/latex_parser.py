@@ -134,6 +134,49 @@ class LaTeXParser:
         merged = self._strip_comments(self._inline_inputs(self._find_entry_file(paper_dir), paper_dir))
         return self._extract_authors(merged), self._extract_affiliations(merged)
 
+    def extract_code_url(self, paper_dir: Path) -> str:
+        """只读地从 raw LaTeX 中尽量提取论文对应的开源代码仓库链接。"""
+        paper_dir = paper_dir.resolve()
+        self._source_files = []
+        merged = self._strip_comments(self._inline_inputs(self._find_entry_file(paper_dir), paper_dir))
+        return self._extract_code_url(merged)
+
+    @staticmethod
+    def _extract_code_url(text: str) -> str:
+        """提取 GitHub / GitLab / Codeberg 等代码仓库链接，忽略参考文献和模板链接。"""
+        # Cut off bibliography/references so we only look at the paper's own preamble & body.
+        cut = re.search(r"\\(?:bibliography|begin\{thebibliography\})", text, flags=re.IGNORECASE)
+        scope = text[: cut.start()] if cut else text
+        pattern = re.compile(
+            r"https?://(?:www\.)?(?:github\.com|gitlab\.com|codeberg\.org)/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+",
+            flags=re.IGNORECASE,
+        )
+        ignored_owners = {"acl-org", "overleaf", "latex3", "latex", "tex-live", "ctan"}
+        matches: list[tuple[int, str]] = []
+        seen: set[str] = set()
+        for match in pattern.finditer(scope):
+            url = match.group(0).rstrip(".,;:)}\\'\"")
+            if url.endswith(".git"):
+                url = url[:-4]
+            parts = url.split("/")
+            if len(parts) < 5:
+                continue
+            owner = parts[3].lower()
+            if owner in ignored_owners or url in seen:
+                continue
+            seen.add(url)
+            window = scope[max(0, match.start() - 120) : min(len(scope), match.end() + 80)].lower()
+            score = 0
+            if any(k in window for k in ("repourl", "codeurl", "our code", "source code", "code is available", "github", "repository", "implementation")):
+                score += 2
+            if match.start() < 6000:
+                score += 1
+            matches.append((score, url))
+        if not matches:
+            return ""
+        matches.sort(key=lambda item: item[0], reverse=True)
+        return matches[0][1]
+
     def _find_entry_file(self, paper_dir: Path) -> Path:
         """定位主 tex 文件；优先常见文件名，其次寻找包含 \\begin{document} 的文件。"""
         preferred = ["main.tex", "paper.tex", "article.tex"]

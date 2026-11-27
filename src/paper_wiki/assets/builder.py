@@ -102,13 +102,26 @@ class PaperAssetsBuilder:
         from paper_wiki.discovery.sources.arxiv_source import infer_arxiv_id_from_slug
 
         inferred_arxiv_id = infer_arxiv_id_from_slug(slug)
+        resolved_arxiv_id = previous_paper.arxiv_id if previous_paper and previous_paper.arxiv_id else inferred_arxiv_id
+        resolved_url = (
+            previous_paper.url
+            if previous_paper and previous_paper.url
+            else (f"https://arxiv.org/abs/{resolved_arxiv_id}" if resolved_arxiv_id else "")
+        )
+        resolved_code_url = (
+            previous_paper.code_url
+            if previous_paper and previous_paper.code_url
+            else self.parser._extract_code_url(cleaned)
+        )
         paper_meta = PaperAssetMeta(
             title=title,
             authors=authors,
             affiliations=affiliations,
             abstract=abstract,
-            # Fetch slug is the arXiv id; keep human-edited venue/year/review flags on rebuild.
-            arxiv_id=(previous_paper.arxiv_id if previous_paper and previous_paper.arxiv_id else inferred_arxiv_id),
+            # Fetch slug is the arXiv id; keep human-edited venue/year/links/review flags on rebuild.
+            arxiv_id=resolved_arxiv_id,
+            url=resolved_url,
+            code_url=resolved_code_url,
             year=previous_paper.year if previous_paper else None,
             venue=previous_paper.venue if previous_paper else "",
             tags=list(previous_paper.tags) if previous_paper else [],

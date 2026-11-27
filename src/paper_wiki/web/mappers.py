@@ -12,6 +12,8 @@ def map_paper_meta(meta: PaperAssetMeta) -> PaperMetaDTO:
         year=meta.year,
         venue=meta.venue,
         arxiv_id=meta.arxiv_id,
+        url=meta.url,
+        code_url=meta.code_url,
         tags=meta.tags,
         contribution_type=meta.contribution_type,
         reviewed=meta.reviewed,

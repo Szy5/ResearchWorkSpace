@@ -40,6 +40,8 @@ class PaperAssetMeta(BaseModel):
     year: int | None = None
     venue: str = ""
     arxiv_id: str = ""
+    url: str = ""
+    code_url: str = ""
     tags: list[str] = Field(default_factory=list)
     contribution_type: ContributionType | None = None
     reviewed: bool = False

@@ -16,6 +16,8 @@ class PaperMetaDTO(BaseModel):
     year: int | None = None
     venue: str = ""
     arxiv_id: str = ""
+    url: str = ""
+    code_url: str = ""
     tags: list[str] = Field(default_factory=list)
     contribution_type: ContributionType | None = None
     reviewed: bool = False
@@ -64,6 +66,8 @@ class PaperMetaPatch(BaseModel):
     year: int | None = None
     venue: str | None = None
     arxiv_id: str | None = None
+    url: str | None = None
+    code_url: str | None = None
     tags: list[str] | None = None
     contribution_type: ContributionType | None = None
     meta_reviewed: bool | None = None
