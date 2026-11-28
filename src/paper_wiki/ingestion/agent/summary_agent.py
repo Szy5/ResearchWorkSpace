@@ -55,6 +55,18 @@ class AgentSummaryGenerator:
         prompt_name = prompt_file or DEFAULT_AGENT_SUMMARY_PROMPT
         prompt_path = resolve_prompt_path(self.prompts_dir, prompt_name)
         prompt_vars = load_prompt_module(prompt_path)
+        if (
+            "paper_summary_agent_system_prompt" not in prompt_vars
+            or "paper_summary_agent_user_prompt" not in prompt_vars
+        ):
+            logger.info(
+                "Prompt %s 缺少 agent 模板变量，回退使用默认 %s",
+                prompt_name,
+                DEFAULT_AGENT_SUMMARY_PROMPT,
+            )
+            prompt_name = DEFAULT_AGENT_SUMMARY_PROMPT
+            prompt_path = resolve_prompt_path(self.prompts_dir, prompt_name)
+            prompt_vars = load_prompt_module(prompt_path)
         system = prompt_vars["paper_summary_agent_system_prompt"].strip()
         user_template = prompt_vars["paper_summary_agent_user_prompt"]
 

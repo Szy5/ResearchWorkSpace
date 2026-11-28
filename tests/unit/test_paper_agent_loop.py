@@ -339,6 +339,47 @@ def test_pipeline_uses_settings_ingest_mode_by_default(tmp_path: Path) -> None:
     assert "INGEST_MODE=agent" in result.summary_path.read_text(encoding="utf-8")
 
 
+def test_agent_mode_falls_back_when_workflow_prompt_is_passed(tmp_path: Path) -> None:
+    from paper_wiki.web.schemas.paper import IngestRequest
+
+    assert IngestRequest().summary_prompt is None
+
+    fake_client = _FakeCompletionClient(
+        [
+            _make_response(
+                content="# Tiny Graph Reasoning\n\n## 问题与动机\n兼容 workflow prompt 回退成功。",
+                prompt_tokens=200,
+                completion_tokens=50,
+            ),
+        ]
+    )
+    settings = Settings(
+        project_root=Path.cwd(),
+        raw_dir=Path("tests/fixtures"),
+        artifacts_dir=tmp_path,
+        prompts_dir=Path("prompts"),
+        api_key="test",
+        ingest_mode="agent",
+        langsmith_tracing=False,
+        langsmith_api_key=None,
+    )
+    pipeline = IngestPipeline(settings=settings, llm=_UnusedLLM())
+    pipeline._agent_summary_generator = AgentSummaryGenerator(
+        pipeline.summary_generator,
+        settings=settings,
+        agent_loop=PaperAgentLoop(settings=settings, client=fake_client, max_steps=3),
+    )
+
+    result = pipeline.run(
+        "sample_paper",
+        overwrite=True,
+        only=["summary"],
+        summary_prompt="paper_summary_v5.py",
+    )
+
+    assert "兼容 workflow prompt 回退成功" in result.summary_path.read_text(encoding="utf-8")
+
+
 def test_pipeline_rejects_invalid_mode(tmp_path: Path) -> None:
     settings = Settings(
         project_root=Path.cwd(),

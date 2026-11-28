@@ -98,7 +98,7 @@ class IngestRequest(BaseModel):
     expected_updated_at: str | None = None
     overwrite: bool = False
     only: list[str] | None = None
-    summary_prompt: str | None = "paper_summary_v5.py"
+    summary_prompt: str | None = None
     prior_works_prompt: str | None = "prior_work_prompt.py"
     sci_pattern_prompt: str | None = "sci_pattern_classify_prompt.py"
 
